@@ -25,7 +25,7 @@ CBlockTemplate* CreateNewBlockWithKey(CReserveKey& reservekey);
 void IncrementExtraNonce(CBlock* pblock, CBlockIndex* pindexPrev, unsigned int& nExtraNonce);
 /** Check mined block */
 bool ProcessBlockFound(CBlock* pblock, CWallet& wallet, CReserveKey& reservekey);
-extern double dHashesPerSec;
+extern double dHashesPerMin;
 extern int64_t nHPSTimerStart;
 
 #endif // BITCREDITS_MINER_H

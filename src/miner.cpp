@@ -354,7 +354,7 @@ void IncrementExtraNonce(CBlock* pblock, CBlockIndex* pindexPrev, unsigned int& 
 //
 // Internal miner
 //
-double dHashesPerSec = 0.0;
+double dHashesPerMin = 0.0;
 int64_t nHPSTimerStart = 0;
 
 //
@@ -537,14 +537,14 @@ void static BitcreditsMiner(CWallet *pwallet)
                         LOCK(cs);
                         if (GetTimeMillis() - nHPSTimerStart > 4000*60)
                         {
-                            dHashesPerSec = 1000.0 * nHashCounter / (GetTimeMillis() - nHPSTimerStart);
+                            dHashesPerMin = 1000.0 * nHashCounter *60 / (GetTimeMillis() - nHPSTimerStart);
                             nHPSTimerStart = GetTimeMillis();
                             nHashCounter = 0;
                             static int64_t nLogTime;
                             if (GetTime() - nLogTime > 30 * 60)
                             {
                                 nLogTime = GetTime();
-                                LogPrintf("hashmeter %6.0f khash/s\n", dHashesPerSec/1000.0);
+                                LogPrintf("hashmeter %6.0f khash/s\n", dHashesPerMin/1000.0);
                             }
                         }
                     }
