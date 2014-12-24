@@ -492,7 +492,7 @@ Value getwork(const Array& params, bool fHelp)
         uint256 hashTarget = uint256().SetCompact(pblock->nBits);
 		uint256 initHash = pblock->GetHash();
 
-		memcpy( pdata, (char*)pblock, 88+12 );
+		memcpy( pdata, (char*)pblock, 88);
 
         Object result;
 
@@ -500,6 +500,8 @@ Value getwork(const Array& params, bool fHelp)
 
         result.push_back(Pair("target",   HexStr(BEGIN(hashTarget), END(hashTarget))));
         return result;
+        
+        
     }
     else
     {
@@ -520,7 +522,7 @@ Value getwork(const Array& params, bool fHelp)
         pblock->nNonce = pdata->nNonce;
         pblock->nBirthdayA = pdata->nBirthdayA;
         pblock->nBirthdayB = pdata->nBirthdayB;
-        
+        pblock->vtx[0].vin[0].scriptSig == mapNewBlock[pdata->hashMerkleRoot].second;
         pblock->hashMerkleRoot = pblock->BuildMerkleTree();
 
 		uint256 posthash = pblock->GetHash();

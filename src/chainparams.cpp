@@ -100,12 +100,12 @@ public:
         vAlertPubKey = ParseHex("04fc9702847840aaf195de8442ebecedf5b095cdbb9bc716bda9110971b28a49e0ead8564ff0db22209e0374782c093bb899692d524e9d6a6956e7c5ecbcd68284");
         nDefaultPort = 8877;
         bnProofOfWorkLimit = ~uint256(0) >> 4;
-        nSubsidyHalvingInterval = 210000;
+        nSubsidyHalvingInterval = 21000;
         nEnforceBlockUpgradeMajority = 750;
         nRejectBlockOutdatedMajority = 950;
         nToCheckBlockUpgradeMajority = 1000;
         nMinerThreads = 0;
-        nTargetTimespan = 1 * 60 * 60; // one hour
+        nTargetTimespan = 1 * 60; // per block basis 
         nTargetSpacing = 1 * 60; //one minute
 
         

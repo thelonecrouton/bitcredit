@@ -25,7 +25,6 @@ CBlockTemplate* CreateNewBlockWithKey(CReserveKey& reservekey);
 void IncrementExtraNonce(CBlock* pblock, CBlockIndex* pindexPrev, unsigned int& nExtraNonce);
 /** Check mined block */
 bool ProcessBlockFound(CBlock* pblock, CWallet& wallet, CReserveKey& reservekey);
-
 extern double dHashesPerSec;
 extern int64_t nHPSTimerStart;
 

@@ -1128,10 +1128,9 @@ void static PruneOrphanBlocks()
 
 CAmount GetBlockValue(int nHeight, const CAmount& nFees)
 {
-    int64_t nSubsidy = 250 * COIN;
+    int64_t nSubsidy = 50 * COIN;
     int halvings = nHeight / Params().SubsidyHalvingInterval();
-if (nHeight== 6){ nSubsidy = 10000000* COIN;}
-else if (nHeight< 8000){ nSubsidy = 5* COIN;}
+	if (nHeight< 4000){ nSubsidy = 5* COIN;}
 
     // Force block reward to zero when right shift is undefined.
     if (halvings >= 64)

@@ -404,6 +404,16 @@ CBlockTemplate* CreateNewBlockWithKey(CReserveKey& reservekey)
 
 bool ProcessBlockFound(CBlock* pblock, CWallet& wallet, CReserveKey& reservekey)
 {
+    uint256 hash = pblock->GetVerifiedHash();
+    uint256 hashTarget = uint256().SetCompact(pblock->nBits);
+
+    if (hash > hashTarget)
+        return false;
+
+    //// debug print
+    printf("BitcreditsMiner:\n");
+    printf("proof-of-work found  \n  hash: %s  \ntarget: %s\n", hash.GetHex().c_str(), hashTarget.GetHex().c_str());
+        
     LogPrintf("%s\n", pblock->ToString());
     LogPrintf("generated %s\n", FormatMoney(pblock->vtx[0].vout[0].nValue));
 
