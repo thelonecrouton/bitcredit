@@ -39,8 +39,8 @@ const std::string CLIENT_NAME("Minato");
 // git will put "#define GIT_ARCHIVE 1" on the next line inside archives. 
 #define GIT_ARCHIVE 1
 #ifdef GIT_ARCHIVE
-#define GIT_COMMIT_ID "e8f6d54"
-#define GIT_COMMIT_DATE "Thurs, 11 Dec 2014 05:43:16 +0200"
+#define GIT_COMMIT_ID ""
+#define GIT_COMMIT_DATE "Thurs, 25 Dec 2014 7:43:16 +0200"
 #endif
 
 #define BUILD_DESC_WITH_SUFFIX(maj, min, rev, build, suffix) \
@@ -50,7 +50,7 @@ const std::string CLIENT_NAME("Minato");
     "v" DO_STRINGIZE(maj) "." DO_STRINGIZE(min) "." DO_STRINGIZE(rev) "." DO_STRINGIZE(build) "-g" commit
 
 #define BUILD_DESC_FROM_UNKNOWN(maj, min, rev, build) \
-    "v" DO_STRINGIZE(maj) "." DO_STRINGIZE(min) "." DO_STRINGIZE(rev) "." DO_STRINGIZE(build) "-unk"
+    "v" DO_STRINGIZE(maj) "." DO_STRINGIZE(min) "." DO_STRINGIZE(rev) "." DO_STRINGIZE(build) "-x"
 
 #ifndef BUILD_DESC
 #ifdef BUILD_SUFFIX
