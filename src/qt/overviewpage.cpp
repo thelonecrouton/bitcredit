@@ -139,7 +139,7 @@ OverviewPage::OverviewPage(QWidget *parent) :
     // start with displaying the "out of sync" warnings
     showOutOfSyncWarning(true);
 
-    this->setStyleSheet("background-image:url(:/images/background);");
+    
 }
 
 void OverviewPage::handleTransactionClicked(const QModelIndex &index)
