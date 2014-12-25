@@ -120,8 +120,8 @@ bool CheckMinWork(unsigned int nBits, unsigned int nBase, int64_t deltaTime)
     bnResult.SetCompact(nBase);
     while (deltaTime > 0 && bnResult < bnLimit)
     {
-        // Maximum 200% adjustment...
-        bnResult *= 2;
+        // Maximum 400% adjustment...
+        bnResult *= 4;
         // ... in best-case exactly 4-times-normal target time
         deltaTime -= Params().TargetTimespan()*4;
     }
