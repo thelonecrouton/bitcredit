@@ -15,10 +15,10 @@
 #define CLIENT_VERSION_IS_RELEASE true
 
 /* Major version */
-#define CLIENT_VERSION_MAJOR 2
+#define CLIENT_VERSION_MAJOR 1
 
 /* Minor version */
-#define CLIENT_VERSION_MINOR 1
+#define CLIENT_VERSION_MINOR 2
 
 /* Build revision */
 #define CLIENT_VERSION_REVISION 06
@@ -271,7 +271,7 @@
 #define PACKAGE_URL ""
 
 /* Define to the version of this package. */
-#define PACKAGE_VERSION "1.2.06"
+#define PACKAGE_VERSION "1.1.02"
 
 /* Define to necessary symbol if this constant uses a non-standard name on
    your system. */
