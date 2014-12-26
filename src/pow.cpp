@@ -51,25 +51,43 @@ unsigned int GetNextWorkRequired(const CBlockIndex* pindexLast, const CBlockHead
     // Limit adjustment step
     int64_t nActualTimespan = pindexLast->GetBlockTime() - pindexFirst->GetBlockTime();
     LogPrintf("  nActualTimespan = %d  before bounds\n", nActualTimespan);
-    if (nActualTimespan < Params().TargetTimespan()/4)
+    
+    if (pindexLast->nHeight+1 <799){
+		if (nActualTimespan < Params().TargetTimespan()/4)
         nActualTimespan = Params().TargetTimespan()/4;
-    if (nActualTimespan > Params().TargetTimespan()*4)
+		if (nActualTimespan > Params().TargetTimespan()*4)
         nActualTimespan = Params().TargetTimespan()*4;
+	}
 
+	else {
+		if (nActualTimespan < Params().TargetTimespan2()/4)
+        nActualTimespan = Params().TargetTimespan2()/4;
+		if (nActualTimespan > Params().TargetTimespan2()*4)
+        nActualTimespan = Params().TargetTimespan2()*4;
+	}
     // Retarget
     uint256 bnNew;
     uint256 bnOld;
     bnNew.SetCompact(pindexLast->nBits);
     bnOld = bnNew;
     bnNew *= nActualTimespan;
+    if (pindexLast->nHeight+1 <799){
     bnNew /= Params().TargetTimespan();
-
+	}
+	else {
+    bnNew /= Params().TargetTimespan2();
+	}
     if (bnNew > Params().ProofOfWorkLimit())
         bnNew = Params().ProofOfWorkLimit();
 
     /// debug print
     LogPrintf("GetNextWorkRequired RETARGET\n");
+    if (pindexLast->nHeight+1 <799){
     LogPrintf("Params().TargetTimespan() = %d    nActualTimespan = %d\n", Params().TargetTimespan(), nActualTimespan);
+    }
+    else {
+    LogPrintf("Params().TargetTimespan2() = %d    nActualTimespan = %d\n", Params().TargetTimespan2(), nActualTimespan);
+    }
     LogPrintf("Before: %08x  %s\n", pindexLast->nBits, bnOld.ToString());
     LogPrintf("After:  %08x  %s\n", bnNew.GetCompact(), bnNew.ToString());
 

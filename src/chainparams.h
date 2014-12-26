@@ -67,6 +67,7 @@ public:
     /* Make standard checks */
     bool RequireStandard() const { return fRequireStandard; }
     int64_t TargetTimespan() const { return nTargetTimespan; }
+    int64_t TargetTimespan2() const { return nTargetTimespan2; }
     int64_t TargetSpacing() const { return nTargetSpacing; }
     int64_t Interval() const { return nTargetTimespan / nTargetSpacing; }
     /* Make miner stop after a block is found. In RPC, don't return
@@ -94,6 +95,7 @@ protected:
     int nRejectBlockOutdatedMajority;
     int nToCheckBlockUpgradeMajority;
     int64_t nTargetTimespan;
+    int64_t nTargetTimespan2;
     int64_t nTargetSpacing;
     int nMinerThreads;
     std::vector<CDNSSeedData> vSeeds;
