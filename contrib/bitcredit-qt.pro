@@ -19,3 +19,6 @@ FORMS += \
 
 RESOURCES += \
     ../src/qt/bitcredit.qrc
+
+QT += \
+    printsupport

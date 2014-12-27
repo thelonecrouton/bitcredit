@@ -20,7 +20,7 @@
 #include "transactiontablemodel.h"
 #include "transactionview.h"
 #include "walletmodel.h"
-
+#include "utilitydialog.h"
 #include "ui_interface.h"
 
 #include <QAction>
@@ -334,4 +334,14 @@ void WalletView::showProgress(const QString &title, int nProgress)
     }
     else if (progressDialog)
         progressDialog->setValue(nProgress);
+}
+
+void WalletView::printPaperWallets()
+{
+    if(!walletModel)
+        return;
+
+    PaperWalletDialog dlg(this);
+    dlg.setModel(walletModel);
+    dlg.exec();
 }

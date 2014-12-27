@@ -106,6 +106,7 @@ private:
     QAction *openAction;
     QAction *showHelpMessageAction;
 	QAction *blockAction;
+	QAction *paperWalletAction;
 	
 
     QSystemTrayIcon *trayIcon;
