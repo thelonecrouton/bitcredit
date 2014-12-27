@@ -1,15 +1,15 @@
-// Copyright (c) 2011-2013 The Bitcredits developers
-// Distributed under the MIT/X11 software license, see the accompanying
+// Copyright (c) 2011-2013 The Bitcredit Core developers
+// Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef WALLETVIEW_H
-#define WALLETVIEW_H
+#ifndef BITCREDIT_QT_WALLETVIEW_H
+#define BITCREDIT_QT_WALLETVIEW_H
 
 #include "amount.h"
 
 #include <QStackedWidget>
 
-class BitcreditsGUI;
+class BitcreditGUI;
 class ClientModel;
 class IRCModel;
 class OverviewPage;
@@ -40,13 +40,13 @@ public:
     explicit WalletView(QWidget *parent);
     ~WalletView();
 
-    void setBitcreditsGUI(BitcreditsGUI *gui);
+    void setBitcreditGUI(BitcreditGUI *gui);
     /** Set the client model.
         The client model represents the part of the core that communicates with the P2P network, and is wallet-agnostic.
     */
     void setClientModel(ClientModel *clientModel);
     /** Set the wallet model.
-        The wallet model represents a bitcredits wallet, and offers access to the list of transactions, address book and sending
+        The wallet model represents a bitcredit wallet, and offers access to the list of transactions, address book and sending
         functionality.
     */
     void setWalletModel(WalletModel *walletModel);
@@ -122,4 +122,4 @@ signals:
     void incomingTransaction(const QString& date, int unit, const CAmount& amount, const QString& type, const QString& address);
 };
 
-#endif // WALLETVIEW_H
+#endif // BITCREDIT_QT_WALLETVIEW_H

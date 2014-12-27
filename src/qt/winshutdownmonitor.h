@@ -1,9 +1,9 @@
-// Copyright (c) 2014 The Bitcredits developers
-// Distributed under the MIT/X11 software license, see the accompanying
+// Copyright (c) 2014 The Bitcredit Core developers
+// Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef WINSHUTDOWNMONITOR_H
-#define WINSHUTDOWNMONITOR_H
+#ifndef BITCREDIT_QT_WINSHUTDOWNMONITOR_H
+#define BITCREDIT_QT_WINSHUTDOWNMONITOR_H
 
 #ifdef WIN32
 #include <QByteArray>
@@ -26,4 +26,4 @@ public:
 #endif
 #endif
 
-#endif // WINSHUTDOWNMONITOR_H
+#endif // BITCREDIT_QT_WINSHUTDOWNMONITOR_H

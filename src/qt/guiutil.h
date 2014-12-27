@@ -1,15 +1,17 @@
-// Copyright (c) 2011-2013 The Bitcredits developers
-// Distributed under the MIT/X11 software license, see the accompanying
+// Copyright (c) 2011-2013 The Bitcredit Core developers
+// Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef GUIUTIL_H
-#define GUIUTIL_H
+#ifndef BITCREDIT_QT_GUIUTIL_H
+#define BITCREDIT_QT_GUIUTIL_H
 
 #include "amount.h"
 
+#include <QEvent>
 #include <QHeaderView>
 #include <QMessageBox>
 #include <QObject>
+#include <QProgressBar>
 #include <QString>
 #include <QTableView>
 
@@ -27,7 +29,7 @@ class QUrl;
 class QWidget;
 QT_END_NAMESPACE
 
-/** Utility functions used by the Bitcredits Qt UI.
+/** Utility functions used by the Bitcredit Qt UI.
  */
 namespace GUIUtil
 {
@@ -35,17 +37,17 @@ namespace GUIUtil
     QString dateTimeStr(const QDateTime &datetime);
     QString dateTimeStr(qint64 nTime);
 
-    // Render Bitcredits addresses in monospace font
-    QFont bitcreditsAddressFont();
+    // Render Bitcredit addresses in monospace font
+    QFont bitcreditAddressFont();
 
     // Set up widgets for address and amounts
     void setupAddressWidget(QValidatedLineEdit *widget, QWidget *parent);
     void setupAmountWidget(QLineEdit *widget, QWidget *parent);
 
-    // Parse "bitcredits:" URI into recipient object, return true on successful parsing
-    bool parseBitcreditsURI(const QUrl &uri, SendCoinsRecipient *out);
-    bool parseBitcreditsURI(QString uri, SendCoinsRecipient *out);
-    QString formatBitcreditsURI(const SendCoinsRecipient &info);
+    // Parse "bitcredit:" URI into recipient object, return true on successful parsing
+    bool parseBitcreditURI(const QUrl &uri, SendCoinsRecipient *out);
+    bool parseBitcreditURI(QString uri, SendCoinsRecipient *out);
+    QString formatBitcreditURI(const SendCoinsRecipient &info);
 
     // Returns true if given address+amount meets "dust" definition
     bool isDust(const QString& address, const CAmount& amount);
@@ -186,6 +188,21 @@ namespace GUIUtil
 
     /* Format a CNodeCombinedStats.dPingTime into a user-readable string or display N/A, if 0*/
     QString formatPingTime(double dPingTime);
+    
+#if defined(Q_OS_MAC) && QT_VERSION >= 0x050000
+    // workaround for Qt OSX Bug:
+    // https://bugreports.qt-project.org/browse/QTBUG-15631
+    // QProgressBar uses around 10% CPU even when app is in background
+    class ProgressBar : public QProgressBar
+    {
+        bool event(QEvent *e) {
+            return (e->type() != QEvent::StyleAnimationUpdate) ? QProgressBar::event(e) : false;
+        }
+    };
+#else
+    typedef QProgressBar ProgressBar;
+#endif
+    
 } // namespace GUIUtil
 
-#endif // GUIUTIL_H
+#endif // BITCREDIT_QT_GUIUTIL_H

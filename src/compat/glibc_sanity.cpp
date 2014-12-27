@@ -1,9 +1,9 @@
-// Copyright (c) 2009-2014 The Bitcredits developers
+// Copyright (c) 2009-2014 The Bitcredit Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #if defined(HAVE_CONFIG_H)
-#include "config/bitcredits-config.h"
+#include "config/bitcredit-config.h"
 #endif
 
 #include <cstddef>

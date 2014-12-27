@@ -1,9 +1,9 @@
-// Copyright (c) 2014 The Bitcredits developers
-// Distributed under the MIT/X11 software license, see the accompanying
+// Copyright (c) 2014 The Bitcredit Core developers
+// Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef BITCREDITS_TIMEDATA_H
-#define BITCREDITS_TIMEDATA_H
+#ifndef BITCREDIT_TIMEDATA_H
+#define BITCREDIT_TIMEDATA_H
 
 #include <algorithm>
 #include <assert.h>
@@ -12,7 +12,8 @@
 
 class CNetAddr;
 
-/** Median filter over a stream of values.
+/** 
+ * Median filter over a stream of values.
  * Returns the median of the last N numbers
  */
 template <typename T>
@@ -67,9 +68,9 @@ public:
     }
 };
 
-/* Functions to keep track of adjusted P2P time */
+/** Functions to keep track of adjusted P2P time */
 int64_t GetTimeOffset();
 int64_t GetAdjustedTime();
 void AddTimeData(const CNetAddr& ip, int64_t nTime);
 
-#endif // BITCREDITS_TIMEDATA_H
+#endif // BITCREDIT_TIMEDATA_H

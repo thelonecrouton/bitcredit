@@ -1,0 +1,27 @@
+# /etc/conf.d/bitcreditd: config file for /etc/init.d/bitcreditd
+
+# Config file location
+#BITCREDITD_CONFIGFILE="/etc/bitcredit/bitcredit.conf"
+
+# What directory to write pidfile to?  (created and owned by $BITCREDITD_USER)
+#BITCREDITD_PIDDIR="/var/run/bitcreditd"
+
+# What filename to give the pidfile
+#BITCREDITD_PIDFILE="${BITCREDITD_PIDDIR}/bitcreditd.pid"
+
+# Where to write bitcreditd data (be mindful that the blockchain is large)
+#BITCREDITD_DATADIR="/var/lib/bitcreditd"
+
+# User and group to own bitcreditd process
+#BITCREDITD_USER="bitcredit"
+#BITCREDITD_GROUP="bitcredit"
+
+# Path to bitcreditd executable
+#BITCREDITD_BIN="/usr/bin/bitcreditd"
+
+# Nice value to run bitcreditd under
+#BITCREDITD_NICE=0
+
+# Additional options (avoid -conf and -datadir, use flags above)
+BITCREDITD_OPTS="-disablewallet"
+

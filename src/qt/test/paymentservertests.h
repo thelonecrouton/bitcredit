@@ -1,9 +1,9 @@
-// Copyright (c) 2009-2014 The Bitcredits developers
+// Copyright (c) 2009-2014 The Bitcredit Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef PAYMENTSERVERTESTS_H
-#define PAYMENTSERVERTESTS_H
+#ifndef BITCREDIT_QT_TEST_PAYMENTSERVERTESTS_H
+#define BITCREDIT_QT_TEST_PAYMENTSERVERTESTS_H
 
 #include "../paymentserver.h"
 
@@ -32,4 +32,4 @@ public:
     SendCoinsRecipient recipient;
 };
 
-#endif // PAYMENTSERVERTESTS_H
+#endif // BITCREDIT_QT_TEST_PAYMENTSERVERTESTS_H

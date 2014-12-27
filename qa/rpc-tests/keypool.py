@@ -1,14 +1,14 @@
-#!/usr/bin/env python
-# Copyright (c) 2014 The Bitcredits Core developers
-# Distributed under the MIT/X11 software license, see the accompanying
+#!/usr/bin/env python2
+# Copyright (c) 2014 The Bitcredit Core developers
+# Distributed under the MIT software license, see the accompanying
 # file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 # Exercise the wallet keypool, and interaction with wallet encryption/locking
 
-# Add python-bitcreditsrpc to module search path:
+# Add python-bitcreditrpc to module search path:
 import os
 import sys
-sys.path.append(os.path.join(os.path.dirname(os.path.abspath(__file__)), "python-bitcreditsrpc"))
+sys.path.append(os.path.join(os.path.dirname(os.path.abspath(__file__)), "python-bitcreditrpc"))
 
 import json
 import shutil
@@ -16,7 +16,7 @@ import subprocess
 import tempfile
 import traceback
 
-from bitcreditsrpc.authproxy import AuthServiceProxy, JSONRPCException
+from bitcreditrpc.authproxy import AuthServiceProxy, JSONRPCException
 from util import *
 
 
@@ -44,7 +44,7 @@ def check_array_result(object_array, to_match, expected):
 def run_test(nodes, tmpdir):
     # Encrypt wallet and wait to terminate
     nodes[0].encryptwallet('test')
-    bitcreditsd_processes[0].wait()
+    bitcreditd_processes[0].wait()
     # Restart node 0
     nodes[0] = start_node(0, tmpdir)
     # Keep creating keys
@@ -81,9 +81,9 @@ def main():
 
     parser = optparse.OptionParser(usage="%prog [options]")
     parser.add_option("--nocleanup", dest="nocleanup", default=False, action="store_true",
-                      help="Leave bitcreditsds and test.* datadir on exit or error")
+                      help="Leave bitcreditds and test.* datadir on exit or error")
     parser.add_option("--srcdir", dest="srcdir", default="../../src",
-                      help="Source directory containing bitcreditsd/bitcredits-cli (default: %default%)")
+                      help="Source directory containing bitcreditd/bitcredit-cli (default: %default%)")
     parser.add_option("--tmpdir", dest="tmpdir", default=tempfile.mkdtemp(prefix="test"),
                       help="Root directory for datadirs")
     (options, args) = parser.parse_args()
@@ -118,7 +118,7 @@ def main():
     if not options.nocleanup:
         print("Cleaning up")
         stop_nodes(nodes)
-        wait_bitcreditsds()
+        wait_bitcreditds()
         shutil.rmtree(options.tmpdir)
 
     if success:

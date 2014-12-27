@@ -1,10 +1,10 @@
-// Copyright (c) 2011-2013 The Bitcredits developers
-// Distributed under the MIT/X11 software license, see the accompanying
+// Copyright (c) 2011-2013 The Bitcredit Core developers
+// Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include "walletframe.h"
 
-#include "bitcreditsgui.h"
+#include "bitcreditgui.h"
 #include "walletview.h"
 
 #include <cstdio>
@@ -12,7 +12,7 @@
 #include <QHBoxLayout>
 #include <QLabel>
 
-WalletFrame::WalletFrame(BitcreditsGUI *_gui) :
+WalletFrame::WalletFrame(BitcreditGUI *_gui) :
     QFrame(_gui),
     gui(_gui)
 {
@@ -43,7 +43,7 @@ bool WalletFrame::addWallet(const QString& name, WalletModel *walletModel)
         return false;
 
     WalletView *walletView = new WalletView(this);
-    walletView->setBitcreditsGUI(gui);
+    walletView->setBitcreditGUI(gui);
     walletView->setClientModel(clientModel);
     walletView->setWalletModel(walletModel);
     walletView->showOutOfSyncWarning(bOutOfSync);

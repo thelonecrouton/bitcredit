@@ -1,5 +1,5 @@
-// Copyright (c) 2013 The Bitcredits Core developers
-// Distributed under the MIT/X11 software license, see the accompanying
+// Copyright (c) 2013 The Bitcredit Core developers
+// Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include <boost/test/unit_test.hpp>
@@ -87,10 +87,10 @@ void RunTest(const TestVector &test) {
         key.Encode(data);
         pubkey.Encode(data);
         // Test private key
-        CBitcreditsExtKey b58key; b58key.SetKey(key);
+        CBitcreditExtKey b58key; b58key.SetKey(key);
         BOOST_CHECK(b58key.ToString() == derive.prv);
         // Test public key
-        CBitcreditsExtPubKey b58pubkey; b58pubkey.SetKey(pubkey);
+        CBitcreditExtPubKey b58pubkey; b58pubkey.SetKey(pubkey);
         BOOST_CHECK(b58pubkey.ToString() == derive.pub);
         // Derive new keys
         CExtKey keyNew;

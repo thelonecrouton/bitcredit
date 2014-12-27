@@ -1,10 +1,10 @@
 // Copyright (c) 2010 Satoshi Nakamoto
-// Copyright (c) 2009-2013 The Bitcredits developers
-// Distributed under the MIT/X11 software license, see the accompanying
+// Copyright (c) 2009-2014 The Bitcredit Core developers
+// Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef _BITCREDITSRPC_CLIENT_H_
-#define _BITCREDITSRPC_CLIENT_H_
+#ifndef BITCREDIT_RPCCLIENT_H
+#define BITCREDIT_RPCCLIENT_H
 
 #include "json/json_spirit_reader_template.h"
 #include "json/json_spirit_utils.h"
@@ -12,4 +12,4 @@
 
 json_spirit::Array RPCConvertValues(const std::string& strMethod, const std::vector<std::string>& strParams);
 
-#endif // _BITCREDITSRPC_CLIENT_H_
+#endif // BITCREDIT_RPCCLIENT_H

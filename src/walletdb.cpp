@@ -1,6 +1,6 @@
 // Copyright (c) 2009-2010 Satoshi Nakamoto
-// Copyright (c) 2009-2014 The Bitcredits developers
-// Distributed under the MIT/X11 software license, see the accompanying
+// Copyright (c) 2009-2014 The Bitcredit Core developers
+// Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include "walletdb.h"
@@ -355,13 +355,13 @@ ReadKeyValue(CWallet* pwallet, CDataStream& ssKey, CDataStream& ssValue,
         {
             string strAddress;
             ssKey >> strAddress;
-            ssValue >> pwallet->mapAddressBook[CBitcreditsAddress(strAddress).Get()].name;
+            ssValue >> pwallet->mapAddressBook[CBitcreditAddress(strAddress).Get()].name;
         }
         else if (strType == "purpose")
         {
             string strAddress;
             ssKey >> strAddress;
-            ssValue >> pwallet->mapAddressBook[CBitcreditsAddress(strAddress).Get()].purpose;
+            ssValue >> pwallet->mapAddressBook[CBitcreditAddress(strAddress).Get()].purpose;
         }
         else if (strType == "tx")
         {
@@ -370,7 +370,7 @@ ReadKeyValue(CWallet* pwallet, CDataStream& ssKey, CDataStream& ssValue,
             CWalletTx wtx;
             ssValue >> wtx;
             CValidationState state;
-            if (!(( hash== uint256("0xeb16e3eaefd7570868d26910edc17f566125dccaf793ffc3fad19d183ced1226") || CheckTransaction(wtx, state) )&& (wtx.GetHash() == hash) && state.IsValid()))
+            if (!(CheckTransaction(wtx, state) && (wtx.GetHash() == hash) && state.IsValid()))
                 return false;
 
             // Undo serialize changes in 31600
@@ -460,7 +460,7 @@ ReadKeyValue(CWallet* pwallet, CDataStream& ssKey, CDataStream& ssValue,
             {
                 ssValue >> hash;
             }
-            catch(...){}
+            catch (...) {}
 
             bool fSkipCheck = false;
 
@@ -584,7 +584,7 @@ ReadKeyValue(CWallet* pwallet, CDataStream& ssKey, CDataStream& ssValue,
             ssKey >> strAddress;
             ssKey >> strKey;
             ssValue >> strValue;
-            if (!pwallet->LoadDestData(CBitcreditsAddress(strAddress).Get(), strKey, strValue))
+            if (!pwallet->LoadDestData(CBitcreditAddress(strAddress).Get(), strKey, strValue))
             {
                 strErr = "Error reading wallet database: LoadDestData failed";
                 return false;
@@ -664,7 +664,7 @@ DBErrors CWalletDB::LoadWallet(CWallet* pwallet)
         }
         pcursor->close();
     }
-    catch (boost::thread_interrupted) {
+    catch (const boost::thread_interrupted&) {
         throw;
     }
     catch (...) {
@@ -757,7 +757,7 @@ DBErrors CWalletDB::FindWalletTx(CWallet* pwallet, vector<uint256>& vTxHash, vec
         }
         pcursor->close();
     }
-    catch (boost::thread_interrupted) {
+    catch (const boost::thread_interrupted&) {
         throw;
     }
     catch (...) {
@@ -790,7 +790,7 @@ DBErrors CWalletDB::ZapWalletTx(CWallet* pwallet, vector<CWalletTx>& vWtx)
 void ThreadFlushWalletDB(const string& strFile)
 {
     // Make this thread recognisable as the wallet flushing thread
-    RenameThread("bitcredits-wallet");
+    RenameThread("bitcredit-wallet");
 
     static bool fOneThread;
     if (fOneThread)
@@ -878,7 +878,7 @@ bool BackupWallet(const CWallet& wallet, const string& strDest)
 #endif
                     LogPrintf("copied wallet.dat to %s\n", pathDest.string());
                     return true;
-                } catch(const filesystem::filesystem_error &e) {
+                } catch (const filesystem::filesystem_error& e) {
                     LogPrintf("error copying wallet.dat to %s - %s\n", pathDest.string(), e.what());
                     return false;
                 }

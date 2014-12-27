@@ -1,0 +1,12 @@
+[Desktop Entry]
+Encoding=UTF-8
+Name=Bitcredit
+Comment=Bitcredit P2P Cryptocurrency
+Comment[fr]=Bitcredit, monnaie virtuelle cryptographique pair à pair
+Comment[tr]=Bitcredit, eşten eşe kriptografik sanal para birimi
+Exec=bitcredit-qt %u
+Terminal=false
+Type=Application
+Icon=bitcredit128
+MimeType=x-scheme-handler/bitcredit;
+Categories=Office;Finance;

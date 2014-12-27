@@ -1,5 +1,5 @@
-// Copyright (c) 2011-2013 The Bitcredits developers
-// Distributed under the MIT/X11 software license, see the accompanying
+// Copyright (c) 2011-2013 The Bitcredit Core developers
+// Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include "openuridialog.h"
@@ -16,7 +16,7 @@ OpenURIDialog::OpenURIDialog(QWidget *parent) :
 {
     ui->setupUi(this);
 #if QT_VERSION >= 0x040700
-    ui->uriEdit->setPlaceholderText("bitcredits:");
+    ui->uriEdit->setPlaceholderText("bitcredit:");
 #endif
 }
 
@@ -33,7 +33,7 @@ QString OpenURIDialog::getURI()
 void OpenURIDialog::accept()
 {
     SendCoinsRecipient rcp;
-    if(GUIUtil::parseBitcreditsURI(getURI(), &rcp))
+    if(GUIUtil::parseBitcreditURI(getURI(), &rcp))
     {
         /* Only accept value URIs */
         QDialog::accept();
@@ -48,5 +48,5 @@ void OpenURIDialog::on_selectFileButton_clicked()
     if(filename.isEmpty())
         return;
     QUrl fileUri = QUrl::fromLocalFile(filename);
-    ui->uriEdit->setText("bitcredits:?r=" + QUrl::toPercentEncoding(fileUri.toString()));
+    ui->uriEdit->setText("bitcredit:?r=" + QUrl::toPercentEncoding(fileUri.toString()));
 }

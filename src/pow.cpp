@@ -1,14 +1,13 @@
 // Copyright (c) 2009-2010 Satoshi Nakamoto
-// Copyright (c) 2009-2014 The Bitcredits developers
-// Distributed under the MIT/X11 software license, see the accompanying
+// Copyright (c) 2009-2014 The Bitcredit Core developers
+// Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include "pow.h"
 
+#include "chain.h"
 #include "chainparams.h"
-#include "core.h"
-#include "main.h"
-#include "timedata.h"
+#include "primitives/block.h"
 #include "uint256.h"
 #include "util.h"
 
@@ -52,18 +51,18 @@ unsigned int GetNextWorkRequired(const CBlockIndex* pindexLast, const CBlockHead
     int64_t nActualTimespan = pindexLast->GetBlockTime() - pindexFirst->GetBlockTime();
     LogPrintf("  nActualTimespan = %d  before bounds\n", nActualTimespan);
     
-    if (pindexLast->nHeight+1 <799){
-		if (nActualTimespan < Params().TargetTimespan()/4)
-        nActualTimespan = Params().TargetTimespan()/4;
-		if (nActualTimespan > Params().TargetTimespan()*4)
-        nActualTimespan = Params().TargetTimespan()*4;
-	}
-
-	else {
+    if (pindexLast->nHeight+1 >840){
 		if (nActualTimespan < Params().TargetTimespan2()/4)
         nActualTimespan = Params().TargetTimespan2()/4;
 		if (nActualTimespan > Params().TargetTimespan2()*4)
         nActualTimespan = Params().TargetTimespan2()*4;
+	}
+
+	else {
+		if (nActualTimespan < Params().TargetTimespan()/4)
+        nActualTimespan = Params().TargetTimespan()/4;
+		if (nActualTimespan > Params().TargetTimespan()*4)
+        nActualTimespan = Params().TargetTimespan()*4;
 	}
     // Retarget
     uint256 bnNew;
@@ -71,22 +70,22 @@ unsigned int GetNextWorkRequired(const CBlockIndex* pindexLast, const CBlockHead
     bnNew.SetCompact(pindexLast->nBits);
     bnOld = bnNew;
     bnNew *= nActualTimespan;
-    if (pindexLast->nHeight+1 <799){
-    bnNew /= Params().TargetTimespan();
+    if (pindexLast->nHeight+1 >840){
+    bnNew /= Params().TargetTimespan2();
 	}
 	else {
-    bnNew /= Params().TargetTimespan2();
+    bnNew /= Params().TargetTimespan();
 	}
     if (bnNew > Params().ProofOfWorkLimit())
         bnNew = Params().ProofOfWorkLimit();
 
     /// debug print
     LogPrintf("GetNextWorkRequired RETARGET\n");
-    if (pindexLast->nHeight+1 <799){
-    LogPrintf("Params().TargetTimespan() = %d    nActualTimespan = %d\n", Params().TargetTimespan(), nActualTimespan);
+	if (pindexLast->nHeight+1 >840){
+    LogPrintf("Params().TargetTimespan2() = %d    nActualTimespan = %d\n", Params().TargetTimespan2(), nActualTimespan);
     }
     else {
-    LogPrintf("Params().TargetTimespan2() = %d    nActualTimespan = %d\n", Params().TargetTimespan2(), nActualTimespan);
+    LogPrintf("Params().TargetTimespan() = %d    nActualTimespan = %d\n", Params().TargetTimespan(), nActualTimespan);
     }
     LogPrintf("Before: %08x  %s\n", pindexLast->nBits, bnOld.ToString());
     LogPrintf("After:  %08x  %s\n", bnNew.GetCompact(), bnNew.ToString());
@@ -116,54 +115,12 @@ bool CheckProofOfWork(uint256 hash, unsigned int nBits)
     return true;
 }
 
-//
-// true if nBits is greater than the minimum amount of work that could
-// possibly be required deltaTime after minimum work required was nBase
-//
-bool CheckMinWork(unsigned int nBits, unsigned int nBase, int64_t deltaTime)
-{
-    bool fOverflow = false;
-    uint256 bnNewBlock;
-    bnNewBlock.SetCompact(nBits, NULL, &fOverflow);
-    if (fOverflow)
-        return false;
-
-    const uint256 &bnLimit = Params().ProofOfWorkLimit();
-    // Testnet has min-difficulty blocks
-    // after Params().TargetSpacing()*2 time between blocks:
-    if (Params().AllowMinDifficultyBlocks() && deltaTime > Params().TargetSpacing()*2)
-        return bnNewBlock <= bnLimit;
-
-    uint256 bnResult;
-    bnResult.SetCompact(nBase);
-    while (deltaTime > 0 && bnResult < bnLimit)
-    {
-        // Maximum 400% adjustment...
-        bnResult *= 4;
-        // ... in best-case exactly 4-times-normal target time
-        deltaTime -= Params().TargetTimespan()*4;
-    }
-    if (bnResult > bnLimit)
-        bnResult = bnLimit;
-
-    return bnNewBlock <= bnResult;
-}
-
-void UpdateTime(CBlockHeader* pblock, const CBlockIndex* pindexPrev)
-{
-    pblock->nTime = std::max(pindexPrev->GetMedianTimePast()+1, GetAdjustedTime());
-
-    // Updating time can change work required on testnet:
-    if (Params().AllowMinDifficultyBlocks())
-        pblock->nBits = GetNextWorkRequired(pindexPrev, pblock);
-}
-
-uint256 GetProofIncrement(unsigned int nBits)
+uint256 GetBlockProof(const CBlockIndex& block)
 {
     uint256 bnTarget;
     bool fNegative;
     bool fOverflow;
-    bnTarget.SetCompact(nBits, &fNegative, &fOverflow);
+    bnTarget.SetCompact(block.nBits, &fNegative, &fOverflow);
     if (fNegative || fOverflow || bnTarget == 0)
         return 0;
     // We need to compute 2**256 / (bnTarget+1), but we can't represent 2**256

@@ -1,9 +1,9 @@
 Gitian building
 ================
 
-*Setup instructions for a gitian build of Bitcoin using a Debian VM or physical system.*
+*Setup instructions for a gitian build of Bitcredit using a Debian VM or physical system.*
 
-Gitian is the deterministic build process that is used to build the Bitcoin
+Gitian is the deterministic build process that is used to build the Bitcredit
 Core executables. It provides a way to be reasonably sure that the
 executables are really built from source on GitHub. It also makes sure that
 the same, tested dependencies are used and statically built into the executable.
@@ -11,7 +11,7 @@ the same, tested dependencies are used and statically built into the executable.
 Multiple developers build the source code by following a specific descriptor
 ("recipe"), cryptographically sign the result, and upload the resulting signature.
 These results are compared and only if they match, the build is accepted and uploaded
-to bitcoin.org.
+to bitcredit.org.
 
 More independent gitian builders are needed, which is why I wrote this
 guide. It is preferred to follow these steps yourself instead of using someone else's
@@ -26,7 +26,7 @@ Table of Contents
 - [Installing gitian](#installing-gitian)
 - [Setting up gitian images](#setting-up-gitian-images)
 - [Getting and building the inputs](#getting-and-building-the-inputs)
-- [Building Bitcoin](#building-bitcoin)
+- [Building Bitcredit](#building-bitcredit)
 - [Building an alternative repository](#building-an-alternative-repository)
 - [Signing externally](#signing-externally)
 - [Uploading signatures](#uploading-signatures)
@@ -41,7 +41,7 @@ Debian Linux was chosen as the host distribution because it has a lightweight in
 Any kind of virtualization can be used, for example:
 - [VirtualBox](https://www.virtualbox.org/), covered by this guide
 - [KVM](http://www.linux-kvm.org/page/Main_Page)
-- [LXC](https://linuxcontainers.org/), see also [Gitian host docker container](https://github.com/gdm85/tenku/tree/master/docker/gitian-bitcoin-host/README.md).
+- [LXC](https://linuxcontainers.org/), see also [Gitian host docker container](https://github.com/gdm85/tenku/tree/master/docker/gitian-bitcredit-host/README.md).
 
 You can also install on actual hardware instead of using virtualization.
 
@@ -277,12 +277,12 @@ cd ..
 
 **Note**: When sudo asks for a password, enter the password for the user *debian* not for *root*.
 
-Clone the git repositories for bitcoin and gitian and then checkout the bitcoin version that you want to build.
+Clone the git repositories for bitcredit and gitian and then checkout the bitcredit version that you want to build.
 
 ```bash
 git clone https://github.com/devrandom/gitian-builder.git
-git clone https://github.com/bitcoin/bitcoin
-cd bitcoin
+git clone https://github.com/bitcredit/bitcredit
+cd bitcredit
 git checkout v${VERSION}
 cd ..
 ```
@@ -291,7 +291,7 @@ Setting up gitian images
 -------------------------
 
 Gitian needs virtual images of the operating system to build in.
-Currently this is Ubuntu Precise for both x86 architectures.
+Currently this is Ubuntu Precise for x86_64.
 These images will be copied and used every time that a build is started to
 make sure that the build is deterministic.
 Creating the images will take a while, but only has to be done once.
@@ -300,7 +300,6 @@ Execute the following as user `debian`:
 
 ```bash
 cd gitian-builder
-bin/make-base-vm --lxc --arch i386 --suite precise
 bin/make-base-vm --lxc --arch amd64 --suite precise
 ```
 
@@ -311,44 +310,36 @@ There will be a lot of warnings printed during build of the images. These can be
 Getting and building the inputs
 --------------------------------
 
-In [doc/release-process.md](release-process.md) in the bitcoin repository under 'Fetch and build inputs'.
-you will find a list of `wget` commands that can be executed to get the dependencies.
+Follow the instructions in [doc/release-process.md](release-process.md) in the bitcredit repository
+under 'Fetch and build inputs' to install sources which require manual intervention. Also follow
+the next step: 'Seed the Gitian sources cache', which will fetch all necessary source files allowing
+for gitian to work offline.
 
-I needed to add `--no-check-certificate` to the OpenSSL wget line to make it work.
-Likely this is because the ca-certificates in Debian 7.4 is fairly old. This does not create a 
-security issue as the gitian descriptors check the integrity of the input archives and refuse to work
-if any one is corrupted.
+Building Bitcredit
+----------------
 
-After downloading the archives, execute the `gbuild` commands to build the dependencies.
-This can take a long time, but only has to be done when the dependencies change, for example
-to upgrade the used version.
+To build Bitcredit (for Linux, OSX and Windows) just follow the steps under 'perform
+gitian builds' in [doc/release-process.md](release-process.md) in the bitcredit repository.
 
-**Note**: Do not forget to copy the result from `build/out` to `inputs` after every gbuild command! This will save
-you a lot of time.
+This may take a long time as it also builds the dependencies needed for each descriptor.
+These dependencies will be cached after a successful build to avoid rebuilding them when possible.
 
 At any time you can check the package installation and build progress with
 
 ```bash
 tail -f var/install.log
 tail -f var/build.log
-```
-
-Building Bitcoin
-----------------
-
-To build Bitcoin (for Linux, OSX and Windows) just follow the steps under 'perform
-gitian builds' in [doc/release-process.md](release-process.md) in the bitcoin repository.
 
 Output from `gbuild` will look something like
 
-    Initialized empty Git repository in /home/debian/gitian-builder/inputs/bitcoin/.git/
+    Initialized empty Git repository in /home/debian/gitian-builder/inputs/bitcredit/.git/
     remote: Reusing existing pack: 35606, done.
     remote: Total 35606 (delta 0), reused 0 (delta 0)
     Receiving objects: 100% (35606/35606), 26.52 MiB | 4.28 MiB/s, done.
     Resolving deltas: 100% (25724/25724), done.
-    From https://github.com/bitcoin/bitcoin
+    From https://github.com/bitcredit/bitcredit
     ... (new tags, new branch etc)
-    --- Building for precise i386 ---
+    --- Building for precise x86_64 ---
     Stopping target if it is up
     Making a new image copy
     stdin: is not a tty
@@ -363,9 +354,6 @@ Output from `gbuild` will look something like
     lxc-start: Connection refused - inotify event with no name (mask 32768)
     Running build script (log in var/build.log)
 
-As when building the dependencies, the progress of package installation and building
-can be inspected in `var/install.log` and `var/build.log`.
-
 Building an alternative repository
 -----------------------------------
 
@@ -375,11 +363,11 @@ and inputs.
 
 For example:
 ```bash
-URL=https://github.com/laanwj/bitcoin.git
+URL=https://github.com/laanwj/bitcredit.git
 COMMIT=2014_03_windows_unicode_path
-./bin/gbuild --commit bitcoin=${COMMIT} --url bitcoin=${URL} ../bitcoin/contrib/gitian-descriptors/gitian-linux.yml
-./bin/gbuild --commit bitcoin=${COMMIT} --url bitcoin=${URL} ../bitcoin/contrib/gitian-descriptors/gitian-win.yml
-./bin/gbuild --commit bitcoin=${COMMIT} --url bitcoin=${URL} ../bitcoin/contrib/gitian-descriptors/gitian-osx.yml
+./bin/gbuild --commit bitcredit=${COMMIT} --url bitcredit=${URL} ../bitcredit/contrib/gitian-descriptors/gitian-linux.yml
+./bin/gbuild --commit bitcredit=${COMMIT} --url bitcredit=${URL} ../bitcredit/contrib/gitian-descriptors/gitian-win.yml
+./bin/gbuild --commit bitcredit=${COMMIT} --url bitcredit=${URL} ../bitcredit/contrib/gitian-descriptors/gitian-osx.yml
 ```
 
 Signing externally
@@ -394,9 +382,9 @@ When you execute `gsign` you will get an error from GPG, which can be ignored. C
 in `gitian.sigs` to your signing machine and do
 
 ```bash
-    gpg --detach-sign ${VERSION}-linux/${SIGNER}/bitcoin-build.assert
-    gpg --detach-sign ${VERSION}-win/${SIGNER}/bitcoin-build.assert
-    gpg --detach-sign ${VERSION}-osx/${SIGNER}/bitcoin-build.assert
+    gpg --detach-sign ${VERSION}-linux/${SIGNER}/bitcredit-build.assert
+    gpg --detach-sign ${VERSION}-win/${SIGNER}/bitcredit-build.assert
+    gpg --detach-sign ${VERSION}-osx/${SIGNER}/bitcredit-build.assert
 ```
 
 This will create the `.sig` files that can be committed together with the `.assert` files to assert your
@@ -406,5 +394,5 @@ Uploading signatures
 ---------------------
 
 After building and signing you can push your signatures (both the `.assert` and `.assert.sig` files) to the
-[bitcoin/gitian.sigs](https://github.com/bitcoin/gitian.sigs/) repository, or if that's not possible create a pull
+[bitcredit/gitian.sigs](https://github.com/bitcredit/gitian.sigs/) repository, or if that's not possible create a pull
 request. You can also mail the files to me (laanwj@gmail.com) and I'll commit them.

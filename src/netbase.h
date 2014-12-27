@@ -1,12 +1,12 @@
-// Copyright (c) 2009-2013 The Bitcredits developers
-// Distributed under the MIT/X11 software license, see the accompanying
+// Copyright (c) 2009-2013 The Bitcredit Core developers
+// Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef BITCREDITS_NETBASE_H
-#define BITCREDITS_NETBASE_H
+#ifndef BITCREDIT_NETBASE_H
+#define BITCREDIT_NETBASE_H
 
 #if defined(HAVE_CONFIG_H)
-#include "config/bitcredits-config.h"
+#include "config/bitcredit-config.h"
 #endif
 
 #include "compat.h"
@@ -62,6 +62,9 @@ class CNetAddr
         bool IsIPv4() const;    // IPv4 mapped address (::FFFF:0:0/96, 0.0.0.0/0)
         bool IsIPv6() const;    // IPv6 address (not mapped IPv4, not Tor)
         bool IsRFC1918() const; // IPv4 private networks (10.0.0.0/8, 192.168.0.0/16, 172.16.0.0/12)
+        bool IsRFC2544() const; // IPv4 inter-network communcations (192.18.0.0/15)
+        bool IsRFC6598() const; // IPv4 ISP-level NAT (100.64.0.0/10)
+        bool IsRFC5737() const; // IPv4 documentation addresses (192.0.2.0/24, 198.51.100.0/24, 203.0.113.0/24)
         bool IsRFC3849() const; // IPv6 documentation address (2001:0DB8::/32)
         bool IsRFC3927() const; // IPv4 autoconfig (169.254.0.0/16)
         bool IsRFC3964() const; // IPv6 6to4 tunnelling (2002::/16)
@@ -181,8 +184,8 @@ bool LookupHost(const char *pszName, std::vector<CNetAddr>& vIP, unsigned int nM
 bool Lookup(const char *pszName, CService& addr, int portDefault = 0, bool fAllowLookup = true);
 bool Lookup(const char *pszName, std::vector<CService>& vAddr, int portDefault = 0, bool fAllowLookup = true, unsigned int nMaxSolutions = 0);
 bool LookupNumeric(const char *pszName, CService& addr, int portDefault = 0);
-bool ConnectSocket(const CService &addr, SOCKET& hSocketRet, int nTimeout = nConnectTimeout);
-bool ConnectSocketByName(CService &addr, SOCKET& hSocketRet, const char *pszDest, int portDefault = 0, int nTimeout = nConnectTimeout);
+bool ConnectSocket(const CService &addr, SOCKET& hSocketRet, int nTimeout, bool *outProxyConnectionFailed = 0);
+bool ConnectSocketByName(CService &addr, SOCKET& hSocketRet, const char *pszDest, int portDefault, int nTimeout, bool *outProxyConnectionFailed = 0);
 /** Return readable error string for a network error code */
 std::string NetworkErrorString(int err);
 /** Close socket and set hSocket to INVALID_SOCKET */
@@ -190,4 +193,4 @@ bool CloseSocket(SOCKET& hSocket);
 /** Disable or enable blocking-mode for a socket */
 bool SetSocketNonBlocking(SOCKET& hSocket, bool fNonBlocking);
 
-#endif // BITCREDITS_NETBASE_H
+#endif // BITCREDIT_NETBASE_H

@@ -1,12 +1,12 @@
-// Copyright (c) 2011-2013 The Bitcredits developers
-// Distributed under the MIT/X11 software license, see the accompanying
+// Copyright (c) 2011-2013 The Bitcredit Core developers
+// Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include "walletview.h"
 
 #include "addressbookpage.h"
 #include "askpassphrasedialog.h"
-#include "bitcreditsgui.h"
+#include "bitcreditgui.h"
 #include "clientmodel.h"
 #include "blockbrowser.h"
 
@@ -86,7 +86,7 @@ WalletView::~WalletView()
 {
 }
 
-void WalletView::setBitcreditsGUI(BitcreditsGUI *gui)
+void WalletView::setBitcreditGUI(BitcreditGUI *gui)
 {
     if (gui)
     {
@@ -109,6 +109,7 @@ void WalletView::setClientModel(ClientModel *clientModel)
     this->clientModel = clientModel;
 
     overviewPage->setClientModel(clientModel);
+    sendCoinsPage->setClientModel(clientModel);
 }
 
 void WalletView::setWalletModel(WalletModel *walletModel)
@@ -160,10 +161,12 @@ void WalletView::setIRCModel(IRCModel *ircModel)
 void WalletView::processNewTransaction(const QModelIndex& parent, int start, int /*end*/)
 {
     // Prevent balloon-spam when initial block download is in progress
-    if (!walletModel || walletModel->processingQueuedTransactions() || !clientModel || clientModel->inInitialBlockDownload())
+    if (!walletModel || !clientModel || clientModel->inInitialBlockDownload())
         return;
 
     TransactionTableModel *ttm = walletModel->getTransactionTableModel();
+    if (!ttm || ttm->processingQueuedTransactions())
+        return;
 
     QString date = ttm->index(start, TransactionTableModel::Date, parent).data().toString();
     qint64 amount = ttm->index(start, TransactionTableModel::Amount, parent).data(Qt::EditRole).toULongLong();

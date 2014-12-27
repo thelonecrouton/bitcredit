@@ -1,10 +1,10 @@
 // Copyright (c) 2009-2010 Satoshi Nakamoto
-// Copyright (c) 2009-2013 The Bitcredits developers
-// Distributed under the MIT/X11 software license, see the accompanying
+// Copyright (c) 2009-2014 The Bitcredit Core developers
+// Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef BITCREDITS_INIT_H
-#define BITCREDITS_INIT_H
+#ifndef BITCREDIT_INIT_H
+#define BITCREDIT_INIT_H
 
 #include <string>
 
@@ -22,10 +22,10 @@ bool ShutdownRequested();
 void Shutdown();
 bool AppInit2(boost::thread_group& threadGroup);
 
-/* The help message mode determines what help message to show */
+/** The help message mode determines what help message to show */
 enum HelpMessageMode {
-    HMM_BITCREDITSD,
-    HMM_BITCREDITS_QT
+    HMM_BITCREDITD,
+    HMM_BITCREDIT_QT
 };
 
 /** Help for options shared between UI and daemon (for -help) */
@@ -33,4 +33,4 @@ std::string HelpMessage(HelpMessageMode mode);
 /** Returns licensing information (for -version) */
 std::string LicenseInfo();
 
-#endif // BITCREDITS_INIT_H
+#endif // BITCREDIT_INIT_H

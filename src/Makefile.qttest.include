@@ -1,5 +1,5 @@
-bin_PROGRAMS += qt/test/test_bitcredits-qt
-TESTS += qt/test/test_bitcredits-qt
+bin_PROGRAMS += qt/test/test_bitcredit-qt
+TESTS += qt/test/test_bitcredit-qt
 
 TEST_QT_MOC_CPP = qt/test/moc_uritests.cpp
 
@@ -12,40 +12,37 @@ TEST_QT_H = \
   qt/test/paymentrequestdata.h \
   qt/test/paymentservertests.h
 
-qt_test_test_bitcredits_qt_CPPFLAGS = $(BITCREDITS_INCLUDES) $(BITCREDITS_QT_INCLUDES) \
+qt_test_test_bitcredit_qt_CPPFLAGS = $(BITCREDIT_INCLUDES) $(BITCREDIT_QT_INCLUDES) \
   $(QT_INCLUDES) $(QT_TEST_INCLUDES) $(PROTOBUF_CFLAGS)
 
-qt_test_test_bitcredits_qt_SOURCES = \
+qt_test_test_bitcredit_qt_SOURCES = \
   qt/test/test_main.cpp \
   qt/test/uritests.cpp \
   $(TEST_QT_H)
 if ENABLE_WALLET
-qt_test_test_bitcredits_qt_SOURCES += \
+qt_test_test_bitcredit_qt_SOURCES += \
   qt/test/paymentservertests.cpp
 endif
 
-nodist_qt_test_test_bitcredits_qt_SOURCES = $(TEST_QT_MOC_CPP)
+nodist_qt_test_test_bitcredit_qt_SOURCES = $(TEST_QT_MOC_CPP)
 
-qt_test_test_bitcredits_qt_LDADD = $(LIBBITCREDITSQT) $(LIBBITCREDITS_SERVER)
+qt_test_test_bitcredit_qt_LDADD = $(LIBBITCREDITQT) $(LIBBITCREDIT_SERVER)
 if ENABLE_WALLET
-qt_test_test_bitcredits_qt_LDADD += $(LIBBITCREDITS_WALLET)
+qt_test_test_bitcredit_qt_LDADD += $(LIBBITCREDIT_WALLET)
 endif
-qt_test_test_bitcredits_qt_LDADD += $(LIBBITCREDITS_CLI) $(LIBBITCREDITS_COMMON) $(LIBBITCREDITS_UTIL) $(LIBBITCREDITS_CRYPTO) $(LIBBITCREDITS_UNIVALUE) $(LIBLEVELDB) \
+qt_test_test_bitcredit_qt_LDADD += $(LIBBITCREDIT_CLI) $(LIBBITCREDIT_COMMON) $(LIBBITCREDIT_UTIL) $(LIBBITCREDIT_CRYPTO) $(LIBBITCREDIT_UNIVALUE) $(LIBLEVELDB) \
   $(LIBMEMENV) $(BOOST_LIBS) $(QT_DBUS_LIBS) $(QT_TEST_LIBS) $(QT_LIBS) \
-  $(QR_LIBS) $(PROTOBUF_LIBS) $(BDB_LIBS) $(SSL_LIBS) $(CRYPTO_LIBS)
-if USE_LIBSECP256K1
-  qt_test_test_bitcredits_qt_LDADD += secp256k1/libsecp256k1.la
-endif
-qt_test_test_bitcredits_qt_LDFLAGS = $(RELDFLAGS) $(AM_LDFLAGS) $(QT_LDFLAGS)
+  $(QR_LIBS) $(PROTOBUF_LIBS) $(BDB_LIBS) $(SSL_LIBS) $(CRYPTO_LIBS) $(MINIUPNPC_LIBS) $(LIBSECP256K1)
+qt_test_test_bitcredit_qt_LDFLAGS = $(RELDFLAGS) $(AM_LDFLAGS) $(QT_LDFLAGS) $(LIBTOOL_APP_LDFLAGS)
 
-CLEAN_BITCREDITS_QT_TEST = $(TEST_QT_MOC_CPP) qt/test/*.gcda qt/test/*.gcno
+CLEAN_BITCREDIT_QT_TEST = $(TEST_QT_MOC_CPP) qt/test/*.gcda qt/test/*.gcno
 
-CLEANFILES += $(CLEAN_BITCREDITS_QT_TEST)
+CLEANFILES += $(CLEAN_BITCREDIT_QT_TEST)
 
-test_bitcredits_qt : qt/test/test_bitcredits-qt$(EXEEXT)
+test_bitcredit_qt : qt/test/test_bitcredit-qt$(EXEEXT)
 
-test_bitcredits_qt_check : qt/test/test_bitcredits-qt$(EXEEXT) FORCE
+test_bitcredit_qt_check : qt/test/test_bitcredit-qt$(EXEEXT) FORCE
 	$(MAKE) check-TESTS TESTS=$^
 
-test_bitcredits_qt_clean: FORCE
-	rm -f $(CLEAN_BITCREDITS_QT_TEST) $(qt_test_test_bitcredits_qt_OBJECTS)
+test_bitcredit_qt_clean: FORCE
+	rm -f $(CLEAN_BITCREDIT_QT_TEST) $(qt_test_test_bitcredit_qt_OBJECTS)

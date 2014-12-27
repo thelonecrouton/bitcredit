@@ -48,6 +48,7 @@ define $(package)_preprocess_cmds
   sed -i.old "s|updateqm.commands = \$$$$\$$$$LRELEASE|updateqm.commands = $($(package)_extract_dir)/qttools/bin/lrelease|" qttranslations/translations/translations.pro && \
   sed -i.old "s/src_plugins.depends = src_sql src_xml src_network/src_plugins.depends = src_xml src_network/" qtbase/src/src.pro && \
   sed -i.old "/XIproto.h/d" qtbase/src/plugins/platforms/xcb/qxcbxsettings.cpp && \
+  sed -i.old 's/if \[ "$$$$XPLATFORM_MAC" = "yes" \]; then xspecvals=$$$$(macSDKify/if \[ "$$$$BUILD_ON_MAC" = "yes" \]; then xspecvals=$$$$(macSDKify/' qtbase/configure && \
   mkdir -p qtbase/mkspecs/macx-clang-linux &&\
   cp -f qtbase/mkspecs/macx-clang/Info.plist.lib qtbase/mkspecs/macx-clang-linux/ &&\
   cp -f qtbase/mkspecs/macx-clang/Info.plist.app qtbase/mkspecs/macx-clang-linux/ &&\
@@ -93,5 +94,5 @@ endef
 
 define $(package)_postprocess_cmds
   rm -rf mkspecs/ lib/cmake/ && \
-  rm lib/libQt5Bootstrap.a lib/lib*.la lib/lib*.prl
+  rm lib/libQt5Bootstrap.a lib/lib*.la lib/*.prl plugins/*/*.prl
 endef

@@ -1,9 +1,9 @@
-// Copyright (c) 2011-2013 The Bitcredits developers
-// Distributed under the MIT/X11 software license, see the accompanying
+// Copyright (c) 2011-2013 The Bitcredit Core developers
+// Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef SENDCOINSENTRY_H
-#define SENDCOINSENTRY_H
+#ifndef BITCREDIT_QT_SENDCOINSENTRY_H
+#define BITCREDIT_QT_SENDCOINSENTRY_H
 
 #include "walletmodel.h"
 
@@ -16,7 +16,7 @@ namespace Ui {
 }
 
 /**
- * A single entry in the dialog for sending bitcreditss.
+ * A single entry in the dialog for sending bitcredits.
  * Stacked widget, with different UIs for payment requests
  * with a strong payee identity.
  */
@@ -67,4 +67,4 @@ private:
     bool updateLabel(const QString &address);
 };
 
-#endif // SENDCOINSENTRY_H
+#endif // BITCREDIT_QT_SENDCOINSENTRY_H

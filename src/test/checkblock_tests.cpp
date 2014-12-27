@@ -1,5 +1,5 @@
-// Copyright (c) 2013-2014 The Bitcredits Core developers
-// Distributed under the MIT/X11 software license, see the accompanying
+// Copyright (c) 2013-2014 The Bitcredit Core developers
+// Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 //
@@ -8,6 +8,7 @@
 
 
 
+#include "clientversion.h"
 #include "main.h"
 #include "utiltime.h"
 
@@ -36,7 +37,7 @@ bool read_block(const std::string& filename, CBlock& block)
     fseek(fp, 8, SEEK_SET); // skip msgheader/size
 
     CAutoFile filein(fp, SER_DISK, CLIENT_VERSION);
-    if (!filein) return false;
+    if (filein.IsNull()) return false;
 
     filein >> block;
 
@@ -48,7 +49,7 @@ BOOST_AUTO_TEST_CASE(May15)
     // Putting a 1MB binary file in the git repository is not a great
     // idea, so this test is only run if you manually download
     // test/data/Mar12Fork.dat from
-    // http://sourceforge.net/projects/bitcredits/files/Bitcredits/blockchain/Mar12Fork.dat/download
+    // http://sourceforge.net/projects/bitcredit/files/Bitcredit/blockchain/Mar12Fork.dat/download
     unsigned int tMay15 = 1368576000;
     SetMockTime(tMay15); // Test as if it was right at May 15
 

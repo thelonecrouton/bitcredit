@@ -1,20 +1,20 @@
 // Copyright (c) 2009-2010 Satoshi Nakamoto
-// Copyright (c) 2009-2013 The Bitcredits developers
-// Distributed under the MIT/X11 software license, see the accompanying
+// Copyright (c) 2009-2013 The Bitcredit Core developers
+// Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef BITCREDITS_HASH_H
-#define BITCREDITS_HASH_H
+#ifndef BITCREDIT_HASH_H
+#define BITCREDIT_HASH_H
 
 #include "crypto/ripemd160.h"
-#include "crypto/sha2.h"
+#include "crypto/sha256.h"
 #include "serialize.h"
 #include "uint256.h"
 #include "version.h"
 
 #include <vector>
 
-/** A hasher class for Bitcredits's 256-bit hash (double SHA-256). */
+/** A hasher class for Bitcredit's 256-bit hash (double SHA-256). */
 class CHash256 {
 private:
     CSHA256 sha;
@@ -38,7 +38,7 @@ public:
     }
 };
 
-/** A hasher class for Bitcredits's 160-bit hash (SHA-256 + RIPEMD-160). */
+/** A hasher class for Bitcredit's 160-bit hash (SHA-256 + RIPEMD-160). */
 class CHash160 {
 private:
     CSHA256 sha;
@@ -159,4 +159,6 @@ uint256 SerializeHash(const T& obj, int nType=SER_GETHASH, int nVersion=PROTOCOL
 
 unsigned int MurmurHash3(unsigned int nHashSeed, const std::vector<unsigned char>& vDataToHash);
 
-#endif // BITCREDITS_HASH_H
+void BIP32Hash(const unsigned char chainCode[32], unsigned int nChild, unsigned char header, const unsigned char data[32], unsigned char output[64]);
+
+#endif // BITCREDIT_HASH_H

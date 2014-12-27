@@ -1,10 +1,10 @@
 UNIX BUILD NOTES
 ====================
-Some notes on how to build Bitcoin in Unix. 
+Some notes on how to build Bitcredit in Unix. 
 
 Note
 ---------------------
-Always use absolute paths to configure and compile bitcoin and the dependencies,
+Always use absolute paths to configure and compile bitcredit and the dependencies,
 for example, when specifying the the path of the dependency:
 
 	../dist/configure --enable-cxx --disable-shared --with-pic --prefix=$BDB_PREFIX
@@ -22,42 +22,35 @@ make
 make install # optional
 ```
 
-This will build bitcoin-qt as well if the dependencies are met.
+This will build bitcredit-qt as well if the dependencies are met.
 
 Dependencies
 ---------------------
 
+These dependencies are required:
+
  Library     | Purpose          | Description
  ------------|------------------|----------------------
  libssl      | SSL Support      | Secure communications
- libdb4.8    | Berkeley DB      | Wallet storage
  libboost    | Boost            | C++ Library
- miniupnpc   | UPnP Support     | Optional firewall-jumping support
- qt          | GUI              | GUI toolkit
- protobuf    | Payments in GUI  | Data interchange format used for payment protocol
- libqrencode | QR codes in GUI  | Optional for generating QR codes
 
-[miniupnpc](http://miniupnp.free.fr/) may be used for UPnP port mapping.  It can be downloaded from [here](
-http://miniupnp.tuxfamily.org/files/).  UPnP support is compiled in and
-turned off by default.  See the configure options for upnp behavior desired:
+Optional dependencies:
 
-	--without-miniupnpc      No UPnP support miniupnp not required
-	--disable-upnp-default   (the default) UPnP support turned off by default at runtime
-	--enable-upnp-default    UPnP support turned on by default at runtime
+ Library     | Purpose          | Description
+ ------------|------------------|----------------------
+ miniupnpc   | UPnP Support     | Firewall-jumping support
+ libdb4.8    | Berkeley DB      | Wallet storage (only needed when wallet enabled)
+ qt          | GUI              | GUI toolkit (only needed when GUI enabled)
+ protobuf    | Payments in GUI  | Data interchange format used for payment protocol (only needed when GUI enabled)
+ libqrencode | QR codes in GUI  | Optional for generating QR codes (only needed when GUI enabled)
 
-Licenses of statically linked libraries:
- Berkeley DB   New BSD license with additional requirement that linked
-               software must be free open source
- Boost         MIT-like license
- miniupnpc     New (3-clause) BSD license
-
-- For the versions used in the release, see doc/release-process.md under *Fetch and build inputs*.
+For the versions used in the release, see [release-process.md](release-process.md) under *Fetch and build inputs*.
 
 System requirements
 --------------------
 
 C++ compilers are memory-hungry. It is recommended to have at least 1 GB of
-memory available when compiling Bitcoin Core. With 512MB of memory or less
+memory available when compiling Bitcredit Core. With 512MB of memory or less
 compilation will take much longer due to swap thrashing.
 
 Dependency Build Instructions: Ubuntu & Debian
@@ -70,10 +63,10 @@ for Ubuntu 12.04 and later or Debian 7 and later libboost-all-dev has to be inst
 
 	sudo apt-get install libboost-all-dev
 
- db4.8 packages are available [here](https://launchpad.net/~bitcoin/+archive/bitcoin).
+ db4.8 packages are available [here](https://launchpad.net/~bitcredit/+archive/bitcredit).
  You can add the repository using the following command:
 
-        sudo add-apt-repository ppa:bitcoin/bitcoin
+        sudo add-apt-repository ppa:bitcredit/bitcredit
         sudo apt-get update
 
  Ubuntu 12.04 and later have packages for libdb5.1-dev and libdb5.1++-dev,
@@ -101,7 +94,7 @@ Optional:
 Dependencies for the GUI: Ubuntu & Debian
 -----------------------------------------
 
-If you want to build Bitcoin-Qt, make sure that the required packages for Qt development
+If you want to build Bitcredit-Qt, make sure that the required packages for Qt development
 are installed. Either Qt 4 or Qt 5 are necessary to build the GUI.
 If both Qt 4 and Qt 5 are installed, Qt 4 will be used. Pass `--with-gui=qt5` to configure to choose Qt5.
 To build without GUI pass `--without-gui`.
@@ -112,23 +105,34 @@ To build with Qt 4 you need the following:
 
 For Qt 5 you need the following:
 
-    sudo apt-get install libqt5gui5 libqt5core5 libqt5dbus5 qttools5-dev qttools5-dev-tools libprotobuf-dev protobuf-compiler
+    sudo apt-get install libqt5gui5 libqt5core5a libqt5dbus5 qttools5-dev qttools5-dev-tools libprotobuf-dev protobuf-compiler
 
 libqrencode (optional) can be installed with:
 
     sudo apt-get install libqrencode-dev
 
-Once these are installed, they will be found by configure and a bitcoin-qt executable will be
+Once these are installed, they will be found by configure and a bitcredit-qt executable will be
 built by default.
 
 Notes
 -----
-The release is built with GCC and then "strip bitcoind" to strip the debug
+The release is built with GCC and then "strip bitcreditd" to strip the debug
 symbols, which reduces the executable size by about 90%.
 
 
 miniupnpc
 ---------
+
+[miniupnpc](http://miniupnp.free.fr/) may be used for UPnP port mapping.  It can be downloaded from [here](
+http://miniupnp.tuxfamily.org/files/).  UPnP support is compiled in and
+turned off by default.  See the configure options for upnp behavior desired:
+
+	--without-miniupnpc      No UPnP support miniupnp not required
+	--disable-upnp-default   (the default) UPnP support turned off by default at runtime
+	--enable-upnp-default    UPnP support turned on by default at runtime
+
+To build:
+
 	tar -xzvf miniupnpc-1.6.tar.gz
 	cd miniupnpc-1.6
 	make
@@ -141,10 +145,10 @@ Berkeley DB
 It is recommended to use Berkeley DB 4.8. If you have to build it yourself:
 
 ```bash
-BITCOIN_ROOT=$(pwd)
+BITCREDIT_ROOT=$(pwd)
 
-# Pick some path to install BDB to, here we create a directory within the bitcoin directory
-BDB_PREFIX="${BITCOIN_ROOT}/db4"
+# Pick some path to install BDB to, here we create a directory within the bitcredit directory
+BDB_PREFIX="${BITCREDIT_ROOT}/db4"
 mkdir -p $BDB_PREFIX
 
 # Fetch the source and verify that it is not tampered with
@@ -159,8 +163,8 @@ cd db-4.8.30.NC/build_unix/
 ../dist/configure --enable-cxx --disable-shared --with-pic --prefix=$BDB_PREFIX
 make install
 
-# Configure Bitcoin Core to use our own-built instance of BDB
-cd $BITCOIN_ROOT
+# Configure Bitcredit Core to use our own-built instance of BDB
+cd $BITCREDIT_ROOT
 ./configure (other args...) LDFLAGS="-L${BDB_PREFIX}/lib/" CPPFLAGS="-I${BDB_PREFIX}/include/"
 ```
 
@@ -177,7 +181,7 @@ If you need to build Boost yourself:
 
 Security
 --------
-To help make your bitcoin installation more secure by making certain attacks impossible to
+To help make your bitcredit installation more secure by making certain attacks impossible to
 exploit even if a vulnerability is found, binaries are hardened by default.
 This can be disabled with:
 
@@ -201,7 +205,7 @@ Hardening enables the following features:
 
     To test that you have built PIE executable, install scanelf, part of paxutils, and use:
 
-    	scanelf -e ./bitcoin
+    	scanelf -e ./bitcredit
 
     The output should contain:
      TYPE
@@ -209,13 +213,13 @@ Hardening enables the following features:
 
 * Non-executable Stack
     If the stack is executable then trivial stack based buffer overflow exploits are possible if
-    vulnerable buffers are found. By default, bitcoin should be built with a non-executable stack
+    vulnerable buffers are found. By default, bitcredit should be built with a non-executable stack
     but if one of the libraries it uses asks for an executable stack or someone makes a mistake
     and uses a compiler extension which requires an executable stack, it will silently build an
     executable without the non-executable stack protection.
 
     To verify that the stack is non-executable after compiling use:
-    `scanelf -e ./bitcoin`
+    `scanelf -e ./bitcredit`
 
     the output should contain:
 	STK/REL/PTL
@@ -225,7 +229,7 @@ Hardening enables the following features:
 
 Disable-wallet mode
 --------------------
-When the intention is to run only a P2P node without a wallet, bitcoin may be compiled in
+When the intention is to run only a P2P node without a wallet, bitcredit may be compiled in
 disable-wallet mode with:
 
     ./configure --disable-wallet

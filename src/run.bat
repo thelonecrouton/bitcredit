@@ -1,2 +1,0 @@
-bitcreditsd.exe -printtoconsole 
-pause

@@ -1,14 +1,14 @@
 // Copyright (c) 2009-2010 Satoshi Nakamoto
-// Copyright (c) 2009-2013 The Bitcredits developers
-// Distributed under the MIT/X11 software license, see the accompanying
+// Copyright (c) 2009-2013 The Bitcredit Core developers
+// Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #ifndef __cplusplus
 #error This header can only be compiled as C++.
 #endif
 
-#ifndef __INCLUDED_PROTOCOL_H__
-#define __INCLUDED_PROTOCOL_H__
+#ifndef BITCREDIT_PROTOCOL_H
+#define BITCREDIT_PROTOCOL_H
 
 #include "netbase.h"
 #include "serialize.h"
@@ -69,7 +69,7 @@ enum {
 
     // Bits 24-31 are reserved for temporary experiments. Just pick a bit that
     // isn't getting used, or one not being used much, and notify the
-    // bitcredits-development mailing list. Remember that service bits are just
+    // bitcredit-development mailing list. Remember that service bits are just
     // unauthenticated advertisements, so your code must be robust against
     // collisions and other cases where nodes may be advertising a service they
     // do not actually support. Other service bits should be allocated via the
@@ -149,4 +149,4 @@ enum {
     MSG_FILTERED_BLOCK,
 };
 
-#endif // __INCLUDED_PROTOCOL_H__
+#endif // BITCREDIT_PROTOCOL_H

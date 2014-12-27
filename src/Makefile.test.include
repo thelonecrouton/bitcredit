@@ -1,13 +1,13 @@
-TESTS += test/test_bitcredits test/bitcredits-util-test.py
-bin_PROGRAMS += test/test_bitcredits
+TESTS += test/test_bitcredit test/bitcredit-util-test.py
+bin_PROGRAMS += test/test_bitcredit
 TEST_SRCDIR = test
-TEST_BINARY=test/test_bitcredits$(EXEEXT)
+TEST_BINARY=test/test_bitcredit$(EXEEXT)
 
 
 EXTRA_DIST += \
 	test/bctest.py \
-	test/bitcredits-util-test.py \
-	test/data/bitcredits-util-test.json \
+	test/bitcredit-util-test.py \
+	test/data/bitcredit-util-test.json \
 	test/data/blanktx.hex \
 	test/data/tt-delin1-out.hex \
 	test/data/tt-delout1-out.hex \
@@ -32,7 +32,7 @@ RAW_TEST_FILES = test/data/alertTests.raw
 
 GENERATED_TEST_FILES = $(JSON_TEST_FILES:.json=.json.h) $(RAW_TEST_FILES:.raw=.raw.h)
 
-BITCREDITS_TESTS =\
+BITCREDIT_TESTS =\
   test/bignum.h \
   test/alert_tests.cpp \
   test/allocator_tests.cpp \
@@ -42,8 +42,8 @@ BITCREDITS_TESTS =\
   test/bloom_tests.cpp \
   test/checkblock_tests.cpp \
   test/Checkpoints_tests.cpp \
-  test/compress_tests.cpp \
   test/coins_tests.cpp \
+  test/compress_tests.cpp \
   test/crypto_tests.cpp \
   test/DoS_tests.cpp \
   test/getarg_tests.cpp \
@@ -58,55 +58,54 @@ BITCREDITS_TESTS =\
   test/rpc_tests.cpp \
   test/script_P2SH_tests.cpp \
   test/script_tests.cpp \
+  test/scriptnum_tests.cpp \
   test/serialize_tests.cpp \
+  test/sighash_tests.cpp \
   test/sigopcount_tests.cpp \
   test/skiplist_tests.cpp \
-  test/test_bitcredits.cpp \
+  test/test_bitcredit.cpp \
   test/timedata_tests.cpp \
   test/transaction_tests.cpp \
   test/uint256_tests.cpp \
   test/univalue_tests.cpp \
-  test/util_tests.cpp \
-  test/scriptnum_tests.cpp \
-  test/sighash_tests.cpp
+  test/util_tests.cpp
 
 if ENABLE_WALLET
-BITCREDITS_TESTS += \
+BITCREDIT_TESTS += \
   test/accounting_tests.cpp \
   test/wallet_tests.cpp \
   test/rpc_wallet_tests.cpp
 endif
 
-test_test_bitcredits_SOURCES = $(BITCREDITS_TESTS) $(JSON_TEST_FILES) $(RAW_TEST_FILES)
-test_test_bitcredits_CPPFLAGS = $(BITCREDITS_INCLUDES) -I$(builddir)/test/ $(TESTDEFS)
-test_test_bitcredits_LDADD = $(LIBBITCREDITS_SERVER) $(LIBBITCREDITS_CLI) $(LIBBITCREDITS_COMMON) $(LIBBITCREDITS_UTIL) $(LIBBITCREDITS_CRYPTO) $(LIBBITCREDITS_UNIVALUE) $(LIBLEVELDB) $(LIBMEMENV) \
-  $(BOOST_LIBS) $(BOOST_UNIT_TEST_FRAMEWORK_LIB)
+test_test_bitcredit_SOURCES = $(BITCREDIT_TESTS) $(JSON_TEST_FILES) $(RAW_TEST_FILES)
+test_test_bitcredit_CPPFLAGS = $(BITCREDIT_INCLUDES) -I$(builddir)/test/ $(TESTDEFS)
+test_test_bitcredit_LDADD = $(LIBBITCREDIT_SERVER) $(LIBBITCREDIT_CLI) $(LIBBITCREDIT_COMMON) $(LIBBITCREDIT_UTIL) $(LIBBITCREDIT_CRYPTO) $(LIBBITCREDIT_UNIVALUE) $(LIBLEVELDB) $(LIBMEMENV) \
+  $(BOOST_LIBS) $(BOOST_UNIT_TEST_FRAMEWORK_LIB) $(LIBSECP256K1)
 if ENABLE_WALLET
-test_test_bitcredits_LDADD += $(LIBBITCREDITS_WALLET)
+test_test_bitcredit_LDADD += $(LIBBITCREDIT_WALLET)
 endif
 
-if USE_LIBSECP256K1
-  test_test_bitcredits_LDADD += secp256k1/libsecp256k1.la
-endif
+test_test_bitcredit_LDADD += $(LIBBITCREDIT_CONSENSUS) $(BDB_LIBS) $(SSL_LIBS) $(CRYPTO_LIBS) $(MINIUPNPC_LIBS)
+test_test_bitcredit_LDFLAGS = $(RELDFLAGS) $(AM_LDFLAGS) $(LIBTOOL_APP_LDFLAGS) -static
 
-test_test_bitcredits_LDADD += $(BDB_LIBS) $(SSL_LIBS) $(CRYPTO_LIBS)
-test_test_bitcredits_LDFLAGS = $(RELDFLAGS) $(AM_LDFLAGS)
+nodist_test_test_bitcredit_SOURCES = $(GENERATED_TEST_FILES)
 
-nodist_test_test_bitcredits_SOURCES = $(GENERATED_TEST_FILES)
+$(BITCREDIT_TESTS): $(GENERATED_TEST_FILES)
 
-$(BITCREDITS_TESTS): $(GENERATED_TEST_FILES)
+CLEAN_BITCREDIT_TEST = test/*.gcda test/*.gcno $(GENERATED_TEST_FILES)
 
-CLEAN_BITCREDITS_TEST = test/*.gcda test/*.gcno $(GENERATED_TEST_FILES)
+CLEANFILES += $(CLEAN_BITCREDIT_TEST)
 
-CLEANFILES += $(CLEAN_BITCREDITS_TEST)
+bitcredit_test: $(TEST_BINARY)
 
-bitcredits_test: $(TEST_BINARY)
-
-bitcredits_test_check: $(TEST_BINARY) FORCE
+bitcredit_test_check: $(TEST_BINARY) FORCE
 	$(MAKE) check-TESTS TESTS=$^
 
-bitcredits_test_clean : FORCE
-	rm -f $(CLEAN_BITCREDITS_TEST) $(test_test_bitcredits_OBJECTS) $(TEST_BINARY)
+bitcredit_test_clean : FORCE
+	rm -f $(CLEAN_BITCREDIT_TEST) $(test_test_bitcredit_OBJECTS) $(TEST_BINARY)
+
+check-local:
+	$(AM_V_at)$(MAKE) $(AM_MAKEFLAGS) -C secp256k1 check
 
 %.json.h: %.json
 	@$(MKDIR_P) $(@D)

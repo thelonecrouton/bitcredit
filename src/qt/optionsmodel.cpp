@@ -1,16 +1,17 @@
-// Copyright (c) 2011-2014 The Bitcredits developers
-// Distributed under the MIT/X11 software license, see the accompanying
+// Copyright (c) 2011-2014 The Bitcredit Core developers
+// Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #if defined(HAVE_CONFIG_H)
-#include "config/bitcredits-config.h"
+#include "config/bitcredit-config.h"
 #endif
 
 #include "optionsmodel.h"
 
-#include "bitcreditsunits.h"
+#include "bitcreditunits.h"
 #include "guiutil.h"
 
+#include "amount.h"
 #include "init.h"
 #include "main.h"
 #include "net.h"
@@ -57,7 +58,7 @@ void OptionsModel::Init()
 
     // Display
     if (!settings.contains("nDisplayUnit"))
-        settings.setValue("nDisplayUnit", BitcreditsUnits::BCR);
+        settings.setValue("nDisplayUnit", BitcreditUnits::BCR);
     nDisplayUnit = settings.value("nDisplayUnit").toInt();
 
     if (!settings.contains("strThirdPartyTxUrls"))
@@ -89,12 +90,6 @@ void OptionsModel::Init()
 
     // Wallet
 #ifdef ENABLE_WALLET
-    if (!settings.contains("nTransactionFee"))
-        settings.setValue("nTransactionFee", (qint64)DEFAULT_TRANSACTION_FEE);
-    payTxFee = CFeeRate(settings.value("nTransactionFee").toLongLong()); // if -paytxfee is set, this will be overridden later in init.cpp
-    if (mapArgs.count("-paytxfee"))
-        addOverriddenOption("-paytxfee");
-
     if (!settings.contains("bSpendZeroConfChange"))
         settings.setValue("bSpendZeroConfChange", true);
     if (!SoftSetBoolArg("-spendzeroconfchange", settings.value("bSpendZeroConfChange").toBool()))
@@ -184,16 +179,6 @@ QVariant OptionsModel::data(const QModelIndex & index, int role) const
         }
 
 #ifdef ENABLE_WALLET
-        case Fee: {
-            // Attention: Init() is called before payTxFee is set in AppInit2()!
-            // To ensure we can change the fee on-the-fly update our QSetting when
-            // opening OptionsDialog, which queries Fee via the mapper.
-            if (!(payTxFee == CFeeRate(settings.value("nTransactionFee").toLongLong(), 1000)))
-                settings.setValue("nTransactionFee", (qint64)payTxFee.GetFeePerK());
-            // Todo: Consider to revert back to use just payTxFee here, if we don't want
-            // -paytxfee to update our QSettings!
-            return settings.value("nTransactionFee");
-        }
         case SpendZeroConfChange:
             return settings.value("bSpendZeroConfChange");
 #endif
@@ -275,14 +260,6 @@ bool OptionsModel::setData(const QModelIndex & index, const QVariant & value, in
         }
         break;
 #ifdef ENABLE_WALLET
-        case Fee: { // core option - can be changed on-the-fly
-            // Todo: Add is valid check  and warn via message, if not
-            CAmount nTransactionFee(value.toLongLong());
-            payTxFee = CFeeRate(nTransactionFee, 1000);
-            settings.setValue("nTransactionFee", qint64(nTransactionFee));
-            emit transactionFeeChanged(nTransactionFee);
-            break;
-        }
         case SpendZeroConfChange:
             if (settings.value("bSpendZeroConfChange") != value) {
                 settings.setValue("bSpendZeroConfChange", value);

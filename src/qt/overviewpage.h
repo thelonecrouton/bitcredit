@@ -1,19 +1,13 @@
-// Copyright (c) 2011-2013 The Bitcredits developers
-// Distributed under the MIT/X11 software license, see the accompanying
+// Copyright (c) 2011-2013 The Bitcredit Core developers
+// Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef OVERVIEWPAGE_H
-#define OVERVIEWPAGE_H
+#ifndef BITCREDIT_QT_OVERVIEWPAGE_H
+#define BITCREDIT_QT_OVERVIEWPAGE_H
 
 #include "amount.h"
 
 #include <QWidget>
-#include <QTreeWidget>
-#include <QXmlStreamReader>
-#include <QtNetwork>
-#include <QDebug>
-#include <QList>
-#include <QNetworkAccessManager>
 
 class ClientModel;
 class TransactionFilterProxy;
@@ -66,11 +60,6 @@ private:
     TxViewDelegate *txdelegate;
     TransactionFilterProxy *filter;
 
-    QString currentTag;
-    QString linkString;
-    QString titleString;
-    QString dateString;
-            
 private slots:
     void updateDisplayUnit();
     void enableTrollbox();
@@ -81,4 +70,4 @@ private slots:
 	void sendIRCMessage();
 };
 
-#endif // OVERVIEWPAGE_H
+#endif // BITCREDIT_QT_OVERVIEWPAGE_H

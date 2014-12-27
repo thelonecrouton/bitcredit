@@ -1,79 +1,79 @@
-bin_PROGRAMS += qt/bitcredits-qt
-noinst_LIBRARIES += qt/libbitcreditsqt.a
+bin_PROGRAMS += qt/bitcredit-qt
+noinst_LIBRARIES += qt/libbitcreditqt.a
 
-# bitcredits qt core #
+# bitcredit qt core #
 QT_TS = \
-  qt/locale/bitcredits_ach.ts \
-  qt/locale/bitcredits_af_ZA.ts \
-  qt/locale/bitcredits_ar.ts \
-  qt/locale/bitcredits_be_BY.ts \
-  qt/locale/bitcredits_bg.ts \
-  qt/locale/bitcredits_bs.ts \
-  qt/locale/bitcredits_ca_ES.ts \
-  qt/locale/bitcredits_ca.ts \
-  qt/locale/bitcredits_ca@valencia.ts \
-  qt/locale/bitcredits_cmn.ts \
-  qt/locale/bitcredits_cs.ts \
-  qt/locale/bitcredits_cy.ts \
-  qt/locale/bitcredits_da.ts \
-  qt/locale/bitcredits_de.ts \
-  qt/locale/bitcredits_el_GR.ts \
-  qt/locale/bitcredits_en.ts \
-  qt/locale/bitcredits_eo.ts \
-  qt/locale/bitcredits_es_CL.ts \
-  qt/locale/bitcredits_es_DO.ts \
-  qt/locale/bitcredits_es_MX.ts \
-  qt/locale/bitcredits_es.ts \
-  qt/locale/bitcredits_es_UY.ts \
-  qt/locale/bitcredits_et.ts \
-  qt/locale/bitcredits_eu_ES.ts \
-  qt/locale/bitcredits_fa_IR.ts \
-  qt/locale/bitcredits_fa.ts \
-  qt/locale/bitcredits_fi.ts \
-  qt/locale/bitcredits_fr_CA.ts \
-  qt/locale/bitcredits_fr.ts \
-  qt/locale/bitcredits_gl.ts \
-  qt/locale/bitcredits_gu_IN.ts \
-  qt/locale/bitcredits_he.ts \
-  qt/locale/bitcredits_hi_IN.ts \
-  qt/locale/bitcredits_hr.ts \
-  qt/locale/bitcredits_hu.ts \
-  qt/locale/bitcredits_id_ID.ts \
-  qt/locale/bitcredits_it.ts \
-  qt/locale/bitcredits_ja.ts \
-  qt/locale/bitcredits_ka.ts \
-  qt/locale/bitcredits_kk_KZ.ts \
-  qt/locale/bitcredits_ko_KR.ts \
-  qt/locale/bitcredits_ky.ts \
-  qt/locale/bitcredits_la.ts \
-  qt/locale/bitcredits_lt.ts \
-  qt/locale/bitcredits_lv_LV.ts \
-  qt/locale/bitcredits_mn.ts \
-  qt/locale/bitcredits_ms_MY.ts \
-  qt/locale/bitcredits_nb.ts \
-  qt/locale/bitcredits_nl.ts \
-  qt/locale/bitcredits_pam.ts \
-  qt/locale/bitcredits_pl.ts \
-  qt/locale/bitcredits_pt_BR.ts \
-  qt/locale/bitcredits_pt_PT.ts \
-  qt/locale/bitcredits_ro_RO.ts \
-  qt/locale/bitcredits_ru.ts \
-  qt/locale/bitcredits_sah.ts \
-  qt/locale/bitcredits_sk.ts \
-  qt/locale/bitcredits_sl_SI.ts \
-  qt/locale/bitcredits_sq.ts \
-  qt/locale/bitcredits_sr.ts \
-  qt/locale/bitcredits_sv.ts \
-  qt/locale/bitcredits_th_TH.ts \
-  qt/locale/bitcredits_tr.ts \
-  qt/locale/bitcredits_uk.ts \
-  qt/locale/bitcredits_ur_PK.ts \
-  qt/locale/bitcredits_uz@Cyrl.ts \
-  qt/locale/bitcredits_vi.ts \
-  qt/locale/bitcredits_vi_VN.ts \
-  qt/locale/bitcredits_zh_CN.ts \
-  qt/locale/bitcredits_zh_HK.ts \
-  qt/locale/bitcredits_zh_TW.ts
+  qt/locale/bitcredit_ach.ts \
+  qt/locale/bitcredit_af_ZA.ts \
+  qt/locale/bitcredit_ar.ts \
+  qt/locale/bitcredit_be_BY.ts \
+  qt/locale/bitcredit_bg.ts \
+  qt/locale/bitcredit_bs.ts \
+  qt/locale/bitcredit_ca_ES.ts \
+  qt/locale/bitcredit_ca.ts \
+  qt/locale/bitcredit_ca@valencia.ts \
+  qt/locale/bitcredit_cmn.ts \
+  qt/locale/bitcredit_cs.ts \
+  qt/locale/bitcredit_cy.ts \
+  qt/locale/bitcredit_da.ts \
+  qt/locale/bitcredit_de.ts \
+  qt/locale/bitcredit_el_GR.ts \
+  qt/locale/bitcredit_en.ts \
+  qt/locale/bitcredit_eo.ts \
+  qt/locale/bitcredit_es_CL.ts \
+  qt/locale/bitcredit_es_DO.ts \
+  qt/locale/bitcredit_es_MX.ts \
+  qt/locale/bitcredit_es.ts \
+  qt/locale/bitcredit_es_UY.ts \
+  qt/locale/bitcredit_et.ts \
+  qt/locale/bitcredit_eu_ES.ts \
+  qt/locale/bitcredit_fa_IR.ts \
+  qt/locale/bitcredit_fa.ts \
+  qt/locale/bitcredit_fi.ts \
+  qt/locale/bitcredit_fr_CA.ts \
+  qt/locale/bitcredit_fr.ts \
+  qt/locale/bitcredit_gl.ts \
+  qt/locale/bitcredit_gu_IN.ts \
+  qt/locale/bitcredit_he.ts \
+  qt/locale/bitcredit_hi_IN.ts \
+  qt/locale/bitcredit_hr.ts \
+  qt/locale/bitcredit_hu.ts \
+  qt/locale/bitcredit_id_ID.ts \
+  qt/locale/bitcredit_it.ts \
+  qt/locale/bitcredit_ja.ts \
+  qt/locale/bitcredit_ka.ts \
+  qt/locale/bitcredit_kk_KZ.ts \
+  qt/locale/bitcredit_ko_KR.ts \
+  qt/locale/bitcredit_ky.ts \
+  qt/locale/bitcredit_la.ts \
+  qt/locale/bitcredit_lt.ts \
+  qt/locale/bitcredit_lv_LV.ts \
+  qt/locale/bitcredit_mn.ts \
+  qt/locale/bitcredit_ms_MY.ts \
+  qt/locale/bitcredit_nb.ts \
+  qt/locale/bitcredit_nl.ts \
+  qt/locale/bitcredit_pam.ts \
+  qt/locale/bitcredit_pl.ts \
+  qt/locale/bitcredit_pt_BR.ts \
+  qt/locale/bitcredit_pt_PT.ts \
+  qt/locale/bitcredit_ro_RO.ts \
+  qt/locale/bitcredit_ru.ts \
+  qt/locale/bitcredit_sah.ts \
+  qt/locale/bitcredit_sk.ts \
+  qt/locale/bitcredit_sl_SI.ts \
+  qt/locale/bitcredit_sq.ts \
+  qt/locale/bitcredit_sr.ts \
+  qt/locale/bitcredit_sv.ts \
+  qt/locale/bitcredit_th_TH.ts \
+  qt/locale/bitcredit_tr.ts \
+  qt/locale/bitcredit_uk.ts \
+  qt/locale/bitcredit_ur_PK.ts \
+  qt/locale/bitcredit_uz@Cyrl.ts \
+  qt/locale/bitcredit_vi.ts \
+  qt/locale/bitcredit_vi_VN.ts \
+  qt/locale/bitcredit_zh_CN.ts \
+  qt/locale/bitcredit_zh_HK.ts \
+  qt/locale/bitcredit_zh_TW.ts
 
 QT_FORMS_UI = \
   qt/forms/addressbookpage.ui \
@@ -98,10 +98,10 @@ QT_MOC_CPP = \
   qt/moc_addressbookpage.cpp \
   qt/moc_addresstablemodel.cpp \
   qt/moc_askpassphrasedialog.cpp \
-  qt/moc_bitcreditsaddressvalidator.cpp \
-  qt/moc_bitcreditsamountfield.cpp \
-  qt/moc_bitcreditsgui.cpp \
-  qt/moc_bitcreditsunits.cpp \
+  qt/moc_bitcreditaddressvalidator.cpp \
+  qt/moc_bitcreditamountfield.cpp \
+  qt/moc_bitcreditgui.cpp \
+  qt/moc_bitcreditunits.cpp \
   qt/moc_clientmodel.cpp \
   qt/moc_coincontroldialog.cpp \
   qt/moc_coincontroltreewidget.cpp \
@@ -111,7 +111,6 @@ QT_MOC_CPP = \
   qt/moc_intro.cpp \
   qt/moc_macdockiconhandler.cpp \
   qt/moc_macnotificationhandler.cpp \
-  qt/moc_monitoreddatamapper.cpp \
   qt/moc_notificator.cpp \
   qt/moc_openuridialog.cpp \
   qt/moc_optionsdialog.cpp \
@@ -142,34 +141,34 @@ QT_MOC_CPP = \
   qt/moc_blockbrowser.cpp \
   qt/moc_ircmodel.cpp
 
-BITCREDITS_MM = \
+BITCREDIT_MM = \
   qt/macdockiconhandler.mm \
   qt/macnotificationhandler.mm
 
 QT_MOC = \
-  qt/bitcredits.moc \
-  qt/bitcreditsamountfield.moc \
+  qt/bitcredit.moc \
+  qt/bitcreditamountfield.moc \
   qt/intro.moc \
   qt/overviewpage.moc \
   qt/rpcconsole.moc
 
-QT_QRC_CPP = qt/qrc_bitcredits.cpp
-QT_QRC = qt/bitcredits.qrc
-QT_QRC_LOCALE_CPP = qt/qrc_bitcredits_locale.cpp
-QT_QRC_LOCALE = qt/bitcredits_locale.qrc
+QT_QRC_CPP = qt/qrc_bitcredit.cpp
+QT_QRC = qt/bitcredit.qrc
+QT_QRC_LOCALE_CPP = qt/qrc_bitcredit_locale.cpp
+QT_QRC_LOCALE = qt/bitcredit_locale.qrc
 
 PROTOBUF_CC = qt/paymentrequest.pb.cc
 PROTOBUF_H = qt/paymentrequest.pb.h
 PROTOBUF_PROTO = qt/paymentrequest.proto
 
-BITCREDITS_QT_H = \
+BITCREDIT_QT_H = \
   qt/addressbookpage.h \
   qt/addresstablemodel.h \
   qt/askpassphrasedialog.h \
-  qt/bitcreditsaddressvalidator.h \
-  qt/bitcreditsamountfield.h \
-  qt/bitcreditsgui.h \
-  qt/bitcreditsunits.h \
+  qt/bitcreditaddressvalidator.h \
+  qt/bitcreditamountfield.h \
+  qt/bitcreditgui.h \
+  qt/bitcreditunits.h \
   qt/clientmodel.h \
   qt/coincontroldialog.h \
   qt/coincontroltreewidget.h \
@@ -180,7 +179,6 @@ BITCREDITS_QT_H = \
   qt/intro.h \
   qt/macdockiconhandler.h \
   qt/macnotificationhandler.h \
-  qt/monitoreddatamapper.h \
   qt/networkstyle.h \
   qt/ircmodel.h \
   qt/notificator.h \
@@ -219,21 +217,21 @@ BITCREDITS_QT_H = \
 RES_ICONS = \
   qt/res/icons/add.png \
   qt/res/icons/address-book.png \
-  qt/res/icons/bitcredits.ico \
-  qt/res/icons/bitcredits.png \
-  qt/res/icons/bitcredits_testnet.ico \
-  qt/res/icons/bitcredits_testnet.png \
+  qt/res/icons/about.png \
+  qt/res/icons/about_qt.png \
+  qt/res/icons/bitcredit.ico \
+  qt/res/icons/bitcredit.png \
   qt/res/icons/clock1.png \
   qt/res/icons/clock2.png \
   qt/res/icons/clock3.png \
   qt/res/icons/clock4.png \
   qt/res/icons/clock5.png \
   qt/res/icons/configure.png \
-  qt/res/icons/connect0_16.png \
-  qt/res/icons/connect1_16.png \
-  qt/res/icons/connect2_16.png \
-  qt/res/icons/connect3_16.png \
-  qt/res/icons/connect4_16.png \
+  qt/res/icons/connect0.png \
+  qt/res/icons/connect1.png \
+  qt/res/icons/connect2.png \
+  qt/res/icons/connect3.png \
+  qt/res/icons/connect4.png \
   qt/res/icons/debugwindow.png \
   qt/res/icons/edit.png \
   qt/res/icons/editcopy.png \
@@ -244,11 +242,12 @@ RES_ICONS = \
   qt/res/icons/eye_plus.png \
   qt/res/icons/filesave.png \
   qt/res/icons/history.png \
+  qt/res/icons/info.png \
   qt/res/icons/key.png \
   qt/res/icons/lock_closed.png \
   qt/res/icons/lock_open.png \
+  qt/res/icons/open.png \
   qt/res/icons/overview.png \
-  qt/res/icons/qrcode.png \
   qt/res/icons/quit.png \
   qt/res/icons/receive.png \
   qt/res/icons/remove.png \
@@ -263,18 +262,18 @@ RES_ICONS = \
   qt/res/icons/tx_mined.png \
   qt/res/icons/unit_btc.png \
   qt/res/icons/unit_mbtc.png \
-  qt/res/icons/unit_ubtc.png
+  qt/res/icons/unit_ubtc.png \
+  qt/res/icons/verify.png
 
-BITCREDITS_QT_CPP = \
-  qt/bitcreditsaddressvalidator.cpp \
-  qt/bitcreditsamountfield.cpp \
-  qt/bitcreditsgui.cpp \
-  qt/bitcreditsunits.cpp \
+BITCREDIT_QT_CPP = \
+  qt/bitcreditaddressvalidator.cpp \
+  qt/bitcreditamountfield.cpp \
+  qt/bitcreditgui.cpp \
+  qt/bitcreditunits.cpp \
   qt/clientmodel.cpp \
   qt/csvmodelwriter.cpp \
   qt/guiutil.cpp \
   qt/intro.cpp \
-  qt/monitoreddatamapper.cpp \
   qt/networkstyle.cpp \
   qt/ircmodel.cpp \
   qt/notificator.cpp \
@@ -291,7 +290,7 @@ BITCREDITS_QT_CPP = \
   qt/blockbrowser.cpp
 
 if ENABLE_WALLET
-BITCREDITS_QT_CPP += \
+BITCREDIT_QT_CPP += \
   qt/addressbookpage.cpp \
   qt/addresstablemodel.cpp \
   qt/askpassphrasedialog.cpp \
@@ -321,24 +320,22 @@ BITCREDITS_QT_CPP += \
 endif
 
 RES_IMAGES = \
-  qt/res/images/about.png \
-  qt/res/images/splash.png \
-  qt/res/images/splash_testnet.png
+  qt/res/images/about.png
 
 RES_MOVIES = $(wildcard qt/res/movies/spinner-*.png)
 
-BITCREDITS_RC = qt/res/bitcredits-qt-res.rc
+BITCREDIT_RC = qt/res/bitcredit-qt-res.rc
 
-BITCREDITS_QT_INCLUDES = -I$(builddir)/qt -I$(srcdir)/qt -I$(srcdir)/qt/forms \
+BITCREDIT_QT_INCLUDES = -I$(builddir)/qt -I$(srcdir)/qt -I$(srcdir)/qt/forms \
   -I$(builddir)/qt/forms
 
-qt_libbitcreditsqt_a_CPPFLAGS = $(BITCREDITS_INCLUDES) $(BITCREDITS_QT_INCLUDES) \
+qt_libbitcreditqt_a_CPPFLAGS = $(BITCREDIT_INCLUDES) $(BITCREDIT_QT_INCLUDES) \
   $(QT_INCLUDES) $(QT_DBUS_INCLUDES) $(PROTOBUF_CFLAGS) $(QR_CFLAGS)
 
-qt_libbitcreditsqt_a_SOURCES = $(BITCREDITS_QT_CPP) $(BITCREDITS_QT_H) $(QT_FORMS_UI) \
+qt_libbitcreditqt_a_SOURCES = $(BITCREDIT_QT_CPP) $(BITCREDIT_QT_H) $(QT_FORMS_UI) \
   $(QT_QRC) $(QT_QRC_LOCALE) $(QT_TS) $(PROTOBUF_PROTO) $(RES_ICONS) $(RES_IMAGES) $(RES_MOVIES)
 
-nodist_qt_libbitcreditsqt_a_SOURCES = $(QT_MOC_CPP) $(QT_MOC) $(PROTOBUF_CC) \
+nodist_qt_libbitcreditqt_a_SOURCES = $(QT_MOC_CPP) $(QT_MOC) $(PROTOBUF_CC) \
   $(PROTOBUF_H) $(QT_QRC_CPP) $(QT_QRC_LOCALE_CPP)
 
 # forms/foo.h -> forms/ui_foo.h
@@ -347,67 +344,65 @@ QT_FORMS_H=$(join $(dir $(QT_FORMS_UI)),$(addprefix ui_, $(notdir $(QT_FORMS_UI:
 # Most files will depend on the forms and moc files as includes. Generate them
 # before anything else.
 $(QT_MOC): $(QT_FORMS_H)
-$(qt_libbitcreditsqt_a_OBJECTS) $(qt_bitcredits_qt_OBJECTS) : | $(QT_MOC)
+$(qt_libbitcreditqt_a_OBJECTS) $(qt_bitcredit_qt_OBJECTS) : | $(QT_MOC)
 
 #Generating these with a half-written protobuf header leads to wacky results.
 #This makes sure it's done.
 $(QT_MOC): $(PROTOBUF_H)
 $(QT_MOC_CPP): $(PROTOBUF_H)
 
-# bitcredits-qt binary #
-qt_bitcredits_qt_CPPFLAGS = $(BITCREDITS_INCLUDES) $(BITCREDITS_QT_INCLUDES) \
+# bitcredit-qt binary #
+qt_bitcredit_qt_CPPFLAGS = $(BITCREDIT_INCLUDES) $(BITCREDIT_QT_INCLUDES) \
   $(QT_INCLUDES) $(PROTOBUF_CFLAGS) $(QR_CFLAGS)
 
-qt_bitcredits_qt_SOURCES = qt/bitcredits.cpp
+qt_bitcredit_qt_SOURCES = qt/bitcredit.cpp
 if TARGET_DARWIN
-  qt_bitcredits_qt_SOURCES += $(BITCREDITS_MM)
+  qt_bitcredit_qt_SOURCES += $(BITCREDIT_MM)
 endif
 if TARGET_WINDOWS
-  qt_bitcredits_qt_SOURCES += $(BITCREDITS_RC)
+  qt_bitcredit_qt_SOURCES += $(BITCREDIT_RC)
 endif
-qt_bitcredits_qt_LDADD = qt/libbitcreditsqt.a $(LIBBITCREDITS_SERVER)
+qt_bitcredit_qt_LDADD = qt/libbitcreditqt.a $(LIBBITCREDIT_SERVER)
 if ENABLE_WALLET
-qt_bitcredits_qt_LDADD += $(LIBBITCREDITS_WALLET)
+qt_bitcredit_qt_LDADD += $(LIBBITCREDIT_WALLET)
 endif
-qt_bitcredits_qt_LDADD += $(LIBBITCREDITS_CLI) $(LIBBITCREDITS_COMMON) $(LIBBITCREDITS_UTIL) $(LIBBITCREDITS_CRYPTO) $(LIBBITCREDITS_UNIVALUE) $(LIBLEVELDB) $(LIBMEMENV) \
-  $(BOOST_LIBS) $(QT_LIBS) $(QT_DBUS_LIBS) $(QR_LIBS) $(PROTOBUF_LIBS) $(BDB_LIBS) $(SSL_LIBS) $(CRYPTO_LIBS)
-if USE_LIBSECP256K1
-  qt_bitcredits_qt_LDADD += secp256k1/libsecp256k1.la
-endif
-qt_bitcredits_qt_LDFLAGS = $(RELDFLAGS) $(AM_LDFLAGS) $(QT_LDFLAGS)
+qt_bitcredit_qt_LDADD += $(LIBBITCREDIT_CLI) $(LIBBITCREDIT_COMMON) $(LIBBITCREDIT_UTIL) $(LIBBITCREDIT_CRYPTO) $(LIBBITCREDIT_UNIVALUE) $(LIBLEVELDB) $(LIBMEMENV) \
+  $(BOOST_LIBS) $(QT_LIBS) $(QT_DBUS_LIBS) $(QR_LIBS) $(PROTOBUF_LIBS) $(BDB_LIBS) $(SSL_LIBS) $(CRYPTO_LIBS) $(MINIUPNPC_LIBS) $(LIBSECP256K1)
+qt_bitcredit_qt_LDFLAGS = $(RELDFLAGS) $(AM_LDFLAGS) $(QT_LDFLAGS) $(LIBTOOL_APP_LDFLAGS)
+qt_bitcredit_qt_LIBTOOLFLAGS = --tag CXX
 
 #locale/foo.ts -> locale/foo.qm
 QT_QM=$(QT_TS:.ts=.qm)
 
-.SECONDARY: $(QT_QM)
+SECONDARY: $(QT_QM)
 
-qt/bitcreditsstrings.cpp: $(libbitcredits_server_a_SOURCES) $(libbitcredits_wallet_a_SOURCES)
+qt/bitcreditstrings.cpp: $(libbitcredit_server_a_SOURCES) $(libbitcredit_wallet_a_SOURCES)
 	@test -n $(XGETTEXT) || echo "xgettext is required for updating translations"
 	$(AM_V_GEN) cd $(srcdir); XGETTEXT=$(XGETTEXT) ../share/qt/extract_strings_qt.py $^
 
-translate: qt/bitcreditsstrings.cpp $(QT_FORMS_UI) $(QT_FORMS_UI) $(BITCREDITS_QT_CPP) $(BITCREDITS_QT_H) $(BITCREDITS_MM)
+translate: qt/bitcreditstrings.cpp $(QT_FORMS_UI) $(QT_FORMS_UI) $(BITCREDIT_QT_CPP) $(BITCREDIT_QT_H) $(BITCREDIT_MM)
 	@test -n $(LUPDATE) || echo "lupdate is required for updating translations"
-	$(AM_V_GEN) QT_SELECT=$(QT_SELECT) $(LUPDATE) $^ -locations relative -no-obsolete -ts qt/locale/bitcredits_en.ts
+	$(AM_V_GEN) QT_SELECT=$(QT_SELECT) $(LUPDATE) $^ -locations relative -no-obsolete -ts qt/locale/bitcredit_en.ts
 
 $(QT_QRC_LOCALE_CPP): $(QT_QRC_LOCALE) $(QT_QM)
 	@test -f $(RCC)
 	@test -f $(@D)/$(<F) || cp -f $< $(@D)
-	$(AM_V_GEN) QT_SELECT=$(QT_SELECT) $(RCC) -name bitcredits_locale $(@D)/$(<F) | \
+	$(AM_V_GEN) QT_SELECT=$(QT_SELECT) $(RCC) -name bitcredit_locale $(@D)/$(<F) | \
 	  $(SED) -e '/^\*\*.*Created:/d' -e '/^\*\*.*by:/d' > $@
 
 $(QT_QRC_CPP): $(QT_QRC) $(QT_FORMS_H) $(RES_ICONS) $(RES_IMAGES) $(RES_MOVIES) $(PROTOBUF_H)
 	@test -f $(RCC)
-	$(AM_V_GEN) QT_SELECT=$(QT_SELECT) $(RCC) -name bitcredits $< | \
+	$(AM_V_GEN) QT_SELECT=$(QT_SELECT) $(RCC) -name bitcredit $< | \
 	  $(SED) -e '/^\*\*.*Created:/d' -e '/^\*\*.*by:/d' > $@
 
-CLEAN_QT = $(nodist_qt_libbitcreditsqt_a_SOURCES) $(QT_QM) $(QT_FORMS_H) qt/*.gcda qt/*.gcno
+CLEAN_QT = $(nodist_qt_libbitcreditqt_a_SOURCES) $(QT_QM) $(QT_FORMS_H) qt/*.gcda qt/*.gcno
 
 CLEANFILES += $(CLEAN_QT)
 
-bitcredits_qt_clean: FORCE
-	rm -f $(CLEAN_QT) $(qt_libbitcreditsqt_a_OBJECTS) $(qt_bitcredits_qt_OBJECTS) qt/bitcredits-qt$(EXEEXT) $(LIBBITCREDITSQT)
+bitcredit_qt_clean: FORCE
+	rm -f $(CLEAN_QT) $(qt_libbitcreditqt_a_OBJECTS) $(qt_bitcredit_qt_OBJECTS) qt/bitcredit-qt$(EXEEXT) $(LIBBITCREDITQT)
 
-bitcredits_qt : qt/bitcredits-qt$(EXEEXT)
+bitcredit_qt : qt/bitcredit-qt$(EXEEXT)
 
 ui_%.h: %.ui
 	@test -f $(UIC)

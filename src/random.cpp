@@ -1,6 +1,6 @@
 // Copyright (c) 2009-2010 Satoshi Nakamoto
-// Copyright (c) 2009-2014 The Bitcredits developers
-// Distributed under the MIT/X11 software license, see the accompanying
+// Copyright (c) 2009-2014 The Bitcredit Core developers
+// Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include "random.h"
@@ -82,13 +82,12 @@ void RandAddSeedPerfmon()
 #endif
 }
 
-bool GetRandBytes(unsigned char* buf, int num)
+void GetRandBytes(unsigned char* buf, int num)
 {
     if (RAND_bytes(buf, num) != 1) {
         LogPrintf("%s: OpenSSL RAND_bytes() failed with error: %s\n", __func__, ERR_error_string(ERR_get_error(), NULL));
-        return false;
+        assert(false);
     }
-    return true;
 }
 
 uint64_t GetRand(uint64_t nMax)

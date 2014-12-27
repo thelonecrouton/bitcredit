@@ -1,10 +1,10 @@
 // Copyright (c) 2009-2010 Satoshi Nakamoto
-// Copyright (c) 2009-2013 The Bitcoin developers
-// Distributed under the MIT/X11 software license, see the accompanying
+// Copyright (c) 2009-2013 The Bitcredit Core developers
+// Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef BITCOIN_BIGNUM_H
-#define BITCOIN_BIGNUM_H
+#ifndef BITCREDIT_TEST_BIGNUM_H
+#define BITCREDIT_TEST_BIGNUM_H
 
 #include <algorithm>
 #include <limits>
@@ -177,4 +177,4 @@ inline bool operator>=(const CBigNum& a, const CBigNum& b) { return (BN_cmp(&a, 
 inline bool operator<(const CBigNum& a, const CBigNum& b)  { return (BN_cmp(&a, &b) < 0); }
 inline bool operator>(const CBigNum& a, const CBigNum& b)  { return (BN_cmp(&a, &b) > 0); }
 
-#endif
+#endif // BITCREDIT_TEST_BIGNUM_H

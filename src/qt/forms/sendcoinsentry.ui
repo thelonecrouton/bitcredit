@@ -51,7 +51,7 @@
       <item>
        <widget class="QValidatedLineEdit" name="payTo">
         <property name="toolTip">
-         <string>The Bitcredits address to send the payment to</string>
+         <string>The Bitcredit address to send the payment to</string>
         </property>
        </widget>
       </item>
@@ -64,8 +64,14 @@
          <string/>
         </property>
         <property name="icon">
-         <iconset resource="../bitcredits.qrc">
+         <iconset resource="../bitcredit.qrc">
           <normaloff>:/icons/address-book</normaloff>:/icons/address-book</iconset>
+        </property>
+        <property name="iconSize">
+         <size>
+          <width>22</width>
+          <height>22</height>
+         </size>
         </property>
         <property name="shortcut">
          <string>Alt+A</string>
@@ -81,8 +87,14 @@
          <string/>
         </property>
         <property name="icon">
-         <iconset resource="../bitcredits.qrc">
+         <iconset resource="../bitcredit.qrc">
           <normaloff>:/icons/editpaste</normaloff>:/icons/editpaste</iconset>
+        </property>
+        <property name="iconSize">
+         <size>
+          <width>22</width>
+          <height>22</height>
+         </size>
         </property>
         <property name="shortcut">
          <string>Alt+P</string>
@@ -98,8 +110,14 @@
          <string/>
         </property>
         <property name="icon">
-         <iconset resource="../bitcredits.qrc">
+         <iconset resource="../bitcredit.qrc">
           <normaloff>:/icons/remove</normaloff>:/icons/remove</iconset>
+        </property>
+        <property name="iconSize">
+         <size>
+          <width>22</width>
+          <height>22</height>
+         </size>
         </property>
        </widget>
       </item>
@@ -139,7 +157,7 @@
      </widget>
     </item>
     <item row="2" column="1">
-     <widget class="BitcreditsAmountField" name="payAmount"/>
+     <widget class="BitcreditAmountField" name="payAmount"/>
     </item>
     <item row="3" column="0">
      <widget class="QLabel" name="messageLabel">
@@ -154,7 +172,7 @@
     <item row="3" column="1">
      <widget class="QLabel" name="messageTextLabel">
       <property name="toolTip">
-       <string>A message that was attached to the bitcredits: URI which will be stored with the transaction for your reference. Note: This message will not be sent over the Bitcredits network.</string>
+       <string>A message that was attached to the bitcredit: URI which will be stored with the transaction for your reference. Note: This message will not be sent over the Bitcredit network.</string>
       </property>
       <property name="textFormat">
        <enum>Qt::PlainText</enum>
@@ -622,7 +640,7 @@
          <string/>
         </property>
         <property name="icon">
-         <iconset resource="../bitcredits.qrc">
+         <iconset resource="../bitcredit.qrc">
           <normaloff>:/icons/remove</normaloff>:/icons/remove</iconset>
         </property>
        </widget>
@@ -660,7 +678,7 @@
      </widget>
     </item>
     <item row="2" column="1">
-     <widget class="BitcreditsAmountField" name="payAmount_is">
+     <widget class="BitcreditAmountField" name="payAmount_is">
       <property name="acceptDrops">
        <bool>false</bool>
       </property>
@@ -1158,7 +1176,7 @@
          <string/>
         </property>
         <property name="icon">
-         <iconset resource="../bitcredits.qrc">
+         <iconset resource="../bitcredit.qrc">
           <normaloff>:/icons/remove</normaloff>:/icons/remove</iconset>
         </property>
        </widget>
@@ -1196,7 +1214,7 @@
      </widget>
     </item>
     <item row="2" column="1">
-     <widget class="BitcreditsAmountField" name="payAmount_s">
+     <widget class="BitcreditAmountField" name="payAmount_s">
       <property name="acceptDrops">
        <bool>false</bool>
       </property>
@@ -1212,9 +1230,9 @@
    <header>qvalidatedlineedit.h</header>
   </customwidget>
   <customwidget>
-   <class>BitcreditsAmountField</class>
+   <class>BitcreditAmountField</class>
    <extends>QLineEdit</extends>
-   <header>bitcreditsamountfield.h</header>
+   <header>bitcreditamountfield.h</header>
   </customwidget>
  </customwidgets>
  <tabstops>
@@ -1230,7 +1248,7 @@
   <tabstop>deleteButton_s</tabstop>
  </tabstops>
  <resources>
-  <include location="../bitcredits.qrc"/>
+  <include location="../bitcredit.qrc"/>
  </resources>
  <connections/>
 </ui>

@@ -4,7 +4,7 @@ if [ -d "$1" ]; then
   cd "$1"
 else
   echo "Usage: $0 <datadir>" >&2
-  echo "Removes obsolete Bitcredits database files" >&2
+  echo "Removes obsolete Bitcredit database files" >&2
   exit 1
 fi
 
@@ -16,22 +16,22 @@ if [ -f wallet.dat -a -f peers.dat -a -f chainstate/CURRENT -a -f blocks/index/C
 
 case $LEVEL in
   0)
-    echo "Error: no Bitcredits datadir detected."
+    echo "Error: no Bitcredit datadir detected."
     exit 1
     ;;
   1)
-    echo "Detected old Bitcredits datadir (before 0.7)."
+    echo "Detected old Bitcredit datadir (before 0.7)."
     echo "Nothing to do."
     exit 0
     ;;
   2)
-    echo "Detected Bitcredits 0.7 datadir."
+    echo "Detected Bitcredit 0.7 datadir."
     ;;
   3)
-    echo "Detected Bitcredits pre-0.8 datadir."
+    echo "Detected Bitcredit pre-0.8 datadir."
     ;;
   4)
-    echo "Detected Bitcredits 0.8 datadir."
+    echo "Detected Bitcredit 0.8 datadir."
     ;;
 esac
 

@@ -1,12 +1,14 @@
 // Copyright (c) 2009-2010 Satoshi Nakamoto
-// Copyright (c) 2009-2013 The Bitcredits developers
-// Distributed under the MIT/X11 software license, see the accompanying
+// Copyright (c) 2009-2014 The Bitcredit Core developers
+// Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef BITCREDITS_DB_H
-#define BITCREDITS_DB_H
+#ifndef BITCREDIT_DB_H
+#define BITCREDIT_DB_H
 
+#include "clientversion.h"
 #include "serialize.h"
+#include "streams.h"
 #include "sync.h"
 #include "version.h"
 
@@ -48,7 +50,7 @@ public:
     void MakeMock();
     bool IsMock() { return fMockDb; }
 
-    /*
+    /**
      * Verify that database file strFile is OK. If it is not,
      * call the callback to try to recover.
      * This must be called BEFORE strFile is opened.
@@ -58,7 +60,7 @@ public:
                         RECOVER_OK,
                         RECOVER_FAIL };
     VerifyResult Verify(std::string strFile, bool (*recoverFunc)(CDBEnv& dbenv, std::string strFile));
-    /*
+    /**
      * Salvage data from a file that Verify says is bad.
      * fAggressive sets the DB_AGGRESSIVE flag (see berkeley DB->verify() method documentation).
      * Appends binary key/value pairs to vResult, returns true if successful.
@@ -307,4 +309,4 @@ public:
     bool static Rewrite(const std::string& strFile, const char* pszSkip = NULL);
 };
 
-#endif // BITCREDITS_DB_H
+#endif // BITCREDIT_DB_H

@@ -1,42 +1,27 @@
 dnl require autoconf 2.60 (AS_ECHO/AS_ECHO_N)
 AC_PREREQ([2.60])
-define(_CLIENT_VERSION_MAJOR, 1)
-define(_CLIENT_VERSION_MINOR, 1)
-define(_CLIENT_VERSION_REVISION, 02)
-define(_CLIENT_VERSION_BUILD, 1)
-define(_CLIENT_VERSION_IS_RELEASE, true)
+define(_CLIENT_VERSION_MAJOR, 0)
+define(_CLIENT_VERSION_MINOR, 10)
+define(_CLIENT_VERSION_REVISION, 99)
+define(_CLIENT_VERSION_BUILD, 0)
+define(_CLIENT_VERSION_IS_RELEASE, false)
 define(_COPYRIGHT_YEAR, 2014)
-AC_INIT([Bitcredits Core],[_CLIENT_VERSION_MAJOR._CLIENT_VERSION_MINOR._CLIENT_VERSION_REVISION],[info@bitcredits.org],[bitcredits])
+AC_INIT([Bitcredit Core],[_CLIENT_VERSION_MAJOR._CLIENT_VERSION_MINOR._CLIENT_VERSION_REVISION],[info@bitcredit.org],[bitcredit])
 AC_CONFIG_SRCDIR([src/main.cpp])
-AC_CONFIG_HEADERS([src/config/bitcredits-config.h])
+AC_CONFIG_HEADERS([src/config/bitcredit-config.h])
 AC_CONFIG_AUX_DIR([build-aux])
 AC_CONFIG_MACRO_DIR([build-aux/m4])
-LT_INIT([disable-shared])
-AC_CANONICAL_HOST
-AH_TOP([#ifndef BITCREDITS_CONFIG_H])
-AH_TOP([#define BITCREDITS_CONFIG_H])
-AH_BOTTOM([#endif //BITCREDITS_CONFIG_H])
 
-# This m4 will only be used if a system copy cannot be found. This is helpful
-# on systems where autotools are installed but the pkg-config macros are not in
-# a default location. It is currently used for building on OSX where autotools
-# are preinstalled but pkg-config comes from macports or homebrew. It should
-# probably be removed when building on <= 10.6 is no longer supported.
-m4_include([pkg.m4])
+AC_CANONICAL_HOST
+
+AH_TOP([#ifndef BITCREDIT_CONFIG_H])
+AH_TOP([#define BITCREDIT_CONFIG_H])
+AH_BOTTOM([#endif //BITCREDIT_CONFIG_H])
 
 dnl faketime breaks configure and is only needed for make. Disable it here.
 unset FAKETIME
 
-if test "x${CXXFLAGS+set}" = "xset"; then
-  CXXFLAGS_overridden=yes
-else
-  CXXFLAGS_overridden=no
-fi
-
-dnl ==============================================================
-dnl Setup for automake
-dnl ==============================================================
-
+dnl Automake init set-up and checks
 AM_INIT_AUTOMAKE([no-define subdir-objects foreign])
 
 dnl faketime messes with timestamps and causes configure to be re-run.
@@ -46,17 +31,27 @@ AM_MAINTAINER_MODE([enable])
 dnl make the compilation flags quiet unless V=1 is used
 m4_ifdef([AM_SILENT_RULES], [AM_SILENT_RULES([yes])])
 
-dnl Checks for programs.
+dnl Compiler checks (here before libtool).
+if test "x${CXXFLAGS+set}" = "xset"; then
+  CXXFLAGS_overridden=yes
+else
+  CXXFLAGS_overridden=no
+fi
 AC_PROG_CXX
-AC_PROG_CC
-AC_PROG_CPP
-AC_PROG_CXXCPP
-AC_PROG_INSTALL
-AC_PROG_OBJC
-AC_PROG_LN_S
 m4_ifdef([AC_PROG_OBJCXX],[AC_PROG_OBJCXX])
-AC_PROG_MKDIR_P
-AC_PROG_SED
+
+dnl By default, libtool for mingw refuses to link static libs into a dll for
+dnl fear of mixing pic/non-pic objects, and import/export complications. Since
+dnl we have those under control, re-enable that functionality.
+case $host in
+  *mingw*)
+     lt_cv_deplibs_check_method="pass_all"
+  ;;
+esac
+dnl Libtool init checks.
+LT_INIT([pic-only])
+
+dnl Check/return PATH for base programs.
 AC_PATH_TOOL(AR, ar)
 AC_PATH_TOOL(RANLIB, ranlib)
 AC_PATH_TOOL(STRIP, strip)
@@ -68,6 +63,15 @@ AC_PATH_PROG([GIT], [git])
 AC_PATH_PROG(CCACHE,ccache)
 AC_PATH_PROG(XGETTEXT,xgettext)
 AC_PATH_PROG(HEXDUMP,hexdump)
+
+# This m4 will only be used if a system copy cannot be found. This is helpful
+# on systems where autotools are installed but the pkg-config macros are not in
+# a default location. It is currently used for building on OSX where autotools
+# are preinstalled but pkg-config comes from macports or homebrew. It should
+# probably be removed when building on <= 10.6 is no longer supported.
+m4_include([pkg.m4])
+
+dnl pkg-config check.
 PKG_PROG_PKG_CONFIG
 
 # Enable wallet
@@ -197,12 +201,9 @@ case $host in
      AC_CHECK_LIB([iphlpapi],      [main],, AC_MSG_ERROR(lib missing))
      AC_CHECK_LIB([crypt32],      [main],, AC_MSG_ERROR(lib missing))
 
-     AX_CHECK_LINK_FLAG([[-static-libgcc]],[LDFLAGS="$LDFLAGS -static-libgcc"])
-     AX_CHECK_LINK_FLAG([[-static-libstdc++]],[LDFLAGS="$LDFLAGS -static-libstdc++"])
-
      # -static is interpreted by libtool, where it has a different meaning.
      # In libtool-speak, it's -all-static.
-     AX_CHECK_LINK_FLAG([[-static]],[LDFLAGS="$LDFLAGS -static"; LIBTOOL_LDFLAGS="$LIBTOOL_LDFLAGS -all-static"])
+     AX_CHECK_LINK_FLAG([[-static]],[LIBTOOL_APP_LDFLAGS="$LIBTOOL_APP_LDFLAGS -all-static"])
 
      AC_PATH_PROG([MAKENSIS], [makensis], none)
      if test x$MAKENSIS = xnone; then
@@ -225,6 +226,15 @@ case $host in
        *) AC_MSG_ERROR("Could not determine win32/win64 for installer") ;;
      esac
      AC_SUBST(WINDOWS_BITS)
+
+     dnl libtool insists upon adding -nostdlib and a list of objects/libs to link against.
+     dnl That breaks our ability to build dll's with static libgcc/libstdc++/libssp. Override
+     dnl its command here, with the predeps/postdeps removed, and -static inserted. Postdeps are
+     dnl also overridden to prevent their insertion later.
+     dnl This should only affect dll's.
+     archive_cmds_CXX="\$CC -shared \$libobjs \$deplibs \$compiler_flags -static -o \$output_objdir/\$soname \${wl}--enable-auto-image-base -Xlinker --out-implib -Xlinker \$lib"
+     postdeps_CXX=
+
      ;;
   *darwin*)
      TARGET_OS=darwin
@@ -234,8 +244,12 @@ case $host in
        AC_CHECK_PROG([PORT],port, port)
        if test x$PORT = xport; then
          dnl add default macports paths
-         CPPFLAGS="$CPPFLAGS -isystem /opt/local/include -I/opt/local/include/db48"
-         LIBS="$LIBS -L/opt/local/lib -L/opt/local/lib/db48"
+         CPPFLAGS="$CPPFLAGS -isystem /opt/local/include"
+         LIBS="$LIBS -L/opt/local/lib"
+         if test -d /opt/local/include/db48; then
+           CPPFLAGS="$CPPFLAGS -I/opt/local/include/db48"
+           LIBS="$LIBS -L/opt/local/lib/db48"
+         fi
        fi
 
        AC_CHECK_PROG([BREW],brew, brew)
@@ -271,10 +285,17 @@ case $host in
            AC_PATH_TOOL([INSTALLNAMETOOL], [install_name_tool], install_name_tool)
            AC_PATH_TOOL([OTOOL], [otool], otool)
            AC_PATH_PROGS([GENISOIMAGE], [genisoimage mkisofs],genisoimage)
+
+           dnl libtool will try to strip the static lib, which is a problem for
+           dnl cross-builds because strip attempts to call a hard-coded ld,
+           dnl which may not exist in the path. Stripping the .a is not
+           dnl necessary, so just disable it.
+           old_striplib=
            ;;
        esac
      fi
 
+     AX_CHECK_LINK_FLAG([[-Wl,-headerpad_max_install_names]], [LDFLAGS="$LDFLAGS -Wl,-headerpad_max_install_names"])
      CPPFLAGS="$CPPFLAGS -DMAC_OSX"
      ;;
    *linux*)
@@ -324,7 +345,7 @@ AC_C_BIGENDIAN([AC_MSG_ERROR("Big Endian not supported")])
 dnl Check for pthread compile/link requirements
 AX_PTHREAD
 
-# The following macro will add the necessary defines to bitcredits-config.h, but
+# The following macro will add the necessary defines to bitcredit-config.h, but
 # they also need to be passed down to any subprojects. Pull the results out of
 # the cache and add them to CPPFLAGS.
 AC_SYS_LARGEFILE
@@ -344,6 +365,10 @@ if test x$ac_cv_sys_large_files != x &&
 fi
 
 AX_CHECK_LINK_FLAG([[-Wl,--large-address-aware]], [LDFLAGS="$LDFLAGS -Wl,--large-address-aware"])
+
+AX_GCC_FUNC_ATTRIBUTE([visibility])
+AX_GCC_FUNC_ATTRIBUTE([dllexport])
+AX_GCC_FUNC_ATTRIBUTE([dllimport])
 
 if test x$use_glibc_compat != xno; then
 
@@ -385,6 +410,12 @@ if test x$use_hardening != xno; then
     AX_CHECK_LINK_FLAG([[-pie]], [HARDENED_LDFLAGS="$HARDENED_LDFLAGS -pie"])
   fi
 
+  case $host in
+    *mingw*)
+       AC_CHECK_LIB([ssp],      [main],, AC_MSG_ERROR(lib missing))
+    ;;
+  esac
+
   CXXFLAGS="$CXXFLAGS $HARDENED_CXXFLAGS"
   CPPFLAGS="$CPPFLAGS $HARDENED_CPPFLAGS"
   LDFLAGS="$LDFLAGS $HARDENED_LDFLAGS"
@@ -399,6 +430,8 @@ fi
 AC_CHECK_HEADERS([endian.h stdio.h stdlib.h unistd.h strings.h sys/types.h sys/stat.h sys/select.h sys/prctl.h])
 AC_SEARCH_LIBS([getaddrinfo_a], [anl], [AC_DEFINE(HAVE_GETADDRINFO_A, 1, [Define this symbol if you have getaddrinfo_a])])
 AC_SEARCH_LIBS([inet_pton], [nsl resolv], [AC_DEFINE(HAVE_INET_PTON, 1, [Define this symbol if you have inet_pton])])
+
+AC_CHECK_DECLS([strnlen])
 
 AC_CHECK_DECLS([le32toh, le64toh, htole32, htole64, be32toh, be64toh, htobe32, htobe64],,,
 		[#if HAVE_ENDIAN_H
@@ -455,14 +488,14 @@ AC_SUBST(LIBMEMENV)
 
 if test x$enable_wallet != xno; then
     dnl Check for libdb_cxx only if wallet enabled
-    BITCREDITS_FIND_BDB48
+    BITCREDIT_FIND_BDB48
 fi
 
 dnl Check for libminiupnpc (optional)
 if test x$use_upnp != xno; then
   AC_CHECK_HEADERS(
     [miniupnpc/miniwget.h miniupnpc/miniupnpc.h miniupnpc/upnpcommands.h miniupnpc/upnperrors.h],
-    [AC_CHECK_LIB([miniupnpc], [main],, [have_miniupnpc=no])],
+    [AC_CHECK_LIB([miniupnpc], [main],[MINIUPNPC_LIBS=-lminiupnpc], [have_miniupnpc=no])],
     [have_miniupnpc=no]
   )
 fi
@@ -595,17 +628,23 @@ fi
 
 AC_ARG_WITH([utils],
   [AS_HELP_STRING([--with-utils],
-  [build bitcredits-cli bitcredits-tx (default=yes)])],
-  [build_bitcredits_utils=$withval],
-  [build_bitcredits_utils=yes])
+  [build bitcredit-cli bitcredit-tx (default=yes)])],
+  [build_bitcredit_utils=$withval],
+  [build_bitcredit_utils=yes])
+
+AC_ARG_WITH([libs],
+  [AS_HELP_STRING([--with-libs],
+  [build libraries (default=yes)])],
+  [build_bitcredit_libs=$withval],
+  [build_bitcredit_libs=yes])
 
 AC_ARG_WITH([daemon],
   [AS_HELP_STRING([--with-daemon],
-  [build bitcreditsd daemon (default=yes)])],
-  [build_bitcreditsd=$withval],
-  [build_bitcreditsd=yes])
+  [build bitcreditd daemon (default=yes)])],
+  [build_bitcreditd=$withval],
+  [build_bitcreditd=yes])
 
-BITCREDITS_QT_INIT
+BITCREDIT_QT_INIT
 
 if test x$use_pkgconfig = xyes; then
 
@@ -619,9 +658,9 @@ if test x$use_pkgconfig = xyes; then
     [
       PKG_CHECK_MODULES([SSL], [libssl],, [AC_MSG_ERROR(openssl  not found.)])
       PKG_CHECK_MODULES([CRYPTO], [libcrypto],,[AC_MSG_ERROR(libcrypto  not found.)])
-      BITCREDITS_QT_CHECK([PKG_CHECK_MODULES([PROTOBUF], [protobuf], [have_protobuf=yes], [BITCREDITS_QT_FAIL(libprotobuf not found)])])
+      BITCREDIT_QT_CHECK([PKG_CHECK_MODULES([PROTOBUF], [protobuf], [have_protobuf=yes], [BITCREDIT_QT_FAIL(libprotobuf not found)])])
       if test x$use_qr != xno; then
-        BITCREDITS_QT_CHECK([PKG_CHECK_MODULES([QR], [libqrencode], [have_qrencode=yes], [have_qrencode=no])])
+        BITCREDIT_QT_CHECK([PKG_CHECK_MODULES([QR], [libqrencode], [have_qrencode=yes], [have_qrencode=no])])
       fi
     ]
   )
@@ -632,25 +671,33 @@ else
   AC_CHECK_HEADER([openssl/ssl.h],, AC_MSG_ERROR(libssl headers missing),)
   AC_CHECK_LIB([ssl],         [main],SSL_LIBS=-lssl, AC_MSG_ERROR(libssl missing))
 
-  BITCREDITS_QT_CHECK(AC_CHECK_LIB([protobuf] ,[main],,BITCREDITS_QT_FAIL(libprotobuf not found)))
+  BITCREDIT_QT_CHECK(AC_CHECK_LIB([protobuf] ,[main],[PROTOBUF_LIBS=-lprotobuf], BITCREDIT_QT_FAIL(libprotobuf not found)))
   if test x$use_qr != xno; then
-    BITCREDITS_QT_CHECK([AC_CHECK_LIB([qrencode], [main],, [have_qrencode=no])])
-    BITCREDITS_QT_CHECK([AC_CHECK_HEADER([qrencode.h],, have_qrencode=no)])
+    BITCREDIT_QT_CHECK([AC_CHECK_LIB([qrencode], [main],[QR_LIBS=-lqrencode], [have_qrencode=no])])
+    BITCREDIT_QT_CHECK([AC_CHECK_HEADER([qrencode.h],, have_qrencode=no)])
   fi
 fi
 
-BITCREDITS_QT_PATH_PROGS([PROTOC], [protoc],$protoc_bin_path)
+BITCREDIT_QT_PATH_PROGS([PROTOC], [protoc],$protoc_bin_path)
 
-AC_MSG_CHECKING([whether to build bitcreditsd])
-AM_CONDITIONAL([BUILD_BITCREDITSD], [test x$build_bitcreditsd = xyes])
-AC_MSG_RESULT($build_bitcreditsd)
+AC_MSG_CHECKING([whether to build bitcreditd])
+AM_CONDITIONAL([BUILD_BITCREDITD], [test x$build_bitcreditd = xyes])
+AC_MSG_RESULT($build_bitcreditd)
 
-AC_MSG_CHECKING([whether to build utils (bitcredits-cli bitcredits-tx)])
-AM_CONDITIONAL([BUILD_BITCREDITS_UTILS], [test x$build_bitcredits_utils = xyes])
-AC_MSG_RESULT($build_bitcredits_utils)
+AC_MSG_CHECKING([whether to build utils (bitcredit-cli bitcredit-tx)])
+AM_CONDITIONAL([BUILD_BITCREDIT_UTILS], [test x$build_bitcredit_utils = xyes])
+AC_MSG_RESULT($build_bitcredit_utils)
 
-dnl sets $bitcredits_enable_qt, $bitcredits_enable_qt_test, $bitcredits_enable_qt_dbus
-BITCREDITS_QT_CONFIGURE([$use_pkgconfig], [qt4])
+AC_MSG_CHECKING([whether to build libraries])
+AM_CONDITIONAL([BUILD_BITCREDIT_LIBS], [test x$build_bitcredit_libs = xyes])
+if test x$build_bitcredit_libs = xyes; then
+  AC_DEFINE(HAVE_CONSENSUS_LIB, 1, [Define this symbol if the consensus lib has been built])
+  AC_CONFIG_FILES([libbitcreditconsensus.pc:libbitcreditconsensus.pc.in])
+fi
+AC_MSG_RESULT($build_bitcredit_libs)
+
+dnl sets $bitcredit_enable_qt, $bitcredit_enable_qt_test, $bitcredit_enable_qt_dbus
+BITCREDIT_QT_CONFIGURE([$use_pkgconfig], [qt4])
 
 AC_LANG_POP
 
@@ -711,14 +758,14 @@ else
 fi
 
 dnl these are only used when qt is enabled
-if test x$bitcredits_enable_qt != xno; then
+if test x$bitcredit_enable_qt != xno; then
   BUILD_QT=qt
   dnl enable dbus support
   AC_MSG_CHECKING([whether to build GUI with support for D-Bus])
-  if test x$bitcredits_enable_qt_dbus != xno; then
+  if test x$bitcredit_enable_qt_dbus != xno; then
     AC_DEFINE([USE_DBUS],[1],[Define if dbus support should be compiled in])
   fi
-  AC_MSG_RESULT($bitcredits_enable_qt_dbus)
+  AC_MSG_RESULT($bitcredit_enable_qt_dbus)
 
   dnl enable qr support
   AC_MSG_CHECKING([whether to build GUI with support for QR codes])
@@ -741,8 +788,8 @@ if test x$bitcredits_enable_qt != xno; then
     AC_MSG_WARN("xgettext is required to update qt translations")
   fi
 
-  AC_MSG_CHECKING([whether to build test_bitcredits-qt])
-  if test x$use_tests$bitcredits_enable_qt_test = xyesyes; then
+  AC_MSG_CHECKING([whether to build test_bitcredit-qt])
+  if test x$use_tests$bitcredit_enable_qt_test = xyesyes; then
     AC_MSG_RESULT([yes])
     BUILD_TEST_QT="test"
   else
@@ -750,7 +797,7 @@ if test x$bitcredits_enable_qt != xno; then
   fi
 fi
 
-AC_MSG_CHECKING([whether to build test_bitcredits])
+AC_MSG_CHECKING([whether to build test_bitcredit])
 if test x$use_tests = xyes; then
   AC_MSG_RESULT([yes])
   BUILD_TEST="test"
@@ -765,8 +812,8 @@ else
   AC_MSG_RESULT([no])
 fi
 
-if test x$build_bitcredits_utils$build_bitcreditsd$bitcredits_enable_qt$use_tests = xnononono; then
-  AC_MSG_ERROR([No targets! Please specify at least one of: --with-utils --with-daemon --with-gui or --enable-tests])
+if test x$build_bitcredit_utils$build_bitcredit_libs$build_bitcreditd$bitcredit_enable_qt$use_tests = xnononono; then
+  AC_MSG_ERROR([No targets! Please specify at least one of: --with-utils --with-libs --with-daemon --with-gui or --enable-tests])
 fi
 
 AM_CONDITIONAL([TARGET_DARWIN], [test x$TARGET_OS = xdarwin])
@@ -774,8 +821,8 @@ AM_CONDITIONAL([BUILD_DARWIN], [test x$BUILD_OS = xdarwin])
 AM_CONDITIONAL([TARGET_WINDOWS], [test x$TARGET_OS = xwindows])
 AM_CONDITIONAL([ENABLE_WALLET],[test x$enable_wallet = xyes])
 AM_CONDITIONAL([ENABLE_TESTS],[test x$use_tests = xyes])
-AM_CONDITIONAL([ENABLE_QT],[test x$bitcredits_enable_qt = xyes])
-AM_CONDITIONAL([ENABLE_QT_TESTS],[test x$use_tests$bitcredits_enable_qt_test = xyesyes])
+AM_CONDITIONAL([ENABLE_QT],[test x$bitcredit_enable_qt = xyes])
+AM_CONDITIONAL([ENABLE_QT_TESTS],[test x$use_tests$bitcredit_enable_qt_test = xyesyes])
 AM_CONDITIONAL([USE_QRCODE], [test x$use_qr = xyes])
 AM_CONDITIONAL([USE_LCOV],[test x$use_lcov = xyes])
 AM_CONDITIONAL([USE_COMPARISON_TOOL],[test x$use_comparison_tool != xno])
@@ -796,9 +843,8 @@ AC_SUBST(CLIENT_VERSION_BUILD, _CLIENT_VERSION_BUILD)
 AC_SUBST(CLIENT_VERSION_IS_RELEASE, _CLIENT_VERSION_IS_RELEASE)
 AC_SUBST(COPYRIGHT_YEAR, _COPYRIGHT_YEAR)
 
-
 AC_SUBST(RELDFLAGS)
-AC_SUBST(LIBTOOL_LDFLAGS)
+AC_SUBST(LIBTOOL_APP_LDFLAGS)
 AC_SUBST(USE_UPNP)
 AC_SUBST(USE_QRCODE)
 AC_SUBST(BOOST_LIBS)
@@ -808,9 +854,37 @@ AC_SUBST(BUILD_TEST)
 AC_SUBST(BUILD_QT)
 AC_SUBST(BUILD_TEST_QT)
 AC_SUBST(MINIUPNPC_CPPFLAGS)
+AC_SUBST(MINIUPNPC_LIBS)
 AC_CONFIG_FILES([Makefile src/Makefile share/setup.nsi share/qt/Info.plist src/test/buildenv.py])
-AC_CONFIG_FILES([qa/pull-tester/run-bitcreditsd-for-test.sh],[chmod +x qa/pull-tester/run-bitcreditsd-for-test.sh])
-AC_CONFIG_FILES([qa/pull-tester/build-tests.sh],[chmod +x qa/pull-tester/build-tests.sh])
+AC_CONFIG_FILES([qa/pull-tester/run-bitcreditd-for-test.sh],[chmod +x qa/pull-tester/run-bitcreditd-for-test.sh])
+AC_CONFIG_FILES([qa/pull-tester/tests-config.sh],[chmod +x qa/pull-tester/tests-config.sh])
+
+dnl boost's m4 checks do something really nasty: they export these vars. As a
+dnl result, they leak into secp256k1's configure and crazy things happen.
+dnl Until this is fixed upstream and we've synced, we'll just un-export them.
+CPPFLAGS_TEMP="$CPPFLAGS"
+unset CPPFLAGS
+CPPFLAGS="$CPPFLAGS_TEMP"
+
+LDFLAGS_TEMP="$LDFLAGS"
+unset LDFLAGS
+LDFLAGS="$LDFLAGS_TEMP"
+
+LIBS_TEMP="$LIBS"
+unset LIBS
+LIBS="$LIBS_TEMP"
+
+PKGCONFIG_PATH_TEMP="$PKG_CONFIG_PATH"
+unset PKG_CONFIG_PATH
+PKG_CONFIG_PATH="$PKGCONFIG_PATH_TEMP"
+
+PKGCONFIG_LIBDIR_TEMP="$PKG_CONFIG_LIBDIR"
+unset PKG_CONFIG_LIBDIR
+PKG_CONFIG_LIBDIR="$PKGCONFIG_LIBDIR_TEMP"
+
+ac_configure_args="${ac_configure_args} --disable-shared --with-pic"
+AC_CONFIG_SUBDIRS([src/secp256k1])
+
 AC_OUTPUT
 
 dnl Taken from https://wiki.debian.org/RpathIssue

@@ -1,9 +1,9 @@
-// Copyright (c) 2011-2013 The Bitcredits developers
-// Distributed under the MIT/X11 software license, see the accompanying
+// Copyright (c) 2011-2013 The Bitcredit Core developers
+// Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef ADDRESSTABLEMODEL_H
-#define ADDRESSTABLEMODEL_H
+#ifndef BITCREDIT_QT_ADDRESSTABLEMODEL_H
+#define BITCREDIT_QT_ADDRESSTABLEMODEL_H
 
 #include <QAbstractTableModel>
 #include <QStringList>
@@ -26,7 +26,7 @@ public:
 
     enum ColumnIndex {
         Label = 0,   /**< User specified label */
-        Address = 1  /**< Bitcredits address */
+        Address = 1  /**< Bitcredit address */
     };
 
     enum RoleIndex {
@@ -92,4 +92,4 @@ public slots:
     friend class AddressTablePriv;
 };
 
-#endif // ADDRESSTABLEMODEL_H
+#endif // BITCREDIT_QT_ADDRESSTABLEMODEL_H

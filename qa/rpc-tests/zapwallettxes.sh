@@ -1,17 +1,21 @@
 #!/usr/bin/env bash
+# Copyright (c) 2014 The Bitcredit Core developers
+# Distributed under the MIT software license, see the accompanying
+# file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 # Test -zapwallettxes=<mode>
 
 if [ $# -lt 1 ]; then
         echo "Usage: $0 path_to_binaries"
         echo "e.g. $0 ../../src"
+        echo "Env vars BITCREDITD and BITCREDITCLI may be used to specify the exact binaries used"
         exit 1
 fi
 
 set -f
 
-BITCREDITSD=${1}/bitcreditsd
-CLI=${1}/bitcredits-cli
+BITCREDITD=${BITCREDITD:-${1}/bitcreditd}
+CLI=${BITCREDITCLI:-${1}/bitcredit-cli}
 
 DIR="${BASH_SOURCE%/*}"
 SENDANDWAIT="${DIR}/send.sh"
@@ -23,13 +27,13 @@ D=$(mktemp -d test.XXXXX)
 D1=${D}/node1
 CreateDataDir "$D1" port=11000 rpcport=11001
 B1ARGS="-datadir=$D1"
-$BITCREDITSD $B1ARGS &
+$BITCREDITD $B1ARGS &
 B1PID=$!
 
 D2=${D}/node2
 CreateDataDir "$D2" port=11010 rpcport=11011
 B2ARGS="-datadir=$D2"
-$BITCREDITSD $B2ARGS &
+$BITCREDITD $B2ARGS &
 B2PID=$!
 
 function CleanUp {
@@ -105,9 +109,9 @@ $CLI $B1ARGS stop > /dev/null 2>&1
 wait $B1PID
 
 # restart nodes with -zapwallettxes
-$BITCREDITSD -zapwallettxes=1 $B1ARGS &
+$BITCREDITD -zapwallettxes=1 $B1ARGS &
 B1PID=$!
-$BITCREDITSD -zapwallettxes=2 $B2ARGS &
+$BITCREDITD -zapwallettxes=2 $B2ARGS &
 B2PID=$!
 
 # check if confirmed transactions are there

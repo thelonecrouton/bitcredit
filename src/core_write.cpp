@@ -1,17 +1,19 @@
-// Copyright (c) 2009-2014 The Bitcredits developers
-// Distributed under the MIT/X11 software license, see the accompanying
+// Copyright (c) 2009-2014 The Bitcredit Core developers
+// Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include "core_io.h"
 
 #include "base58.h"
-#include "core.h"
+#include "primitives/transaction.h"
 #include "script/script.h"
 #include "script/standard.h"
 #include "serialize.h"
+#include "streams.h"
 #include "univalue/univalue.h"
 #include "util.h"
 #include "utilmoneystr.h"
+#include "utilstrencodings.h"
 
 #include <boost/foreach.hpp>
 
@@ -80,7 +82,7 @@ void ScriptPubKeyToUniv(const CScript& scriptPubKey,
 
     UniValue a(UniValue::VARR);
     BOOST_FOREACH(const CTxDestination& addr, addresses)
-        a.push_back(CBitcreditsAddress(addr).ToString());
+        a.push_back(CBitcreditAddress(addr).ToString());
     out.pushKV("addresses", a);
 }
 
@@ -127,4 +129,6 @@ void TxToUniv(const CTransaction& tx, const uint256& hashBlock, UniValue& entry)
 
     if (hashBlock != 0)
         entry.pushKV("blockhash", hashBlock.GetHex());
+
+    entry.pushKV("hex", EncodeHexTx(tx)); // the hex-encoded transaction. used the name "hex" to be consistent with the verbose output of "getrawtransaction".
 }

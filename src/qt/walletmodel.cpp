@@ -1,5 +1,5 @@
-// Copyright (c) 2011-2014 The Bitcredits developers
-// Distributed under the MIT/X11 software license, see the accompanying
+// Copyright (c) 2011-2014 The Bitcredit Core developers
+// Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include "walletmodel.h"
@@ -34,7 +34,6 @@ WalletModel::WalletModel(CWallet *wallet, OptionsModel *optionsModel, QObject *p
     cachedEncryptionStatus(Unencrypted),
     cachedNumBlocks(0)
 {
-    fProcessingQueuedTransactions = false;
     fHaveWatchOnly = wallet->HaveWatchOnly();
     fForceCheckBalanceChanged = false;
 
@@ -164,11 +163,8 @@ void WalletModel::checkBalanceChanged()
     }
 }
 
-void WalletModel::updateTransaction(const QString &hash, int status)
+void WalletModel::updateTransaction()
 {
-    if(transactionTableModel)
-        transactionTableModel->updateTransaction(hash, status);
-
     // Balance and number of transactions might have changed
     fForceCheckBalanceChanged = true;
 }
@@ -188,7 +184,7 @@ void WalletModel::updateWatchOnlyFlag(bool fHaveWatchonly)
 
 bool WalletModel::validateAddress(const QString &address)
 {
-    CBitcreditsAddress addressParsed(address.toStdString());
+    CBitcreditAddress addressParsed(address.toStdString());
     return addressParsed.IsValid();
 }
 
@@ -229,7 +225,7 @@ WalletModel::SendCoinsReturn WalletModel::prepareTransaction(WalletModelTransact
             total += subtotal;
         }
         else
-        {   // User-entered bitcredits address / amount:
+        {   // User-entered bitcredit address / amount:
             if(!validateAddress(rcp.address))
             {
                 return InvalidAddress;
@@ -241,7 +237,7 @@ WalletModel::SendCoinsReturn WalletModel::prepareTransaction(WalletModelTransact
             setAddress.insert(rcp.address);
             ++nAddresses;
 
-            CScript scriptPubKey = GetScriptForDestination(CBitcreditsAddress(rcp.address.toStdString()).Get());
+            CScript scriptPubKey = GetScriptForDestination(CBitcreditAddress(rcp.address.toStdString()).Get());
             vecSend.push_back(std::pair<CScript, CAmount>(scriptPubKey, rcp.amount));
 
             total += rcp.amount;
@@ -281,6 +277,10 @@ WalletModel::SendCoinsReturn WalletModel::prepareTransaction(WalletModelTransact
                          CClientUIInterface::MSG_ERROR);
             return TransactionCreationFailed;
         }
+
+        // reject insane fee > 0.1 bitcredit
+        if (nFeeRequired > 10000000)
+            return InsaneFee;
     }
 
     return SendCoinsReturn(OK);
@@ -304,7 +304,7 @@ WalletModel::SendCoinsReturn WalletModel::sendCoins(WalletModelTransaction &tran
                 rcp.paymentRequest.SerializeToString(&value);
                 newTx->vOrderForm.push_back(make_pair(key, value));
             }
-            else if (!rcp.message.isEmpty()) // Message from normal bitcredits:URI (bitcredits:123...?message=example)
+            else if (!rcp.message.isEmpty()) // Message from normal bitcredit:URI (bitcredit:123...?message=example)
                 newTx->vOrderForm.push_back(make_pair("Message", rcp.message.toStdString()));
         }
 
@@ -326,7 +326,7 @@ WalletModel::SendCoinsReturn WalletModel::sendCoins(WalletModelTransaction &tran
         if (!rcp.paymentRequest.IsInitialized())
         {
             std::string strAddress = rcp.address.toStdString();
-            CTxDestination dest = CBitcreditsAddress(strAddress).Get();
+            CTxDestination dest = CBitcreditAddress(strAddress).Get();
             std::string strLabel = rcp.label.toStdString();
             {
                 LOCK(wallet->cs_wallet);
@@ -442,7 +442,7 @@ static void NotifyAddressBookChanged(WalletModel *walletmodel, CWallet *wallet,
         const CTxDestination &address, const std::string &label, bool isMine,
         const std::string &purpose, ChangeType status)
 {
-    QString strAddress = QString::fromStdString(CBitcreditsAddress(address).ToString());
+    QString strAddress = QString::fromStdString(CBitcreditAddress(address).ToString());
     QString strLabel = QString::fromStdString(label);
     QString strPurpose = QString::fromStdString(purpose);
 
@@ -455,45 +455,16 @@ static void NotifyAddressBookChanged(WalletModel *walletmodel, CWallet *wallet,
                               Q_ARG(int, status));
 }
 
-// queue notifications to show a non freezing progress dialog e.g. for rescan
-static bool fQueueNotifications = false;
-static std::vector<std::pair<uint256, ChangeType> > vQueueNotifications;
 static void NotifyTransactionChanged(WalletModel *walletmodel, CWallet *wallet, const uint256 &hash, ChangeType status)
 {
-    if (fQueueNotifications)
-    {
-        vQueueNotifications.push_back(make_pair(hash, status));
-        return;
-    }
-
-    QString strHash = QString::fromStdString(hash.GetHex());
-
-    qDebug() << "NotifyTransactionChanged : " + strHash + " status= " + QString::number(status);
-    QMetaObject::invokeMethod(walletmodel, "updateTransaction", Qt::QueuedConnection,
-                              Q_ARG(QString, strHash),
-                              Q_ARG(int, status));
+    Q_UNUSED(wallet);
+    Q_UNUSED(hash);
+    Q_UNUSED(status);
+    QMetaObject::invokeMethod(walletmodel, "updateTransaction", Qt::QueuedConnection);
 }
 
 static void ShowProgress(WalletModel *walletmodel, const std::string &title, int nProgress)
 {
-    if (nProgress == 0)
-        fQueueNotifications = true;
-
-    if (nProgress == 100)
-    {
-        fQueueNotifications = false;
-        if (vQueueNotifications.size() > 10) // prevent balloon spam, show maximum 10 balloons
-            QMetaObject::invokeMethod(walletmodel, "setProcessingQueuedTransactions", Qt::QueuedConnection, Q_ARG(bool, true));
-        for (unsigned int i = 0; i < vQueueNotifications.size(); ++i)
-        {
-            if (vQueueNotifications.size() - i <= 10)
-                QMetaObject::invokeMethod(walletmodel, "setProcessingQueuedTransactions", Qt::QueuedConnection, Q_ARG(bool, false));
-
-            NotifyTransactionChanged(walletmodel, NULL, vQueueNotifications[i].first, vQueueNotifications[i].second);
-        }
-        std::vector<std::pair<uint256, ChangeType> >().swap(vQueueNotifications); // clear
-    }
-
     // emits signal "showProgress"
     QMetaObject::invokeMethod(walletmodel, "showProgress", Qt::QueuedConnection,
                               Q_ARG(QString, QString::fromStdString(title)),
@@ -622,7 +593,7 @@ void WalletModel::listCoins(std::map<QString, std::vector<COutput> >& mapCoins) 
         CTxDestination address;
         if(!out.fSpendable || !ExtractDestination(cout.tx->vout[cout.i].scriptPubKey, address))
             continue;
-        mapCoins[QString::fromStdString(CBitcreditsAddress(address).ToString())].push_back(out);
+        mapCoins[QString::fromStdString(CBitcreditAddress(address).ToString())].push_back(out);
     }
 }
 
@@ -661,7 +632,7 @@ void WalletModel::loadReceiveRequests(std::vector<std::string>& vReceiveRequests
 
 bool WalletModel::saveReceiveRequest(const std::string &sAddress, const int64_t nId, const std::string &sRequest)
 {
-    CTxDestination dest = CBitcreditsAddress(sAddress).Get();
+    CTxDestination dest = CBitcreditAddress(sAddress).Get();
 
     std::stringstream ss;
     ss << nId;

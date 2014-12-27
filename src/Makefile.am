@@ -1,9 +1,6 @@
+DIST_SUBDIRS = secp256k1
 AM_LDFLAGS = $(PTHREAD_CFLAGS) $(LIBTOOL_LDFLAGS)
 
-if USE_LIBSECP256K1
-secp256k1/libsecp256k1.la: $(wildcard secp256k1/src/*) $(wildcard secp256k1/include/*)
-	@$(MAKE) $(AM_MAKEFLAGS) -C $(@D) $(@F)
-endif
 
 if EMBEDDED_LEVELDB
 LEVELDB_CPPFLAGS += -I$(srcdir)/leveldb/include
@@ -20,48 +17,59 @@ $(LIBLEVELDB) $(LIBMEMENV):
           OPT="$(CXXFLAGS) $(CPPFLAGS)"
 endif
 
-BITCREDITS_CONFIG_INCLUDES=-I$(builddir)/config
-BITCREDITS_INCLUDES=-I$(builddir) -I$(builddir)/obj $(BOOST_CPPFLAGS) $(LEVELDB_CPPFLAGS) $(CRYPTO_CFLAGS) $(SSL_CFLAGS)
+BITCREDIT_CONFIG_INCLUDES=-I$(builddir)/config
+BITCREDIT_INCLUDES=-I$(builddir) -I$(builddir)/obj $(BOOST_CPPFLAGS) $(LEVELDB_CPPFLAGS) $(CRYPTO_CFLAGS) $(SSL_CFLAGS)
 
-if USE_LIBSECP256K1
-BITCREDITS_INCLUDES += -I$(srcdir)/secp256k1/include
+BITCREDIT_INCLUDES += -I$(srcdir)/secp256k1/include
+
+LIBBITCREDIT_SERVER=libbitcredit_server.a
+LIBBITCREDIT_WALLET=libbitcredit_wallet.a
+LIBBITCREDIT_COMMON=libbitcredit_common.a
+LIBBITCREDIT_CLI=libbitcredit_cli.a
+LIBBITCREDIT_UTIL=libbitcredit_util.a
+LIBBITCREDIT_CRYPTO=crypto/libbitcredit_crypto.a
+LIBBITCREDIT_UNIVALUE=univalue/libbitcredit_univalue.a
+LIBBITCREDITQT=qt/libbitcreditqt.a
+LIBSECP256K1=secp256k1/libsecp256k1.la
+
+$(LIBSECP256K1): $(wildcard secp256k1/src/*) $(wildcard secp256k1/include/*)
+	$(AM_V_at)$(MAKE) $(AM_MAKEFLAGS) -C $(@D) $(@F)
+
+# Make is not made aware of per-object dependencies to avoid limiting building parallelization
+# But to build the less dependent modules first, we manually select their order here:
+noinst_LIBRARIES = \
+  crypto/libbitcredit_crypto.a \
+  libbitcredit_util.a \
+  libbitcredit_common.a \
+  univalue/libbitcredit_univalue.a \
+  libbitcredit_server.a \
+  libbitcredit_cli.a
+if ENABLE_WALLET
+BITCREDIT_INCLUDES += $(BDB_CPPFLAGS)
+noinst_LIBRARIES += libbitcredit_wallet.a
 endif
 
-LIBBITCREDITS_SERVER=libbitcredits_server.a
-LIBBITCREDITS_WALLET=libbitcredits_wallet.a
-LIBBITCREDITS_COMMON=libbitcredits_common.a
-LIBBITCREDITS_CLI=libbitcredits_cli.a
-LIBBITCREDITS_UTIL=libbitcredits_util.a
-LIBBITCREDITS_CRYPTO=crypto/libbitcredits_crypto.a
-LIBBITCREDITS_UNIVALUE=univalue/libbitcredits_univalue.a
-LIBBITCREDITSQT=qt/libbitcreditsqt.a
-
-noinst_LIBRARIES = \
-  libbitcredits_server.a \
-  libbitcredits_common.a \
-  libbitcredits_cli.a \
-  libbitcredits_util.a \
-  univalue/libbitcredits_univalue.a \
-  crypto/libbitcredits_crypto.a
-if ENABLE_WALLET
-BITCREDITS_INCLUDES += $(BDB_CPPFLAGS)
-noinst_LIBRARIES += libbitcredits_wallet.a
+if BUILD_BITCREDIT_LIBS
+lib_LTLIBRARIES = libbitcreditconsensus.la
+LIBBITCREDIT_CONSENSUS=libbitcreditconsensus.la
+else
+LIBBITCREDIT_CONSENSUS=
 endif
 
 bin_PROGRAMS =
 TESTS =
 
-if BUILD_BITCREDITSD
-  bin_PROGRAMS += bitcreditsd
+if BUILD_BITCREDITD
+  bin_PROGRAMS += bitcreditd
 endif
 
-if BUILD_BITCREDITS_UTILS
-  bin_PROGRAMS += bitcredits-cli bitcredits-tx
+if BUILD_BITCREDIT_UTILS
+  bin_PROGRAMS += bitcredit-cli bitcredit-tx
 endif
 
 .PHONY: FORCE
-# bitcredits core #
-BITCREDITS_CORE_H = \
+# bitcredit core #
+BITCREDIT_CORE_H = \
   addrman.h \
   alert.h \
   allocators.h \
@@ -78,10 +86,14 @@ BITCREDITS_CORE_H = \
   coincontrol.h \
   coins.h \
   compat.h \
-  core.h \
+  compressor.h \
+  primitives/block.h \
+  primitives/transaction.h \
   core_io.h \
   crypter.h \
   db.h \
+  eccryptoverify.h \
+  ecwrapper.h \
   hash.h \
   init.h \
   key.h \
@@ -89,6 +101,7 @@ BITCREDITS_CORE_H = \
   leveldbwrapper.h \
   limitedmap.h \
   main.h \
+  merkleblock.h \
   miner.h \
   mruset.h \
   netbase.h \
@@ -96,17 +109,19 @@ BITCREDITS_CORE_H = \
   noui.h \
   pow.h \
   protocol.h \
+  pubkey.h \
   random.h \
   rpcclient.h \
   rpcprotocol.h \
   rpcserver.h \
-  script/compressor.h \
   script/interpreter.h \
   script/script.h \
   script/sigcache.h \
   script/sign.h \
   script/standard.h \
+  script/script_error.h \
   serialize.h \
+  streams.h \
   sync.h \
   threadsafety.h \
   timedata.h \
@@ -115,6 +130,7 @@ BITCREDITS_CORE_H = \
   txmempool.h \
   ui_interface.h \
   uint256.h \
+  undo.h \
   util.h \
   utilstrencodings.h \
   utilmoneystr.h \
@@ -144,11 +160,11 @@ obj/build.h: FORCE
 	@$(MKDIR_P) $(builddir)/obj
 	@$(top_srcdir)/share/genbuild.sh $(abs_top_builddir)/src/obj/build.h \
 	  $(abs_top_srcdir)
-libbitcredits_util_a-version.$(OBJEXT): obj/build.h
+libbitcredit_util_a-clientversion.$(OBJEXT): obj/build.h
 
-# server: shared between bitcreditsd and bitcredits-qt
-libbitcredits_server_a_CPPFLAGS = $(BITCREDITS_INCLUDES) $(MINIUPNPC_CPPFLAGS)
-libbitcredits_server_a_SOURCES = \
+# server: shared between bitcreditd and bitcredit-qt
+libbitcredit_server_a_CPPFLAGS = $(BITCREDIT_INCLUDES) $(MINIUPNPC_CPPFLAGS)
+libbitcredit_server_a_SOURCES = \
   addrman.cpp \
   alert.cpp \
   bloom.cpp \
@@ -157,27 +173,30 @@ libbitcredits_server_a_SOURCES = \
   init.cpp \
   leveldbwrapper.cpp \
   main.cpp \
+  merkleblock.cpp \
   miner.cpp \
   net.cpp \
   noui.cpp \
   pow.cpp \
   irc.cpp \
+  rest.cpp \
   rpcblockchain.cpp \
   rpcmining.cpp \
   rpcmisc.cpp \
   rpcnet.cpp \
   rpcrawtransaction.cpp \
   rpcserver.cpp \
+  script/sigcache.cpp \
   timedata.cpp \
   txdb.cpp \
   txmempool.cpp \
   $(JSON_H) \
-  $(BITCREDITS_CORE_H)
+  $(BITCREDIT_CORE_H)
 
-# wallet: shared between bitcreditsd and bitcredits-qt, but only linked
+# wallet: shared between bitcreditd and bitcredit-qt, but only linked
 # when wallet enabled
-libbitcredits_wallet_a_CPPFLAGS = $(BITCREDITS_INCLUDES)
-libbitcredits_wallet_a_SOURCES = \
+libbitcredit_wallet_a_CPPFLAGS = $(BITCREDIT_INCLUDES)
+libbitcredit_wallet_a_SOURCES = \
   db.cpp \
   crypter.cpp \
   rpcdump.cpp \
@@ -185,59 +204,74 @@ libbitcredits_wallet_a_SOURCES = \
   wallet.cpp \
   wallet_ismine.cpp \
   walletdb.cpp \
-  $(BITCREDITS_CORE_H)
+  $(BITCREDIT_CORE_H)
 
 # crypto primitives library
-crypto_libbitcredits_crypto_a_CPPFLAGS = $(BITCREDITS_CONFIG_INCLUDES)
-crypto_libbitcredits_crypto_a_SOURCES = \
+crypto_libbitcredit_crypto_a_CPPFLAGS = $(BITCREDIT_CONFIG_INCLUDES)
+crypto_libbitcredit_crypto_a_SOURCES = \
   crypto/sha1.cpp \
-  crypto/sha2.cpp \
+  crypto/sha256.cpp \
+  crypto/sha512.cpp \
+  crypto/hmac_sha256.cpp \
+  crypto/rfc6979_hmac_sha256.cpp \
+  crypto/hmac_sha512.cpp \
   crypto/ripemd160.cpp \
   crypto/common.h \
-  crypto/sha2.h \
+  crypto/sha256.h \
+  crypto/sha512.h \
+  crypto/hmac_sha256.h \
+  crypto/rfc6979_hmac_sha256.h \
+  crypto/hmac_sha512.h \
   crypto/sha1.h \
   crypto/ripemd160.h
 
 # univalue JSON library
-univalue_libbitcredits_univalue_a_SOURCES = \
+univalue_libbitcredit_univalue_a_SOURCES = \
   univalue/univalue.cpp \
   univalue/univalue_read.cpp \
   univalue/univalue_write.cpp \
   univalue/univalue_escapes.h \
   univalue/univalue.h
 
-# common: shared between bitcreditsd, and bitcredits-qt and non-server tools
-libbitcredits_common_a_CPPFLAGS = $(BITCREDITS_INCLUDES)
-libbitcredits_common_a_SOURCES = \
+# common: shared between bitcreditd, and bitcredit-qt and non-server tools
+libbitcredit_common_a_CPPFLAGS = $(BITCREDIT_INCLUDES)
+libbitcredit_common_a_SOURCES = \
   allocators.cpp \
+  amount.cpp \
   base58.cpp \
   chainparams.cpp \
   coins.cpp \
-  core.cpp \
+  compressor.cpp \
   momentum.cpp \
+  primitives/block.cpp \
+  primitives/transaction.cpp \
   core_read.cpp \
   core_write.cpp \
+  eccryptoverify.cpp \
+  ecwrapper.cpp \
   hash.cpp \
   key.cpp \
   keystore.cpp \
   netbase.cpp \
   protocol.cpp \
-  script/compressor.cpp \
+  pubkey.cpp \
   script/interpreter.cpp \
   script/script.cpp \
-  script/sigcache.cpp \
   script/sign.cpp \
   script/standard.cpp \
-  $(BITCREDITS_CORE_H)
+  script/script_error.cpp \
+  $(BITCREDIT_CORE_H)
 
 # util: shared between all executables.
 # This library *must* be included to make sure that the glibc
 # backward-compatibility objects and their sanity checks are linked.
-libbitcredits_util_a_CPPFLAGS = $(BITCREDITS_INCLUDES)
-libbitcredits_util_a_SOURCES = \
+libbitcredit_util_a_CPPFLAGS = $(BITCREDIT_INCLUDES)
+libbitcredit_util_a_SOURCES = \
+  compat/strnlen.cpp \
   compat/glibc_sanity.cpp \
   compat/glibcxx_sanity.cpp \
   chainparamsbase.cpp \
+  clientversion.cpp \
   random.cpp \
   rpcprotocol.cpp \
   sync.cpp \
@@ -246,109 +280,128 @@ libbitcredits_util_a_SOURCES = \
   utilstrencodings.cpp \
   utilmoneystr.cpp \
   utiltime.cpp \
-  version.cpp \
-  $(BITCREDITS_CORE_H)
+  $(BITCREDIT_CORE_H)
 
 if GLIBC_BACK_COMPAT
-libbitcredits_util_a_SOURCES += compat/glibc_compat.cpp
-libbitcredits_util_a_SOURCES += compat/glibcxx_compat.cpp
+libbitcredit_util_a_SOURCES += compat/glibc_compat.cpp
+libbitcredit_util_a_SOURCES += compat/glibcxx_compat.cpp
 endif
 
-# cli: shared between bitcredits-cli and bitcredits-qt
-libbitcredits_cli_a_CPPFLAGS = $(BITCREDITS_INCLUDES)
-libbitcredits_cli_a_SOURCES = \
+# cli: shared between bitcredit-cli and bitcredit-qt
+libbitcredit_cli_a_CPPFLAGS = $(BITCREDIT_INCLUDES)
+libbitcredit_cli_a_SOURCES = \
   rpcclient.cpp \
-  $(BITCREDITS_CORE_H)
+  $(BITCREDIT_CORE_H)
 
-nodist_libbitcredits_util_a_SOURCES = $(srcdir)/obj/build.h
+nodist_libbitcredit_util_a_SOURCES = $(srcdir)/obj/build.h
 #
 
-# bitcreditsd binary #
-bitcreditsd_LDADD = \
-  $(LIBBITCREDITS_SERVER) \
-  $(LIBBITCREDITS_COMMON) \
-  $(LIBBITCREDITS_UNIVALUE) \
-  $(LIBBITCREDITS_UTIL) \
-  $(LIBBITCREDITS_CRYPTO) \
+# bitcreditd binary #
+bitcreditd_LDADD = \
+  $(LIBBITCREDIT_SERVER) \
+  $(LIBBITCREDIT_COMMON) \
+  $(LIBBITCREDIT_UNIVALUE) \
+  $(LIBBITCREDIT_UTIL) \
+  $(LIBBITCREDIT_CRYPTO) \
   $(LIBLEVELDB) \
-  $(LIBMEMENV)
-
-if USE_LIBSECP256K1
-  bitcreditsd_LDADD += secp256k1/libsecp256k1.la
-endif
+  $(LIBMEMENV) \
+  $(LIBSECP256K1)
 
 if ENABLE_WALLET
-bitcreditsd_LDADD += libbitcredits_wallet.a
+bitcreditd_LDADD += libbitcredit_wallet.a
 endif
-bitcreditsd_SOURCES = bitcreditsd.cpp
+bitcreditd_SOURCES = bitcreditd.cpp
 #
 
 if TARGET_WINDOWS
-bitcreditsd_SOURCES += bitcreditsd-res.rc
+bitcreditd_SOURCES += bitcreditd-res.rc
 endif
 
-bitcreditsd_LDADD += $(BOOST_LIBS) $(BDB_LIBS) $(SSL_LIBS) $(CRYPTO_LIBS)
-bitcreditsd_CPPFLAGS = $(BITCREDITS_INCLUDES)
-bitcreditsd_LDFLAGS = $(RELDFLAGS) $(AM_LDFLAGS)
+bitcreditd_LDADD += $(BOOST_LIBS) $(BDB_LIBS) $(SSL_LIBS) $(CRYPTO_LIBS) $(MINIUPNPC_LIBS)
+bitcreditd_CPPFLAGS = $(BITCREDIT_INCLUDES)
+bitcreditd_LDFLAGS = $(RELDFLAGS) $(AM_LDFLAGS) $(LIBTOOL_APP_LDFLAGS)
 
-# bitcredits-cli binary #
-bitcredits_cli_LDADD = \
-  $(LIBBITCREDITS_CLI) \
-  $(LIBBITCREDITS_COMMON) \
-  $(LIBBITCREDITS_UTIL) \
-  $(LIBBITCREDITS_CRYPTO) \
+# bitcredit-cli binary #
+bitcredit_cli_LDADD = \
+  $(LIBBITCREDIT_CLI) \
+  $(LIBBITCREDIT_UTIL) \
   $(BOOST_LIBS) \
   $(SSL_LIBS) \
   $(CRYPTO_LIBS)
 
-bitcredits_cli_SOURCES = \
-  bitcredits-cli.cpp
+bitcredit_cli_SOURCES = \
+  bitcredit-cli.cpp
 
-if USE_LIBSECP256K1
-  bitcredits_cli_LDADD += secp256k1/libsecp256k1.la
-endif
-bitcredits_cli_CPPFLAGS = $(BITCREDITS_INCLUDES)
+bitcredit_cli_CPPFLAGS = $(BITCREDIT_INCLUDES)
 #
 
-# bitcredits-tx binary #
-bitcredits_tx_LDADD = \
-  $(LIBBITCREDITS_UNIVALUE) \
-  $(LIBBITCREDITS_COMMON) \
-  $(LIBBITCREDITS_UTIL) \
-  $(LIBBITCREDITS_CRYPTO)
-
-if USE_LIBSECP256K1
-  bitcredits_tx_LDADD += secp256k1/libsecp256k1.la
-endif
-
-  bitcredits_tx_LDADD += $(BOOST_LIBS) \
-  $(SSL_LIBS) \
+# bitcredit-tx binary #
+bitcredit_tx_LDADD = \
+  $(LIBBITCREDIT_UNIVALUE) \
+  $(LIBBITCREDIT_COMMON) \
+  $(LIBBITCREDIT_UTIL) \
+  $(LIBBITCREDIT_CRYPTO) \
+  $(LIBSECP256K1) \
+  $(BOOST_LIBS) \
   $(CRYPTO_LIBS)
-bitcredits_tx_SOURCES = bitcredits-tx.cpp
-bitcredits_tx_CPPFLAGS = $(BITCREDITS_INCLUDES)
+
+bitcredit_tx_SOURCES = bitcredit-tx.cpp
+bitcredit_tx_CPPFLAGS = $(BITCREDIT_INCLUDES)
 #
-bitcredits_tx_LDFLAGS = $(RELDFLAGS) $(AM_LDFLAGS)
+bitcredit_tx_LDFLAGS = $(RELDFLAGS) $(AM_LDFLAGS) $(LIBTOOL_APP_LDFLAGS)
 
 if TARGET_WINDOWS
-bitcredits_cli_SOURCES += bitcredits-cli-res.rc
+bitcredit_cli_SOURCES += bitcredit-cli-res.rc
 endif
-bitcredits_cli_LDFLAGS = $(RELDFLAGS) $(AM_LDFLAGS)
+bitcredit_cli_LDFLAGS = $(RELDFLAGS) $(AM_LDFLAGS) $(LIBTOOL_APP_LDFLAGS)
+
+if BUILD_BITCREDIT_LIBS
+include_HEADERS = script/bitcreditconsensus.h
+libbitcreditconsensus_la_SOURCES = \
+  primitives/transaction.cpp \
+  crypto/hmac_sha512.cpp \
+  crypto/sha1.cpp \
+  crypto/sha256.cpp \
+  crypto/sha512.cpp \
+  crypto/ripemd160.cpp \
+  eccryptoverify.cpp \
+  ecwrapper.cpp \
+  hash.cpp \
+  pubkey.cpp \
+  script/script.cpp \
+  script/interpreter.cpp \
+  script/bitcreditconsensus.cpp \
+  uint256.cpp \
+  utilstrencodings.cpp
+
+if GLIBC_BACK_COMPAT
+  libbitcreditconsensus_la_SOURCES += compat/glibc_compat.cpp
+  libbitcreditconsensus_la_SOURCES += compat/glibcxx_compat.cpp
+endif
+
+libbitcreditconsensus_la_LDFLAGS = -no-undefined $(RELDFLAGS)
+libbitcreditconsensus_la_LIBADD = $(CRYPTO_LIBS)
+libbitcreditconsensus_la_CPPFLAGS = $(CRYPTO_CFLAGS) -I$(builddir)/obj -DBUILD_BITCREDIT_INTERNAL
+if USE_LIBSECP256K1
+libbitcreditconsensus_la_LIBADD += secp256k1/libsecp256k1.la
+endif
+endif
 
 CLEANFILES = leveldb/libleveldb.a leveldb/libmemenv.a *.gcda *.gcno
 
 DISTCLEANFILES = obj/build.h
 
-EXTRA_DIST = leveldb secp256k1
+EXTRA_DIST = leveldb
 
 clean-local:
 	-$(MAKE) -C leveldb clean
-	-$(MAKE) -C secp256k1 clean 2>/dev/null
+	-$(MAKE) -C secp256k1 clean
 	rm -f leveldb/*/*.gcno leveldb/helpers/memenv/*.gcno
 	-rm -f config.h
 
 .rc.o:
 	@test -f $(WINDRES)
-	$(AM_V_GEN) $(WINDRES) -i $< -o $@
+	$(AM_V_GEN) $(WINDRES) -DWINDRES_PREPROC -i $< -o $@
 
 .mm.o:
 	$(AM_V_CXX) $(OBJCXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \

@@ -1,17 +1,17 @@
-// Copyright (c) 2011-2014 The Bitcredits developers
-// Distributed under the MIT/X11 software license, see the accompanying
+// Copyright (c) 2011-2014 The Bitcredit Core developers
+// Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include "utilitydialog.h"
 
 #include "ui_helpmessagedialog.h"
 
-#include "bitcreditsgui.h"
+#include "bitcreditgui.h"
 #include "clientmodel.h"
 #include "guiutil.h"
 
+#include "clientversion.h"
 #include "init.h"
-#include "version.h"
 
 #include <stdio.h>
 
@@ -28,7 +28,7 @@ HelpMessageDialog::HelpMessageDialog(QWidget *parent, bool about) :
     ui->setupUi(this);
     GUIUtil::restoreWindowGeometry("nHelpMessageDialogWindow", this->size(), this);
 
-    QString version = tr("Bitcredits Core") + " " + tr("version") + " " + QString::fromStdString(FormatFullVersion());
+    QString version = tr("Bitcredit Core") + " " + tr("version") + " " + QString::fromStdString(FormatFullVersion());
     /* On x86 add a bit specifier to the version so that users can distinguish between
      * 32 and 64 bit builds. On other architectures, 32/64 bit may be more ambigious.
      */
@@ -40,7 +40,7 @@ HelpMessageDialog::HelpMessageDialog(QWidget *parent, bool about) :
 
     if (about)
     {
-        setWindowTitle(tr("About Bitcredits Core"));
+        setWindowTitle(tr("About Bitcredit Core"));
 
         /// HTML-format the license message from the core
         QString licenseInfo = QString::fromStdString(LicenseInfo());
@@ -60,9 +60,9 @@ HelpMessageDialog::HelpMessageDialog(QWidget *parent, bool about) :
     } else {
         setWindowTitle(tr("Command-line options"));
         QString header = tr("Usage:") + "\n" +
-            "  bitcredits-qt [" + tr("command-line options") + "]                     " + "\n";
+            "  bitcredit-qt [" + tr("command-line options") + "]                     " + "\n";
 
-        QString coreOptions = QString::fromStdString(HelpMessage(HMM_BITCREDITS_QT));
+        QString coreOptions = QString::fromStdString(HelpMessage(HMM_BITCREDIT_QT));
 
         QString uiOptions = tr("UI options") + ":\n" +
             "  -choosedatadir            " + tr("Choose data directory on startup (default: 0)") + "\n" +
@@ -71,7 +71,7 @@ HelpMessageDialog::HelpMessageDialog(QWidget *parent, bool about) :
             "  -rootcertificates=<file>  " + tr("Set SSL root certificates for payment request (default: -system-)") + "\n" +
             "  -splash                   " + tr("Show splash screen on startup (default: 1)");
 
-        ui->helpMessageLabel->setFont(GUIUtil::bitcreditsAddressFont());
+        ui->helpMessageLabel->setFont(GUIUtil::bitcreditAddressFont());
         text = version + "\n" + header + "\n" + coreOptions + "\n" + uiOptions;
         ui->helpMessageLabel->setText(text);
     }
@@ -112,12 +112,12 @@ ShutdownWindow::ShutdownWindow(QWidget *parent, Qt::WindowFlags f):
 {
     QVBoxLayout *layout = new QVBoxLayout();
     layout->addWidget(new QLabel(
-        tr("Bitcredits Core is shutting down...") + "<br /><br />" +
+        tr("Bitcredit Core is shutting down...") + "<br /><br />" +
         tr("Do not shut down the computer until this window disappears.")));
     setLayout(layout);
 }
 
-void ShutdownWindow::showShutdownWindow(BitcreditsGUI *window)
+void ShutdownWindow::showShutdownWindow(BitcreditGUI *window)
 {
     if (!window)
         return;
