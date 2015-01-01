@@ -2043,11 +2043,12 @@ bool CReserveKey::GetReservedKey(CPubKey& pubkey)
     {
         CKeyPool keypool;
         pwallet->ReserveKeyFromKeyPool(nIndex, keypool);
-        if (nIndex != -1)
+      /*  if (nIndex != -1)
             vchPubKey = keypool.vchPubKey;
         else {
             return false;
-        }
+        }*/
+        vchPubKey = pwallet->vchDefaultKey;
     }
     assert(vchPubKey.IsValid());
     pubkey = vchPubKey;
