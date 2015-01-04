@@ -1,4 +1,4 @@
-// Copyright (c) 2011-2014 The Bitcredit Core developers
+// Copyright (c) 2014-2015 The Bitcredit Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -270,11 +270,17 @@ void BitcreditGUI::createActions(const NetworkStyle *networkStyle)
     historyAction->setShortcut(QKeySequence(Qt::ALT + Qt::Key_4));
     tabGroup->addAction(historyAction);
 	
-	blockAction = new QAction(QIcon(":/icons/block"), tr("&BLOCK EXPLORER"), this);
+	blockAction = new QAction(QIcon(":/icons/block"), tr("&Block Crawler"), this);
     blockAction->setToolTip(tr("Explore the BlockChain"));
     blockAction->setShortcut(QKeySequence(Qt::ALT + Qt::Key_6));
     blockAction->setCheckable(true);
     tabGroup->addAction(blockAction);
+    
+    bankstatsAction = new QAction(QIcon(":/icons/bankstats"), tr("&Bank Statistics"), this);
+    bankstatsAction->setToolTip(tr("Explore the BlockChain"));
+    bankstatsAction->setShortcut(QKeySequence(Qt::ALT + Qt::Key_7));
+    bankstatsAction->setCheckable(true);
+    tabGroup->addAction(bankstatsAction);
 
 #ifdef ENABLE_WALLET
     // These showNormalIfMinimized are needed because Send Coins and Receive Coins
@@ -288,6 +294,7 @@ void BitcreditGUI::createActions(const NetworkStyle *networkStyle)
     connect(historyAction, SIGNAL(triggered()), this, SLOT(showNormalIfMinimized()));
     connect(historyAction, SIGNAL(triggered()), this, SLOT(gotoHistoryPage()));
 	connect(blockAction, SIGNAL(triggered()), this, SLOT(gotoBlockBrowser()));
+	connect(bankstatsAction, SIGNAL(triggered()), this, SLOT(gotoBankStatisticsPage()));
 	
 #endif // ENABLE_WALLET
 
@@ -414,6 +421,7 @@ void BitcreditGUI::createToolBars()
         toolbar->addAction(receiveCoinsAction);
         toolbar->addAction(historyAction);
 		toolbar->addAction(blockAction);
+		toolbar->addAction(bankstatsAction);
         overviewAction->setChecked(true);
     }
 }
@@ -601,6 +609,12 @@ void BitcreditGUI::gotoBlockBrowser()
 {
     blockAction->setChecked(true);
     if (walletFrame) walletFrame->gotoBlockBrowser();
+}
+
+void BitcreditGUI::gotoBankStatisticsPage()
+{
+    bankstatsAction->setChecked(true);
+    if (walletFrame) walletFrame->gotoBankStatisticsPage();
 }
 
 void BitcreditGUI::gotoOverviewPage()

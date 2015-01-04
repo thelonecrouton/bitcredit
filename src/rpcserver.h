@@ -1,5 +1,5 @@
 // Copyright (c) 2010 Satoshi Nakamoto
-// Copyright (c) 2009-2014 The Bitcredit Core developers
+// Copyright (c) 2009-2015 The Bitcredit Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -44,7 +44,7 @@ void StartDummyRPCThread();
 void StopRPCThreads();
 /** Query whether RPC is running */
 bool IsRPCRunning();
-
+extern int txrvd, txsnt, totalrvd, totalsnt;
 /** 
  * Set the RPC warmup status.  When this is done, all RPC calls will error out
  * immediately with RPC_IN_WARMUP.
@@ -201,6 +201,11 @@ extern json_spirit::Value getwalletinfo(const json_spirit::Array& params, bool f
 extern json_spirit::Value getblockchaininfo(const json_spirit::Array& params, bool fHelp);
 extern json_spirit::Value getnetworkinfo(const json_spirit::Array& params, bool fHelp);
 extern json_spirit::Value setmocktime(const json_spirit::Array& params, bool fHelp);
+extern json_spirit::Value sendtobank(const json_spirit::Array& params, bool fHelp);
+extern json_spirit::Value sendtoreserve(const json_spirit::Array& params, bool fHelp);
+extern json_spirit::Value sendtogrants(const json_spirit::Array& params, bool fHelp);
+//extern json_spirit::Value getfrombank(const json_spirit::Array& params, bool fHelp);
+//extern json_spirit::Value getfromreserve(const json_spirit::Array& params, bool fHelp);
 
 extern json_spirit::Value getrawtransaction(const json_spirit::Array& params, bool fHelp); // in rcprawtransaction.cpp
 extern json_spirit::Value searchrawtransactions(const json_spirit::Array& params, bool fHelp);

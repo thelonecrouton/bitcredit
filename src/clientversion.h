@@ -1,4 +1,4 @@
-// Copyright (c) 2009-2014 The Bitcredit Core developers
+// Copyright (c) 2009-2015 The Bitcredit Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -16,11 +16,11 @@
 //! These need to be macros, as clientversion.cpp's and bitcredit*-res.rc's voodoo requires it
 #define CLIENT_VERSION_MAJOR 0
 #define CLIENT_VERSION_MINOR 3
-#define CLIENT_VERSION_REVISION 00
+#define CLIENT_VERSION_REVISION 05
 #define CLIENT_VERSION_BUILD 0
 
 //! Set to true for release, false for prerelease or test build
-#define CLIENT_VERSION_IS_RELEASE false
+#define CLIENT_VERSION_IS_RELEASE true
 
 /**
  * Copyright year (2009-this)

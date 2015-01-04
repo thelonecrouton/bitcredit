@@ -1,4 +1,4 @@
-// Copyright (c) 2012-2014 The Bitcredit Core developers
+// Copyright (c) 2012-2015 The Bitcredit Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -13,7 +13,7 @@
  * for both bitcreditd and bitcredit-core, to make it harder for attackers to
  * target servers or GUI users specifically.
  */
-const std::string CLIENT_NAME("Satoshi");
+const std::string CLIENT_NAME("Minato");
 
 /**
  * Client version number
@@ -45,8 +45,8 @@ const std::string CLIENT_NAME("Satoshi");
 //! git will put "#define GIT_ARCHIVE 1" on the next line inside archives. 
 #define GIT_ARCHIVE 1
 #ifdef GIT_ARCHIVE
-#define GIT_COMMIT_ID "4312c8f"
-#define GIT_COMMIT_DATE "Tue, 23 Dec 2014 14:16:38 +0100"
+#define GIT_COMMIT_ID ""
+#define GIT_COMMIT_DATE "Sat, 03 Jan 2015 23:50:38 +0200"
 #endif
 
 #define BUILD_DESC_WITH_SUFFIX(maj, min, rev, build, suffix) \

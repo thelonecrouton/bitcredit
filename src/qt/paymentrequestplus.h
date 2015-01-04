@@ -1,4 +1,4 @@
-// Copyright (c) 2011-2014 The Bitcredit developers
+// Copyright (c) 2014-2015 The Bitcredit developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 

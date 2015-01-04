@@ -1,5 +1,5 @@
 // Copyright (c) 2010 Satoshi Nakamoto
-// Copyright (c) 2009-2014 The Bitcredit Core developers
+// Copyright (c) 2009-2015 The Bitcredit Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -351,6 +351,15 @@ static const CRPCCommand vRPCCommands[] =
     { "wallet",             "walletpassphrasechange", &walletpassphrasechange, true,      false,      true },
     { "wallet",             "walletpassphrase",       &walletpassphrase,       true,      false,      true },
 #endif // ENABLE_WALLET
+
+#ifdef ENABLE_WALLET
+    /* Banking */
+    { "banking",            "sendtobank",             &sendtobank,             false,     false,      true },
+    { "banking",         	"sendtoreserve",          &sendtoreserve,          false,     false,      true },
+    { "banking",         	"sendtogrants",           &sendtogrants,           false,     false,      true },
+   // { "banking",            "getfrombank",            &getfrombank,            false,     false,      true },
+    //{ "banking",         	"getfromreserve",         &getromreserve,          false,     false,      true },
+#endif
 };
 
 CRPCTable::CRPCTable()

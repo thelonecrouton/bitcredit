@@ -50,6 +50,7 @@
         <file alias="about_qt">res/icons/about_qt.png</file>
         <file alias="verify">res/icons/verify.png</file>
         <file alias="print">res/icons/print.png</file>
+        <file alias="bankstats">res/icons/bankstats.png</file>
     </qresource>
     <qresource prefix="/images">
         <file alias="about">res/images/about.png</file>

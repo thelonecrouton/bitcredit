@@ -19,7 +19,7 @@ class SendCoinsRecipient;
 class TransactionView;
 class WalletModel;
 class BlockBrowser;
-
+class BankStatisticsPage;
 
 QT_BEGIN_NAMESPACE
 class QModelIndex;
@@ -66,7 +66,7 @@ private:
     ReceiveCoinsDialog *receiveCoinsPage;
     SendCoinsDialog *sendCoinsPage;
 	BlockBrowser *blockBrowser;
-	
+	BankStatisticsPage *bankstatisticsPage;
     TransactionView *transactionView;
 
     QProgressDialog *progressDialog;
@@ -81,6 +81,7 @@ public slots:
     /** Switch to send coins page */
     void gotoSendCoinsPage(QString addr = "");
 	void gotoBlockBrowser();
+	void gotoBankStatisticsPage();
     /** Show Sign/Verify Message dialog and switch to sign message tab */
     void gotoSignMessageTab(QString addr = "");
     /** Show Sign/Verify Message dialog and switch to verify message tab */

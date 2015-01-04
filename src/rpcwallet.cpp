@@ -1,5 +1,5 @@
 // Copyright (c) 2010 Satoshi Nakamoto
-// Copyright (c) 2009-2014 The Bitcredit Core developers
+// Copyright (c) 2009-2015 The Bitcredit Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -771,6 +771,122 @@ Value movecmd(const Array& params, bool fHelp)
     return true;
 }
 
+Value sendtobank(const Array& params, bool fHelp)
+{
+    if (fHelp || params.size() < 3 || params.size() > 6)
+        throw runtime_error(
+            "sendtobank <fromaccount> <bank> <amount> [minconf=1] [comment] [comment-to]\n"
+            "<amount> is a real and is rounded to the nearest 0.00000001"
+            + HelpRequiringPassphrase());
+
+    string strAccount = AccountFromValue(params[0]);
+
+    string bank = params[1].get_str();
+    string addrStr;
+    if (bank == "devbank" || bank == "DEVBANK")
+        addrStr = "1FfmbHfnpaZjKFvyi1okTjJJusN455paPH";
+    if (bank == "glb" || bank == "GLB")
+        addrStr = "1FfmbHfnpaZjKFvyi1okTjJJusN455paPH";
+    else
+        throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid or unknown bank acronym.");
+
+    CBitcreditAddress address(addrStr);
+    if (!address.IsValid())
+        throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid Bitcredit address");
+    
+    CAmount nAmount = AmountFromValue(params[2]);
+    
+    CWalletTx wtx;
+    wtx.strFromAccount = strAccount;
+    if (params.size() > 4 && params[4].type() != null_type && !params[4].get_str().empty())
+        wtx.mapValue["comment"] = params[4].get_str();
+    if (params.size() > 5 && params[5].type() != null_type && !params[5].get_str().empty())
+        wtx.mapValue["to"]      = params[5].get_str();
+
+    EnsureWalletIsUnlocked();
+
+    SendMoney(address.Get(), nAmount, wtx);
+
+    return wtx.GetHash().GetHex();
+}
+
+Value sendtoreserve(const Array& params, bool fHelp)
+{
+    if (fHelp || params.size() < 3 || params.size() > 6)
+        throw runtime_error(
+            "sendtobank <fromaccount> <reserve> <amount> [minconf=1] [comment] [comment-to]\n"
+            "<amount> is a real and is rounded to the nearest 0.00000001"
+            + HelpRequiringPassphrase());
+
+    string strAccount = AccountFromValue(params[0]);
+
+    string reserve = params[1].get_str();
+    string addrStr;
+    if (reserve == "devreserve" || reserve == "DEVRESERVE")
+        addrStr = "1FfmbHfnpaZjKFvyi1okTjJJusN455paPH";
+    if (reserve == "glb" || reserve == "GLB")
+        addrStr = "1FfmbHfnpaZjKFvyi1okTjJJusN455paPH";
+    else
+        throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid or unknown reserve acronym.");
+
+    CBitcreditAddress address(addrStr);
+    if (!address.IsValid())
+        throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid Bitcredit address");
+    
+    CAmount nAmount = AmountFromValue(params[2]);
+    
+    CWalletTx wtx;
+    wtx.strFromAccount = strAccount;
+    if (params.size() > 4 && params[4].type() != null_type && !params[4].get_str().empty())
+        wtx.mapValue["comment"] = params[4].get_str();
+    if (params.size() > 5 && params[5].type() != null_type && !params[5].get_str().empty())
+        wtx.mapValue["to"]      = params[5].get_str();
+
+    EnsureWalletIsUnlocked();
+
+    SendMoney(address.Get(), nAmount, wtx);
+
+    return wtx.GetHash().GetHex();
+}
+
+Value sendtogrants(const Array& params, bool fHelp)
+{
+    if (fHelp || params.size() < 3 || params.size() > 6)
+        throw runtime_error(
+            "sendtobank <fromaccount> <grant> <amount> [minconf=1] [comment] [comment-to]\n"
+            "<amount> is a real and is rounded to the nearest 0.00000001"
+            + HelpRequiringPassphrase());
+
+    string strAccount = AccountFromValue(params[0]);
+
+    string grant = params[1].get_str();
+    string addrStr;
+    if (grant == "devgrant" || grant == "DEVGRANT")
+        addrStr = "1FfmbHfnpaZjKFvyi1okTjJJusN455paPH";
+    if (grant == "glb" || grant == "GLB")
+        addrStr = "1FfmbHfnpaZjKFvyi1okTjJJusN455paPH";
+    else
+        throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid or unknown grant acronym.");
+
+    CBitcreditAddress address(addrStr);
+    if (!address.IsValid())
+        throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid Bitcredit address");
+    
+    CAmount nAmount = AmountFromValue(params[2]);
+    
+    CWalletTx wtx;
+    wtx.strFromAccount = strAccount;
+    if (params.size() > 4 && params[4].type() != null_type && !params[4].get_str().empty())
+        wtx.mapValue["comment"] = params[4].get_str();
+    if (params.size() > 5 && params[5].type() != null_type && !params[5].get_str().empty())
+        wtx.mapValue["to"]      = params[5].get_str();
+
+    EnsureWalletIsUnlocked();
+
+    SendMoney(address.Get(), nAmount, wtx);
+
+    return wtx.GetHash().GetHex();
+}
 
 Value sendfrom(const Array& params, bool fHelp)
 {

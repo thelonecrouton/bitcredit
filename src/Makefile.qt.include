@@ -93,6 +93,7 @@ QT_FORMS_UI = \
   qt/forms/signverifymessagedialog.ui \
   qt/forms/transactiondescdialog.ui \
   qt/forms/blockbrowser.ui \
+  qt/forms/bankstatisticspage.ui \
   qt/forms/paperwalletdialog.ui 
 
 QT_MOC_CPP = \
@@ -140,6 +141,7 @@ QT_MOC_CPP = \
   qt/moc_walletmodel.cpp \
   qt/moc_walletview.cpp \
   qt/moc_blockbrowser.cpp \
+  qt/moc_bankstatisticspage.cpp \
   qt/moc_ircmodel.cpp \
   qt/moc_verticallabel.cpp 
 
@@ -215,7 +217,9 @@ BITCREDIT_QT_H = \
   qt/walletview.h \
   qt/winshutdownmonitor.h \
   qt/blockbrowser.h \
-  qt/verticallabel.h 
+  qt/bankstatisticspage.h \
+  qt/verticallabel.h \
+  qt/stats.h 
 
 RES_ICONS = \
   qt/res/icons/add.png \
@@ -267,7 +271,8 @@ RES_ICONS = \
   qt/res/icons/unit_mbtc.png \
   qt/res/icons/unit_ubtc.png \
   qt/res/icons/verify.png \
-  qt/res/icons/print.png 
+  qt/res/icons/print.png \
+  qt/res/icons/bankstats.png 
 
 BITCREDIT_QT_CPP = \
   qt/bitcreditaddressvalidator.cpp \
@@ -291,8 +296,8 @@ BITCREDIT_QT_CPP = \
   qt/trafficgraphwidget.cpp \
   qt/utilitydialog.cpp \
   qt/winshutdownmonitor.cpp \
-  qt/blockbrowser.cpp 
-  
+  qt/blockbrowser.cpp \
+  qt/bankstatisticspage.cpp 
 
 if ENABLE_WALLET
 BITCREDIT_QT_CPP += \

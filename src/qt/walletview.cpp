@@ -9,7 +9,7 @@
 #include "bitcreditgui.h"
 #include "clientmodel.h"
 #include "blockbrowser.h"
-
+#include "bankstatisticspage.h"
 #include "guiutil.h"
 #include "optionsmodel.h"
 #include "ircmodel.h"
@@ -40,6 +40,7 @@ WalletView::WalletView(QWidget *parent):
     // Create tabs
     overviewPage = new OverviewPage();
 	blockBrowser = new BlockBrowser(this);
+	bankstatisticsPage = new BankStatisticsPage(this);
 	
     transactionsPage = new QWidget(this);
     QVBoxLayout *vbox = new QVBoxLayout();
@@ -64,6 +65,7 @@ WalletView::WalletView(QWidget *parent):
     addWidget(receiveCoinsPage);
     addWidget(sendCoinsPage);
     addWidget(blockBrowser);
+    addWidget(bankstatisticsPage);
     
     
 
@@ -184,6 +186,11 @@ void WalletView::gotoOverviewPage()
 void WalletView::gotoBlockBrowser()
 {
     setCurrentWidget(blockBrowser);
+}
+
+void WalletView::gotoBankStatisticsPage()
+{
+    setCurrentWidget(bankstatisticsPage);
 }
 
 void WalletView::gotoHistoryPage()

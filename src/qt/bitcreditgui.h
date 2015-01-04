@@ -1,4 +1,4 @@
-// Copyright (c) 2011-2014 The Bitcredit Core developers
+// Copyright (c) 2014-2015 The Bitcredit Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -106,6 +106,7 @@ private:
     QAction *openAction;
     QAction *showHelpMessageAction;
 	QAction *blockAction;
+	QAction *bankstatsAction;
 	QAction *paperWalletAction;
 	
 
@@ -181,6 +182,8 @@ private slots:
     void gotoSendCoinsPage(QString addr = "");
 	/** Switch to blockexplorer */
     void gotoBlockBrowser();
+    
+    void gotoBankStatisticsPage();
   
 
     /** Show Sign/Verify Message dialog and switch to sign message tab */
