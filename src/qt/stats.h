@@ -98,22 +98,22 @@ class Stats : public QObject
 				{
 					// lifetime carries up to 10 %
 					if (lifetime() < month)
-						trust+= 0.0
+						trust+= 0.0;
 					
 					if (lifetime() > month && lifetime() < 2 * month )
-						trust+= 0.01	
+						trust+= 0.01;	
 					
 					if (lifetime() > 2* month && lifetime() < 3 * month )
-						trust+= 0.03
+						trust+= 0.03;
 					
 					if (lifetime() > 3 * month && lifetime() < 6 * month )
-						trust+= 0.05
+						trust+= 0.05;
 					
 					if (lifetime() > 6* month && lifetime() < 12 * month )
-						trust+= 0.07
+						trust+= 0.07;
 					
 					if (lifetime() > 12 * month)
-						trust+= 0.1	
+						trust+= 0.1;
 					
 				}	
 				
