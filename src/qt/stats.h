@@ -211,7 +211,7 @@ class Stats : public QObject
 	double Getmintrust()
 	{
 		double  x= moneysupply()/lifetime();
-	
+		 
 		return x; 	 
 	}
 
@@ -302,38 +302,33 @@ class Stats : public QObject
 
 	int64_t Getvolume()
 	{
-		return 0;
+		return 0; // need exchange to provide, unless we just consider volume per period within the client
 	}
 
 	int64_t Getgrantstotal()
 	{
-		return 0;
-	}
-
-	double Getgrantsaverage()
-	{
-		return 0;
+		return 0; //need to retrun balance of specific account
 	}
 
 	int64_t Getbankreserve()
 	{
-		return 0;
+		return 0; //need to retrun balance of specific account
 	}
 
 	int64_t Getgblavailablecredit() 
 	{
 		
-		return (moneysupply());
+		return (Getgrantstotal()+Getbankreserve()); //credit available from the bank and the reserve
 	}
 
 	int64_t Getglobaldebt()
 	{
-		return 0;
+		return moneysupply()-(Getgrantstotal()+Getbankreserve()); //representing how much of the people's money the bank holds 
 	}
 
 	double Getgblmoneysupply()
 	{
-		return moneysupply();
+		return moneysupply(); //overall money supply 
 	}
 	
 };

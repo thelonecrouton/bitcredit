@@ -28,7 +28,7 @@ BankStatisticsPage::BankStatisticsPage(QWidget *parent) :
 double mincreditscorePrevious = -1, avecreditscorePrevious = -1, glbcreditscorePrevious = -1, bestcreditscorePrevious = -1,
     mintrustPrevious = -1, avetrustPrevious = -1, gbltrustPrevious = -1, besttrustPrevious = -1, grossinterestratePrevious = -1, netinterestratePrevious = -1,
     gblinterestratePrevious = -1, grantindexPrevious = -1, expectedchangePrevious = -1, inflationindexPrevious = -1, consensusindexPrevious = -1, minsafereserve = -1, 
-    maxreserve = -1, reserverequirement = -1, grantsaveragePrevious = -1;
+    maxreserve = -1, reserverequirement = -1;
 
 int64_t marketcapPrevious = -1, gblmoneysupplyPrevious = -1, grantstotalPrevious = -1, bankreservePrevious = -1, gblavailablecreditPrevious = -1,
     globaldebtPrevious = -1;
@@ -58,7 +58,6 @@ void BankStatisticsPage::updateStatistics()
     int nHeight = (chainActive.Tip()->nHeight);
     int64_t volume = st.Getvolume();
     int64_t marketcap = st.aveprice() * volume;
-    double grantsaverage = st.Getgrantsaverage();
     double gblmoneysupply = st.Getgblmoneysupply();
     int64_t grantstotal = st.Getgrantstotal();
     int64_t bankreserve = st.Getbankreserve();
@@ -286,19 +285,6 @@ void BankStatisticsPage::updateStatistics()
     ui->grantindex->setText(ngrantindex);
     }
 
-    if(expectedchange > expectedchangePrevious)
-    {
-        ui->expectedchange->setText("<font color=\"green\">" + nexpectedchange + "</font>");
-    }
-    else if (expectedchange < expectedchangePrevious)
-    {
-        ui->expectedchange->setText("<font color=\"red\">" + nexpectedchange + "</font>");
-    }
-    else
-    {
-    ui->expectedchange->setText(nexpectedchange);
-    }
-
     if(inflationindex > inflationindexPrevious)
     {
         ui->inflationindex->setText("<font color=\"green\">" + ninflationindex + "</font>");
@@ -325,7 +311,6 @@ void BankStatisticsPage::updateStatistics()
     ui->consensusindex->setText(nconsensusindex);
     }
     
-    QString ngrantsaverage = QString::number(grantsaverage, 'f', 6);
     QString ngblmoneysupply = QString::number(gblmoneysupply, 'f', 6);
     QString ngrantstotal = QString::number(grantstotal, 'f', 6);
     QString ngblavailablecredit = QString::number(gblavailablecredit, 'f', 6);
@@ -342,19 +327,6 @@ void BankStatisticsPage::updateStatistics()
     else 
     {
         ui->marketcap->setText(QString::number(marketcap) + " $");
-    }
-
-    if(grantsaverage > grantsaveragePrevious)
-    {
-        ui->grantsaverage->setText("<font color=\"green\">" + ngrantsaverage + "</font>");
-    }
-    else if (grantsaverage < grantsaveragePrevious)
-    {
-        ui->grantsaverage->setText("<font color=\"red\">" + ngrantsaverage + "</font>");
-    }
-    else
-    {
-    ui->grantsaverage->setText(ngrantsaverage);
     }
 
     if(gblmoneysupply > gblmoneysupplyPrevious)
@@ -409,10 +381,10 @@ void BankStatisticsPage::updateStatistics()
     ui->globaldebt->setText(nglobaldebt);
     }
 
-    updatePrevious(mincreditscore , avecreditscore, glbcreditscore, bestcreditscore, mintrust, avetrust, gbltrust, besttrust, grossinterestrate, netinterestrate, gblinterestrate, grantindex, expectedchange, inflationindex, consensusindex, nHeight, volume , marketcap , grantsaverage , gblmoneysupply , grantstotal, bankreserve, gblavailablecredit, globaldebt, bankstatus);
+    updatePrevious(mincreditscore , avecreditscore, glbcreditscore, bestcreditscore, mintrust, avetrust, gbltrust, besttrust, grossinterestrate, netinterestrate, gblinterestrate, grantindex, inflationindex, consensusindex, nHeight, volume , marketcap ,  gblmoneysupply , grantstotal, bankreserve, gblavailablecredit, globaldebt, bankstatus);
 }
 
-void BankStatisticsPage::updatePrevious(double mincreditscore ,double  avecreditscore,double  glbcreditscore,double  bestcreditscore,double  mintrust,double  avetrust,double  gbltrust,double  besttrust,double  grossinterestrate,double  netinterestrate,double  gblinterestrate,double  grantindex,double  expectedchange,double  inflationindex,double consensusindex,int  nHeight,int64_t  volume ,int64_t  marketcap ,int64_t  grantsaverage ,int64_t  gblmoneysupply ,int64_t  grantstotal,int64_t  bankreserve,int64_t  gblavailablecredit,int64_t  globaldebt, QString bankstatus)
+void BankStatisticsPage::updatePrevious(double mincreditscore ,double  avecreditscore,double  glbcreditscore,double  bestcreditscore,double  mintrust,double  avetrust,double  gbltrust,double  besttrust,double  grossinterestrate,double  netinterestrate,double  gblinterestrate,double  grantindex,double  inflationindex,double consensusindex,int  nHeight,int64_t  volume ,int64_t  marketcap ,int64_t  gblmoneysupply ,int64_t  grantstotal,int64_t  bankreserve,int64_t  gblavailablecredit,int64_t  globaldebt, QString bankstatus)
 {
     mincreditscorePrevious = mincreditscore;
     avecreditscorePrevious = avecreditscore;
@@ -430,7 +402,6 @@ void BankStatisticsPage::updatePrevious(double mincreditscore ,double  avecredit
     expectedchangePrevious = expectedchange;
     inflationindexPrevious = inflationindex;
     consensusindexPrevious = consensusindex;
-    grantsaveragePrevious = grantsaverage;
     gblmoneysupplyPrevious = gblmoneysupply;
     volumePrevious = volume;
     grantstotalPrevious = grantstotal;

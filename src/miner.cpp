@@ -6,6 +6,7 @@
 #include "miner.h"
 
 #include "amount.h"
+#include "base58.h"
 #include "primitives/block.h"
 #include "primitives/transaction.h"
 #include "hash.h"
@@ -105,7 +106,27 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn)
     CMutableTransaction txNew;
     txNew.vin.resize(1);
     txNew.vin[0].prevout.SetNull();
-    txNew.vout.resize(1);
+    txNew.vout.resize(3);
+    
+    {
+      {
+		
+		string grant = "6AtYqDFdDNN6WDKa9cRcqxj9rvMJ6B4mZn";
+		CBitcreditAddress address(grant);
+		CScript scriptPubKeym = GetScriptForDestination(address.Get());
+		txNew.vout[1].scriptPubKey = scriptPubKeym;
+		txNew.vout[1].nValue = GetBlockValue(0, 0)/20;		
+	   }
+	   
+	   {
+		string grant = "6AtYqDFdDNN6WDKa9cRcqxj9rvMJ6B4mZn";
+		CBitcreditAddress address(grant);
+		CScript scriptPubKeyn = GetScriptForDestination(address.Get());
+		txNew.vout[2].scriptPubKey =scriptPubKeyn;
+		txNew.vout[2].nValue = GetBlockValue(0, 0)/20;	  
+	   }
+    }
+    
     txNew.vout[0].scriptPubKey = scriptPubKeyIn;
 
     // Add dummy coinbase tx as first transaction
