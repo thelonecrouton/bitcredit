@@ -814,7 +814,7 @@ Value sendtoreserve(const Array& params, bool fHelp)
 {
     if (fHelp || params.size() < 3 || params.size() > 6)
         throw runtime_error(
-            "sendtobank <fromaccount> <reserve> <amount> [minconf=1] [comment] [comment-to]\n"
+            "sendtoreserve <fromaccount> <reserve> <amount> [minconf=1] [comment] [comment-to]\n"
             "<amount> is a real and is rounded to the nearest 0.00000001"
             + HelpRequiringPassphrase());
 
@@ -853,7 +853,7 @@ Value sendtogrants(const Array& params, bool fHelp)
 {
     if (fHelp || params.size() < 3 || params.size() > 6)
         throw runtime_error(
-            "sendtobank <fromaccount> <grant> <amount> [minconf=1] [comment] [comment-to]\n"
+            "sendtogrants <fromaccount> <grant> <amount> [minconf=1] [comment] [comment-to]\n"
             "<amount> is a real and is rounded to the nearest 0.00000001"
             + HelpRequiringPassphrase());
 

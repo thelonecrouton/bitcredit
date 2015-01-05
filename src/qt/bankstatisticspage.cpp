@@ -28,9 +28,9 @@ BankStatisticsPage::BankStatisticsPage(QWidget *parent) :
 double mincreditscorePrevious = -1, avecreditscorePrevious = -1, glbcreditscorePrevious = -1, bestcreditscorePrevious = -1,
     mintrustPrevious = -1, avetrustPrevious = -1, gbltrustPrevious = -1, besttrustPrevious = -1, grossinterestratePrevious = -1, netinterestratePrevious = -1,
     gblinterestratePrevious = -1, grantindexPrevious = -1, expectedchangePrevious = -1, inflationindexPrevious = -1, consensusindexPrevious = -1, minsafereserve = -1, 
-    maxreserve = -1, reserverequirement = -1;
+    maxreserve = -1, reserverequirement = -1, grantsaveragePrevious = -1;
 
-int64_t marketcapPrevious = -1, grantsaveragePrevious = -1, gblmoneysupplyPrevious = -1, grantstotalPrevious = -1, bankreservePrevious = -1, gblavailablecreditPrevious = -1,
+int64_t marketcapPrevious = -1, gblmoneysupplyPrevious = -1, grantstotalPrevious = -1, bankreservePrevious = -1, gblavailablecreditPrevious = -1,
     globaldebtPrevious = -1;
 
 QString bankstatusPrevious = "Inactive";
@@ -41,8 +41,6 @@ QString phase = "";
 void BankStatisticsPage::updateStatistics()
 {
 	Stats st;
-	CCoinsStats stats;
-	FlushStateToDisk();
     double mincreditscore =  st.Getmincreditscore();
     double avecreditscore = st.Getavecreditscore();
     double glbcreditscore = st.Getglbcreditscore();
@@ -60,8 +58,8 @@ void BankStatisticsPage::updateStatistics()
     int nHeight = (chainActive.Tip()->nHeight);
     int64_t volume = st.Getvolume();
     int64_t marketcap = st.aveprice() * volume;
-    int64_t grantsaverage = st.moneysupply();
-    CAmount gblmoneysupply = stats.nTotalAmount;
+    double grantsaverage = st.Getgrantsaverage();
+    double gblmoneysupply = st.Getgblmoneysupply();
     int64_t grantstotal = st.Getgrantstotal();
     int64_t bankreserve = st.Getbankreserve();
     int64_t gblavailablecredit = st.Getgblavailablecredit();
@@ -74,8 +72,6 @@ void BankStatisticsPage::updateStatistics()
     double consensusindex = st.Getconsensusindex();
     ui->bankstatus->setText(bankstatusPrevious);
     QString height = QString::number(nHeight);
-
-
 
     if (bankreserve < minsafereserve)
     {

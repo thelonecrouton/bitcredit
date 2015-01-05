@@ -2,12 +2,13 @@
 // Copyright (c) 2009-2015 The Bitcredit Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
-
+#include "checkpoints.h"
 #include "base58.h"
 #include "clientversion.h"
 #include "init.h"
 #include "main.h"
 #include "net.h"
+#include "sync.h"
 #include "netbase.h"
 #include "rpcserver.h"
 #include "timedata.h"
@@ -73,8 +74,10 @@ Value getinfo(const Array& params, bool fHelp)
 
     proxyType proxy;
     GetProxy(NET_IPV4, proxy);
-	CCoinsStats stats;
+
     Object obj;
+    CCoinsStats stats;
+    FlushStateToDisk();
     obj.push_back(Pair("version", CLIENT_VERSION));
     obj.push_back(Pair("protocolversion", PROTOCOL_VERSION));
 #ifdef ENABLE_WALLET
@@ -85,7 +88,9 @@ Value getinfo(const Array& params, bool fHelp)
 #endif
     obj.push_back(Pair("blocks",        (int)chainActive.Height()));
     obj.push_back(Pair("timeoffset",    GetTimeOffset()));
+    if (pcoinsTip->GetStats(stats)) {
     obj.push_back(Pair("moneysupply",   ValueFromAmount(stats.nTotalAmount)));
+    }
     obj.push_back(Pair("connections",   (int)vNodes.size()));
     obj.push_back(Pair("proxy",         (proxy.IsValid() ? proxy.ToStringIPPort() : string())));
     obj.push_back(Pair("difficulty",    (double)GetDifficulty()));
