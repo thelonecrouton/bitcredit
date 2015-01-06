@@ -1,15 +1,15 @@
-// Copyright (c) 2011-2013 The Bitcredits developers
-// Distributed under the MIT/X11 software license, see the accompanying
+// Copyright (c) 2011-2013 The Bitcredit Core developers
+// Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include "guiutil.h"
 
-#include "bitcreditsaddressvalidator.h"
-#include "bitcreditsunits.h"
+#include "bitcreditaddressvalidator.h"
+#include "bitcreditunits.h"
 #include "qvalidatedlineedit.h"
 #include "walletmodel.h"
 
-#include "core.h"
+#include "primitives/transaction.h"
 #include "init.h"
 #include "main.h"
 #include "protocol.h"
@@ -84,7 +84,7 @@ QString dateTimeStr(qint64 nTime)
     return dateTimeStr(QDateTime::fromTime_t((qint32)nTime));
 }
 
-QFont bitcreditsAddressFont()
+QFont bitcreditAddressFont()
 {
     QFont font("Monospace");
 #if QT_VERSION >= 0x040800
@@ -99,14 +99,14 @@ void setupAddressWidget(QValidatedLineEdit *widget, QWidget *parent)
 {
     parent->setFocusProxy(widget);
 
-    widget->setFont(bitcreditsAddressFont());
+    widget->setFont(bitcreditAddressFont());
 #if QT_VERSION >= 0x040700
     // We don't want translators to use own addresses in translations
     // and this is the only place, where this address is supplied.
-    widget->setPlaceholderText(QObject::tr("Enter a Bitcredits address (e.g. %1)").arg("1NS17iag9jJgTHD1VXjvLCEnZuQ3rJDE9L"));
+    widget->setPlaceholderText(QObject::tr("Enter a Bitcredit address (e.g. %1)").arg("1NS17iag9jJgTHD1VXjvLCEnZuQ3rJDE9L"));
 #endif
-    widget->setValidator(new BitcreditsAddressEntryValidator(parent));
-    widget->setCheckValidator(new BitcreditsAddressCheckValidator(parent));
+    widget->setValidator(new BitcreditAddressEntryValidator(parent));
+    widget->setCheckValidator(new BitcreditAddressCheckValidator(parent));
 }
 
 void setupAmountWidget(QLineEdit *widget, QWidget *parent)
@@ -118,10 +118,10 @@ void setupAmountWidget(QLineEdit *widget, QWidget *parent)
     widget->setAlignment(Qt::AlignRight|Qt::AlignVCenter);
 }
 
-bool parseBitcreditsURI(const QUrl &uri, SendCoinsRecipient *out)
+bool parseBitcreditURI(const QUrl &uri, SendCoinsRecipient *out)
 {
-    // return if URI is not valid or is no bitcredits: URI
-    if(!uri.isValid() || uri.scheme() != QString("bitcredits"))
+    // return if URI is not valid or is no bitcredit: URI
+    if(!uri.isValid() || uri.scheme() != QString("bitcredit"))
         return false;
 
     SendCoinsRecipient rv;
@@ -161,7 +161,7 @@ bool parseBitcreditsURI(const QUrl &uri, SendCoinsRecipient *out)
         {
             if(!i->second.isEmpty())
             {
-                if(!BitcreditsUnits::parse(BitcreditsUnits::BCR, i->second, &rv.amount))
+                if(!BitcreditUnits::parse(BitcreditUnits::BCR, i->second, &rv.amount))
                 {
                     return false;
                 }
@@ -179,28 +179,28 @@ bool parseBitcreditsURI(const QUrl &uri, SendCoinsRecipient *out)
     return true;
 }
 
-bool parseBitcreditsURI(QString uri, SendCoinsRecipient *out)
+bool parseBitcreditURI(QString uri, SendCoinsRecipient *out)
 {
-    // Convert bitcredits:// to bitcredits:
+    // Convert bitcredit:// to bitcredit:
     //
-    //    Cannot handle this later, because bitcredits:// will cause Qt to see the part after // as host,
+    //    Cannot handle this later, because bitcredit:// will cause Qt to see the part after // as host,
     //    which will lower-case it (and thus invalidate the address).
-    if(uri.startsWith("bitcredits://", Qt::CaseInsensitive))
+    if(uri.startsWith("bitcredit://", Qt::CaseInsensitive))
     {
-        uri.replace(0, 10, "bitcredits:");
+        uri.replace(0, 10, "bitcredit:");
     }
     QUrl uriInstance(uri);
-    return parseBitcreditsURI(uriInstance, out);
+    return parseBitcreditURI(uriInstance, out);
 }
 
-QString formatBitcreditsURI(const SendCoinsRecipient &info)
+QString formatBitcreditURI(const SendCoinsRecipient &info)
 {
-    QString ret = QString("bitcredits:%1").arg(info.address);
+    QString ret = QString("bitcredit:%1").arg(info.address);
     int paramCount = 0;
 
     if (info.amount)
     {
-        ret += QString("?amount=%1").arg(BitcreditsUnits::format(BitcreditsUnits::BCR, info.amount, false, BitcreditsUnits::separatorNever));
+        ret += QString("?amount=%1").arg(BitcreditUnits::format(BitcreditUnits::BCR, info.amount, false, BitcreditUnits::separatorNever));
         paramCount++;
     }
 
@@ -223,7 +223,7 @@ QString formatBitcreditsURI(const SendCoinsRecipient &info)
 
 bool isDust(const QString& address, const CAmount& amount)
 {
-    CTxDestination dest = CBitcreditsAddress(address.toStdString()).Get();
+    CTxDestination dest = CBitcreditAddress(address.toStdString()).Get();
     CScript script = GetScriptForDestination(dest);
     CTxOut txOut(amount, script);
     return txOut.IsDust(::minRelayTxFee);
@@ -548,12 +548,12 @@ TableViewLastColumnResizingFixer::TableViewLastColumnResizingFixer(QTableView* t
 #ifdef WIN32
 boost::filesystem::path static StartupShortcutPath()
 {
-    return GetSpecialFolderPath(CSIDL_STARTUP) / "Bitcredits.lnk";
+    return GetSpecialFolderPath(CSIDL_STARTUP) / "Bitcredit.lnk";
 }
 
 bool GetStartOnSystemStartup()
 {
-    // check for Bitcredits.lnk
+    // check for Bitcredit.lnk
     return boost::filesystem::exists(StartupShortcutPath());
 }
 
@@ -630,7 +630,7 @@ boost::filesystem::path static GetAutostartDir()
 
 boost::filesystem::path static GetAutostartFilePath()
 {
-    return GetAutostartDir() / "bitcredits.desktop";
+    return GetAutostartDir() / "bitcredit.desktop";
 }
 
 bool GetStartOnSystemStartup()
@@ -668,10 +668,10 @@ bool SetStartOnSystemStartup(bool fAutoStart)
         boost::filesystem::ofstream optionFile(GetAutostartFilePath(), std::ios_base::out|std::ios_base::trunc);
         if (!optionFile.good())
             return false;
-        // Write a bitcredits.desktop file to the autostart directory:
+        // Write a bitcredit.desktop file to the autostart directory:
         optionFile << "[Desktop Entry]\n";
         optionFile << "Type=Application\n";
-        optionFile << "Name=Bitcredits\n";
+        optionFile << "Name=Bitcredit\n";
         optionFile << "Exec=" << pszExePath << " -min\n";
         optionFile << "Terminal=false\n";
         optionFile << "Hidden=false\n";
@@ -690,7 +690,7 @@ bool SetStartOnSystemStartup(bool fAutoStart)
 LSSharedFileListItemRef findStartupItemInList(LSSharedFileListRef list, CFURLRef findUrl);
 LSSharedFileListItemRef findStartupItemInList(LSSharedFileListRef list, CFURLRef findUrl)
 {
-    // loop through the list of startup items and try to find the bitcredits app
+    // loop through the list of startup items and try to find the bitcredit app
     CFArrayRef listSnapshot = LSSharedFileListCopySnapshot(list, NULL);
     for(int i = 0; i < CFArrayGetCount(listSnapshot); i++) {
         LSSharedFileListItemRef item = (LSSharedFileListItemRef)CFArrayGetValueAtIndex(listSnapshot, i);
@@ -711,21 +711,21 @@ LSSharedFileListItemRef findStartupItemInList(LSSharedFileListRef list, CFURLRef
 
 bool GetStartOnSystemStartup()
 {
-    CFURLRef bitcreditsAppUrl = CFBundleCopyBundleURL(CFBundleGetMainBundle());
+    CFURLRef bitcreditAppUrl = CFBundleCopyBundleURL(CFBundleGetMainBundle());
     LSSharedFileListRef loginItems = LSSharedFileListCreate(NULL, kLSSharedFileListSessionLoginItems, NULL);
-    LSSharedFileListItemRef foundItem = findStartupItemInList(loginItems, bitcreditsAppUrl);
+    LSSharedFileListItemRef foundItem = findStartupItemInList(loginItems, bitcreditAppUrl);
     return !!foundItem; // return boolified object
 }
 
 bool SetStartOnSystemStartup(bool fAutoStart)
 {
-    CFURLRef bitcreditsAppUrl = CFBundleCopyBundleURL(CFBundleGetMainBundle());
+    CFURLRef bitcreditAppUrl = CFBundleCopyBundleURL(CFBundleGetMainBundle());
     LSSharedFileListRef loginItems = LSSharedFileListCreate(NULL, kLSSharedFileListSessionLoginItems, NULL);
-    LSSharedFileListItemRef foundItem = findStartupItemInList(loginItems, bitcreditsAppUrl);
+    LSSharedFileListItemRef foundItem = findStartupItemInList(loginItems, bitcreditAppUrl);
 
     if(fAutoStart && !foundItem) {
-        // add bitcredits app to startup item list
-        LSSharedFileListInsertItemURL(loginItems, kLSSharedFileListItemBeforeFirst, NULL, NULL, bitcreditsAppUrl, NULL, NULL);
+        // add bitcredit app to startup item list
+        LSSharedFileListInsertItemURL(loginItems, kLSSharedFileListItemBeforeFirst, NULL, NULL, bitcreditAppUrl, NULL, NULL);
     }
     else if(!fAutoStart && foundItem) {
         // remove item

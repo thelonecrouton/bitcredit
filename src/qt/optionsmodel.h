@@ -1,9 +1,9 @@
-// Copyright (c) 2011-2013 The Bitcredits developers
-// Distributed under the MIT/X11 software license, see the accompanying
+// Copyright (c) 2011-2013 The Bitcredit Core developers
+// Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef OPTIONSMODEL_H
-#define OPTIONSMODEL_H
+#ifndef BITCREDIT_QT_OPTIONSMODEL_H
+#define BITCREDIT_QT_OPTIONSMODEL_H
 
 #include "amount.h"
 
@@ -13,7 +13,7 @@ QT_BEGIN_NAMESPACE
 class QNetworkProxy;
 QT_END_NAMESPACE
 
-/** Interface from Qt to configuration data structure for Bitcredits client.
+/** Interface from Qt to configuration data structure for Bitcredit client.
    To Qt, the options are presented as a list with the different options
    laid out vertically.
    This can be changed to a tree once the settings become sufficiently
@@ -34,8 +34,10 @@ public:
         ProxyUse,               // bool
         ProxyIP,                // QString
         ProxyPort,              // int
-        Fee,                    // qint64
-        DisplayUnit,            // BitcreditsUnits::Unit
+        ProxyUseTor,            // bool
+        ProxyIPTor,             // QString
+        ProxyPortTor,           // int
+        DisplayUnit,            // BitcreditUnits::Unit
         ThirdPartyTxUrls,       // QString
         Language,               // QString
         CoinControlFeatures,    // bool
@@ -90,11 +92,10 @@ private:
 
 signals:
     void displayUnitChanged(int unit);
-    void transactionFeeChanged(const CAmount&);
-	void coinControlFeaturesChanged(bool);
+    void coinControlFeaturesChanged(bool);
 	void enableTrollboxChanged(bool);
     void trollNameChanged(QString);
 
 };
 
-#endif // OPTIONSMODEL_H
+#endif // BITCREDIT_QT_OPTIONSMODEL_H

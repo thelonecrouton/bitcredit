@@ -1,5 +1,5 @@
-// Copyright (c) 2011-2014 The Bitcredits developers
-// Distributed under the MIT/X11 software license, see the accompanying
+// Copyright (c) 2014-2015 The Bitcredit Core developers
+// Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include "transactionrecord.h"
@@ -55,9 +55,9 @@ QList<TransactionRecord> TransactionRecord::decomposeTransaction(const CWallet *
                 sub.involvesWatchAddress = mine == ISMINE_WATCH_ONLY;
                 if (ExtractDestination(txout.scriptPubKey, address) && IsMine(*wallet, address))
                 {
-                    // Received by Bitcredits Address
+                    // Received by Bitcredit Address
                     sub.type = TransactionRecord::RecvWithAddress;
-                    sub.address = CBitcreditsAddress(address).ToString();
+                    sub.address = CBitcreditAddress(address).ToString();
                 }
                 else
                 {
@@ -127,9 +127,9 @@ QList<TransactionRecord> TransactionRecord::decomposeTransaction(const CWallet *
                 CTxDestination address;
                 if (ExtractDestination(txout.scriptPubKey, address))
                 {
-                    // Sent to Bitcredits Address
+                    // Sent to Bitcredit Address
                     sub.type = TransactionRecord::SendToAddress;
-                    sub.address = CBitcreditsAddress(address).ToString();
+                    sub.address = CBitcreditAddress(address).ToString();
                 }
                 else
                 {

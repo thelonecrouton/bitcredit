@@ -1,9 +1,9 @@
-// Copyright (c) 2011-2013 The Bitcredits developers
-// Distributed under the MIT/X11 software license, see the accompanying
+// Copyright (c) 2011-2013 The Bitcredit Core developers
+// Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef CLIENTMODEL_H
-#define CLIENTMODEL_H
+#ifndef BITCREDIT_QT_CLIENTMODEL_H
+#define BITCREDIT_QT_CLIENTMODEL_H
 
 #include <QObject>
 
@@ -33,7 +33,7 @@ enum NumConnections {
     CONNECTIONS_ALL  = (CONNECTIONS_IN | CONNECTIONS_OUT),
 };
 
-/** Model for Bitcredits network client. */
+/** Model for Bitcredit network client. */
 class ClientModel : public QObject
 {
     Q_OBJECT
@@ -102,4 +102,4 @@ public slots:
     void updateAlert(const QString &hash, int status);
 };
 
-#endif // CLIENTMODEL_H
+#endif // BITCREDIT_QT_CLIENTMODEL_H

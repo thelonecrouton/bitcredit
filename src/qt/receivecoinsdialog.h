@@ -1,9 +1,9 @@
-// Copyright (c) 2011-2014 The Bitcredits developers
-// Distributed under the MIT/X11 software license, see the accompanying
+// Copyright (c) 2014-2015 The Bitcredit Core developers
+// Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef RECEIVECOINSDIALOG_H
-#define RECEIVECOINSDIALOG_H
+#ifndef BITCREDIT_QT_RECEIVECOINSDIALOG_H
+#define BITCREDIT_QT_RECEIVECOINSDIALOG_H
 
 #include "guiutil.h"
 
@@ -26,7 +26,7 @@ QT_BEGIN_NAMESPACE
 class QModelIndex;
 QT_END_NAMESPACE
 
-/** Dialog for requesting payment of bitcreditss */
+/** Dialog for requesting payment of bitcredits */
 class ReceiveCoinsDialog : public QDialog
 {
     Q_OBJECT
@@ -73,4 +73,4 @@ private slots:
     void copyAmount();
 };
 
-#endif // RECEIVECOINSDIALOG_H
+#endif // BITCREDIT_QT_RECEIVECOINSDIALOG_H

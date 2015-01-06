@@ -1,9 +1,9 @@
-// Copyright (c) 2011-2014 The Bitcredits developers
-// Distributed under the MIT/X11 software license, see the accompanying
+// Copyright (c) 2014-2015 The Bitcredit Core developers
+// Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef RECENTREQUESTSTABLEMODEL_H
-#define RECENTREQUESTSTABLEMODEL_H
+#ifndef BITCREDIT_QT_RECENTREQUESTSTABLEMODEL_H
+#define BITCREDIT_QT_RECENTREQUESTSTABLEMODEL_H
 
 #include "walletmodel.h"
 
@@ -53,7 +53,7 @@ private:
     Qt::SortOrder order;
 };
 
-/** Model for list of recently generated payment requests / bitcredits: URIs.
+/** Model for list of recently generated payment requests / bitcredit: URIs.
  * Part of wallet model.
  */
 class RecentRequestsTableModel: public QAbstractTableModel
@@ -105,4 +105,4 @@ private:
     QString getAmountTitle();
 };
 
-#endif
+#endif // BITCREDIT_QT_RECENTREQUESTSTABLEMODEL_H

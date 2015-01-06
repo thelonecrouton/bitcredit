@@ -1,11 +1,11 @@
 // Copyright (c) 2009-2010 Satoshi Nakamoto
-// Copyright (c) 2009-2014 The Bitcredits developers
+// Copyright (c) 2009-2014 The Bitcredit Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include "sigcache.h"
 
-#include "key.h"
+#include "pubkey.h"
 #include "random.h"
 #include "uint256.h"
 #include "util.h"
@@ -15,13 +15,15 @@
 
 namespace {
 
-// Valid signature cache, to avoid doing expensive ECDSA signature checking
-// twice for every transaction (once when accepted into memory pool, and
-// again when accepted into the block chain)
+/**
+ * Valid signature cache, to avoid doing expensive ECDSA signature checking
+ * twice for every transaction (once when accepted into memory pool, and
+ * again when accepted into the block chain)
+ */
 class CSignatureCache
 {
 private:
-     // sigdata_type is (signature hash, signature, public key):
+     //! sigdata_type is (signature hash, signature, public key):
     typedef boost::tuple<uint256, std::vector<unsigned char>, CPubKey> sigdata_type;
     std::set< sigdata_type> setValid;
     boost::shared_mutex cs_sigcache;

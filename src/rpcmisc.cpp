@@ -1,12 +1,14 @@
 // Copyright (c) 2010 Satoshi Nakamoto
-// Copyright (c) 2009-2014 The Bitcredits developers
-// Distributed under the MIT/X11 software license, see the accompanying
+// Copyright (c) 2009-2015 The Bitcredit Core developers
+// Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
-
+#include "checkpoints.h"
 #include "base58.h"
+#include "clientversion.h"
 #include "init.h"
 #include "main.h"
 #include "net.h"
+#include "sync.h"
 #include "netbase.h"
 #include "rpcserver.h"
 #include "timedata.h"
@@ -29,7 +31,7 @@ using namespace std;
 
 /**
  * @note Do not add or change anything in the information returned by this
- * method. `getinfo` exists for backwards-compatibilty only. It combines
+ * method. `getinfo` exists for backwards-compatibility only. It combines
  * information from wildly different sources in the program, which is a mess,
  * and is thus planned to be deprecated eventually.
  *
@@ -51,7 +53,7 @@ Value getinfo(const Array& params, bool fHelp)
             "  \"version\": xxxxx,           (numeric) the server version\n"
             "  \"protocolversion\": xxxxx,   (numeric) the protocol version\n"
             "  \"walletversion\": xxxxx,     (numeric) the wallet version\n"
-            "  \"balance\": xxxxxxx,         (numeric) the total bitcredits balance of the wallet\n"
+            "  \"balance\": xxxxxxx,         (numeric) the total bitcredit balance of the wallet\n"
             "  \"blocks\": xxxxxx,           (numeric) the current number of blocks processed in the server\n"
             "  \"timeoffset\": xxxxx,        (numeric) the time offset\n"
             "  \"connections\": xxxxx,       (numeric) the number of connections\n"
@@ -74,6 +76,8 @@ Value getinfo(const Array& params, bool fHelp)
     GetProxy(NET_IPV4, proxy);
 
     Object obj;
+    CCoinsStats stats;
+    FlushStateToDisk();
     obj.push_back(Pair("version", CLIENT_VERSION));
     obj.push_back(Pair("protocolversion", PROTOCOL_VERSION));
 #ifdef ENABLE_WALLET
@@ -84,6 +88,9 @@ Value getinfo(const Array& params, bool fHelp)
 #endif
     obj.push_back(Pair("blocks",        (int)chainActive.Height()));
     obj.push_back(Pair("timeoffset",    GetTimeOffset()));
+    if (pcoinsTip->GetStats(stats)) {
+    obj.push_back(Pair("moneysupply",   ValueFromAmount(stats.nTotalAmount)));
+    }
     obj.push_back(Pair("connections",   (int)vNodes.size()));
     obj.push_back(Pair("proxy",         (proxy.IsValid() ? proxy.ToStringIPPort() : string())));
     obj.push_back(Pair("difficulty",    (double)GetDifficulty()));
@@ -139,7 +146,7 @@ public:
             obj.push_back(Pair("hex", HexStr(subscript.begin(), subscript.end())));
             Array a;
             BOOST_FOREACH(const CTxDestination& addr, addresses)
-                a.push_back(CBitcreditsAddress(addr).ToString());
+                a.push_back(CBitcreditAddress(addr).ToString());
             obj.push_back(Pair("addresses", a));
             if (whichType == TX_MULTISIG)
                 obj.push_back(Pair("sigsrequired", nRequired));
@@ -149,18 +156,44 @@ public:
 };
 #endif
 
+Value getinternalstats(const Array& params, bool fHelp)
+{
+    if (fHelp || params.size() != 0)
+        throw runtime_error(
+            "getinternalstats\n"
+            "Returns an object containing information about resource usage\n"
+            "of internal data structures.\n"
+            "This should be used for debugging purposes only; internal\n"
+            "data structures will change from release to release without\n"
+            "warning. Result is an object with string keys that are\n"
+            "internal variable names and values that are numeric sizes.\n"
+            "\nExamples:\n"
+            + HelpExampleCli("getinternalstats", "")
+            + HelpExampleRpc("getinternalstats", "")
+        );
+
+    map<string, size_t> mapResults;
+    NetGetInternalStats(mapResults);
+    MainGetInternalStats(mapResults);
+
+    Object obj;
+    BOOST_FOREACH(const PAIRTYPE(string, size_t)& item, mapResults)
+        obj.push_back(Pair(item.first, (int64_t)item.second));
+    return obj;
+}
+
 Value validateaddress(const Array& params, bool fHelp)
 {
     if (fHelp || params.size() != 1)
         throw runtime_error(
-            "validateaddress \"bitcreditsaddress\"\n"
-            "\nReturn information about the given bitcredits address.\n"
+            "validateaddress \"bitcreditaddress\"\n"
+            "\nReturn information about the given bitcredit address.\n"
             "\nArguments:\n"
-            "1. \"bitcreditsaddress\"     (string, required) The bitcredits address to validate\n"
+            "1. \"bitcreditaddress\"     (string, required) The bitcredit address to validate\n"
             "\nResult:\n"
             "{\n"
             "  \"isvalid\" : true|false,         (boolean) If the address is valid or not. If not, this is the only property returned.\n"
-            "  \"address\" : \"bitcreditsaddress\", (string) The bitcredits address validated\n"
+            "  \"address\" : \"bitcreditaddress\", (string) The bitcredit address validated\n"
             "  \"ismine\" : true|false,          (boolean) If the address is yours or not\n"
             "  \"isscript\" : true|false,        (boolean) If the key is a script\n"
             "  \"pubkey\" : \"publickeyhex\",    (string) The hex value of the raw public key\n"
@@ -172,7 +205,7 @@ Value validateaddress(const Array& params, bool fHelp)
             + HelpExampleRpc("validateaddress", "\"1PSSGeFHDnKNxiEyFrD1wcEaHr9hrQDDWc\"")
         );
 
-    CBitcreditsAddress address(params[0].get_str());
+    CBitcreditAddress address(params[0].get_str());
     bool isValid = address.IsValid();
 
     Object ret;
@@ -197,9 +230,9 @@ Value validateaddress(const Array& params, bool fHelp)
     return ret;
 }
 
-//
-// Used by addmultisigaddress / createmultisig:
-//
+/**
+ * Used by addmultisigaddress / createmultisig:
+ */
 CScript _createmultisig_redeemScript(const Array& params)
 {
     int nRequired = params[0].get_int();
@@ -218,8 +251,8 @@ CScript _createmultisig_redeemScript(const Array& params)
     {
         const std::string& ks = keys[i].get_str();
 #ifdef ENABLE_WALLET
-        // Case 1: Bitcredits address and we have full public key:
-        CBitcreditsAddress address(ks);
+        // Case 1: Bitcredit address and we have full public key:
+        CBitcreditAddress address(ks);
         if (pwalletMain && address.IsValid())
         {
             CKeyID keyID;
@@ -269,9 +302,9 @@ Value createmultisig(const Array& params, bool fHelp)
 
             "\nArguments:\n"
             "1. nrequired      (numeric, required) The number of required signatures out of the n keys or addresses.\n"
-            "2. \"keys\"       (string, required) A json array of keys which are bitcredits addresses or hex-encoded public keys\n"
+            "2. \"keys\"       (string, required) A json array of keys which are bitcredit addresses or hex-encoded public keys\n"
             "     [\n"
-            "       \"key\"    (string) bitcredits address or hex-encoded public key\n"
+            "       \"key\"    (string) bitcredit address or hex-encoded public key\n"
             "       ,...\n"
             "     ]\n"
 
@@ -292,8 +325,8 @@ Value createmultisig(const Array& params, bool fHelp)
 
     // Construct using pay-to-script-hash:
     CScript inner = _createmultisig_redeemScript(params);
-    CScriptID innerID = inner.GetID();
-    CBitcreditsAddress address(innerID);
+    CScriptID innerID(inner);
+    CBitcreditAddress address(innerID);
 
     Object result;
     result.push_back(Pair("address", address.ToString()));
@@ -306,10 +339,10 @@ Value verifymessage(const Array& params, bool fHelp)
 {
     if (fHelp || params.size() != 3)
         throw runtime_error(
-            "verifymessage \"bitcreditsaddress\" \"signature\" \"message\"\n"
+            "verifymessage \"bitcreditaddress\" \"signature\" \"message\"\n"
             "\nVerify a signed message\n"
             "\nArguments:\n"
-            "1. \"bitcreditsaddress\"  (string, required) The bitcredits address to use for the signature.\n"
+            "1. \"bitcreditaddress\"  (string, required) The bitcredit address to use for the signature.\n"
             "2. \"signature\"       (string, required) The signature provided by the signer in base 64 encoding (see signmessage).\n"
             "3. \"message\"         (string, required) The message that was signed.\n"
             "\nResult:\n"
@@ -329,7 +362,7 @@ Value verifymessage(const Array& params, bool fHelp)
     string strSign     = params[1].get_str();
     string strMessage  = params[2].get_str();
 
-    CBitcreditsAddress addr(strAddress);
+    CBitcreditAddress addr(strAddress);
     if (!addr.IsValid())
         throw JSONRPCError(RPC_TYPE_ERROR, "Invalid address");
 
@@ -352,4 +385,24 @@ Value verifymessage(const Array& params, bool fHelp)
         return false;
 
     return (pubkey.GetID() == keyID);
+}
+
+Value setmocktime(const Array& params, bool fHelp)
+{
+    if (fHelp || params.size() != 1)
+        throw runtime_error(
+            "setmocktime timestamp\n"
+            "\nSet the local time to given timestamp (-regtest only)\n"
+            "\nArguments:\n"
+            "1. timestamp  (integer, required) Unix seconds-since-epoch timestamp\n"
+            "   Pass 0 to go back to using the system time."
+        );
+
+    if (!Params().MineBlocksOnDemand())
+        throw runtime_error("setmocktime for regression testing (-regtest mode) only");
+
+    RPCTypeCheck(params, boost::assign::list_of(int_type));
+    SetMockTime(params[0].get_int64());
+
+    return Value::null;
 }

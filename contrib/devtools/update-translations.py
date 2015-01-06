@@ -1,6 +1,6 @@
 #!/usr/bin/python
 # Copyright (c) 2014 Wladimir J. van der Laan
-# Distributed under the MIT/X11 software license, see the accompanying
+# Distributed under the MIT software license, see the accompanying
 # file COPYING or http://www.opensource.org/licenses/mit-license.php.
 '''
 Run this script from the root of the repository to update all translations from
@@ -26,7 +26,7 @@ import xml.etree.ElementTree as ET
 # Name of transifex tool
 TX = 'tx'
 # Name of source language file
-SOURCE_LANG = 'bitcoin_en.ts'
+SOURCE_LANG = 'bitcredit_en.ts'
 # Directory with locale files
 LOCALE_DIR = 'src/qt/locale'
 

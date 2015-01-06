@@ -1,19 +1,44 @@
-// Copyright (c) 2011-2014 The Bitcredits developers
-// Distributed under the MIT/X11 software license, see the accompanying
+// Copyright (c) 2014-2015 The Bitcredit Core developers
+// Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef UTILITYDIALOG_H
-#define UTILITYDIALOG_H
+#ifndef BITCREDIT_QT_UTILITYDIALOG_H
+#define BITCREDIT_QT_UTILITYDIALOG_H
 
 #include <QDialog>
 #include <QObject>
+#include "walletmodel.h"
 
-class BitcreditsGUI;
+class BitcreditGUI;
 class ClientModel;
 
 namespace Ui {
     class HelpMessageDialog;
+    class PaperWalletDialog;
 }
+
+/** "Paper Wallet" dialog box */
+class PaperWalletDialog : public QDialog
+{
+    Q_OBJECT
+
+public:
+    explicit PaperWalletDialog(QWidget *parent);
+    ~PaperWalletDialog();
+
+    void setModel(WalletModel *model);
+
+private:
+    Ui::PaperWalletDialog *ui;
+    WalletModel *model;
+    static const int PAPER_WALLET_READJUST_LIMIT = 20;
+    static const int PAPER_WALLET_PAGE_MARGIN = 50;
+
+private slots:
+    void on_getNewAddress_clicked();
+    void on_printButton_clicked();
+};
+
 
 /** "Help message" dialog box */
 class HelpMessageDialog : public QDialog
@@ -43,10 +68,10 @@ class ShutdownWindow : public QWidget
 
 public:
     ShutdownWindow(QWidget *parent=0, Qt::WindowFlags f=0);
-    static void showShutdownWindow(BitcreditsGUI *window);
+    static void showShutdownWindow(BitcreditGUI *window);
 
 protected:
     void closeEvent(QCloseEvent *event);
 };
 
-#endif // UTILITYDIALOG_H
+#endif // BITCREDIT_QT_UTILITYDIALOG_H

@@ -1,9 +1,9 @@
-// Copyright (c) 2014 The Bitcredits developers
+// Copyright (c) 2014 The Bitcredit Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef BITCREDITS_RIPEMD160_H
-#define BITCREDITS_RIPEMD160_H
+#ifndef BITCREDIT_CRYPTO_RIPEMD160_H
+#define BITCREDIT_CRYPTO_RIPEMD160_H
 
 #include <stdint.h>
 #include <stdlib.h>
@@ -25,4 +25,4 @@ public:
     CRIPEMD160& Reset();
 };
 
-#endif // BITCREDITS_RIPEMD160_H
+#endif // BITCREDIT_CRYPTO_RIPEMD160_H

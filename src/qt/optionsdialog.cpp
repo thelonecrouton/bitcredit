@@ -1,17 +1,16 @@
-// Copyright (c) 2011-2013 The Bitcredits developers
-// Distributed under the MIT/X11 software license, see the accompanying
+// Copyright (c) 2011-2013 The Bitcredit Core developers
+// Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #if defined(HAVE_CONFIG_H)
-#include "config/bitcredits-config.h"
+#include "config/bitcredit-config.h"
 #endif
 
 #include "optionsdialog.h"
 #include "ui_optionsdialog.h"
 
-#include "bitcreditsunits.h"
+#include "bitcreditunits.h"
 #include "guiutil.h"
-#include "monitoreddatamapper.h"
 #include "optionsmodel.h"
 
 #include "main.h" // for MAX_SCRIPTCHECK_THREADS
@@ -24,18 +23,19 @@
 
 #include <boost/thread.hpp>
 
+#include <QDataWidgetMapper>
 #include <QDir>
 #include <QIntValidator>
 #include <QLocale>
 #include <QMessageBox>
 #include <QTimer>
 
-OptionsDialog::OptionsDialog(QWidget *parent) :
+OptionsDialog::OptionsDialog(QWidget *parent, bool enableWallet) :
     QDialog(parent),
     ui(new Ui::OptionsDialog),
     model(0),
     mapper(0),
-    fProxyIpValid(true)
+    fProxyIpsValid(true)
 {
     ui->setupUi(this);
     GUIUtil::restoreWindowGeometry("nOptionsDialogWindow", this->size(), this);
@@ -55,8 +55,15 @@ OptionsDialog::OptionsDialog(QWidget *parent) :
     ui->proxyPort->setEnabled(false);
     ui->proxyPort->setValidator(new QIntValidator(1, 65535, this));
 
+    ui->proxyIpTor->setEnabled(false);
+    ui->proxyPortTor->setEnabled(false);
+    ui->proxyPortTor->setValidator(new QIntValidator(1, 65535, this));
+
     connect(ui->connectSocks, SIGNAL(toggled(bool)), ui->proxyIp, SLOT(setEnabled(bool)));
     connect(ui->connectSocks, SIGNAL(toggled(bool)), ui->proxyPort, SLOT(setEnabled(bool)));
+    
+    connect(ui->connectSocksTor, SIGNAL(toggled(bool)), ui->proxyIpTor, SLOT(setEnabled(bool)));
+    connect(ui->connectSocksTor, SIGNAL(toggled(bool)), ui->proxyPortTor, SLOT(setEnabled(bool)));
 
     ui->proxyIp->installEventFilter(this);
 
@@ -65,6 +72,11 @@ OptionsDialog::OptionsDialog(QWidget *parent) :
     /* remove Window tab on Mac */
     ui->tabWidget->removeTab(ui->tabWidget->indexOf(ui->tabWindow));
 #endif
+
+    /* remove Wallet tab in case of -disablewallet */
+    if (!enableWallet) {
+        ui->tabWidget->removeTab(ui->tabWidget->indexOf(ui->tabWallet));
+    }
 
     /* Display elements init */
     QDir translations(":translations");
@@ -99,17 +111,14 @@ OptionsDialog::OptionsDialog(QWidget *parent) :
     ui->thirdPartyTxUrls->setPlaceholderText("https://example.com/tx/%s");
 #endif
 
-    ui->unit->setModel(new BitcreditsUnits(this));
-#ifdef ENABLE_WALLET
-    ui->transactionFee->setSingleStep(CWallet::minTxFee.GetFeePerK());
-#endif
+    ui->unit->setModel(new BitcreditUnits(this));
 
     /* Widget-to-option mapper */
-    mapper = new MonitoredDataMapper(this);
+    mapper = new QDataWidgetMapper(this);
     mapper->setSubmitPolicy(QDataWidgetMapper::ManualSubmit);
     mapper->setOrientation(Qt::Vertical);
 
-    /* setup/change UI elements when proxy IP is invalid/valid */
+    /* setup/change UI elements when proxy IPs are invalid/valid */
     connect(this, SIGNAL(proxyIpChecks(QValidatedLineEdit *, int)), this, SLOT(doProxyIpChecks(QValidatedLineEdit *, int)));
 }
 
@@ -134,15 +143,12 @@ void OptionsDialog::setModel(OptionsModel *model)
             strLabel = tr("none");
         ui->overriddenByCommandLineLabel->setText(strLabel);
 
-        connect(model, SIGNAL(displayUnitChanged(int)), this, SLOT(updateDisplayUnit()));
-
         mapper->setModel(model);
         setMapper();
         mapper->toFirst();
+        
+        updateDefaultProxyNets();
     }
-
-    /* update the display unit, to not use the default ("BCR") */
-    updateDisplayUnit();
 
     /* warn when one of the following settings changes by user action (placed here so init via mapper doesn't trigger them) */
 
@@ -154,6 +160,7 @@ void OptionsDialog::setModel(OptionsModel *model)
     /* Network */
     connect(ui->allowIncoming, SIGNAL(clicked(bool)), this, SLOT(showRestartWarning()));
     connect(ui->connectSocks, SIGNAL(clicked(bool)), this, SLOT(showRestartWarning()));
+    connect(ui->connectSocksTor, SIGNAL(clicked(bool)), this, SLOT(showRestartWarning()));
     /* Display */
     connect(ui->lang, SIGNAL(valueChanged()), this, SLOT(showRestartWarning()));
     connect(ui->thirdPartyTxUrls, SIGNAL(textChanged(const QString &)), this, SLOT(showRestartWarning()));
@@ -162,12 +169,11 @@ void OptionsDialog::setModel(OptionsModel *model)
 void OptionsDialog::setMapper()
 {
     /* Main */
-    mapper->addMapping(ui->bitcreditsAtStartup, OptionsModel::StartAtStartup);
+    mapper->addMapping(ui->bitcreditAtStartup, OptionsModel::StartAtStartup);
     mapper->addMapping(ui->threadsScriptVerif, OptionsModel::ThreadsScriptVerif);
     mapper->addMapping(ui->databaseCache, OptionsModel::DatabaseCache);
 
     /* Wallet */
-    mapper->addMapping(ui->transactionFee, OptionsModel::Fee);
     mapper->addMapping(ui->spendZeroConfChange, OptionsModel::SpendZeroConfChange);
     mapper->addMapping(ui->coinControlFeatures, OptionsModel::CoinControlFeatures);
 
@@ -178,6 +184,10 @@ void OptionsDialog::setMapper()
     mapper->addMapping(ui->connectSocks, OptionsModel::ProxyUse);
     mapper->addMapping(ui->proxyIp, OptionsModel::ProxyIP);
     mapper->addMapping(ui->proxyPort, OptionsModel::ProxyPort);
+    
+    mapper->addMapping(ui->connectSocksTor, OptionsModel::ProxyUseTor);
+    mapper->addMapping(ui->proxyIpTor, OptionsModel::ProxyIPTor);
+    mapper->addMapping(ui->proxyPortTor, OptionsModel::ProxyPortTor);
 
     /* Window */
 #ifndef Q_OS_MAC
@@ -196,7 +206,7 @@ void OptionsDialog::setMapper()
 void OptionsDialog::enableOkButton()
 {
     /* prevent enabling of the OK button when data modified, if there is an invalid proxy address present */
-    if(fProxyIpValid)
+    if(fProxyIpsValid)
         setOkButtonState(true);
 }
 
@@ -232,6 +242,7 @@ void OptionsDialog::on_okButton_clicked()
 {
     mapper->submit();
     accept();
+    updateDefaultProxyNets();
 }
 
 void OptionsDialog::on_cancelButton_clicked()
@@ -261,15 +272,6 @@ void OptionsDialog::clearStatusLabel()
     ui->statusLabel->clear();
 }
 
-void OptionsDialog::updateDisplayUnit()
-{
-    if(model)
-    {
-        /* Update transactionFee with the current unit */
-        ui->transactionFee->setDisplayUnit(model->getDisplayUnit());
-    }
-}
-
 void OptionsDialog::doProxyIpChecks(QValidatedLineEdit *pUiProxyIp, int nProxyPort)
 {
     Q_UNUSED(nProxyPort);
@@ -278,7 +280,7 @@ void OptionsDialog::doProxyIpChecks(QValidatedLineEdit *pUiProxyIp, int nProxyPo
     CService addrProxy;
 
     /* Check for a valid IPv4 / IPv6 address */
-    if (!(fProxyIpValid = LookupNumeric(strAddrProxy.c_str(), addrProxy)))
+    if (!(fProxyIpsValid = LookupNumeric(pUiProxyIp->text().toStdString().c_str(), addrProxy)))
     {
         disableOkButton();
         pUiProxyIp->setValid(false);
@@ -292,6 +294,28 @@ void OptionsDialog::doProxyIpChecks(QValidatedLineEdit *pUiProxyIp, int nProxyPo
     }
 }
 
+void OptionsDialog::updateDefaultProxyNets()
+{
+    proxyType proxy;
+    std::string strProxy;
+    QString strDefaultProxyGUI;
+
+    GetProxy(NET_IPV4, proxy);
+    strProxy = proxy.ToStringIP() + ":" + proxy.ToStringPort();
+    strDefaultProxyGUI = ui->proxyIp->text() + ":" + ui->proxyPort->text();
+    (strProxy == strDefaultProxyGUI.toStdString()) ? ui->proxyReachIPv4->setChecked(true) : ui->proxyReachIPv4->setChecked(false);
+
+    GetProxy(NET_IPV6, proxy);
+    strProxy = proxy.ToStringIP() + ":" + proxy.ToStringPort();
+    strDefaultProxyGUI = ui->proxyIp->text() + ":" + ui->proxyPort->text();
+    (strProxy == strDefaultProxyGUI.toStdString()) ? ui->proxyReachIPv6->setChecked(true) : ui->proxyReachIPv6->setChecked(false);
+
+    GetProxy(NET_TOR, proxy);
+    strProxy = proxy.ToStringIP() + ":" + proxy.ToStringPort();
+    strDefaultProxyGUI = ui->proxyIp->text() + ":" + ui->proxyPort->text();
+    (strProxy == strDefaultProxyGUI.toStdString()) ? ui->proxyReachTor->setChecked(true) : ui->proxyReachTor->setChecked(false);
+}
+
 bool OptionsDialog::eventFilter(QObject *object, QEvent *event)
 {
     if(event->type() == QEvent::FocusOut)
@@ -299,6 +323,10 @@ bool OptionsDialog::eventFilter(QObject *object, QEvent *event)
         if(object == ui->proxyIp)
         {
             emit proxyIpChecks(ui->proxyIp, ui->proxyPort->text().toInt());
+        }
+        else if(object == ui->proxyIpTor)
+        {
+            emit proxyIpChecks(ui->proxyIpTor, ui->proxyPortTor->text().toInt());
         }
     }
     return QDialog::eventFilter(object, event);

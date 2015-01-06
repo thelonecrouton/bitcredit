@@ -1,10 +1,10 @@
 // Copyright (c) 2009-2010 Satoshi Nakamoto
-// Copyright (c) 2009-2014 The Bitcredits developers
-// Distributed under the MIT/X11 software license, see the accompanying
+// Copyright (c) 2009-2015 The Bitcredit Core developers
+// Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef BITCREDITS_RANDOM_H
-#define BITCREDITS_RANDOM_H
+#ifndef BITCREDIT_RANDOM_H
+#define BITCREDIT_RANDOM_H
 
 #include "uint256.h"
 
@@ -19,14 +19,14 @@ void RandAddSeedPerfmon();
 /**
  * Functions to gather random data via the OpenSSL PRNG
  */
-bool GetRandBytes(unsigned char* buf, int num);
+void GetRandBytes(unsigned char* buf, int num);
 uint64_t GetRand(uint64_t nMax);
 int GetRandInt(int nMax);
 uint256 GetRandHash();
 
 /**
  * Seed insecure_rand using the random pool.
- * @param Deterministic Use a determinstic seed
+ * @param Deterministic Use a deterministic seed
  */
 void seed_insecure_rand(bool fDeterministic = false);
 
@@ -46,4 +46,4 @@ static inline uint32_t insecure_rand(void)
     return (insecure_rand_Rw << 16) + insecure_rand_Rz;
 }
 
-#endif // BITCREDITS_RANDOM_H
+#endif // BITCREDIT_RANDOM_H

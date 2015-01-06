@@ -1,13 +1,13 @@
 // Copyright (c) 2009-2010 Satoshi Nakamoto
-// Copyright (c) 2009-2014 The Bitcredits developers
-// Distributed under the MIT/X11 software license, see the accompanying
+// Copyright (c) 2009-2015 The Bitcredit Core developers
+// Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 /**
  * Money parsing/formatting utilities.
  */
-#ifndef BITCREDITS_UTILMONEYSTR_H
-#define BITCREDITS_UTILMONEYSTR_H
+#ifndef BITCREDIT_UTILMONEYSTR_H
+#define BITCREDIT_UTILMONEYSTR_H
 
 #include <stdint.h>
 #include <string>
@@ -18,4 +18,4 @@ std::string FormatMoney(const CAmount& n, bool fPlus=false);
 bool ParseMoney(const std::string& str, CAmount& nRet);
 bool ParseMoney(const char* pszIn, CAmount& nRet);
 
-#endif // BITCREDITS_UTILMONEYSTR_H
+#endif // BITCREDIT_UTILMONEYSTR_H

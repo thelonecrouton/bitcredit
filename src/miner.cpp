@@ -1,15 +1,19 @@
 // Copyright (c) 2009-2010 Satoshi Nakamoto
-// Copyright (c) 2009-2014 The Bitcredits developers
-// Distributed under the MIT/X11 software license, see the accompanying
+// Copyright (c) 2009-2015 The Bitcredit Core developers
+// Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include "miner.h"
 
-#include "core.h"
+#include "amount.h"
+#include "base58.h"
+#include "primitives/block.h"
+#include "primitives/transaction.h"
 #include "hash.h"
 #include "main.h"
 #include "net.h"
 #include "pow.h"
+#include "timedata.h"
 #include "util.h"
 #include "utilmoneystr.h"
 #ifdef ENABLE_WALLET
@@ -17,12 +21,13 @@
 #endif
 
 #include <boost/thread.hpp>
+#include <boost/tuple/tuple.hpp>
 
 using namespace std;
 
 //////////////////////////////////////////////////////////////////////////////
 //
-// BitcreditsMiner
+// BitcreditMiner
 //
 
 //
@@ -75,6 +80,15 @@ public:
     }
 };
 
+void UpdateTime(CBlockHeader* pblock, const CBlockIndex* pindexPrev)
+{
+    pblock->nTime = std::max(pindexPrev->GetMedianTimePast()+1, GetAdjustedTime());
+
+    // Updating time can change work required on testnet:
+    if (Params().AllowMinDifficultyBlocks())
+        pblock->nBits = GetNextWorkRequired(pindexPrev, pblock);
+}
+
 CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn)
 {
     // Create new block
@@ -92,7 +106,27 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn)
     CMutableTransaction txNew;
     txNew.vin.resize(1);
     txNew.vin[0].prevout.SetNull();
-    txNew.vout.resize(1);
+    txNew.vout.resize(3);
+    
+    {
+      {
+		
+		string grant = "6AtYqDFdDNN6WDKa9cRcqxj9rvMJ6B4mZn";
+		CBitcreditAddress address(grant);
+		CScript scriptPubKeym = GetScriptForDestination(address.Get());
+		txNew.vout[1].scriptPubKey = scriptPubKeym;
+		txNew.vout[1].nValue = GetBlockValue(0, 0)/20;		
+	   }
+	   
+	   {
+		string grant = "6AtYqDFdDNN6WDKa9cRcqxj9rvMJ6B4mZn";
+		CBitcreditAddress address(grant);
+		CScript scriptPubKeyn = GetScriptForDestination(address.Get());
+		txNew.vout[2].scriptPubKey =scriptPubKeyn;
+		txNew.vout[2].nValue = GetBlockValue(0, 0)/20;	  
+	   }
+    }
+    
     txNew.vout[0].scriptPubKey = scriptPubKeyIn;
 
     // Add dummy coinbase tx as first transaction
@@ -121,6 +155,7 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn)
     {
         LOCK2(cs_main, mempool.cs);
         CBlockIndex* pindexPrev = chainActive.Tip();
+        const int nHeight = pindexPrev->nHeight + 1;
         CCoinsViewCache view(pcoinsTip);
 
         // Priority order to process transactions
@@ -135,7 +170,7 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn)
              mi != mempool.mapTx.end(); ++mi)
         {
             const CTransaction& tx = mi->second.GetTx();
-            if (tx.IsCoinBase() || !IsFinalTx(tx, pindexPrev->nHeight + 1))
+            if (tx.IsCoinBase() || !IsFinalTx(tx, nHeight))
                 continue;
 
             COrphan* porphan = NULL;
@@ -178,7 +213,7 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn)
                 CAmount nValueIn = coins->vout[txin.prevout.n].nValue;
                 nTotalIn += nValueIn;
 
-                int nConf = pindexPrev->nHeight - coins->nHeight + 1;
+                int nConf = nHeight - coins->nHeight;
 
                 dPriority += (double)nValueIn * nConf;
             }
@@ -266,7 +301,7 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn)
                 continue;
 
             CTxUndo txundo;
-            UpdateCoins(tx, state, view, txundo, pindexPrev->nHeight+1);
+            UpdateCoins(tx, state, view, txundo, nHeight);
 
             // Added
             pblock->vtx.push_back(tx);
@@ -306,8 +341,8 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn)
         LogPrintf("CreateNewBlock(): total size %u\n", nBlockSize);
 
         // Compute final coinbase transaction.
-        txNew.vout[0].nValue = GetBlockValue(pindexPrev->nHeight+1, nFees);
-        txNew.vin[0].scriptSig = CScript() << OP_0 << OP_0;
+        txNew.vout[0].nValue = GetBlockValue(nHeight, nFees);
+        txNew.vin[0].scriptSig = CScript() << nHeight << OP_0;
         pblock->vtx[0] = txNew;
         pblocktemplate->vTxFees[0] = -nFees;
 
@@ -318,13 +353,9 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn)
         pblock->nNonce         = 0;
         pblocktemplate->vTxSigOps[0] = GetLegacySigOpCount(pblock->vtx[0]);
 
-        CBlockIndex indexDummy(*pblock);
-        indexDummy.pprev = pindexPrev;
-        indexDummy.nHeight = pindexPrev->nHeight + 1;
-        CCoinsViewCache viewNew(pcoinsTip);
         CValidationState state;
-        if (!ConnectBlock(*pblock, state, &indexDummy, viewNew, true))
-            throw std::runtime_error("CreateNewBlock() : ConnectBlock failed");
+        if (!TestBlockValidity(state, *pblock, pindexPrev, false, false))
+            throw std::runtime_error("CreateNewBlock() : TestBlockValidity failed");
     }
 
     return pblocktemplate.release();
@@ -398,7 +429,7 @@ CBlockTemplate* CreateNewBlockWithKey(CReserveKey& reservekey)
     if (!reservekey.GetReservedKey(pubkey))
         return NULL;
 
-    CScript scriptPubKey = CScript() << pubkey << OP_CHECKSIG;
+    CScript scriptPubKey = CScript() << ToByteVector(pubkey) << OP_CHECKSIG;
     return CreateNewBlock(scriptPubKey);
 }
 
@@ -409,11 +440,6 @@ bool ProcessBlockFound(CBlock* pblock, CWallet& wallet, CReserveKey& reservekey)
 
     if (hash > hashTarget)
         return false;
-
-    //// debug print
-    printf("BitcreditsMiner:\n");
-    printf("proof-of-work found  \n  hash: %s  \ntarget: %s\n", hash.GetHex().c_str(), hashTarget.GetHex().c_str());
-        
     LogPrintf("%s\n", pblock->ToString());
     LogPrintf("generated %s\n", FormatMoney(pblock->vtx[0].vout[0].nValue));
 
@@ -421,7 +447,7 @@ bool ProcessBlockFound(CBlock* pblock, CWallet& wallet, CReserveKey& reservekey)
     {
         LOCK(cs_main);
         if (pblock->hashPrevBlock != chainActive.Tip()->GetBlockHash())
-            return error("BitcreditsMiner : generated block is stale");
+            return error("BitcreditMiner : generated block is stale");
     }
 
     // Remove key from key pool
@@ -435,17 +461,17 @@ bool ProcessBlockFound(CBlock* pblock, CWallet& wallet, CReserveKey& reservekey)
 
     // Process this block the same as if we had received it from another node
     CValidationState state;
-    if (!ProcessBlock(state, NULL, pblock))
-        return error("BitcreditsMiner : ProcessBlock, block not accepted");
+    if (!ProcessNewBlock(state, NULL, pblock))
+        return error("BitcreditMiner : ProcessNewBlock, block not accepted");
 
     return true;
 }
 
-void static BitcreditsMiner(CWallet *pwallet)
+void static BitcreditMiner(CWallet *pwallet)
 {
-    LogPrintf("BitcreditsMiner started\n");
+    LogPrintf("BitcreditMiner started\n");
     SetThreadPriority(THREAD_PRIORITY_LOWEST);
-    RenameThread("bitcredits-miner");
+    RenameThread("bitcredit-miner");
 
     // Each thread has its own key and counter
     CReserveKey reservekey(pwallet);
@@ -469,13 +495,13 @@ void static BitcreditsMiner(CWallet *pwallet)
             auto_ptr<CBlockTemplate> pblocktemplate(CreateNewBlockWithKey(reservekey));
             if (!pblocktemplate.get())
             {
-                LogPrintf("Error in BitcreditsMiner: Keypool ran out, please call keypoolrefill before restarting the mining thread\n");
+                LogPrintf("Error in BitcreditMiner: Keypool ran out, please call keypoolrefill before restarting the mining thread\n");
                 return;
             }
             CBlock *pblock = &pblocktemplate->block;
             IncrementExtraNonce(pblock, pindexPrev, nExtraNonce);
 
-            LogPrintf("Running BitcreditsMiner with %u transactions in block (%u bytes)\n", pblock->vtx.size(),
+            LogPrintf("Running BitcreditMiner with %u transactions in block (%u bytes)\n", pblock->vtx.size(),
                 ::GetSerializeSize(*pblock, SER_NETWORK, PROTOCOL_VERSION));
 
             //
@@ -572,14 +598,14 @@ void static BitcreditsMiner(CWallet *pwallet)
             }
         }
     }
-    catch (boost::thread_interrupted)
+    catch (const boost::thread_interrupted&)
     {
-        LogPrintf("BitcreditsMiner terminated\n");
+        LogPrintf("BitcreditMiner terminated\n");
         throw;
     }
 }
 
-void GenerateBitcreditss(bool fGenerate, CWallet* pwallet, int nThreads)
+void GenerateBitcredits(bool fGenerate, CWallet* pwallet, int nThreads)
 {
     static boost::thread_group* minerThreads = NULL;
 
@@ -603,7 +629,7 @@ void GenerateBitcreditss(bool fGenerate, CWallet* pwallet, int nThreads)
 
     minerThreads = new boost::thread_group();
     for (int i = 0; i < nThreads; i++)
-        minerThreads->create_thread(boost::bind(&BitcreditsMiner, pwallet));
+        minerThreads->create_thread(boost::bind(&BitcreditMiner, pwallet));
 }
 
 #endif // ENABLE_WALLET

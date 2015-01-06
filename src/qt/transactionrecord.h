@@ -1,9 +1,9 @@
-// Copyright (c) 2011-2013 The Bitcredits developers
-// Distributed under the MIT/X11 software license, see the accompanying
+// Copyright (c) 2011-2013 The Bitcredit Core developers
+// Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef TRANSACTIONRECORD_H
-#define TRANSACTIONRECORD_H
+#ifndef BITCREDIT_QT_TRANSACTIONRECORD_H
+#define BITCREDIT_QT_TRANSACTIONRECORD_H
 
 #include "amount.h"
 #include "uint256.h"
@@ -140,4 +140,4 @@ public:
     bool statusUpdateNeeded();
 };
 
-#endif // TRANSACTIONRECORD_H
+#endif // BITCREDIT_QT_TRANSACTIONRECORD_H

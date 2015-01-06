@@ -1,9 +1,9 @@
-// Copyright (c) 2011-2014 The Bitcredits developers
-// Distributed under the MIT/X11 software license, see the accompanying
+// Copyright (c) 2014-2015 The Bitcredit Core developers
+// Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef WALLETMODEL_H
-#define WALLETMODEL_H
+#ifndef BITCREDIT_QT_WALLETMODEL_H
+#define BITCREDIT_QT_WALLETMODEL_H
 
 #include "paymentrequestplus.h"
 #include "walletmodeltransaction.h"
@@ -92,7 +92,7 @@ public:
     }
 };
 
-/** Interface to Bitcredits wallet from Qt view code. */
+/** Interface to Bitcredit wallet from Qt view code. */
 class WalletModel : public QObject
 {
     Q_OBJECT
@@ -110,7 +110,8 @@ public:
         AmountWithFeeExceedsBalance,
         DuplicateAddress,
         TransactionCreationFailed, // Error returned when wallet is still locked
-        TransactionCommitFailed
+        TransactionCommitFailed,
+        InsaneFee
     };
 
     enum EncryptionStatus
@@ -133,7 +134,6 @@ public:
     CAmount getWatchUnconfirmedBalance() const;
     CAmount getWatchImmatureBalance() const;
     EncryptionStatus getEncryptionStatus() const;
-    bool processingQueuedTransactions() { return fProcessingQueuedTransactions; }
 
     // Check address for validity
     bool validateAddress(const QString &address);
@@ -197,7 +197,6 @@ public:
 
 private:
     CWallet *wallet;
-    bool fProcessingQueuedTransactions;
     bool fHaveWatchOnly;
     bool fForceCheckBalanceChanged;
 
@@ -254,15 +253,13 @@ public slots:
     /* Wallet status might have changed */
     void updateStatus();
     /* New transaction, or transaction changed status */
-    void updateTransaction(const QString &hash, int status);
+    void updateTransaction();
     /* New, updated or removed address book entry */
     void updateAddressBook(const QString &address, const QString &label, bool isMine, const QString &purpose, int status);
     /* Watch-only added */
     void updateWatchOnlyFlag(bool fHaveWatchonly);
     /* Current, immature or unconfirmed balance might have changed - emit 'balanceChanged' if so */
     void pollBalanceChanged();
-    /* Needed to update fProcessingQueuedTransactions through a QueuedConnection */
-    void setProcessingQueuedTransactions(bool value) { fProcessingQueuedTransactions = value; }
 };
 
-#endif // WALLETMODEL_H
+#endif // BITCREDIT_QT_WALLETMODEL_H

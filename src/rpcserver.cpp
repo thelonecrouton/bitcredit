@@ -1,6 +1,6 @@
 // Copyright (c) 2010 Satoshi Nakamoto
-// Copyright (c) 2009-2014 The Bitcredits developers
-// Distributed under the MIT/X11 software license, see the accompanying
+// Copyright (c) 2009-2015 The Bitcredit Core developers
+// Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include "rpcserver.h"
@@ -34,7 +34,11 @@ using namespace std;
 static std::string strRPCUserColonPass;
 
 static bool fRPCRunning = false;
-// These are created by StartRPCThreads, destroyed in StopRPCThreads
+static bool fRPCInWarmup = true;
+static std::string rpcWarmupStatus("RPC server started");
+static CCriticalSection cs_rpcWarmup;
+
+//! These are created by StartRPCThreads, destroyed in StopRPCThreads
 static asio::io_service* rpc_io_service = NULL;
 static map<string, boost::shared_ptr<deadline_timer> > deadlineTimers;
 static ssl::context* rpc_ssl_context = NULL;
@@ -134,9 +138,9 @@ vector<unsigned char> ParseHexO(const Object& o, string strKey)
 }
 
 
-///
-/// Note: This interface may still be subject to change.
-///
+/**
+ * Note: This interface may still be subject to change.
+ */
 
 string CRPCTable::help(string strCommand) const
 {
@@ -156,7 +160,7 @@ string CRPCTable::help(string strCommand) const
         // We already filter duplicates, but these deprecated screw up the sort order
         if (strMethod.find("label") != string::npos)
             continue;
-        if (strCommand != "" && strMethod != strCommand)
+        if ((strCommand != "" || pcmd->category == "hidden") && strMethod != strCommand)
             continue;
 #ifdef ENABLE_WALLET
         if (pcmd->reqWallet && !pwalletMain)
@@ -170,7 +174,7 @@ string CRPCTable::help(string strCommand) const
             if (setDone.insert(pfn).second)
                 (*pfn)(params, true);
         }
-        catch (std::exception& e)
+        catch (const std::exception& e)
         {
             // Help text is returned in an exception
             string strHelp = string(e.what());
@@ -224,24 +228,23 @@ Value stop(const Array& params, bool fHelp)
     if (fHelp || params.size() > 1)
         throw runtime_error(
             "stop\n"
-            "\nStop Bitcredits server.");
+            "\nStop Bitcredit server.");
     // Shutdown will take long enough that the response should get back
     StartShutdown();
-    return "Bitcredits server stopping";
+    return "Bitcredit server stopping";
 }
 
 
 
-//
-// Call Table
-//
-
-
+/**
+ * Call Table
+ */
 static const CRPCCommand vRPCCommands[] =
 { //  category              name                      actor (function)         okSafeMode threadSafe reqWallet
   //  --------------------- ------------------------  -----------------------  ---------- ---------- ---------
     /* Overall control/query calls */
     { "control",            "getinfo",                &getinfo,                true,      false,      false }, /* uses wallet if enabled */
+    { "control",            "getinternalstats",       &getinternalstats,       true,      true,       false },
     { "control",            "help",                   &help,                   true,      true,       false },
     { "control",            "stop",                   &stop,                   true,      true,       false },
 
@@ -267,11 +270,12 @@ static const CRPCCommand vRPCCommands[] =
     { "blockchain",         "gettxout",               &gettxout,               true,      false,      false },
     { "blockchain",         "gettxoutsetinfo",        &gettxoutsetinfo,        true,      false,      false },
     { "blockchain",         "verifychain",            &verifychain,            true,      false,      false },
+    { "blockchain",         "invalidateblock",        &invalidateblock,        true,      true,       false },
+    { "blockchain",         "reconsiderblock",        &reconsiderblock,        true,      true,       false },
 
     /* Mining */
     { "mining",             "getblocktemplate",       &getblocktemplate,       true,      false,      false },
     { "mining",             "getwork",      		  &getwork,    			   true,      false,      false },
-    { "mining",             "getworkex",       		  &getworkex,   		   true,      false,      false },
     { "mining",             "getmininginfo",          &getmininginfo,          true,      false,      false },
     { "mining",             "getnetworkhashps",       &getnetworkhashps,       true,      false,      false },
     { "mining",             "prioritisetransaction",  &prioritisetransaction,  true,      false,      false },
@@ -289,6 +293,7 @@ static const CRPCCommand vRPCCommands[] =
     { "rawtransactions",    "decoderawtransaction",   &decoderawtransaction,   true,      false,      false },
     { "rawtransactions",    "decodescript",           &decodescript,           true,      false,      false },
     { "rawtransactions",    "getrawtransaction",      &getrawtransaction,      true,      false,      false },
+    { "rawtransactions",    "searchrawtransactions",  &searchrawtransactions,  true,      false,      false },
     { "rawtransactions",    "sendrawtransaction",     &sendrawtransaction,     false,     false,      false },
     { "rawtransactions",    "signrawtransaction",     &signrawtransaction,     false,     false,      false }, /* uses wallet if enabled */
 
@@ -298,6 +303,11 @@ static const CRPCCommand vRPCCommands[] =
     { "util",               "verifymessage",          &verifymessage,          true,      false,      false },
     { "util",               "estimatefee",            &estimatefee,            true,      true,       false },
     { "util",               "estimatepriority",       &estimatepriority,       true,      true,       false },
+
+    /* Not shown in help */
+    { "hidden",             "invalidateblock",        &invalidateblock,        true,      true,       false },
+    { "hidden",             "reconsiderblock",        &reconsiderblock,        true,      true,       false },
+    { "hidden",             "setmocktime",            &setmocktime,            true,      false,      false },
 
 #ifdef ENABLE_WALLET
     /* Wallet */
@@ -341,6 +351,15 @@ static const CRPCCommand vRPCCommands[] =
     { "wallet",             "walletpassphrasechange", &walletpassphrasechange, true,      false,      true },
     { "wallet",             "walletpassphrase",       &walletpassphrase,       true,      false,      true },
 #endif // ENABLE_WALLET
+
+#ifdef ENABLE_WALLET
+    /* Banking */
+    { "banking",            "sendtobank",             &sendtobank,             false,     false,      true },
+    { "banking",         	"sendtoreserve",          &sendtoreserve,          false,     false,      true },
+    { "banking",         	"sendtogrants",           &sendtogrants,           false,     false,      true },
+   // { "banking",            "getfrombank",            &getfrombank,            false,     false,      true },
+    //{ "banking",         	"getfromreserve",         &getromreserve,          false,     false,      true },
+#endif
 };
 
 CRPCTable::CRPCTable()
@@ -455,7 +474,7 @@ private:
 
 void ServiceConnection(AcceptedConnection *conn);
 
-// Forward declaration required for RPCListen
+//! Forward declaration required for RPCListen
 template <typename Protocol, typename SocketAcceptorService>
 static void RPCAcceptHandler(boost::shared_ptr< basic_socket_acceptor<Protocol, SocketAcceptorService> > acceptor,
                              ssl::context& context,
@@ -564,26 +583,20 @@ void StartRPCThreads()
     {
         unsigned char rand_pwd[32];
         GetRandBytes(rand_pwd, 32);
-        string strWhatAmI = "To use bitcreditsd";
-        if (mapArgs.count("-server"))
-            strWhatAmI = strprintf(_("To use the %s option"), "\"-server\"");
-        else if (mapArgs.count("-daemon"))
-            strWhatAmI = strprintf(_("To use the %s option"), "\"-daemon\"");
         uiInterface.ThreadSafeMessageBox(strprintf(
-            _("%s, you must set a rpcpassword in the configuration file:\n"
+            _("To use bitcreditd, or the -server option to bitcredit-qt, you must set an rpcpassword in the configuration file:\n"
               "%s\n"
               "It is recommended you use the following random password:\n"
-              "rpcuser=bitcreditsrpc\n"
+              "rpcuser=bitcreditrpc\n"
               "rpcpassword=%s\n"
               "(you do not need to remember this password)\n"
               "The username and password MUST NOT be the same.\n"
               "If the file does not exist, create it with owner-readable-only file permissions.\n"
               "It is also recommended to set alertnotify so you are notified of problems;\n"
-              "for example: alertnotify=echo %%s | mail -s \"Bitcredits Alert\" admin@foo.com\n"),
-                strWhatAmI,
+              "for example: alertnotify=echo %%s | mail -s \"Bitcredit Alert\" admin@foo.com\n"),
                 GetConfigFile().string(),
                 EncodeBase58(&rand_pwd[0],&rand_pwd[0]+32)),
-                "", CClientUIInterface::MSG_ERROR);
+                "", CClientUIInterface::MSG_ERROR | CClientUIInterface::SECURE);
         StartShutdown();
         return;
     }
@@ -596,7 +609,7 @@ void StartRPCThreads()
 
     if (fUseSSL)
     {
-        rpc_ssl_context->set_options(ssl::context::no_sslv2);
+        rpc_ssl_context->set_options(ssl::context::no_sslv2 | ssl::context::no_sslv3);
 
         filesystem::path pathCertFile(GetArg("-rpcsslcertificatechainfile", "server.cert"));
         if (!pathCertFile.is_complete()) pathCertFile = filesystem::path(GetDataDir()) / pathCertFile;
@@ -630,7 +643,7 @@ void StartRPCThreads()
             try {
                 vEndpoints.push_back(ParseEndpoint(addr, defaultPort));
             }
-            catch(const boost::system::system_error &)
+            catch (const boost::system::system_error&)
             {
                 uiInterface.ThreadSafeMessageBox(
                     strprintf(_("Could not parse -rpcbind value %s as network address"), addr),
@@ -671,11 +684,11 @@ void StartRPCThreads()
 
             fListening = true;
             rpc_acceptors.push_back(acceptor);
-            // If dual IPv6/IPv4 bind succesful, skip binding to IPv4 separately
+            // If dual IPv6/IPv4 bind successful, skip binding to IPv4 separately
             if(bBindAny && bindAddress == asio::ip::address_v6::any() && !v6_only_error)
                 break;
         }
-        catch(boost::system::system_error &e)
+        catch (const boost::system::system_error& e)
         {
             LogPrintf("ERROR: Binding RPC on address %s port %i failed: %s\n", bindAddress.to_string(), endpoint.port(), e.what());
             strerr = strprintf(_("An error occurred while setting up the RPC address %s port %u for listening: %s"), bindAddress.to_string(), endpoint.port(), e.what());
@@ -748,6 +761,27 @@ bool IsRPCRunning()
     return fRPCRunning;
 }
 
+void SetRPCWarmupStatus(const std::string& newStatus)
+{
+    LOCK(cs_rpcWarmup);
+    rpcWarmupStatus = newStatus;
+}
+
+void SetRPCWarmupFinished()
+{
+    LOCK(cs_rpcWarmup);
+    assert(fRPCInWarmup);
+    fRPCInWarmup = false;
+}
+
+bool RPCIsInWarmup(std::string *outStatus)
+{
+    LOCK(cs_rpcWarmup);
+    if (outStatus)
+        *outStatus = rpcWarmupStatus;
+    return fRPCInWarmup;
+}
+
 void RPCRunHandler(const boost::system::error_code& err, boost::function<void(void)> func)
 {
     if (!err)
@@ -795,7 +829,7 @@ void JSONRequest::parse(const Value& valRequest)
     if (valMethod.type() != str_type)
         throw JSONRPCError(RPC_INVALID_REQUEST, "Method must be a string");
     strMethod = valMethod.get_str();
-    if (strMethod != "getblocktemplate" && strMethod != "getwork" && strMethod != "getworkex")
+    if (strMethod != "getblocktemplate")
         LogPrint("rpc", "ThreadRPCServer method=%s\n", strMethod);
 
     // Parse params
@@ -820,11 +854,11 @@ static Object JSONRPCExecOne(const Value& req)
         Value result = tableRPC.execute(jreq.strMethod, jreq.params);
         rpc_result = JSONRPCReplyObj(result, Value::null, jreq.id);
     }
-    catch (Object& objError)
+    catch (const Object& objError)
     {
         rpc_result = JSONRPCReplyObj(Value::null, objError, jreq.id);
     }
-    catch (std::exception& e)
+    catch (const std::exception& e)
     {
         rpc_result = JSONRPCReplyObj(Value::null,
                                      JSONRPCError(RPC_PARSE_ERROR, e.what()), jreq.id);
@@ -874,6 +908,13 @@ static bool HTTPReq_JSONRPC(AcceptedConnection *conn,
         if (!read_string(strRequest, valRequest))
             throw JSONRPCError(RPC_PARSE_ERROR, "Parse error");
 
+        // Return immediately if in warmup
+        {
+            LOCK(cs_rpcWarmup);
+            if (fRPCInWarmup)
+                throw JSONRPCError(RPC_IN_WARMUP, rpcWarmupStatus);
+        }
+
         string strReply;
 
         // singleton request
@@ -893,12 +934,12 @@ static bool HTTPReq_JSONRPC(AcceptedConnection *conn,
 
         conn->stream() << HTTPReplyHeader(HTTP_OK, fRun, strReply.size()) << strReply << std::flush;
     }
-    catch (Object& objError)
+    catch (const Object& objError)
     {
         ErrorReply(conn->stream(), objError, jreq.id);
         return false;
     }
-    catch (std::exception& e)
+    catch (const std::exception& e)
     {
         ErrorReply(conn->stream(), JSONRPCError(RPC_PARSE_ERROR, e.what()), jreq.id);
         return false;
@@ -926,9 +967,16 @@ void ServiceConnection(AcceptedConnection *conn)
         if (mapHeaders["connection"] == "close")
             fRun = false;
 
+        // Process via JSON-RPC API
         if (strURI == "/") {
             if (!HTTPReq_JSONRPC(conn, strRequest, mapHeaders, fRun))
                 break;
+
+        // Process via HTTP REST API
+        } else if (strURI.substr(0, 6) == "/rest/" && GetBoolArg("-rest", false)) {
+            if (!HTTPReq_REST(conn, strURI, mapHeaders, fRun))
+                break;
+
         } else {
             conn->stream() << HTTPError(HTTP_NOT_FOUND, false) << std::flush;
             break;
@@ -977,14 +1025,14 @@ json_spirit::Value CRPCTable::execute(const std::string &strMethod, const json_s
         }
         return result;
     }
-    catch (std::exception& e)
+    catch (const std::exception& e)
     {
         throw JSONRPCError(RPC_MISC_ERROR, e.what());
     }
 }
 
 std::string HelpExampleCli(string methodname, string args){
-    return "> bitcredits-cli " + methodname + " " + args + "\n";
+    return "> bitcredit-cli " + methodname + " " + args + "\n";
 }
 
 std::string HelpExampleRpc(string methodname, string args){

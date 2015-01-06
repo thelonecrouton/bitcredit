@@ -1,16 +1,16 @@
 //
-// Simple Bitcredits Payment Protocol messages
+// Simple Bitcredit Payment Protocol messages
 //
 // Use fields 100+ for extensions;
 // to avoid conflicts, register extensions at:
-// https://en.bitcredits.it/wiki/Payment_Request
+// https://en.bitcredit.it/wiki/Payment_Request
 //
 
 package payments;
-option java_package = "org.bitcredits.protocols.payments";
+option java_package = "org.bitcredit.protocols.payments";
 option java_outer_classname = "Protos";
 
-// Generalized form of "send payment to this/these bitcredits addresses"
+// Generalized form of "send payment to this/these bitcredit addresses"
 message Output {
 	optional uint64 amount = 1 [default = 0]; // amount is integer-number-of-satoshis
 	required bytes script = 2; // usually one of the standard Script forms

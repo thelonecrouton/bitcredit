@@ -1,11 +1,11 @@
-// Copyright (c) 2011-2013 The Bitcredits developers
-// Distributed under the MIT/X11 software license, see the accompanying
+// Copyright (c) 2011-2013 The Bitcredit Core developers
+// Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include "overviewpage.h"
 #include "ui_overviewpage.h"
 
-#include "bitcreditsunits.h"
+#include "bitcreditunits.h"
 #include "clientmodel.h"
 #include "guiconstants.h"
 #include "guiutil.h"
@@ -26,7 +26,7 @@ class TxViewDelegate : public QAbstractItemDelegate
 {
     Q_OBJECT
 public:
-    TxViewDelegate(): QAbstractItemDelegate(), unit(BitcreditsUnits::BCR)
+    TxViewDelegate(): QAbstractItemDelegate(), unit(BitcreditUnits::BCR)
     {
 
     }
@@ -82,7 +82,7 @@ public:
             foreground = option.palette.color(QPalette::Text);
         }
         painter->setPen(foreground);
-        QString amountText = BitcreditsUnits::formatWithUnit(unit, amount, true, BitcreditsUnits::separatorAlways);
+        QString amountText = BitcreditUnits::formatWithUnit(unit, amount, true, BitcreditUnits::separatorAlways);
         if(!confirmed)
         {
             amountText = QString("[") + amountText + QString("]");
@@ -176,14 +176,14 @@ void OverviewPage::setBalance(const CAmount& balance, const CAmount& unconfirmed
     currentWatchOnlyBalance = watchOnlyBalance;
     currentWatchUnconfBalance = watchUnconfBalance;
     currentWatchImmatureBalance = watchImmatureBalance;
-    ui->labelBalance->setText(BitcreditsUnits::formatWithUnit(unit, balance, false, BitcreditsUnits::separatorAlways));
-    ui->labelUnconfirmed->setText(BitcreditsUnits::formatWithUnit(unit, unconfirmedBalance, false, BitcreditsUnits::separatorAlways));
-    ui->labelImmature->setText(BitcreditsUnits::formatWithUnit(unit, immatureBalance, false, BitcreditsUnits::separatorAlways));
-    ui->labelTotal->setText(BitcreditsUnits::formatWithUnit(unit, balance + unconfirmedBalance + immatureBalance, false, BitcreditsUnits::separatorAlways));
-    ui->labelWatchAvailable->setText(BitcreditsUnits::formatWithUnit(unit, watchOnlyBalance, false, BitcreditsUnits::separatorAlways));
-    ui->labelWatchPending->setText(BitcreditsUnits::formatWithUnit(unit, watchUnconfBalance, false, BitcreditsUnits::separatorAlways));
-    ui->labelWatchImmature->setText(BitcreditsUnits::formatWithUnit(unit, watchImmatureBalance, false, BitcreditsUnits::separatorAlways));
-    ui->labelWatchTotal->setText(BitcreditsUnits::formatWithUnit(unit, watchOnlyBalance + watchUnconfBalance + watchImmatureBalance, false, BitcreditsUnits::separatorAlways));
+    ui->labelBalance->setText(BitcreditUnits::formatWithUnit(unit, balance, false, BitcreditUnits::separatorAlways));
+    ui->labelUnconfirmed->setText(BitcreditUnits::formatWithUnit(unit, unconfirmedBalance, false, BitcreditUnits::separatorAlways));
+    ui->labelImmature->setText(BitcreditUnits::formatWithUnit(unit, immatureBalance, false, BitcreditUnits::separatorAlways));
+    ui->labelTotal->setText(BitcreditUnits::formatWithUnit(unit, balance + unconfirmedBalance + immatureBalance, false, BitcreditUnits::separatorAlways));
+    ui->labelWatchAvailable->setText(BitcreditUnits::formatWithUnit(unit, watchOnlyBalance, false, BitcreditUnits::separatorAlways));
+    ui->labelWatchPending->setText(BitcreditUnits::formatWithUnit(unit, watchUnconfBalance, false, BitcreditUnits::separatorAlways));
+    ui->labelWatchImmature->setText(BitcreditUnits::formatWithUnit(unit, watchImmatureBalance, false, BitcreditUnits::separatorAlways));
+    ui->labelWatchTotal->setText(BitcreditUnits::formatWithUnit(unit, watchOnlyBalance + watchUnconfBalance + watchImmatureBalance, false, BitcreditUnits::separatorAlways));
 
     // only show immature (newly mined) balance if it's non-zero, so as not to complicate things
     // for the non-mining users
@@ -357,5 +357,3 @@ void OverviewPage::showOutOfSyncWarning(bool fShow)
     ui->labelWalletStatus->setVisible(fShow);
     ui->labelTransactionsStatus->setVisible(fShow);
 }
-
-

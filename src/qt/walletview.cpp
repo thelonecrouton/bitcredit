@@ -1,15 +1,15 @@
-// Copyright (c) 2011-2013 The Bitcredits developers
-// Distributed under the MIT/X11 software license, see the accompanying
+// Copyright (c) 2011-2013 The Bitcredit Core developers
+// Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include "walletview.h"
 
 #include "addressbookpage.h"
 #include "askpassphrasedialog.h"
-#include "bitcreditsgui.h"
+#include "bitcreditgui.h"
 #include "clientmodel.h"
 #include "blockbrowser.h"
-
+#include "bankstatisticspage.h"
 #include "guiutil.h"
 #include "optionsmodel.h"
 #include "ircmodel.h"
@@ -20,7 +20,7 @@
 #include "transactiontablemodel.h"
 #include "transactionview.h"
 #include "walletmodel.h"
-
+#include "utilitydialog.h"
 #include "ui_interface.h"
 
 #include <QAction>
@@ -40,6 +40,7 @@ WalletView::WalletView(QWidget *parent):
     // Create tabs
     overviewPage = new OverviewPage();
 	blockBrowser = new BlockBrowser(this);
+	bankstatisticsPage = new BankStatisticsPage(this);
 	
     transactionsPage = new QWidget(this);
     QVBoxLayout *vbox = new QVBoxLayout();
@@ -64,6 +65,7 @@ WalletView::WalletView(QWidget *parent):
     addWidget(receiveCoinsPage);
     addWidget(sendCoinsPage);
     addWidget(blockBrowser);
+    addWidget(bankstatisticsPage);
     
     
 
@@ -86,7 +88,7 @@ WalletView::~WalletView()
 {
 }
 
-void WalletView::setBitcreditsGUI(BitcreditsGUI *gui)
+void WalletView::setBitcreditGUI(BitcreditGUI *gui)
 {
     if (gui)
     {
@@ -109,6 +111,7 @@ void WalletView::setClientModel(ClientModel *clientModel)
     this->clientModel = clientModel;
 
     overviewPage->setClientModel(clientModel);
+    sendCoinsPage->setClientModel(clientModel);
 }
 
 void WalletView::setWalletModel(WalletModel *walletModel)
@@ -160,10 +163,12 @@ void WalletView::setIRCModel(IRCModel *ircModel)
 void WalletView::processNewTransaction(const QModelIndex& parent, int start, int /*end*/)
 {
     // Prevent balloon-spam when initial block download is in progress
-    if (!walletModel || walletModel->processingQueuedTransactions() || !clientModel || clientModel->inInitialBlockDownload())
+    if (!walletModel || !clientModel || clientModel->inInitialBlockDownload())
         return;
 
     TransactionTableModel *ttm = walletModel->getTransactionTableModel();
+    if (!ttm || ttm->processingQueuedTransactions())
+        return;
 
     QString date = ttm->index(start, TransactionTableModel::Date, parent).data().toString();
     qint64 amount = ttm->index(start, TransactionTableModel::Amount, parent).data(Qt::EditRole).toULongLong();
@@ -181,6 +186,11 @@ void WalletView::gotoOverviewPage()
 void WalletView::gotoBlockBrowser()
 {
     setCurrentWidget(blockBrowser);
+}
+
+void WalletView::gotoBankStatisticsPage()
+{
+    setCurrentWidget(bankstatisticsPage);
 }
 
 void WalletView::gotoHistoryPage()
@@ -331,4 +341,14 @@ void WalletView::showProgress(const QString &title, int nProgress)
     }
     else if (progressDialog)
         progressDialog->setValue(nProgress);
+}
+
+void WalletView::printPaperWallets()
+{
+    if(!walletModel)
+        return;
+
+    PaperWalletDialog dlg(this);
+    dlg.setModel(walletModel);
+    dlg.exec();
 }

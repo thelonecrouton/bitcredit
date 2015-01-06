@@ -1,9 +1,9 @@
-// Copyright (c) 2014 The Bitcredits developers
+// Copyright (c) 2014 The Bitcredit Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef BITCREDITS_SHA1_H
-#define BITCREDITS_SHA1_H
+#ifndef BITCREDIT_CRYPTO_SHA1_H
+#define BITCREDIT_CRYPTO_SHA1_H
 
 #include <stdint.h>
 #include <stdlib.h>
@@ -25,4 +25,4 @@ public:
     CSHA1& Reset();
 };
 
-#endif // BITCREDITS_SHA1_H
+#endif // BITCREDIT_CRYPTO_SHA1_H

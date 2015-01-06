@@ -1,5 +1,5 @@
-// Copyright (c) 2011-2013 The Bitcredits developers
-// Distributed under the MIT/X11 software license, see the accompanying
+// Copyright (c) 2011-2013 The Bitcredit Core developers
+// Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include "sendcoinsentry.h"
@@ -30,10 +30,10 @@ SendCoinsEntry::SendCoinsEntry(QWidget *parent) :
     ui->addAsLabel->setPlaceholderText(tr("Enter a label for this address to add it to your address book"));
 #endif
 
-    // normal bitcredits address field
+    // normal bitcredit address field
     GUIUtil::setupAddressWidget(ui->payTo, this);
-    // just a label for displaying bitcredits address(es)
-    ui->payTo_is->setFont(GUIUtil::bitcreditsAddressFont());
+    // just a label for displaying bitcredit address(es)
+    ui->payTo_is->setFont(GUIUtil::bitcreditAddressFont());
 
     // Connect signals
     connect(ui->payAmount, SIGNAL(valueChanged()), this, SIGNAL(payAmountChanged()));

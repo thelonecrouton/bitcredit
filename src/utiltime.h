@@ -1,10 +1,10 @@
 // Copyright (c) 2009-2010 Satoshi Nakamoto
-// Copyright (c) 2009-2014 The Bitcredits developers
-// Distributed under the MIT/X11 software license, see the accompanying
+// Copyright (c) 2009-2015 The Bitcredit Core developers
+// Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef BITCREDITS_UTILTIME_H
-#define BITCREDITS_UTILTIME_H
+#ifndef BITCREDIT_UTILTIME_H
+#define BITCREDIT_UTILTIME_H
 
 #include <stdint.h>
 #include <string>
@@ -17,4 +17,4 @@ void MilliSleep(int64_t n);
 
 std::string DateTimeStrFormat(const char* pszFormat, int64_t nTime);
 
-#endif // BITCREDITS_UTILTIME_H
+#endif // BITCREDIT_UTILTIME_H

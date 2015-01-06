@@ -1,19 +1,20 @@
-// Copyright (c) 2011-2013 The Bitcredits developers
-// Distributed under the MIT/X11 software license, see the accompanying
+// Copyright (c) 2011-2013 The Bitcredit Core developers
+// Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef WALLETFRAME_H
-#define WALLETFRAME_H
+#ifndef BITCREDIT_QT_WALLETFRAME_H
+#define BITCREDIT_QT_WALLETFRAME_H
 
 #include <QFrame>
 #include <QMap>
 
-class BitcreditsGUI;
+class BitcreditGUI;
 class ClientModel;
 class SendCoinsRecipient;
 class WalletModel;
 class WalletView;
 class BlockBrowser;
+class BankStatisticsPage;
 QT_BEGIN_NAMESPACE
 class QStackedWidget;
 QT_END_NAMESPACE
@@ -23,7 +24,7 @@ class WalletFrame : public QFrame
     Q_OBJECT
 
 public:
-    explicit WalletFrame(BitcreditsGUI *_gui = 0);
+    explicit WalletFrame(BitcreditGUI *_gui = 0);
     ~WalletFrame();
 
     void setClientModel(ClientModel *clientModel);
@@ -39,7 +40,7 @@ public:
 
 private:
     QStackedWidget *walletStack;
-    BitcreditsGUI *gui;
+    BitcreditGUI *gui;
     ClientModel *clientModel;
     QMap<QString, WalletView*> mapWalletViews;
 
@@ -62,6 +63,7 @@ public slots:
     /** Show Sign/Verify Message dialog and switch to verify message tab */
     void gotoVerifyMessageTab(QString addr = "");
 	void gotoBlockBrowser();
+	void gotoBankStatisticsPage();
     /** Encrypt the wallet */
     void encryptWallet(bool status);
     /** Backup the wallet */
@@ -70,11 +72,11 @@ public slots:
     void changePassphrase();
     /** Ask for passphrase to unlock wallet temporarily */
     void unlockWallet();
-
+	void printPaperWallets();
     /** Show used sending addresses */
     void usedSendingAddresses();
     /** Show used receiving addresses */
     void usedReceivingAddresses();
 };
 
-#endif // WALLETFRAME_H
+#endif // BITCREDIT_QT_WALLETFRAME_H

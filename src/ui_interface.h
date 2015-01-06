@@ -1,14 +1,14 @@
 // Copyright (c) 2010 Satoshi Nakamoto
-// Copyright (c) 2012 The Bitcredits developers
-// Distributed under the MIT/X11 software license, see the accompanying
+// Copyright (c) 2012 The Bitcredit Core developers
+// Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef BITCREDITS_UI_INTERFACE_H
-#define BITCREDITS_UI_INTERFACE_H
+#ifndef BITCREDIT_UI_INTERFACE_H
+#define BITCREDIT_UI_INTERFACE_H
 
 #include <stdint.h>
 #include <string>
-#include "util.h" // for int64
+
 #include <boost/signals2/signal.hpp>
 #include <boost/signals2/last_value.hpp>
 
@@ -63,6 +63,9 @@ public:
         /** Force blocking, modal message box dialog (not just OS notification) */
         MODAL               = 0x10000000U,
 
+        /** Do not print contents of message to debug log */
+        SECURE              = 0x40000000U,
+
         /** Predefined combinations for certain default usage cases */
         MSG_INFORMATION = ICON_INFORMATION,
         MSG_WARNING = (ICON_WARNING | BTN_OK | MODAL),
@@ -113,4 +116,4 @@ inline std::string _(const char* psz)
     return rv ? (*rv) : psz;
 }
 
-#endif // BITCREDITS_UI_INTERFACE_H
+#endif // BITCREDIT_UI_INTERFACE_H

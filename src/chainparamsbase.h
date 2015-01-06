@@ -1,16 +1,16 @@
-// Copyright (c) 2014 The Bitcredits developers
-// Distributed under the MIT/X11 software license, see the accompanying
+// Copyright (c) 2015 The Bitcredit Core developers
+// Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef BITCREDITS_CHAIN_PARAMS_BASE_H
-#define BITCREDITS_CHAIN_PARAMS_BASE_H
+#ifndef BITCREDIT_CHAINPARAMSBASE_H
+#define BITCREDIT_CHAINPARAMSBASE_H
 
 #include <string>
 #include <vector>
 
 /**
- * CBaseChainParams defines the base parameters (shared between bitcredits-cli and bitcreditsd)
- * of a given instance of the Bitcredits system.
+ * CBaseChainParams defines the base parameters (shared between bitcredit-cli and bitcreditd)
+ * of a given instance of the Bitcredit system.
  */
 class CBaseChainParams
 {
@@ -26,7 +26,6 @@ public:
 
     const std::string& DataDir() const { return strDataDir; }
     int RPCPort() const { return nRPCPort; }
-    Network NetworkID() const { return networkID; }
 
 protected:
     CBaseChainParams() {}
@@ -46,7 +45,13 @@ const CBaseChainParams& BaseParams();
 void SelectBaseParams(CBaseChainParams::Network network);
 
 /**
- * Looks for -regtest or -testnet and then calls SelectParams as appropriate.
+ * Looks for -regtest or -testnet and returns the appropriate Network ID.
+ * Returns MAX_NETWORK_TYPES if an invalid combination is given.
+ */
+CBaseChainParams::Network NetworkIdFromCommandLine();
+
+/**
+ * Calls NetworkIdFromCommandLine() and then calls SelectParams as appropriate.
  * Returns false if an invalid combination is given.
  */
 bool SelectBaseParamsFromCommandLine();
@@ -57,4 +62,4 @@ bool SelectBaseParamsFromCommandLine();
  */
 bool AreBaseParamsConfigured();
 
-#endif // BITCREDITS_CHAIN_PARAMS_BASE_H
+#endif // BITCREDIT_CHAINPARAMSBASE_H

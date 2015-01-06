@@ -1,10 +1,10 @@
 // Copyright (c) 2010 Satoshi Nakamoto
-// Copyright (c) 2009-2013 The Bitcredits developers
-// Distributed under the MIT/X11 software license, see the accompanying
+// Copyright (c) 2009-2013 The Bitcredit Core developers
+// Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef _BITCREDITSALERT_H_
-#define _BITCREDITSALERT_H_
+#ifndef BITCREDIT_ALERT_H
+#define BITCREDIT_ALERT_H
 
 #include "serialize.h"
 #include "sync.h"
@@ -110,4 +110,4 @@ public:
     static CAlert getAlertByHash(const uint256 &hash);
 };
 
-#endif // _BITCREDITSALERT_H_
+#endif // BITCREDIT_ALERT_H

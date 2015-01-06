@@ -1,9 +1,9 @@
-// Copyright (c) 2011-2013 The Bitcredits developers
-// Distributed under the MIT/X11 software license, see the accompanying
+// Copyright (c) 2011-2013 The Bitcredit Core developers
+// Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef MACDOCKICONHANDLER_H
-#define MACDOCKICONHANDLER_H
+#ifndef BITCREDIT_QT_MACDOCKICONHANDLER_H
+#define BITCREDIT_QT_MACDOCKICONHANDLER_H
 
 #include <QMainWindow>
 #include <QObject>
@@ -48,4 +48,4 @@ private:
     QMainWindow *mainWindow;
 };
 
-#endif // MACDOCKICONCLICKHANDLER_H
+#endif // BITCREDIT_QT_MACDOCKICONHANDLER_H

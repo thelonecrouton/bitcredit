@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
-# Copyright (c) 2014 The Bitcredits Core developers
-# Distributed under the MIT/X11 software license, see the accompanying
+# Copyright (c) 2014 The Bitcredit Core developers
+# Distributed under the MIT software license, see the accompanying
 # file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 # Test marking of spent outputs
@@ -18,13 +18,14 @@
 if [ $# -lt 1 ]; then
         echo "Usage: $0 path_to_binaries"
         echo "e.g. $0 ../../src"
+        echo "Env vars BITCREDITD and BITCREDITCLI may be used to specify the exact binaries used"
         exit 1
 fi
 
 set -f
 
-BITCREDITSD=${1}/bitcreditsd
-CLI=${1}/bitcredits-cli
+BITCREDITD=${BITCREDITD:-${1}/bitcreditd}
+CLI=${BITCREDITCLI:-${1}/bitcredit-cli}
 
 DIR="${BASH_SOURCE%/*}"
 SENDANDWAIT="${DIR}/send.sh"
@@ -39,13 +40,13 @@ D=$(mktemp -d test.XXXXX)
 D1=${D}/node1
 CreateDataDir $D1 port=11000 rpcport=11001
 B1ARGS="-datadir=$D1 -debug=mempool"
-$BITCREDITSD $B1ARGS &
+$BITCREDITD $B1ARGS &
 B1PID=$!
 
 D2=${D}/node2
 CreateDataDir $D2 port=11010 rpcport=11011
 B2ARGS="-datadir=$D2 -debug=mempool"
-$BITCREDITSD $B2ARGS &
+$BITCREDITD $B2ARGS &
 B2PID=$!
 
 # Wait until all four nodes are at the same block number
@@ -96,7 +97,7 @@ CheckBalance "$B2ARGS" 0
 # restart B2 with no connection
 $CLI $B2ARGS stop > /dev/null 2>&1
 wait $B2PID
-$BITCREDITSD $B2ARGS &
+$BITCREDITD $B2ARGS &
 B2PID=$!
 
 B1ADDRESS=$( $CLI $B1ARGS getnewaddress )

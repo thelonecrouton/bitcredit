@@ -1,9 +1,9 @@
 Regression tests of RPC interface
 =================================
 
-### [python-bitcreditsrpc](https://github.com/jgarzik/python-bitcreditsrpc)
-Git subtree of [https://github.com/jgarzik/python-bitcreditsrpc](https://github.com/jgarzik/python-bitcreditsrpc).
-Changes to python-bitcreditsrpc should be made upstream, and then
+### [python-bitcreditrpc](https://github.com/jgarzik/python-bitcreditrpc)
+Git subtree of [https://github.com/jgarzik/python-bitcreditrpc](https://github.com/jgarzik/python-bitcreditrpc).
+Changes to python-bitcreditrpc should be made upstream, and then
 pulled here using git subtree.
 
 ### [test_framework.py](test_framework.py)
@@ -39,5 +39,5 @@ to recover with:
 
 ```bash
 rm -rf cache
-killall bitcreditsd
+killall bitcreditd
 ```

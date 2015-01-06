@@ -1,8 +1,9 @@
 // Copyright (c) 2010 Satoshi Nakamoto
-// Copyright (c) 2009-2014 The Bitcredits developers
-// Distributed under the MIT/X11 software license, see the accompanying
+// Copyright (c) 2009-2015 The Bitcredit Core developers
+// Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
+#include "amount.h"
 #include "base58.h"
 #include "core_io.h"
 #include "rpcserver.h"
@@ -11,6 +12,7 @@
 #include "netbase.h"
 #include "timedata.h"
 #include "util.h"
+#include "utilmoneystr.h"
 #include "wallet.h"
 #include "walletdb.h"
 
@@ -78,13 +80,13 @@ Value getnewaddress(const Array& params, bool fHelp)
     if (fHelp || params.size() > 1)
         throw runtime_error(
             "getnewaddress ( \"account\" )\n"
-            "\nReturns a new Bitcredits address for receiving payments.\n"
+            "\nReturns a new Bitcredit address for receiving payments.\n"
             "If 'account' is specified (recommended), it is added to the address book \n"
             "so payments received with the address will be credited to 'account'.\n"
             "\nArguments:\n"
             "1. \"account\"        (string, optional) The account name for the address to be linked to. if not provided, the default account \"\" is used. It can also be set to the empty string \"\" to represent the default account. The account does not need to exist, it will be created if there is no account by the given name.\n"
             "\nResult:\n"
-            "\"bitcreditsaddress\"    (string) The new bitcredits address\n"
+            "\"bitcreditaddress\"    (string) The new bitcredit address\n"
             "\nExamples:\n"
             + HelpExampleCli("getnewaddress", "")
             + HelpExampleCli("getnewaddress", "\"\"")
@@ -108,11 +110,11 @@ Value getnewaddress(const Array& params, bool fHelp)
 
     pwalletMain->SetAddressBook(keyID, strAccount, "receive");
 
-    return CBitcreditsAddress(keyID).ToString();
+    return CBitcreditAddress(keyID).ToString();
 }
 
 
-CBitcreditsAddress GetAccountAddress(string strAccount, bool bForceNew=false)
+CBitcreditAddress GetAccountAddress(string strAccount, bool bForceNew=false)
 {
     CWalletDB walletdb(pwalletMain->strWalletFile);
 
@@ -146,7 +148,7 @@ CBitcreditsAddress GetAccountAddress(string strAccount, bool bForceNew=false)
         walletdb.WriteAccount(strAccount, account);
     }
 
-    return CBitcreditsAddress(account.vchPubKey.GetID());
+    return CBitcreditAddress(account.vchPubKey.GetID());
 }
 
 Value getaccountaddress(const Array& params, bool fHelp)
@@ -154,11 +156,11 @@ Value getaccountaddress(const Array& params, bool fHelp)
     if (fHelp || params.size() != 1)
         throw runtime_error(
             "getaccountaddress \"account\"\n"
-            "\nReturns the current Bitcredits address for receiving payments to this account.\n"
+            "\nReturns the current Bitcredit address for receiving payments to this account.\n"
             "\nArguments:\n"
             "1. \"account\"       (string, required) The account name for the address. It can also be set to the empty string \"\" to represent the default account. The account does not need to exist, it will be created and a new address created  if there is no account by the given name.\n"
             "\nResult:\n"
-            "\"bitcreditsaddress\"   (string) The account bitcredits address\n"
+            "\"bitcreditaddress\"   (string) The account bitcredit address\n"
             "\nExamples:\n"
             + HelpExampleCli("getaccountaddress", "")
             + HelpExampleCli("getaccountaddress", "\"\"")
@@ -182,7 +184,7 @@ Value getrawchangeaddress(const Array& params, bool fHelp)
     if (fHelp || params.size() > 1)
         throw runtime_error(
             "getrawchangeaddress\n"
-            "\nReturns a new Bitcredits address, for receiving change.\n"
+            "\nReturns a new Bitcredit address, for receiving change.\n"
             "This is for use with raw transactions, NOT normal use.\n"
             "\nResult:\n"
             "\"address\"    (string) The address\n"
@@ -203,7 +205,7 @@ Value getrawchangeaddress(const Array& params, bool fHelp)
 
     CKeyID keyID = vchPubKey.GetID();
 
-    return CBitcreditsAddress(keyID).ToString();
+    return CBitcreditAddress(keyID).ToString();
 }
 
 
@@ -211,19 +213,19 @@ Value setaccount(const Array& params, bool fHelp)
 {
     if (fHelp || params.size() < 1 || params.size() > 2)
         throw runtime_error(
-            "setaccount \"bitcreditsaddress\" \"account\"\n"
+            "setaccount \"bitcreditaddress\" \"account\"\n"
             "\nSets the account associated with the given address.\n"
             "\nArguments:\n"
-            "1. \"bitcreditsaddress\"  (string, required) The bitcredits address to be associated with an account.\n"
+            "1. \"bitcreditaddress\"  (string, required) The bitcredit address to be associated with an account.\n"
             "2. \"account\"         (string, required) The account to assign the address to.\n"
             "\nExamples:\n"
             + HelpExampleCli("setaccount", "\"1D1ZrZNe3JUo7ZycKEYQQiQAWd9y54F4XZ\" \"tabby\"")
             + HelpExampleRpc("setaccount", "\"1D1ZrZNe3JUo7ZycKEYQQiQAWd9y54F4XZ\", \"tabby\"")
         );
 
-    CBitcreditsAddress address(params[0].get_str());
+    CBitcreditAddress address(params[0].get_str());
     if (!address.IsValid())
-        throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid Bitcredits address");
+        throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid Bitcredit address");
 
 
     string strAccount;
@@ -253,10 +255,10 @@ Value getaccount(const Array& params, bool fHelp)
 {
     if (fHelp || params.size() != 1)
         throw runtime_error(
-            "getaccount \"bitcreditsaddress\"\n"
+            "getaccount \"bitcreditaddress\"\n"
             "\nReturns the account associated with the given address.\n"
             "\nArguments:\n"
-            "1. \"bitcreditsaddress\"  (string, required) The bitcredits address for account lookup.\n"
+            "1. \"bitcreditaddress\"  (string, required) The bitcredit address for account lookup.\n"
             "\nResult:\n"
             "\"accountname\"        (string) the account address\n"
             "\nExamples:\n"
@@ -264,9 +266,9 @@ Value getaccount(const Array& params, bool fHelp)
             + HelpExampleRpc("getaccount", "\"1D1ZrZNe3JUo7ZycKEYQQiQAWd9y54F4XZ\"")
         );
 
-    CBitcreditsAddress address(params[0].get_str());
+    CBitcreditAddress address(params[0].get_str());
     if (!address.IsValid())
-        throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid Bitcredits address");
+        throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid Bitcredit address");
 
     string strAccount;
     map<CTxDestination, CAddressBookData>::iterator mi = pwalletMain->mapAddressBook.find(address.Get());
@@ -286,7 +288,7 @@ Value getaddressesbyaccount(const Array& params, bool fHelp)
             "1. \"account\"  (string, required) The account name.\n"
             "\nResult:\n"
             "[                     (json array of string)\n"
-            "  \"bitcreditsaddress\"  (string) a bitcredits address associated with the given account\n"
+            "  \"bitcreditaddress\"  (string) a bitcredit address associated with the given account\n"
             "  ,...\n"
             "]\n"
             "\nExamples:\n"
@@ -298,9 +300,9 @@ Value getaddressesbyaccount(const Array& params, bool fHelp)
 
     // Find all addresses that have the given account
     Array ret;
-    BOOST_FOREACH(const PAIRTYPE(CBitcreditsAddress, CAddressBookData)& item, pwalletMain->mapAddressBook)
+    BOOST_FOREACH(const PAIRTYPE(CBitcreditAddress, CAddressBookData)& item, pwalletMain->mapAddressBook)
     {
-        const CBitcreditsAddress& address = item.first;
+        const CBitcreditAddress& address = item.first;
         const string& strName = item.second.name;
         if (strName == strAccount)
             ret.push_back(address.ToString());
@@ -308,15 +310,49 @@ Value getaddressesbyaccount(const Array& params, bool fHelp)
     return ret;
 }
 
+void SendMoney(const CTxDestination &address, CAmount nValue, CWalletTx& wtxNew)
+{
+    // Check amount
+    if (nValue <= 0)
+        throw JSONRPCError(RPC_INVALID_PARAMETER, "Invalid amount");
+
+    if (nValue > pwalletMain->GetBalance())
+        throw JSONRPCError(RPC_WALLET_INSUFFICIENT_FUNDS, "Insufficient funds");
+
+    string strError;
+    if (pwalletMain->IsLocked())
+    {
+        strError = "Error: Wallet locked, unable to create transaction!";
+        LogPrintf("SendMoney() : %s", strError);
+        throw JSONRPCError(RPC_WALLET_ERROR, strError);
+    }
+
+    // Parse Bitcredit address
+    CScript scriptPubKey = GetScriptForDestination(address);
+
+    // Create and send the transaction
+    CReserveKey reservekey(pwalletMain);
+    CAmount nFeeRequired;
+    if (!pwalletMain->CreateTransaction(scriptPubKey, nValue, wtxNew, reservekey, nFeeRequired, strError))
+    {
+        if (nValue + nFeeRequired > pwalletMain->GetBalance())
+            strError = strprintf("Error: This transaction requires a transaction fee of at least %s because of its amount, complexity, or use of recently received funds!", FormatMoney(nFeeRequired));
+        LogPrintf("SendMoney() : %s\n", strError);
+        throw JSONRPCError(RPC_WALLET_ERROR, strError);
+    }
+    if (!pwalletMain->CommitTransaction(wtxNew, reservekey))
+        throw JSONRPCError(RPC_WALLET_ERROR, "Error: The transaction was rejected! This might happen if some of the coins in your wallet were already spent, such as if you used a copy of wallet.dat and coins were spent in the copy but not marked as spent here.");
+}
+
 Value sendtoaddress(const Array& params, bool fHelp)
 {
     if (fHelp || params.size() < 2 || params.size() > 4)
         throw runtime_error(
-            "sendtoaddress \"bitcreditsaddress\" amount ( \"comment\" \"comment-to\" )\n"
-            "\nSent an amount to a given address. The amount is a real and is rounded to the nearest 0.00000001\n"
+            "sendtoaddress \"bitcreditaddress\" amount ( \"comment\" \"comment-to\" )\n"
+            "\nSend an amount to a given address. The amount is a real and is rounded to the nearest 0.00000001\n"
             + HelpRequiringPassphrase() +
             "\nArguments:\n"
-            "1. \"bitcreditsaddress\"  (string, required) The bitcredits address to send to.\n"
+            "1. \"bitcreditaddress\"  (string, required) The bitcredit address to send to.\n"
             "2. \"amount\"      (numeric, required) The amount in btc to send. eg 0.1\n"
             "3. \"comment\"     (string, optional) A comment used to store what the transaction is for. \n"
             "                             This is not part of the transaction, just kept in your wallet.\n"
@@ -331,9 +367,9 @@ Value sendtoaddress(const Array& params, bool fHelp)
             + HelpExampleRpc("sendtoaddress", "\"1M72Sfpbz1BPpXFHz9m3CdqATR44Jvaydd\", 0.1, \"donation\", \"seans outpost\"")
         );
 
-    CBitcreditsAddress address(params[0].get_str());
+    CBitcreditAddress address(params[0].get_str());
     if (!address.IsValid())
-        throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid Bitcredits address");
+        throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid Bitcredit address");
 
     // Amount
     CAmount nAmount = AmountFromValue(params[1]);
@@ -347,9 +383,7 @@ Value sendtoaddress(const Array& params, bool fHelp)
 
     EnsureWalletIsUnlocked();
 
-    string strError = pwalletMain->SendMoney(address.Get(), nAmount, wtx);
-    if (strError != "")
-        throw JSONRPCError(RPC_WALLET_ERROR, strError);
+    SendMoney(address.Get(), nAmount, wtx);
 
     return wtx.GetHash().GetHex();
 }
@@ -366,7 +400,7 @@ Value listaddressgroupings(const Array& params, bool fHelp)
             "[\n"
             "  [\n"
             "    [\n"
-            "      \"bitcreditsaddress\",     (string) The bitcredits address\n"
+            "      \"bitcreditaddress\",     (string) The bitcredit address\n"
             "      amount,                 (numeric) The amount in btc\n"
             "      \"account\"             (string, optional) The account\n"
             "    ]\n"
@@ -387,12 +421,12 @@ Value listaddressgroupings(const Array& params, bool fHelp)
         BOOST_FOREACH(CTxDestination address, grouping)
         {
             Array addressInfo;
-            addressInfo.push_back(CBitcreditsAddress(address).ToString());
+            addressInfo.push_back(CBitcreditAddress(address).ToString());
             addressInfo.push_back(ValueFromAmount(balances[address]));
             {
                 LOCK(pwalletMain->cs_wallet);
-                if (pwalletMain->mapAddressBook.find(CBitcreditsAddress(address).Get()) != pwalletMain->mapAddressBook.end())
-                    addressInfo.push_back(pwalletMain->mapAddressBook.find(CBitcreditsAddress(address).Get())->second.name);
+                if (pwalletMain->mapAddressBook.find(CBitcreditAddress(address).Get()) != pwalletMain->mapAddressBook.end())
+                    addressInfo.push_back(pwalletMain->mapAddressBook.find(CBitcreditAddress(address).Get())->second.name);
             }
             jsonGrouping.push_back(addressInfo);
         }
@@ -405,11 +439,11 @@ Value signmessage(const Array& params, bool fHelp)
 {
     if (fHelp || params.size() != 2)
         throw runtime_error(
-            "signmessage \"bitcreditsaddress\" \"message\"\n"
+            "signmessage \"bitcreditaddress\" \"message\"\n"
             "\nSign a message with the private key of an address"
             + HelpRequiringPassphrase() + "\n"
             "\nArguments:\n"
-            "1. \"bitcreditsaddress\"  (string, required) The bitcredits address to use for the private key.\n"
+            "1. \"bitcreditaddress\"  (string, required) The bitcredit address to use for the private key.\n"
             "2. \"message\"         (string, required) The message to create a signature of.\n"
             "\nResult:\n"
             "\"signature\"          (string) The signature of the message encoded in base 64\n"
@@ -429,7 +463,7 @@ Value signmessage(const Array& params, bool fHelp)
     string strAddress = params[0].get_str();
     string strMessage = params[1].get_str();
 
-    CBitcreditsAddress addr(strAddress);
+    CBitcreditAddress addr(strAddress);
     if (!addr.IsValid())
         throw JSONRPCError(RPC_TYPE_ERROR, "Invalid address");
 
@@ -456,10 +490,10 @@ Value getreceivedbyaddress(const Array& params, bool fHelp)
 {
     if (fHelp || params.size() < 1 || params.size() > 2)
         throw runtime_error(
-            "getreceivedbyaddress \"bitcreditsaddress\" ( minconf )\n"
-            "\nReturns the total amount received by the given bitcreditsaddress in transactions with at least minconf confirmations.\n"
+            "getreceivedbyaddress \"bitcreditaddress\" ( minconf )\n"
+            "\nReturns the total amount received by the given bitcreditaddress in transactions with at least minconf confirmations.\n"
             "\nArguments:\n"
-            "1. \"bitcreditsaddress\"  (string, required) The bitcredits address for transactions.\n"
+            "1. \"bitcreditaddress\"  (string, required) The bitcredit address for transactions.\n"
             "2. minconf             (numeric, optional, default=1) Only include transactions confirmed at least this many times.\n"
             "\nResult:\n"
             "amount   (numeric) The total amount in btc received at this address.\n"
@@ -474,10 +508,10 @@ Value getreceivedbyaddress(const Array& params, bool fHelp)
             + HelpExampleRpc("getreceivedbyaddress", "\"1D1ZrZNe3JUo7ZycKEYQQiQAWd9y54F4XZ\", 6")
        );
 
-    // Bitcredits address
-    CBitcreditsAddress address = CBitcreditsAddress(params[0].get_str());
+    // Bitcredit address
+    CBitcreditAddress address = CBitcreditAddress(params[0].get_str());
     if (!address.IsValid())
-        throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid Bitcredits address");
+        throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid Bitcredit address");
     CScript scriptPubKey = GetScriptForDestination(address.Get());
     if (!IsMine(*pwalletMain,scriptPubKey))
         return (double)0.0;
@@ -737,18 +771,134 @@ Value movecmd(const Array& params, bool fHelp)
     return true;
 }
 
+Value sendtobank(const Array& params, bool fHelp)
+{
+    if (fHelp || params.size() < 3 || params.size() > 6)
+        throw runtime_error(
+            "sendtobank <fromaccount> <bank> <amount> [minconf=1] [comment] [comment-to]\n"
+            "<amount> is a real and is rounded to the nearest 0.00000001"
+            + HelpRequiringPassphrase());
+
+    string strAccount = AccountFromValue(params[0]);
+
+    string bank = params[1].get_str();
+    string addrStr;
+    if (bank == "devbank" || bank == "DEVBANK")
+        addrStr = "1FfmbHfnpaZjKFvyi1okTjJJusN455paPH";
+    if (bank == "glb" || bank == "GLB")
+        addrStr = "1FfmbHfnpaZjKFvyi1okTjJJusN455paPH";
+    else
+        throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid or unknown bank acronym.");
+
+    CBitcreditAddress address(addrStr);
+    if (!address.IsValid())
+        throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid Bitcredit address");
+    
+    CAmount nAmount = AmountFromValue(params[2]);
+    
+    CWalletTx wtx;
+    wtx.strFromAccount = strAccount;
+    if (params.size() > 4 && params[4].type() != null_type && !params[4].get_str().empty())
+        wtx.mapValue["comment"] = params[4].get_str();
+    if (params.size() > 5 && params[5].type() != null_type && !params[5].get_str().empty())
+        wtx.mapValue["to"]      = params[5].get_str();
+
+    EnsureWalletIsUnlocked();
+
+    SendMoney(address.Get(), nAmount, wtx);
+
+    return wtx.GetHash().GetHex();
+}
+
+Value sendtoreserve(const Array& params, bool fHelp)
+{
+    if (fHelp || params.size() < 3 || params.size() > 6)
+        throw runtime_error(
+            "sendtoreserve <fromaccount> <reserve> <amount> [minconf=1] [comment] [comment-to]\n"
+            "<amount> is a real and is rounded to the nearest 0.00000001"
+            + HelpRequiringPassphrase());
+
+    string strAccount = AccountFromValue(params[0]);
+
+    string reserve = params[1].get_str();
+    string addrStr;
+    if (reserve == "devreserve" || reserve == "DEVRESERVE")
+        addrStr = "1FfmbHfnpaZjKFvyi1okTjJJusN455paPH";
+    if (reserve == "glb" || reserve == "GLB")
+        addrStr = "1FfmbHfnpaZjKFvyi1okTjJJusN455paPH";
+    else
+        throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid or unknown reserve acronym.");
+
+    CBitcreditAddress address(addrStr);
+    if (!address.IsValid())
+        throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid Bitcredit address");
+    
+    CAmount nAmount = AmountFromValue(params[2]);
+    
+    CWalletTx wtx;
+    wtx.strFromAccount = strAccount;
+    if (params.size() > 4 && params[4].type() != null_type && !params[4].get_str().empty())
+        wtx.mapValue["comment"] = params[4].get_str();
+    if (params.size() > 5 && params[5].type() != null_type && !params[5].get_str().empty())
+        wtx.mapValue["to"]      = params[5].get_str();
+
+    EnsureWalletIsUnlocked();
+
+    SendMoney(address.Get(), nAmount, wtx);
+
+    return wtx.GetHash().GetHex();
+}
+
+Value sendtogrants(const Array& params, bool fHelp)
+{
+    if (fHelp || params.size() < 3 || params.size() > 6)
+        throw runtime_error(
+            "sendtogrants <fromaccount> <grant> <amount> [minconf=1] [comment] [comment-to]\n"
+            "<amount> is a real and is rounded to the nearest 0.00000001"
+            + HelpRequiringPassphrase());
+
+    string strAccount = AccountFromValue(params[0]);
+
+    string grant = params[1].get_str();
+    string addrStr;
+    if (grant == "devgrant" || grant == "DEVGRANT")
+        addrStr = "1FfmbHfnpaZjKFvyi1okTjJJusN455paPH";
+    if (grant == "glb" || grant == "GLB")
+        addrStr = "1FfmbHfnpaZjKFvyi1okTjJJusN455paPH";
+    else
+        throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid or unknown grant acronym.");
+
+    CBitcreditAddress address(addrStr);
+    if (!address.IsValid())
+        throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid Bitcredit address");
+    
+    CAmount nAmount = AmountFromValue(params[2]);
+    
+    CWalletTx wtx;
+    wtx.strFromAccount = strAccount;
+    if (params.size() > 4 && params[4].type() != null_type && !params[4].get_str().empty())
+        wtx.mapValue["comment"] = params[4].get_str();
+    if (params.size() > 5 && params[5].type() != null_type && !params[5].get_str().empty())
+        wtx.mapValue["to"]      = params[5].get_str();
+
+    EnsureWalletIsUnlocked();
+
+    SendMoney(address.Get(), nAmount, wtx);
+
+    return wtx.GetHash().GetHex();
+}
 
 Value sendfrom(const Array& params, bool fHelp)
 {
     if (fHelp || params.size() < 3 || params.size() > 6)
         throw runtime_error(
-            "sendfrom \"fromaccount\" \"tobitcreditsaddress\" amount ( minconf \"comment\" \"comment-to\" )\n"
-            "\nSent an amount from an account to a bitcredits address.\n"
+            "sendfrom \"fromaccount\" \"tobitcreditaddress\" amount ( minconf \"comment\" \"comment-to\" )\n"
+            "\nSent an amount from an account to a bitcredit address.\n"
             "The amount is a real and is rounded to the nearest 0.00000001."
             + HelpRequiringPassphrase() + "\n"
             "\nArguments:\n"
             "1. \"fromaccount\"       (string, required) The name of the account to send funds from. May be the default account using \"\".\n"
-            "2. \"tobitcreditsaddress\"  (string, required) The bitcredits address to send funds to.\n"
+            "2. \"tobitcreditaddress\"  (string, required) The bitcredit address to send funds to.\n"
             "3. amount                (numeric, required) The amount in btc. (transaction fee is added on top).\n"
             "4. minconf               (numeric, optional, default=1) Only use funds with at least this many confirmations.\n"
             "5. \"comment\"           (string, optional) A comment used to store what the transaction is for. \n"
@@ -768,9 +918,9 @@ Value sendfrom(const Array& params, bool fHelp)
         );
 
     string strAccount = AccountFromValue(params[0]);
-    CBitcreditsAddress address(params[1].get_str());
+    CBitcreditAddress address(params[1].get_str());
     if (!address.IsValid())
-        throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid Bitcredits address");
+        throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid Bitcredit address");
     CAmount nAmount = AmountFromValue(params[2]);
     int nMinDepth = 1;
     if (params.size() > 3)
@@ -790,10 +940,7 @@ Value sendfrom(const Array& params, bool fHelp)
     if (nAmount > nBalance)
         throw JSONRPCError(RPC_WALLET_INSUFFICIENT_FUNDS, "Account has insufficient funds");
 
-    // Send
-    string strError = pwalletMain->SendMoney(address.Get(), nAmount, wtx);
-    if (strError != "")
-        throw JSONRPCError(RPC_WALLET_ERROR, strError);
+    SendMoney(address.Get(), nAmount, wtx);
 
     return wtx.GetHash().GetHex();
 }
@@ -810,7 +957,7 @@ Value sendmany(const Array& params, bool fHelp)
             "1. \"fromaccount\"         (string, required) The account to send the funds from, can be \"\" for the default account\n"
             "2. \"amounts\"             (string, required) A json object with addresses and amounts\n"
             "    {\n"
-            "      \"address\":amount   (numeric) The bitcredits address is the key, the numeric amount in btc is the value\n"
+            "      \"address\":amount   (numeric) The bitcredit address is the key, the numeric amount in btc is the value\n"
             "      ,...\n"
             "    }\n"
             "3. minconf                 (numeric, optional, default=1) Only use the balance confirmed at least this many times.\n"
@@ -838,15 +985,15 @@ Value sendmany(const Array& params, bool fHelp)
     if (params.size() > 3 && params[3].type() != null_type && !params[3].get_str().empty())
         wtx.mapValue["comment"] = params[3].get_str();
 
-    set<CBitcreditsAddress> setAddress;
+    set<CBitcreditAddress> setAddress;
     vector<pair<CScript, CAmount> > vecSend;
 
     CAmount totalAmount = 0;
     BOOST_FOREACH(const Pair& s, sendTo)
     {
-        CBitcreditsAddress address(s.name_);
+        CBitcreditAddress address(s.name_);
         if (!address.IsValid())
-            throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, string("Invalid Bitcredits address: ")+s.name_);
+            throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, string("Invalid Bitcredit address: ")+s.name_);
 
         if (setAddress.count(address))
             throw JSONRPCError(RPC_INVALID_PARAMETER, string("Invalid parameter, duplicated address: ")+s.name_);
@@ -888,20 +1035,20 @@ Value addmultisigaddress(const Array& params, bool fHelp)
     {
         string msg = "addmultisigaddress nrequired [\"key\",...] ( \"account\" )\n"
             "\nAdd a nrequired-to-sign multisignature address to the wallet.\n"
-            "Each key is a Bitcredits address or hex-encoded public key.\n"
+            "Each key is a Bitcredit address or hex-encoded public key.\n"
             "If 'account' is specified, assign address to that account.\n"
 
             "\nArguments:\n"
             "1. nrequired        (numeric, required) The number of required signatures out of the n keys or addresses.\n"
-            "2. \"keysobject\"   (string, required) A json array of bitcredits addresses or hex-encoded public keys\n"
+            "2. \"keysobject\"   (string, required) A json array of bitcredit addresses or hex-encoded public keys\n"
             "     [\n"
-            "       \"address\"  (string) bitcredits address or hex-encoded public key\n"
+            "       \"address\"  (string) bitcredit address or hex-encoded public key\n"
             "       ...,\n"
             "     ]\n"
             "3. \"account\"      (string, optional) An account to assign the addresses to.\n"
 
             "\nResult:\n"
-            "\"bitcreditsaddress\"  (string) A bitcredits address associated with the keys.\n"
+            "\"bitcreditaddress\"  (string) A bitcredit address associated with the keys.\n"
 
             "\nExamples:\n"
             "\nAdd a multisig address from 2 addresses\n"
@@ -918,11 +1065,11 @@ Value addmultisigaddress(const Array& params, bool fHelp)
 
     // Construct using pay-to-script-hash:
     CScript inner = _createmultisig_redeemScript(params);
-    CScriptID innerID = inner.GetID();
+    CScriptID innerID(inner);
     pwalletMain->AddCScript(inner);
 
     pwalletMain->SetAddressBook(innerID, strAccount, "send");
-    return CBitcreditsAddress(innerID).ToString();
+    return CBitcreditAddress(innerID).ToString();
 }
 
 
@@ -958,7 +1105,7 @@ Value ListReceived(const Array& params, bool fByAccounts)
             filter = filter | ISMINE_WATCH_ONLY;
 
     // Tally
-    map<CBitcreditsAddress, tallyitem> mapTally;
+    map<CBitcreditAddress, tallyitem> mapTally;
     for (map<uint256, CWalletTx>::iterator it = pwalletMain->mapWallet.begin(); it != pwalletMain->mapWallet.end(); ++it)
     {
         const CWalletTx& wtx = (*it).second;
@@ -992,11 +1139,11 @@ Value ListReceived(const Array& params, bool fByAccounts)
     // Reply
     Array ret;
     map<string, tallyitem> mapAccountTally;
-    BOOST_FOREACH(const PAIRTYPE(CBitcreditsAddress, CAddressBookData)& item, pwalletMain->mapAddressBook)
+    BOOST_FOREACH(const PAIRTYPE(CBitcreditAddress, CAddressBookData)& item, pwalletMain->mapAddressBook)
     {
-        const CBitcreditsAddress& address = item.first;
+        const CBitcreditAddress& address = item.first;
         const string& strAccount = item.second.name;
-        map<CBitcreditsAddress, tallyitem>::iterator it = mapTally.find(address);
+        map<CBitcreditAddress, tallyitem>::iterator it = mapTally.find(address);
         if (it == mapTally.end() && !fIncludeEmpty)
             continue;
 
@@ -1066,7 +1213,7 @@ Value listreceivedbyaddress(const Array& params, bool fHelp)
             "\nList balances by receiving address.\n"
             "\nArguments:\n"
             "1. minconf       (numeric, optional, default=1) The minimum number of confirmations before payments are included.\n"
-            "2. includeempty  (numeric, optional, dafault=false) Whether to include addresses that haven't received any payments.\n"
+            "2. includeempty  (numeric, optional, default=false) Whether to include addresses that haven't received any payments.\n"
             "3. includeWatchonly (bool, optional, default=false) Whether to include watchonly addresses (see 'importaddress').\n"
 
             "\nResult:\n"
@@ -1123,10 +1270,12 @@ Value listreceivedbyaccount(const Array& params, bool fHelp)
 
 static void MaybePushAddress(Object & entry, const CTxDestination &dest)
 {
-    CBitcreditsAddress addr;
+    CBitcreditAddress addr;
     if (addr.Set(dest))
         entry.push_back(Pair("address", addr.ToString()));
 }
+
+int txrvd=0, txsnt=0, totalrvd=0, totalsnt=0;
 
 void ListTransactions(const CWalletTx& wtx, const string& strAccount, int nMinDepth, bool fLong, Array& ret, const isminefilter& filter)
 {
@@ -1152,6 +1301,7 @@ void ListTransactions(const CWalletTx& wtx, const string& strAccount, int nMinDe
             MaybePushAddress(entry, s.destination);
             entry.push_back(Pair("category", "send"));
             entry.push_back(Pair("amount", ValueFromAmount(-s.amount)));
+            totalsnt +=(-s.amount);
             entry.push_back(Pair("vout", s.vout));
             entry.push_back(Pair("fee", ValueFromAmount(-nFee)));
             if (fLong)
@@ -1162,6 +1312,7 @@ void ListTransactions(const CWalletTx& wtx, const string& strAccount, int nMinDe
 
     // Received
     if (listReceived.size() > 0 && wtx.GetDepthInMainChain() >= nMinDepth)
+    
     {
         BOOST_FOREACH(const COutputEntry& r, listReceived)
         {
@@ -1189,6 +1340,7 @@ void ListTransactions(const CWalletTx& wtx, const string& strAccount, int nMinDe
                     entry.push_back(Pair("category", "receive"));
                 }
                 entry.push_back(Pair("amount", ValueFromAmount(r.amount)));
+                totalrvd += (r.amount);
                 entry.push_back(Pair("vout", r.vout));
                 if (fLong)
                     WalletTxToJSON(wtx, entry);
@@ -1196,6 +1348,8 @@ void ListTransactions(const CWalletTx& wtx, const string& strAccount, int nMinDe
             }
         }
     }
+    txrvd=listReceived.size();
+    txsnt=listSent.size();
 }
 
 void AcentryToJSON(const CAccountingEntry& acentry, const string& strAccount, Array& ret)
@@ -1232,7 +1386,7 @@ Value listtransactions(const Array& params, bool fHelp)
             "  {\n"
             "    \"account\":\"accountname\",       (string) The account name associated with the transaction. \n"
             "                                                It will be \"\" for the default account.\n"
-            "    \"address\":\"bitcreditsaddress\",    (string) The bitcredits address of the transaction. Not present for \n"
+            "    \"address\":\"bitcreditaddress\",    (string) The bitcredit address of the transaction. Not present for \n"
             "                                                move transactions (category = move).\n"
             "    \"category\":\"send|receive|move\", (string) The transaction category. 'move' is a local (off blockchain)\n"
             "                                                transaction between accounts, and not associated with an address,\n"
@@ -1334,7 +1488,7 @@ Value listaccounts(const Array& params, bool fHelp)
             "listaccounts ( minconf includeWatchonly)\n"
             "\nReturns Object that has account names as keys, account balances as values.\n"
             "\nArguments:\n"
-            "1. minconf          (numeric, optional, default=1) Only onclude transactions with at least this many confirmations\n"
+            "1. minconf          (numeric, optional, default=1) Only include transactions with at least this many confirmations\n"
             "2. includeWatchonly (bool, optional, default=false) Include balances in watchonly addresses (see 'importaddress')\n"
             "\nResult:\n"
             "{                      (json object where keys are account names, and values are numeric balances\n"
@@ -1416,7 +1570,7 @@ Value listsinceblock(const Array& params, bool fHelp)
             "{\n"
             "  \"transactions\": [\n"
             "    \"account\":\"accountname\",       (string) The account name associated with the transaction. Will be \"\" for the default account.\n"
-            "    \"address\":\"bitcreditsaddress\",    (string) The bitcredits address of the transaction. Not present for move transactions (category = move).\n"
+            "    \"address\":\"bitcreditaddress\",    (string) The bitcredit address of the transaction. Not present for move transactions (category = move).\n"
             "    \"category\":\"send|receive\",     (string) The transaction category. 'send' has negative amounts, 'receive' has positive amounts.\n"
             "    \"amount\": x.xxx,          (numeric) The amount in btc. This is negative for the 'send' category, and for the 'move' category for moves \n"
             "                                          outbound. It is positive for the 'receive' category, and for the 'move' category for inbound funds.\n"
@@ -1510,7 +1664,7 @@ Value gettransaction(const Array& params, bool fHelp)
             "  \"details\" : [\n"
             "    {\n"
             "      \"account\" : \"accountname\",  (string) The account name involved in the transaction, can be \"\" for the default account.\n"
-            "      \"address\" : \"bitcreditsaddress\",   (string) The bitcredits address involved in the transaction\n"
+            "      \"address\" : \"bitcreditaddress\",   (string) The bitcredit address involved in the transaction\n"
             "      \"category\" : \"send|receive\",    (string) The category, either 'send' or 'receive'\n"
             "      \"amount\" : x.xxx                  (numeric) The amount in btc\n"
             "      \"vout\" : n,                       (numeric) the vout value\n"
@@ -1627,7 +1781,7 @@ Value walletpassphrase(const Array& params, bool fHelp)
         throw runtime_error(
             "walletpassphrase \"passphrase\" timeout\n"
             "\nStores the wallet decryption key in memory for 'timeout' seconds.\n"
-            "This is needed prior to performing transactions related to private keys such as sending bitcreditss\n"
+            "This is needed prior to performing transactions related to private keys such as sending bitcredits\n"
             "\nArguments:\n"
             "1. \"passphrase\"     (string, required) The wallet passphrase\n"
             "2. timeout            (numeric, required) The time to keep the decryption key in seconds.\n"
@@ -1767,10 +1921,10 @@ Value encryptwallet(const Array& params, bool fHelp)
             "\nExamples:\n"
             "\nEncrypt you wallet\n"
             + HelpExampleCli("encryptwallet", "\"my pass phrase\"") +
-            "\nNow set the passphrase to use the wallet, such as for signing or sending bitcredits\n"
+            "\nNow set the passphrase to use the wallet, such as for signing or sending bitcredit\n"
             + HelpExampleCli("walletpassphrase", "\"my pass phrase\"") +
             "\nNow we can so something like sign\n"
-            + HelpExampleCli("signmessage", "\"bitcreditsaddress\" \"test message\"") +
+            + HelpExampleCli("signmessage", "\"bitcreditaddress\" \"test message\"") +
             "\nNow lock the wallet again by removing the passphrase\n"
             + HelpExampleCli("walletlock", "") +
             "\nAs a json rpc call\n"
@@ -1800,7 +1954,7 @@ Value encryptwallet(const Array& params, bool fHelp)
     // slack space in .dat files; that is bad if the old data is
     // unencrypted private keys. So:
     StartShutdown();
-    return "wallet encrypted; Bitcredits server stopping, restart to run with encrypted wallet. The keypool has been flushed, you need to make a new backup.";
+    return "wallet encrypted; Bitcredit server stopping, restart to run with encrypted wallet. The keypool has been flushed, you need to make a new backup.";
 }
 
 Value lockunspent(const Array& params, bool fHelp)
@@ -1810,7 +1964,7 @@ Value lockunspent(const Array& params, bool fHelp)
             "lockunspent unlock [{\"txid\":\"txid\",\"vout\":n},...]\n"
             "\nUpdates list of temporarily unspendable outputs.\n"
             "Temporarily lock (unlock=false) or unlock (unlock=true) specified transaction outputs.\n"
-            "A locked transaction output will not be chosen by automatic coin selection, when spending bitcreditss.\n"
+            "A locked transaction output will not be chosen by automatic coin selection, when spending bitcredits.\n"
             "Locks are stored in memory only. Nodes start with zero locked outputs, and the locked output list\n"
             "is always cleared (by virtue of process exit) when a node stops or fails.\n"
             "Also see the listunspent call\n"
@@ -1959,7 +2113,7 @@ Value getwalletinfo(const Array& params, bool fHelp)
             "\nResult:\n"
             "{\n"
             "  \"walletversion\": xxxxx,     (numeric) the wallet version\n"
-            "  \"balance\": xxxxxxx,         (numeric) the total bitcredits balance of the wallet\n"
+            "  \"balance\": xxxxxxx,         (numeric) the total bitcredit balance of the wallet\n"
             "  \"txcount\": xxxxxxx,         (numeric) the total number of transactions in the wallet\n"
             "  \"keypoololdest\": xxxxxx,    (numeric) the timestamp (seconds since GMT epoch) of the oldest pre-generated key in the key pool\n"
             "  \"keypoolsize\": xxxx,        (numeric) how many new keys are pre-generated\n"

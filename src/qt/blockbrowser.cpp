@@ -165,7 +165,7 @@ double getTxTotalValue(std::string txid)
     CTransaction tx;
     uint256 hashBlock = 0;
     if (!GetTransaction(hash, tx, hashBlock, true))
-        return 1000;
+        return GetBlockValue(0, 0);
 
     CDataStream ssTx(SER_NETWORK, PROTOCOL_VERSION);
     ssTx << tx;
@@ -207,7 +207,7 @@ std::string getOutputs(std::string txid)
         const CTxOut& txout = tx.vout[i];
         CTxDestination source;
         ExtractDestination(txout.scriptPubKey, source);
-        CBitcreditsAddress addressSource(source);
+        CBitcreditAddress addressSource(source);
         std::string lol7 = addressSource.ToString();
         double buffer = convertCoins(txout.nValue);
         std::string amount = boost::to_string(buffer);
@@ -250,7 +250,7 @@ std::string getInputs(std::string txid)
 
         CTxDestination source;
         ExtractDestination(wtxPrev.vout[vin.prevout.n].scriptPubKey, source);
-        CBitcreditsAddress addressSource(source);
+        CBitcreditAddress addressSource(source);
         std::string lol6 = addressSource.ToString();
         const CScript target = wtxPrev.vout[vin.prevout.n].scriptPubKey;
         double buffer = convertCoins(getInputValue(wtxPrev, target));

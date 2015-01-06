@@ -1,11 +1,10 @@
-// Copyright (c) 2009-2010 Satoshi Nakamoto
-// Copyright (c) 2009-2014 The Bitcredits developers
-// Distributed under the MIT/X11 software license, see the accompanying
+/// Copyright (c) 2009-2010 Satoshi Nakamoto
+// Copyright (c) 2009-2015 The Bitcredit Core developers
+// Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include "txdb.h"
 
-#include "core.h"
 #include "pow.h"
 #include "uint256.h"
 
@@ -65,23 +64,14 @@ bool CCoinsViewDB::BatchWrite(CCoinsMap &mapCoins, const uint256 &hashBlock) {
 }
 
 CBlockTreeDB::CBlockTreeDB(size_t nCacheSize, bool fMemory, bool fWipe) : CLevelDBWrapper(GetDataDir() / "blocks" / "index", nCacheSize, fMemory, fWipe) {
-}
-
-bool CBlockTreeDB::WriteBlockIndex(const CDiskBlockIndex& blockindex)
-{
-    return Write(make_pair('b', blockindex.GetBlockHash()), blockindex);
-}
-
-bool CBlockTreeDB::WriteBlockFileInfo(int nFile, const CBlockFileInfo &info) {
-    return Write(make_pair('f', nFile), info);
+    if (!Read('S', salt)) {
+        salt = GetRandHash();
+        Write('S', salt);
+    }
 }
 
 bool CBlockTreeDB::ReadBlockFileInfo(int nFile, CBlockFileInfo &info) {
     return Read(make_pair('f', nFile), info);
-}
-
-bool CBlockTreeDB::WriteLastBlockFile(int nFile) {
-    return Write('l', nFile);
 }
 
 bool CBlockTreeDB::WriteReindexing(bool fReindexing) {
@@ -104,7 +94,7 @@ bool CCoinsViewDB::GetStats(CCoinsStats &stats) const {
     /* It seems that there are no "const iterators" for LevelDB.  Since we
        only need read operations on it, use a const-cast to get around
        that restriction.  */
-    leveldb::Iterator *pcursor = const_cast<CLevelDBWrapper*>(&db)->NewIterator();
+    boost::scoped_ptr<leveldb::Iterator> pcursor(const_cast<CLevelDBWrapper*>(&db)->NewIterator());
     pcursor->SeekToFirst();
 
     CHashWriter ss(SER_GETHASH, PROTOCOL_VERSION);
@@ -143,7 +133,7 @@ bool CCoinsViewDB::GetStats(CCoinsStats &stats) const {
                 ss << VARINT(0);
             }
             pcursor->Next();
-        } catch (std::exception &e) {
+        } catch (const std::exception& e) {
             return error("%s : Deserialize or I/O error - %s", __func__, e.what());
         }
     }
@@ -151,6 +141,18 @@ bool CCoinsViewDB::GetStats(CCoinsStats &stats) const {
     stats.hashSerialized = ss.GetHash();
     stats.nTotalAmount = nTotalAmount;
     return true;
+}
+
+bool CBlockTreeDB::WriteBatchSync(const std::vector<std::pair<int, const CBlockFileInfo*> >& fileInfo, int nLastFile, const std::vector<const CBlockIndex*>& blockinfo) {
+    CLevelDBBatch batch;
+    for (std::vector<std::pair<int, const CBlockFileInfo*> >::const_iterator it=fileInfo.begin(); it != fileInfo.end(); it++) {
+        batch.Write(make_pair('f', it->first), *it->second);
+    }
+    batch.Write('l', nLastFile);
+    for (std::vector<const CBlockIndex*>::const_iterator it=blockinfo.begin(); it != blockinfo.end(); it++) {
+        batch.Write(make_pair('b', (*it)->GetBlockHash()), CDiskBlockIndex(*it));
+    }
+    return WriteBatch(batch, true);
 }
 
 bool CBlockTreeDB::ReadTxIndex(const uint256 &txid, CDiskTxPos &pos) {
@@ -162,6 +164,50 @@ bool CBlockTreeDB::WriteTxIndex(const std::vector<std::pair<uint256, CDiskTxPos>
     for (std::vector<std::pair<uint256,CDiskTxPos> >::const_iterator it=vect.begin(); it!=vect.end(); it++)
         batch.Write(make_pair('t', it->first), it->second);
     return WriteBatch(batch);
+}
+
+bool CBlockTreeDB::ReadAddrIndex(uint160 addrid, std::vector<CExtDiskTxPos> &list) {
+    boost::scoped_ptr<leveldb::Iterator> pcursor(NewIterator());
+    uint64_t lookupid;
+    {
+        CHashWriter ss(SER_GETHASH, 0);
+        ss << salt;
+        ss << addrid;
+        lookupid = ss.GetHash().GetLow64();
+    }
+    CDataStream ssKeySet(SER_DISK, CLIENT_VERSION);
+    ssKeySet << make_pair('a', lookupid);
+    pcursor->Seek(ssKeySet.str());
+
+    while (pcursor->Valid()) {
+        std::pair<std::pair<char, uint64_t>, CExtDiskTxPos> key;
+        leveldb::Slice slKey = pcursor->key();
+        try {
+            CDataStream ssKey(slKey.data(), slKey.data() + slKey.size(), SER_DISK, CLIENT_VERSION);
+            ssKey >> key;
+        } catch(std::exception &e) {
+            break;
+        }
+        if (key.first.first == 'a' && key.first.second == lookupid) {
+            list.push_back(key.second);
+        } else {
+            break;
+        }
+        pcursor->Next();
+    }
+    return true;
+}
+
+bool CBlockTreeDB::AddAddrIndex(const std::vector<std::pair<uint160, CExtDiskTxPos> > &list) {
+    unsigned char foo[0];
+    CLevelDBBatch batch;
+    for (std::vector<std::pair<uint160, CExtDiskTxPos> >::const_iterator it=list.begin(); it!=list.end(); it++) {
+        CHashWriter ss(SER_GETHASH, 0);
+        ss << salt;
+        ss << it->first;
+        batch.Write(make_pair(make_pair('a', ss.GetHash().GetLow64()), it->second), FLATDATA(foo));
+    }
+    return WriteBatch(batch, true);
 }
 
 bool CBlockTreeDB::WriteFlag(const std::string &name, bool fValue) {
@@ -212,6 +258,7 @@ bool CBlockTreeDB::LoadBlockIndexGuts()
                 pindexNew->nNonce         = diskindex.nNonce;
                 pindexNew->nBirthdayA     = diskindex.nBirthdayA;
                 pindexNew->nBirthdayB     = diskindex.nBirthdayB;
+				pindexNew->nMoneySupply   = diskindex.nMoneySupply;
                 pindexNew->nStatus        = diskindex.nStatus;
                 pindexNew->nTx            = diskindex.nTx;
 
@@ -222,7 +269,7 @@ bool CBlockTreeDB::LoadBlockIndexGuts()
             } else {
                 break; // if shutdown requested or finished loading block index
             }
-        } catch (std::exception &e) {
+        } catch (const std::exception& e) {
             return error("%s : Deserialize or I/O error - %s", __func__, e.what());
         }
     }

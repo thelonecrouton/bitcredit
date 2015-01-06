@@ -1,9 +1,10 @@
-// Copyright (c) 2009-2014 The Bitcredits developers
-// Distributed under the MIT/X11 software license, see the accompanying
+// Copyright (c) 2009-2015 The Bitcredit Core developers
+// Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include "rpcserver.h"
 
+#include "clientversion.h"
 #include "main.h"
 #include "net.h"
 #include "netbase.h"
@@ -97,7 +98,12 @@ Value getpeerinfo(const Array& params, bool fHelp)
             "    \"inbound\": true|false,     (boolean) Inbound (true) or Outbound (false)\n"
             "    \"startingheight\": n,       (numeric) The starting height (block) of the peer\n"
             "    \"banscore\": n,             (numeric) The ban score\n"
-            "    \"syncnode\": true|false     (boolean) if sync node\n"
+            "    \"synced_headers\": n,       (numeric) The last header we have in common with this peer\n"
+            "    \"synced_blocks\": n,        (numeric) The last block we have in common with this peer\n"
+            "    \"inflight\": [\n"
+            "       n,                        (numeric) The heights of blocks we're currently asking from this peer\n"
+            "       ...\n"
+            "    ]\n"
             "  }\n"
             "  ,...\n"
             "]\n"
@@ -137,9 +143,14 @@ Value getpeerinfo(const Array& params, bool fHelp)
         obj.push_back(Pair("startingheight", stats.nStartingHeight));
         if (fStateStats) {
             obj.push_back(Pair("banscore", statestats.nMisbehavior));
-            obj.push_back(Pair("syncheight", statestats.nSyncHeight));
+            obj.push_back(Pair("synced_headers", statestats.nSyncHeight));
+            obj.push_back(Pair("synced_blocks", statestats.nCommonHeight));
+            Array heights;
+            BOOST_FOREACH(int height, statestats.vHeightInFlight) {
+                heights.push_back(height);
+            }
+            obj.push_back(Pair("inflight", heights));
         }
-        obj.push_back(Pair("syncnode", stats.fSyncNode));
         obj.push_back(Pair("whitelisted", stats.fWhitelisted));
 
         ret.push_back(obj);
@@ -217,7 +228,7 @@ Value getaddednodeinfo(const Array& params, bool fHelp)
             "    \"connected\" : true|false,          (boolean) If connected\n"
             "    \"addresses\" : [\n"
             "       {\n"
-            "         \"address\" : \"192.168.0.201:8333\",  (string) The bitcredits server host and port\n"
+            "         \"address\" : \"192.168.0.201:8333\",  (string) The bitcredit server host and port\n"
             "         \"connected\" : \"outbound\"           (string) connection, inbound or outbound\n"
             "       }\n"
             "       ,...\n"

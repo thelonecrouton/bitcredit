@@ -1,9 +1,9 @@
-// Copyright (c) 2012-2014 The Bitcredits developers
+// Copyright (c) 2012-2015 The Bitcredit Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef BITCREDITS_LIMITEDMAP_H
-#define BITCREDITS_LIMITEDMAP_H
+#ifndef BITCREDIT_LIMITEDMAP_H
+#define BITCREDIT_LIMITEDMAP_H
 
 #include <assert.h>
 #include <map>
@@ -91,4 +91,4 @@ public:
     }
 };
 
-#endif // BITCREDITS_LIMITEDMAP_H
+#endif // BITCREDIT_LIMITEDMAP_H

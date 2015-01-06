@@ -1,16 +1,17 @@
-// Copyright (c) 2011-2014 The Bitcredits developers
-// Distributed under the MIT/X11 software license, see the accompanying
+// Copyright (c) 2014-2015 The Bitcredit Core developers
+// Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #if defined(HAVE_CONFIG_H)
-#include "config/bitcredits-config.h"
+#include "config/bitcredit-config.h"
 #endif
 
 #include "optionsmodel.h"
 
-#include "bitcreditsunits.h"
+#include "bitcreditunits.h"
 #include "guiutil.h"
 
+#include "amount.h"
 #include "init.h"
 #include "main.h"
 #include "net.h"
@@ -57,7 +58,7 @@ void OptionsModel::Init()
 
     // Display
     if (!settings.contains("nDisplayUnit"))
-        settings.setValue("nDisplayUnit", BitcreditsUnits::BCR);
+        settings.setValue("nDisplayUnit", BitcreditUnits::BCR);
     nDisplayUnit = settings.value("nDisplayUnit").toInt();
 
     if (!settings.contains("strThirdPartyTxUrls"))
@@ -89,12 +90,6 @@ void OptionsModel::Init()
 
     // Wallet
 #ifdef ENABLE_WALLET
-    if (!settings.contains("nTransactionFee"))
-        settings.setValue("nTransactionFee", (qint64)DEFAULT_TRANSACTION_FEE);
-    payTxFee = CFeeRate(settings.value("nTransactionFee").toLongLong()); // if -paytxfee is set, this will be overridden later in init.cpp
-    if (mapArgs.count("-paytxfee"))
-        addOverriddenOption("-paytxfee");
-
     if (!settings.contains("bSpendZeroConfChange"))
         settings.setValue("bSpendZeroConfChange", true);
     if (!SoftSetBoolArg("-spendzeroconfchange", settings.value("bSpendZeroConfChange").toBool()))
@@ -121,6 +116,14 @@ void OptionsModel::Init()
         addOverriddenOption("-proxy");
     else if(!settings.value("fUseProxy").toBool() && !GetArg("-proxy", "").empty())
         addOverriddenOption("-proxy");
+        
+    if (!settings.contains("fUseSeparateProxyTor"))
+        settings.setValue("fUseSeparateProxyTor", false);
+    if (!settings.contains("addrSeparateProxyTor"))
+        settings.setValue("addrSeparateProxyTor", "127.0.0.1:9050");
+    // Only try to set -onion, if user has enabled fUseSeparateProxyTor
+    if (settings.value("fUseSeparateProxyTor").toBool() && !SoftSetArg("-onion", settings.value("addrSeparateProxyTor").toString().toStdString()))
+        addOverriddenOption("-onion");
 
     // Display
     if (!settings.contains("language"))
@@ -183,17 +186,21 @@ QVariant OptionsModel::data(const QModelIndex & index, int role) const
             return strlIpPort.at(1);
         }
 
-#ifdef ENABLE_WALLET
-        case Fee: {
-            // Attention: Init() is called before payTxFee is set in AppInit2()!
-            // To ensure we can change the fee on-the-fly update our QSetting when
-            // opening OptionsDialog, which queries Fee via the mapper.
-            if (!(payTxFee == CFeeRate(settings.value("nTransactionFee").toLongLong(), 1000)))
-                settings.setValue("nTransactionFee", (qint64)payTxFee.GetFeePerK());
-            // Todo: Consider to revert back to use just payTxFee here, if we don't want
-            // -paytxfee to update our QSettings!
-            return settings.value("nTransactionFee");
+        // separate Tor proxy
+        case ProxyUseTor:
+            return settings.value("fUseSeparateProxyTor", false);
+        case ProxyIPTor: {
+            // contains IP at index 0 and port at index 1
+            QStringList strlIpPort = settings.value("addrSeparateProxyTor").toString().split(":", QString::SkipEmptyParts);
+            return strlIpPort.at(0);
         }
+        case ProxyPortTor: {
+            // contains IP at index 0 and port at index 1
+            QStringList strlIpPort = settings.value("addrSeparateProxyTor").toString().split(":", QString::SkipEmptyParts);
+            return strlIpPort.at(1);
+        }
+
+#ifdef ENABLE_WALLET
         case SpendZeroConfChange:
             return settings.value("bSpendZeroConfChange");
 #endif
@@ -273,16 +280,41 @@ bool OptionsModel::setData(const QModelIndex & index, const QVariant & value, in
                 setRestartRequired(true);
             }
         }
-        break;
-#ifdef ENABLE_WALLET
-        case Fee: { // core option - can be changed on-the-fly
-            // Todo: Add is valid check  and warn via message, if not
-            CAmount nTransactionFee(value.toLongLong());
-            payTxFee = CFeeRate(nTransactionFee, 1000);
-            settings.setValue("nTransactionFee", qint64(nTransactionFee));
-            emit transactionFeeChanged(nTransactionFee);
+        break;    
+        
+        // separate Tor proxy
+        case ProxyUseTor:
+            if (settings.value("fUseSeparateProxyTor") != value) {
+                settings.setValue("fUseSeparateProxyTor", value.toBool());
+                setRestartRequired(true);
+            }
             break;
+        case ProxyIPTor: {
+            // contains current IP at index 0 and current port at index 1
+            QStringList strlIpPort = settings.value("addrSeparateProxyTor").toString().split(":", QString::SkipEmptyParts);
+            // if that key doesn't exist or has a changed IP
+            if (!settings.contains("addrSeparateProxyTor") || strlIpPort.at(0) != value.toString()) {
+                // construct new value from new IP and current port
+                QString strNewValue = value.toString() + ":" + strlIpPort.at(1);
+                settings.setValue("addrSeparateProxyTor", strNewValue);
+                setRestartRequired(true);
+            }
         }
+        break;
+        case ProxyPortTor: {
+            // contains current IP at index 0 and current port at index 1
+            QStringList strlIpPort = settings.value("addrSeparateProxyTor").toString().split(":", QString::SkipEmptyParts);
+            // if that key doesn't exist or has a changed port
+            if (!settings.contains("addrSeparateProxyTor") || strlIpPort.at(1) != value.toString()) {
+                // construct new value from current IP and new port
+                QString strNewValue = strlIpPort.at(0) + ":" + value.toString();
+                settings.setValue("addrSeparateProxyTor", strNewValue);
+                setRestartRequired(true);
+            }
+        }
+        break;
+  
+#ifdef ENABLE_WALLET
         case SpendZeroConfChange:
             if (settings.value("bSpendZeroConfChange") != value) {
                 settings.setValue("bSpendZeroConfChange", value);

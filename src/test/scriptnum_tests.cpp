@@ -1,5 +1,5 @@
-// Copyright (c) 2012-2014 The Bitcredits Core developers
-// Distributed under the MIT/X11 software license, see the accompanying
+// Copyright (c) 2012-2014 The Bitcredit Core developers
+// Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include "bignum.h"
@@ -25,11 +25,11 @@ static void CheckCreateVch(const int64_t& num)
     BOOST_CHECK(verify(bignum, scriptnum));
 
     CBigNum bignum2(bignum.getvch());
-    CScriptNum scriptnum2(scriptnum.getvch());
+    CScriptNum scriptnum2(scriptnum.getvch(), false);
     BOOST_CHECK(verify(bignum2, scriptnum2));
 
     CBigNum bignum3(scriptnum2.getvch());
-    CScriptNum scriptnum3(bignum2.getvch());
+    CScriptNum scriptnum3(bignum2.getvch(), false);
     BOOST_CHECK(verify(bignum3, scriptnum3));
 }
 

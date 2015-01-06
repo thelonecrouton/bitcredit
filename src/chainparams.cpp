@@ -1,12 +1,13 @@
 // Copyright (c) 2010 Satoshi Nakamoto
-// Copyright (c) 2009-2014 The Bitcredits developers
-// Distributed under the MIT/X11 software license, see the accompanying
+// Copyright (c) 2009-2015 The Bitcredit Core developers
+// Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include "chainparams.h"
 
 #include "random.h"
 #include "util.h"
+#include "utilstrencodings.h"
 
 #include <assert.h>
 
@@ -22,11 +23,11 @@ struct SeedSpec6 {
 
 #include "chainparamsseeds.h"
 
-//
-// Main network
-//
+/**
+ * Main network
+ */
 
-// Convert the pnSeeds6 array into usable address objects.
+//! Convert the pnSeeds6 array into usable address objects.
 static void convertSeed6(std::vector<CAddress> &vSeedsOut, const SeedSpec6 *data, unsigned int count)
 {
     // It'll only connect to one or two seed nodes because once it connects,
@@ -44,11 +45,13 @@ static void convertSeed6(std::vector<CAddress> &vSeedsOut, const SeedSpec6 *data
     }
 }
 
-    // What makes a good checkpoint block?
-    // + Is surrounded by blocks with reasonable timestamps
-    //   (no blocks before with a timestamp after, none after with
-    //    timestamp before)
-    // + Contains no strange transactions
+/**
+ * What makes a good checkpoint block?
+ * + Is surrounded by blocks with reasonable timestamps
+ *   (no blocks before with a timestamp after, none after with
+ *    timestamp before)
+ * + Contains no strange transactions
+ */
 static Checkpoints::MapCheckpoints mapCheckpoints =
         boost::assign::map_list_of
         ( 0, uint256("0x0df7a63994eb66317fd82c16ee5160adb83acb45f72d5bf359b88e635d7301b8"))
@@ -90,9 +93,11 @@ public:
     CMainParams() {
         networkID = CBaseChainParams::MAIN;
         strNetworkID = "main";
-        // The message start string is designed to be unlikely to occur in normal data.
-        // The characters are rarely used upper ASCII, not valid as UTF-8, and produce
-        // a large 4-byte int at any alignment.
+        /** 
+         * The message start string is designed to be unlikely to occur in normal data.
+         * The characters are rarely used upper ASCII, not valid as UTF-8, and produce
+         * a large 4-byte int at any alignment.
+         */
         pchMessageStart[0] = 0xf9;
         pchMessageStart[1] = 0xbe;
         pchMessageStart[2] = 0xb4;
@@ -109,7 +114,16 @@ public:
         nTargetTimespan2 = 1 * 60; // per block basis 
         nTargetSpacing = 1 * 60; //one minute
 
-        
+        /**
+         * Build the genesis block. Note that the output of the genesis coinbase cannot
+         * be spent as it did not originally exist in the database.
+         * 
+         * CBlock(hash=000000000019d6, ver=1, hashPrevBlock=00000000000000, hashMerkleRoot=4a5e1e, nTime=1231006505, nBits=1d00ffff, nNonce=2083236893, vtx=1)
+         *   CTransaction(hash=4a5e1e, ver=1, vin.size=1, vout.size=1, nLockTime=0)
+         *     CTxIn(COutPoint(000000, -1), coinbase 04ffff001d0104455468652054696d65732030332f4a616e2f32303039204368616e63656c6c6f72206f6e206272696e6b206f66207365636f6e64206261696c6f757420666f722062616e6b73)
+         *     CTxOut(nValue=50.00000000, scriptPubKey=0x5F1DF16B2B704C8A578D0B)
+         *   vMerkleTree: 4a5e1e
+         */
         const char* pszTimestamp = "Well nothing serious";
         CMutableTransaction txNew;
         txNew.vin.resize(1);
@@ -127,37 +141,9 @@ public:
         genesis.nBirthdayA   = 26230443;
         genesis.nBirthdayB   = 60109707;
 
-	/*	    {
-		printf("Generating new genesis block...\n");
-		uint256 hashTarget = uint256().SetCompact(pblock->nBits);
-		uint256 testHash;
-		genesis.nNonce = 0;
-		genesis.nBirthdayA = 0;
-		genesis.nBirthdayB = 0;
-		
-		for (;;)
-		{
-			genesis.nNonce=genesis.nNonce+1;
-			testHash=genesis.CalculateBestBirthdayHash();
-			printf("testHash %s\n", testHash.ToString().c_str());
-			printf("Hash Target %s\n", hashTarget.ToString().c_str());
-			if(testHash<hashTarget){
-				printf("Found Genesis Block Hash: %s\n", testHash.ToString().c_str());
-				printf("Found Genesis Block Merkle Root: %s\n", genesis.hashMerkleRoot.ToString().c_str());
-				printf("Found Genesis Block nNonce: %d\n", genesis.nNonce);
-				printf("Found Genesis Block nTime: %d\n", genesis.nTime);
-				printf("Found Genesis Block nBirthdayA: %d\n", genesis.nBirthdayA);
-				printf("Found Genesis Block nBirthdayB: %d\n", genesis.nBirthdayB);
-				
-				break;
-			}
-		}
-    }*/
-
         hashGenesisBlock = genesis.GetHash();
-        uint256 merklerootGenesisBlock("0x5cc3c0d3e08ea84f86235607e33f6153a9396e1a129fda4c671595817a5d7f9d");
         assert(hashGenesisBlock == uint256("0x0df7a63994eb66317fd82c16ee5160adb83acb45f72d5bf359b88e635d7301b8"));
-        assert(genesis.hashMerkleRoot == merklerootGenesisBlock );
+        assert(genesis.hashMerkleRoot == uint256("0x5cc3c0d3e08ea84f86235607e33f6153a9396e1a129fda4c671595817a5d7f9d"));
 
         vSeeds.push_back(CDNSSeedData("198.52.200.9", "198.52.200.9"));
         
@@ -187,18 +173,14 @@ public:
 };
 static CMainParams mainParams;
 
-//
-// Testnet (v3)
-//
-
+/**
+ * Testnet (v3)
+ */
 class CTestNetParams : public CMainParams {
 public:
     CTestNetParams() {
         networkID = CBaseChainParams::TESTNET;
         strNetworkID = "test";
-        // The message start string is designed to be unlikely to occur in normal data.
-        // The characters are rarely used upper ASCII, not valid as UTF-8, and produce
-        // a large 4-byte int at any alignment.
         pchMessageStart[0] = 0x0b;
         pchMessageStart[1] = 0x11;
         pchMessageStart[2] = 0x09;
@@ -209,7 +191,7 @@ public:
         nRejectBlockOutdatedMajority = 75;
         nToCheckBlockUpgradeMajority = 100;
         nMinerThreads = 0;
-        nTargetTimespan = 14 * 24 * 60 * 60; // two weeks
+        nTargetTimespan = 14 * 24 * 60 * 60; //! two weeks
         nTargetSpacing = 10 * 60;
 
         // Modify the testnet genesis block so the timestamp is valid for a later start.
@@ -223,7 +205,9 @@ public:
         vFixedSeeds.clear();
         vSeeds.clear();
         vSeeds.push_back(CDNSSeedData("alexykot.me", "testnet-seed.alexykot.me"));
-        
+        vSeeds.push_back(CDNSSeedData("bitcredit.petertodd.org", "testnet-seed.bitcredit.petertodd.org"));
+        vSeeds.push_back(CDNSSeedData("bluematt.me", "testnet-seed.bluematt.me"));
+        vSeeds.push_back(CDNSSeedData("bitcredit.schildbach.de", "testnet-seed.bitcredit.schildbach.de"));
 
         base58Prefixes[PUBKEY_ADDRESS] = list_of(111);
         base58Prefixes[SCRIPT_ADDRESS] = list_of(196);
@@ -248,9 +232,9 @@ public:
 };
 static CTestNetParams testNetParams;
 
-//
-// Regression test
-//
+/**
+ * Regression test
+ */
 class CRegTestParams : public CTestNetParams {
 public:
     CRegTestParams() {
@@ -265,7 +249,7 @@ public:
         nRejectBlockOutdatedMajority = 950;
         nToCheckBlockUpgradeMajority = 1000;
         nMinerThreads = 1;
-        nTargetTimespan = 14 * 24 * 60 * 60; // two weeks
+        nTargetTimespan = 14 * 24 * 60 * 60; //! two weeks
         nTargetSpacing = 10 * 60;
         bnProofOfWorkLimit = ~uint256(0) >> 4;
         genesis.nTime    = 1418504572;
@@ -277,11 +261,8 @@ public:
         nDefaultPort = 18444;
         assert(hashGenesisBlock == uint256("0x0df7a63994eb66317fd82c16ee5160adb83acb45f72d5bf359b88e635d7301b8"));
 
-        
-        genesis.nNonce   = 2;
-        
-
-        vSeeds.clear();  // Regtest mode doesn't have any DNS seeds.
+        vFixedSeeds.clear(); //! Regtest mode doesn't have any fixed seeds.
+        vSeeds.clear();  //! Regtest mode doesn't have any DNS seeds.
 
         fRequireRPCPassword = false;
         fMiningRequiresPeers = false;
@@ -298,17 +279,17 @@ public:
 };
 static CRegTestParams regTestParams;
 
-//
-// Unit test
-//
+/**
+ * Unit test
+ */
 class CUnitTestParams : public CMainParams, public CModifiableParams {
 public:
     CUnitTestParams() {
         networkID = CBaseChainParams::UNITTEST;
         strNetworkID = "unittest";
         nDefaultPort = 18445;
-        vFixedSeeds.clear();
-        vSeeds.clear();  // Regtest mode doesn't have any DNS seeds.
+        vFixedSeeds.clear(); //! Unit test mode doesn't have any fixed seeds.
+        vSeeds.clear();  //! Unit test mode doesn't have any DNS seeds.
 
         fRequireRPCPassword = false;
         fMiningRequiresPeers = false;
@@ -323,7 +304,7 @@ public:
         return data;
     }
 
-    // Published setters to allow changing values in unit test cases
+    //! Published setters to allow changing values in unit test cases
     virtual void setSubsidyHalvingInterval(int anSubsidyHalvingInterval)  { nSubsidyHalvingInterval=anSubsidyHalvingInterval; }
     virtual void setEnforceBlockUpgradeMajority(int anEnforceBlockUpgradeMajority)  { nEnforceBlockUpgradeMajority=anEnforceBlockUpgradeMajority; }
     virtual void setRejectBlockOutdatedMajority(int anRejectBlockOutdatedMajority)  { nRejectBlockOutdatedMajority=anRejectBlockOutdatedMajority; }
@@ -370,10 +351,12 @@ void SelectParams(CBaseChainParams::Network network) {
     pCurrentParams = &Params(network);
 }
 
-bool SelectParamsFromCommandLine() {
-    if (!SelectBaseParamsFromCommandLine())
+bool SelectParamsFromCommandLine()
+{
+    CBaseChainParams::Network network = NetworkIdFromCommandLine();
+    if (network == CBaseChainParams::MAX_NETWORK_TYPES)
         return false;
 
-    SelectParams(BaseParams().NetworkID());
+    SelectParams(network);
     return true;
 }

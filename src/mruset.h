@@ -1,9 +1,9 @@
-// Copyright (c) 2012 The Bitcredits developers
-// Distributed under the MIT/X11 software license, see the accompanying
+// Copyright (c) 2012 The Bitcredit Core developers
+// Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef BITCREDITS_MRUSET_H
-#define BITCREDITS_MRUSET_H
+#ifndef BITCREDIT_MRUSET_H
+#define BITCREDIT_MRUSET_H
 
 #include <deque>
 #include <set>
@@ -66,4 +66,4 @@ public:
     }
 };
 
-#endif // BITCREDITS_MRUSET_H
+#endif // BITCREDIT_MRUSET_H

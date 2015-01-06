@@ -4,39 +4,46 @@ SUBDIRS = src
 
 GZIP_ENV="-9n"
 
-BITCREDITSD_BIN=$(top_builddir)/src/bitcreditsd$(EXEEXT)
-BITCREDITS_QT_BIN=$(top_builddir)/src/qt/bitcredits-qt$(EXEEXT)
-BITCREDITS_CLI_BIN=$(top_builddir)/src/bitcredits-cli$(EXEEXT)
-BITCREDITS_WIN_INSTALLER=$(PACKAGE)-$(PACKAGE_VERSION)-win$(WINDOWS_BITS)-setup$(EXEEXT)
+if BUILD_BITCREDIT_LIBS
+pkgconfigdir = $(libdir)/pkgconfig
+pkgconfig_DATA = libbitcreditconsensus.pc
+endif
 
-OSX_APP=Bitcredits-Qt.app
-OSX_DMG=Bitcredits-Qt.dmg
+BITCREDITD_BIN=$(top_builddir)/src/bitcreditd$(EXEEXT)
+BITCREDIT_QT_BIN=$(top_builddir)/src/qt/bitcredit-qt$(EXEEXT)
+BITCREDIT_CLI_BIN=$(top_builddir)/src/bitcredit-cli$(EXEEXT)
+BITCREDIT_WIN_INSTALLER=$(PACKAGE)-$(PACKAGE_VERSION)-win$(WINDOWS_BITS)-setup$(EXEEXT)
+
+OSX_APP=Bitcredit-Qt.app
+OSX_DMG=Bitcredit-Qt.dmg
 OSX_DEPLOY_SCRIPT=$(top_srcdir)/contrib/macdeploy/macdeployqtplus
 OSX_FANCY_PLIST=$(top_srcdir)/contrib/macdeploy/fancy.plist
-OSX_INSTALLER_ICONS=$(top_srcdir)/src/qt/res/icons/bitcredits.icns
+OSX_INSTALLER_ICONS=$(top_srcdir)/src/qt/res/icons/bitcredit.icns
 OSX_PLIST=$(top_srcdir)/share/qt/Info.plist #not installed
 OSX_QT_TRANSLATIONS = da,de,es,hu,ru,uk,zh_CN,zh_TW
 
 DIST_DOCS = $(wildcard doc/*.md) $(wildcard doc/release-notes/*.md)
 
-WINDOWS_PACKAGING = $(top_srcdir)/share/pixmaps/bitcredits.ico \
+WINDOWS_PACKAGING = $(top_srcdir)/share/pixmaps/bitcredit.ico \
   $(top_srcdir)/share/pixmaps/nsis-header.bmp \
   $(top_srcdir)/share/pixmaps/nsis-wizard.bmp \
   $(top_srcdir)/doc/README_windows.txt
 
 OSX_PACKAGING = $(OSX_DEPLOY_SCRIPT) $(OSX_FANCY_PLIST) $(OSX_INSTALLER_ICONS) \
   $(top_srcdir)/contrib/macdeploy/background.png \
-  $(top_srcdir)/contrib/macdeploy/DS_Store
+  $(top_srcdir)/contrib/macdeploy/DS_Store \
+  $(top_srcdir)/contrib/macdeploy/detached-sig-apply.sh \
+  $(top_srcdir)/contrib/macdeploy/detached-sig-create.sh
 
 COVERAGE_INFO = baseline_filtered_combined.info baseline.info block_test.info \
-  leveldb_baseline.info test_bitcredits_filtered.info total_coverage.info \
+  leveldb_baseline.info test_bitcredit_filtered.info total_coverage.info \
   baseline_filtered.info block_test_filtered.info \
-  leveldb_baseline_filtered.info test_bitcredits_coverage.info test_bitcredits.info
+  leveldb_baseline_filtered.info test_bitcredit_coverage.info test_bitcredit.info
 
 dist-hook:
 	-$(MAKE) -C $(top_distdir)/src/leveldb clean
 	-$(MAKE) -C $(top_distdir)/src/secp256k1 distclean
-	-$(GIT) archive --format=tar HEAD -- src/version.cpp | $(AMTAR) -C $(top_distdir) -xf -
+	-$(GIT) archive --format=tar HEAD -- src/clientversion.cpp | $(AMTAR) -C $(top_distdir) -xf -
 
 distcheck-hook:
 	$(MKDIR_P) $(top_distdir)/_build/src/leveldb
@@ -46,11 +53,11 @@ distcheck-hook:
 distcleancheck:
 	@:
 
-$(BITCREDITS_WIN_INSTALLER): all-recursive
+$(BITCREDIT_WIN_INSTALLER): all-recursive
 	$(MKDIR_P) $(top_builddir)/release
-	STRIPPROG="$(STRIP)" $(INSTALL_STRIP_PROGRAM) $(BITCREDITSD_BIN) $(top_builddir)/release
-	STRIPPROG="$(STRIP)" $(INSTALL_STRIP_PROGRAM) $(BITCREDITS_QT_BIN) $(top_builddir)/release
-	STRIPPROG="$(STRIP)" $(INSTALL_STRIP_PROGRAM) $(BITCREDITS_CLI_BIN) $(top_builddir)/release
+	STRIPPROG="$(STRIP)" $(INSTALL_STRIP_PROGRAM) $(BITCREDITD_BIN) $(top_builddir)/release
+	STRIPPROG="$(STRIP)" $(INSTALL_STRIP_PROGRAM) $(BITCREDIT_QT_BIN) $(top_builddir)/release
+	STRIPPROG="$(STRIP)" $(INSTALL_STRIP_PROGRAM) $(BITCREDIT_CLI_BIN) $(top_builddir)/release
 	@test -f $(MAKENSIS) && $(MAKENSIS) $(top_builddir)/share/setup.nsi || \
 	  echo error: could not build $@
 
@@ -69,30 +76,46 @@ $(OSX_APP)/Contents/Info.plist: $(OSX_PLIST)
 	$(MKDIR_P) $(@D)
 	$(INSTALL_DATA) $< $@
 
-$(OSX_APP)/Contents/Resources/bitcredits.icns: $(OSX_INSTALLER_ICONS)
+$(OSX_APP)/Contents/Resources/bitcredit.icns: $(OSX_INSTALLER_ICONS)
 	$(MKDIR_P) $(@D)
 	$(INSTALL_DATA) $< $@
 
-$(OSX_APP)/Contents/MacOS/Bitcredits-Qt: $(BITCREDITS_QT_BIN)
+$(OSX_APP)/Contents/MacOS/Bitcredit-Qt: $(BITCREDIT_QT_BIN)
 	$(MKDIR_P) $(@D)
 	STRIPPROG="$(STRIP)" $(INSTALL_STRIP_PROGRAM)  $< $@
 
 OSX_APP_BUILT=$(OSX_APP)/Contents/PkgInfo $(OSX_APP)/Contents/Resources/empty.lproj \
-  $(OSX_APP)/Contents/Resources/bitcredits.icns $(OSX_APP)/Contents/Info.plist \
-  $(OSX_APP)/Contents/MacOS/Bitcredits-Qt
+  $(OSX_APP)/Contents/Resources/bitcredit.icns $(OSX_APP)/Contents/Info.plist \
+  $(OSX_APP)/Contents/MacOS/Bitcredit-Qt
 
 if BUILD_DARWIN
 $(OSX_DMG): $(OSX_APP_BUILT) $(OSX_PACKAGING)
 	$(OSX_DEPLOY_SCRIPT) $(OSX_APP) -add-qt-tr $(OSX_QT_TRANSLATIONS) -translations-dir=$(QT_TRANSLATION_DIR) -dmg -fancy $(OSX_FANCY_PLIST) -verbose 2
 
+deploydir: $(OSX_DMG)
 else
-$(OSX_DMG): $(OSX_APP_BUILT) $(OSX_PACKAGING)
-	INSTALLNAMETOOL=$(INSTALLNAMETOOL)  OTOOL=$(OTOOL) STRIP=$(STRIP) $(OSX_DEPLOY_SCRIPT) $(OSX_APP) -add-qt-tr $(OSX_QT_TRANSLATIONS) -translations-dir=$(QT_TRANSLATION_DIR) -verbose 2
-	$(MKDIR_P) dist/.background
-	$(INSTALL) contrib/macdeploy/background.png dist/.background
-	$(INSTALL) contrib/macdeploy/DS_Store dist/.DS_Store
-	cd dist; $(LN_S) /Applications Applications
-	$(GENISOIMAGE) -no-cache-inodes -l -probe -V "Bitcredits-Qt" -no-pad -r -apple -o $@ dist
+APP_DIST_DIR=$(top_builddir)/dist
+APP_DIST_EXTRAS=$(APP_DIST_DIR)/.background/background.png $(APP_DIST_DIR)/.DS_Store $(APP_DIST_DIR)/Applications
+
+$(APP_DIST_DIR)/Applications:
+	@rm -f $@
+	@cd $(@D); $(LN_S) /Applications $(@F)
+
+$(APP_DIST_EXTRAS): $(APP_DIST_DIR)/$(OSX_APP)/Contents/MacOS/Bitcredit-Qt
+
+$(OSX_DMG): $(APP_DIST_EXTRAS)
+	$(GENISOIMAGE) -no-cache-inodes -D -l -probe -V "Bitcredit-Qt" -no-pad -r -apple -o $@ dist
+
+$(APP_DIST_DIR)/.background/background.png:
+	$(MKDIR_P) $(@D)
+	$(INSTALL) $(top_srcdir)/contrib/macdeploy/background.png $@
+$(APP_DIST_DIR)/.DS_Store:
+	$(INSTALL) $(top_srcdir)/contrib/macdeploy/DS_Store $@
+
+$(APP_DIST_DIR)/$(OSX_APP)/Contents/MacOS/Bitcredit-Qt: $(OSX_APP_BUILT) $(OSX_PACKAGING)
+	INSTALLNAMETOOL=$(INSTALLNAMETOOL)  OTOOL=$(OTOOL) STRIP=$(STRIP) $(OSX_DEPLOY_SCRIPT) $(OSX_APP) -translations-dir=$(QT_TRANSLATION_DIR) -add-qt-tr $(OSX_QT_TRANSLATIONS) -verbose 2
+
+deploydir: $(APP_DIST_EXTRAS)
 endif
 
 if TARGET_DARWIN
@@ -100,16 +123,16 @@ appbundle: $(OSX_APP_BUILT)
 deploy: $(OSX_DMG)
 endif
 if TARGET_WINDOWS
-deploy: $(BITCREDITS_WIN_INSTALLER)
+deploy: $(BITCREDIT_WIN_INSTALLER)
 endif
 
-$(BITCREDITS_QT_BIN): FORCE
+$(BITCREDIT_QT_BIN): FORCE
 	$(MAKE) -C src qt/$(@F)
 
-$(BITCREDITSD_BIN): FORCE
+$(BITCREDITD_BIN): FORCE
 	$(MAKE) -C src $(@F)
 
-$(BITCREDITS_CLI_BIN): FORCE
+$(BITCREDIT_CLI_BIN): FORCE
 	$(MAKE) -C src $(@F)
 
 if USE_LCOV
@@ -129,32 +152,32 @@ leveldb_baseline_filtered.info: leveldb_baseline.info
 baseline_filtered_combined.info: leveldb_baseline_filtered.info baseline_filtered.info
 	$(LCOV) -a leveldb_baseline_filtered.info -a baseline_filtered.info -o $@
 
-test_bitcredits.info: baseline_filtered_combined.info
+test_bitcredit.info: baseline_filtered_combined.info
 	$(MAKE) -C src/ check
-	$(LCOV) -c -d $(abs_builddir)/src -t test_bitcredits -o $@
+	$(LCOV) -c -d $(abs_builddir)/src -t test_bitcredit -o $@
 	$(LCOV) -z -d $(abs_builddir)/src
 	$(LCOV) -z -d $(abs_builddir)/src/leveldb
 
-test_bitcredits_filtered.info: test_bitcredits.info
+test_bitcredit_filtered.info: test_bitcredit.info
 	$(LCOV) -r $< "/usr/include/*" -o $@
 
-block_test.info: test_bitcredits_filtered.info
+block_test.info: test_bitcredit_filtered.info
 	$(MKDIR_P) qa/tmp
-	-@TIMEOUT=15 qa/pull-tester/run-bitcreditsd-for-test.sh $(JAVA) -jar $(JAVA_COMPARISON_TOOL) qa/tmp/compTool 0
-	$(LCOV) -c -d $(abs_builddir)/src --t BitcreditsJBlockTest -o $@
+	-@TIMEOUT=15 qa/pull-tester/run-bitcreditd-for-test.sh $(JAVA) -jar $(JAVA_COMPARISON_TOOL) qa/tmp/compTool 0
+	$(LCOV) -c -d $(abs_builddir)/src --t BitcreditJBlockTest -o $@
 	$(LCOV) -z -d $(abs_builddir)/src
 	$(LCOV) -z -d $(abs_builddir)/src/leveldb
 
 block_test_filtered.info: block_test.info
 	$(LCOV) -r $< "/usr/include/*" -o $@
 
-test_bitcredits_coverage.info: baseline_filtered_combined.info test_bitcredits_filtered.info
-	$(LCOV) -a baseline_filtered.info -a leveldb_baseline_filtered.info -a test_bitcredits_filtered.info -o $@
+test_bitcredit_coverage.info: baseline_filtered_combined.info test_bitcredit_filtered.info
+	$(LCOV) -a baseline_filtered.info -a leveldb_baseline_filtered.info -a test_bitcredit_filtered.info -o $@
 
-total_coverage.info:  baseline_filtered_combined.info test_bitcredits_filtered.info block_test_filtered.info
-	$(LCOV) -a baseline_filtered.info -a leveldb_baseline_filtered.info -a test_bitcredits_filtered.info -a block_test_filtered.info -o $@ | $(GREP) "\%" | $(AWK) '{ print substr($$3,2,50) "/" $$5 }' > coverage_percent.txt
+total_coverage.info:  baseline_filtered_combined.info test_bitcredit_filtered.info block_test_filtered.info
+	$(LCOV) -a baseline_filtered.info -a leveldb_baseline_filtered.info -a test_bitcredit_filtered.info -a block_test_filtered.info -o $@ | $(GREP) "\%" | $(AWK) '{ print substr($$3,2,50) "/" $$5 }' > coverage_percent.txt
 
-test_bitcredits.coverage/.dirstamp:  test_bitcredits_coverage.info
+test_bitcredit.coverage/.dirstamp:  test_bitcredit_coverage.info
 	$(GENHTML) -s $< -o $(@D)
 	@touch $@
 
@@ -162,21 +185,21 @@ total.coverage/.dirstamp: total_coverage.info
 	$(GENHTML) -s $< -o $(@D)
 	@touch $@
 
-cov: test_bitcredits.coverage/.dirstamp total.coverage/.dirstamp
+cov: test_bitcredit.coverage/.dirstamp total.coverage/.dirstamp
 
 endif
 
 if USE_COMPARISON_TOOL
 check-local:
 	$(MKDIR_P) qa/tmp
-	@qa/pull-tester/run-bitcreditsd-for-test.sh $(JAVA) -jar $(JAVA_COMPARISON_TOOL) qa/tmp/compTool $(COMPARISON_TOOL_REORG_TESTS) 2>&1
+	@qa/pull-tester/run-bitcreditd-for-test.sh $(JAVA) -jar $(JAVA_COMPARISON_TOOL) qa/tmp/compTool $(COMPARISON_TOOL_REORG_TESTS) 2>&1
 endif
 
-EXTRA_DIST = $(top_srcdir)/share/genbuild.sh qa/pull-tester/pull-tester.sh qa/rpc-tests $(DIST_DOCS) $(WINDOWS_PACKAGING) $(OSX_PACKAGING)
+EXTRA_DIST = $(top_srcdir)/share/genbuild.sh qa/pull-tester/rpc-tests.sh qa/pull-tester/run-bitcredit-cli qa/rpc-tests $(DIST_DOCS) $(WINDOWS_PACKAGING) $(OSX_PACKAGING)
 
-CLEANFILES = $(OSX_DMG) $(BITCREDITS_WIN_INSTALLER)
+CLEANFILES = $(OSX_DMG) $(BITCREDIT_WIN_INSTALLER)
 
 .INTERMEDIATE: $(COVERAGE_INFO)
 
 clean-local:
-	rm -rf test_bitcredits.coverage/ total.coverage/ $(OSX_APP)
+	rm -rf test_bitcredit.coverage/ total.coverage/ $(OSX_APP)

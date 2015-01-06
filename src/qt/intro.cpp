@@ -1,5 +1,5 @@
-// Copyright (c) 2011-2014 The Bitcredits developers
-// Distributed under the MIT/X11 software license, see the accompanying
+// Copyright (c) 2014-2015 The Bitcredit Core developers
+// Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include "intro.h"
@@ -95,7 +95,7 @@ void FreespaceChecker::check()
                 replyMessage = tr("Path already exists, and is not a directory.");
             }
         }
-    } catch(fs::filesystem_error &e)
+    } catch (const fs::filesystem_error&)
     {
         /* Parent directory does not exist or is not accessible */
         replyStatus = ST_ERROR;
@@ -167,7 +167,7 @@ void Intro::pickDataDirectory()
         /* If current default data directory does not exist, let the user choose one */
         Intro intro;
         intro.setDataDirectory(dataDir);
-        intro.setWindowIcon(QIcon(":icons/bitcredits"));
+        intro.setWindowIcon(QIcon(":icons/bitcredit"));
 
         while(true)
         {
@@ -180,8 +180,8 @@ void Intro::pickDataDirectory()
             try {
                 TryCreateDirectory(GUIUtil::qstringToBoostPath(dataDir));
                 break;
-            } catch(fs::filesystem_error &e) {
-                QMessageBox::critical(0, tr("Bitcredits Core"),
+            } catch (const fs::filesystem_error&) {
+                QMessageBox::critical(0, tr("Bitcredit Core"),
                     tr("Error: Specified data directory \"%1\" cannot be created.").arg(dataDir));
                 /* fall through, back to choosing screen */
             }
@@ -190,8 +190,8 @@ void Intro::pickDataDirectory()
         settings.setValue("strDataDir", dataDir);
     }
     /* Only override -datadir if different from the default, to make it possible to
-     * override -datadir in the bitcredits.conf file in the default data directory
-     * (to be consistent with bitcreditsd behavior)
+     * override -datadir in the bitcredit.conf file in the default data directory
+     * (to be consistent with bitcreditd behavior)
      */
     if(dataDir != getDefaultDataDirectory())
         SoftSetArg("-datadir", GUIUtil::qstringToBoostPath(dataDir).string()); // use OS locale for path setting
@@ -215,10 +215,10 @@ void Intro::setStatus(int status, const QString &message, quint64 bytesAvailable
     {
         ui->freeSpace->setText("");
     } else {
-        QString freeString = QString::number(bytesAvailable/GB_BYTES) + tr("GB of free space available");
+        QString freeString = tr("%n GB of free space available", "", bytesAvailable/GB_BYTES);
         if(bytesAvailable < BLOCK_CHAIN_SIZE)
         {
-            freeString += " " + tr("(of %1GB needed)").arg(BLOCK_CHAIN_SIZE/GB_BYTES);
+            freeString += " " + tr("(of %n GB needed)", "", BLOCK_CHAIN_SIZE/GB_BYTES);
             ui->freeSpace->setStyleSheet("QLabel { color: #800000 }");
         } else {
             ui->freeSpace->setStyleSheet("");

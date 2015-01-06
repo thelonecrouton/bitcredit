@@ -1,11 +1,11 @@
-// Copyright (c) 2009-2014 The Bitcredits developers
+// Copyright (c) 2009-2014 The Bitcredit Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef BITCON_COMPAT_SANITY_H
-#define BITCON_COMPAT_SANITY_H
+#ifndef BITCREDIT_COMPAT_SANITY_H
+#define BITCREDIT_COMPAT_SANITY_H
 
 bool glibc_sanity_test();
 bool glibcxx_sanity_test();
 
-#endif // BITCON_COMPAT_SANITY_H
+#endif // BITCREDIT_COMPAT_SANITY_H

@@ -1,0 +1,86 @@
+#!/sbin/runscript
+
+# backward compatibility for existing gentoo layout 
+#
+if [ -d "/var/lib/bitcredit/.bitcredit" ]; then
+	BITCREDITD_DEFAULT_DATADIR="/var/lib/bitcredit/.bitcredit"
+else
+	BITCREDITD_DEFAULT_DATADIR="/var/lib/bitcreditd"
+fi
+
+BITCREDITD_CONFIGFILE=${BITCREDITD_CONFIGFILE:-/etc/bitcredit/bitcredit.conf}
+BITCREDITD_PIDDIR=${BITCREDITD_PIDDIR:-/var/run/bitcreditd}
+BITCREDITD_PIDFILE=${BITCREDITD_PIDFILE:-${BITCREDITD_PIDDIR}/bitcreditd.pid}
+BITCREDITD_DATADIR=${BITCREDITD_DATADIR:-${BITCREDITD_DEFAULT_DATADIR}}
+BITCREDITD_USER=${BITCREDITD_USER:-bitcredit}
+BITCREDITD_GROUP=${BITCREDITD_GROUP:-bitcredit}
+BITCREDITD_BIN=${BITCREDITD_BIN:-/usr/bin/bitcreditd}
+
+name="Bitcredit Core Daemon"
+description="Bitcredit crypto-currency p2p network daemon"
+
+command="/usr/bin/bitcreditd"
+command_args="-pid=\"${BITCREDITD_PIDFILE}\" \
+		-conf=\"${BITCREDITD_CONFIGFILE}\" \
+		-datadir=\"${BITCREDITD_DATADIR}\" \
+		-daemon \
+		${BITCREDITD_OPTS}"
+
+required_files="${BITCREDITD_CONFIGFILE}"
+start_stop_daemon_args="-u ${BITCREDITD_USER} \
+			-N ${BITCREDITD_NICE:-0} -w 2000"
+pidfile="${BITCREDITD_PIDFILE}"
+retry=60
+
+depend() {
+	need localmount net
+}
+
+# verify
+# 1) that the datadir exists and is writable (or create it)
+# 2) that a directory for the pid exists and is writable
+# 3) ownership and permissions on the config file
+start_pre() {
+	checkpath \
+	-d \
+	--mode 0750 \
+	--owner "${BITCREDITD_USER}:${BITCREDITD_GROUP}" \
+	"${BITCREDITD_DATADIR}"
+
+	checkpath \
+	-d \
+	--mode 0755 \
+	--owner "${BITCREDITD_USER}:${BITCREDITD_GROUP}" \
+	"${BITCREDITD_PIDDIR}"
+
+	checkpath -f \
+	-o ${BITCREDITD_USER}:${BITCREDITD_GROUP} \
+	-m 0660 \
+	${BITCREDITD_CONFIGFILE}
+
+	checkconfig || return 1
+}
+
+checkconfig()
+{
+	if ! grep -qs '^rpcpassword=' "${BITCREDITD_CONFIGFILE}" ; then
+		eerror ""
+		eerror "ERROR: You must set a secure rpcpassword to run bitcreditd."
+		eerror "The setting must appear in ${BITCREDITD_CONFIGFILE}"
+		eerror ""
+		eerror "This password is security critical to securing wallets "
+		eerror "and must not be the same as the rpcuser setting."
+		eerror "You can generate a suitable random password using the following"
+		eerror "command from the shell:"
+		eerror ""
+		eerror "bash -c 'tr -dc a-zA-Z0-9 < /dev/urandom | head -c32 && echo'"
+		eerror ""
+		eerror "It is also recommended that you also set alertnotify so you are "
+		eerror "notified of problems:"
+		eerror ""
+		eerror "ie: alertnotify=echo %%s | mail -s \"Bitcredit Alert\"" \
+			"admin@foo.com"
+		eerror ""
+		return 1
+	fi
+}
