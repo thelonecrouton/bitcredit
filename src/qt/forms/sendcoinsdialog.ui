@@ -32,7 +32,7 @@
       </size>
      </property>
      <property name="frameShape">
-      <enum>QFrame::StyledPanel</enum>
+      <enum>QFrame::NoFrame</enum>
      </property>
      <property name="frameShadow">
       <enum>QFrame::Sunken</enum>
@@ -84,7 +84,7 @@
              </font>
             </property>
             <property name="styleSheet">
-             <string notr="true">font-weight:bold;</string>
+             <string notr="true">font-weight:bold;color: rgb(255, 255, 255);</string>
             </property>
             <property name="text">
              <string>Coin Control Features</string>
@@ -104,7 +104,7 @@
           <item>
            <widget class="QPushButton" name="pushButtonCoinControl">
             <property name="styleSheet">
-             <string notr="true"/>
+             <string notr="true">color: rgb(255, 255, 255);</string>
             </property>
             <property name="text">
              <string>Inputs...</string>
@@ -116,6 +116,9 @@
           </item>
           <item>
            <widget class="QLabel" name="labelCoinControlAutomaticallySelected">
+            <property name="styleSheet">
+             <string notr="true">color: rgb(255, 255, 255);</string>
+            </property>
             <property name="text">
              <string>automatically selected</string>
             </property>
@@ -176,16 +179,7 @@
            <string notr="true"/>
           </property>
           <layout class="QHBoxLayout" name="horizontalLayoutCoinControl5">
-           <property name="leftMargin">
-            <number>0</number>
-           </property>
-           <property name="topMargin">
-            <number>0</number>
-           </property>
-           <property name="rightMargin">
-            <number>0</number>
-           </property>
-           <property name="bottomMargin">
+           <property name="margin">
             <number>0</number>
            </property>
            <item>
@@ -224,6 +218,9 @@
                    <bold>true</bold>
                   </font>
                  </property>
+                 <property name="styleSheet">
+                  <string notr="true">color: rgb(255, 255, 255);</string>
+                 </property>
                  <property name="text">
                   <string>Quantity:</string>
                  </property>
@@ -239,6 +236,9 @@
                  </property>
                  <property name="contextMenuPolicy">
                   <enum>Qt::ActionsContextMenu</enum>
+                 </property>
+                 <property name="styleSheet">
+                  <string notr="true">color: rgb(255, 255, 255);</string>
                  </property>
                  <property name="text">
                   <string notr="true">0</string>
@@ -259,6 +259,9 @@
                    <bold>true</bold>
                   </font>
                  </property>
+                 <property name="styleSheet">
+                  <string notr="true">color: rgb(255, 255, 255);</string>
+                 </property>
                  <property name="text">
                   <string>Bytes:</string>
                  </property>
@@ -271,6 +274,9 @@
                  </property>
                  <property name="contextMenuPolicy">
                   <enum>Qt::ActionsContextMenu</enum>
+                 </property>
+                 <property name="styleSheet">
+                  <string notr="true">color: rgb(255, 255, 255);</string>
                  </property>
                  <property name="text">
                   <string notr="true">0</string>
@@ -307,6 +313,9 @@
                    <bold>true</bold>
                   </font>
                  </property>
+                 <property name="styleSheet">
+                  <string notr="true">color: rgb(255, 255, 255);</string>
+                 </property>
                  <property name="text">
                   <string>Amount:</string>
                  </property>
@@ -323,8 +332,11 @@
                  <property name="contextMenuPolicy">
                   <enum>Qt::ActionsContextMenu</enum>
                  </property>
+                 <property name="styleSheet">
+                  <string notr="true">color: rgb(255, 255, 255);</string>
+                 </property>
                  <property name="text">
-                  <string notr="true">0.00 BTC</string>
+                  <string notr="true">0.00 BCR</string>
                  </property>
                  <property name="textInteractionFlags">
                   <set>Qt::LinksAccessibleByMouse|Qt::TextSelectableByKeyboard|Qt::TextSelectableByMouse</set>
@@ -339,6 +351,9 @@
                    <bold>true</bold>
                   </font>
                  </property>
+                 <property name="styleSheet">
+                  <string notr="true">color: rgb(255, 255, 255);</string>
+                 </property>
                  <property name="text">
                   <string>Priority:</string>
                  </property>
@@ -351,6 +366,9 @@
                  </property>
                  <property name="contextMenuPolicy">
                   <enum>Qt::ActionsContextMenu</enum>
+                 </property>
+                 <property name="styleSheet">
+                  <string notr="true">color: rgb(255, 255, 255);</string>
                  </property>
                  <property name="text">
                   <string notr="true">medium</string>
@@ -387,6 +405,9 @@
                    <bold>true</bold>
                   </font>
                  </property>
+                 <property name="styleSheet">
+                  <string notr="true">color: rgb(255, 255, 255);</string>
+                 </property>
                  <property name="text">
                   <string>Fee:</string>
                  </property>
@@ -403,8 +424,11 @@
                  <property name="contextMenuPolicy">
                   <enum>Qt::ActionsContextMenu</enum>
                  </property>
+                 <property name="styleSheet">
+                  <string notr="true">color: rgb(255, 255, 255);</string>
+                 </property>
                  <property name="text">
-                  <string notr="true">0.00 BTC</string>
+                  <string notr="true">0.00 BCR</string>
                  </property>
                  <property name="textInteractionFlags">
                   <set>Qt::LinksAccessibleByMouse|Qt::TextSelectableByKeyboard|Qt::TextSelectableByMouse</set>
@@ -419,6 +443,9 @@
                    <bold>true</bold>
                   </font>
                  </property>
+                 <property name="styleSheet">
+                  <string notr="true">color: rgb(255, 255, 255);</string>
+                 </property>
                  <property name="text">
                   <string>Dust:</string>
                  </property>
@@ -431,6 +458,9 @@
                  </property>
                  <property name="contextMenuPolicy">
                   <enum>Qt::ActionsContextMenu</enum>
+                 </property>
+                 <property name="styleSheet">
+                  <string notr="true">color: rgb(255, 255, 255);</string>
                  </property>
                  <property name="text">
                   <string notr="true">no</string>
@@ -467,6 +497,9 @@
                    <bold>true</bold>
                   </font>
                  </property>
+                 <property name="styleSheet">
+                  <string notr="true">color: rgb(255, 255, 255);</string>
+                 </property>
                  <property name="text">
                   <string>After Fee:</string>
                  </property>
@@ -483,8 +516,11 @@
                  <property name="contextMenuPolicy">
                   <enum>Qt::ActionsContextMenu</enum>
                  </property>
+                 <property name="styleSheet">
+                  <string notr="true">color: rgb(255, 255, 255);</string>
+                 </property>
                  <property name="text">
-                  <string notr="true">0.00 BTC</string>
+                  <string notr="true">0.00 BCR</string>
                  </property>
                  <property name="textInteractionFlags">
                   <set>Qt::LinksAccessibleByMouse|Qt::TextSelectableByKeyboard|Qt::TextSelectableByMouse</set>
@@ -499,6 +535,9 @@
                    <bold>true</bold>
                   </font>
                  </property>
+                 <property name="styleSheet">
+                  <string notr="true">color: rgb(255, 255, 255);</string>
+                 </property>
                  <property name="text">
                   <string>Change:</string>
                  </property>
@@ -512,8 +551,11 @@
                  <property name="contextMenuPolicy">
                   <enum>Qt::ActionsContextMenu</enum>
                  </property>
+                 <property name="styleSheet">
+                  <string notr="true">color: rgb(255, 255, 255);</string>
+                 </property>
                  <property name="text">
-                  <string notr="true">0.00 BTC</string>
+                  <string notr="true">0.00 BCR</string>
                  </property>
                  <property name="textInteractionFlags">
                   <set>Qt::LinksAccessibleByMouse|Qt::TextSelectableByKeyboard|Qt::TextSelectableByMouse</set>
@@ -545,6 +587,9 @@
            <widget class="QCheckBox" name="checkBoxCoinControlChange">
             <property name="toolTip">
              <string>If this is activated, but the change address is empty or invalid, change will be sent to a newly generated address.</string>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">color: rgb(255, 255, 255);</string>
             </property>
             <property name="text">
              <string>Custom change address</string>
@@ -608,6 +653,9 @@
    </item>
    <item>
     <widget class="QScrollArea" name="scrollArea">
+     <property name="frameShape">
+      <enum>QFrame::NoFrame</enum>
+     </property>
      <property name="widgetResizable">
       <bool>true</bool>
      </property>
@@ -616,21 +664,12 @@
        <rect>
         <x>0</x>
         <y>0</y>
-        <width>830</width>
-        <height>68</height>
+        <width>832</width>
+        <height>75</height>
        </rect>
       </property>
       <layout class="QVBoxLayout" name="verticalLayout_2" stretch="0,1">
-       <property name="leftMargin">
-        <number>0</number>
-       </property>
-       <property name="topMargin">
-        <number>0</number>
-       </property>
-       <property name="rightMargin">
-        <number>0</number>
-       </property>
-       <property name="bottomMargin">
+       <property name="margin">
         <number>0</number>
        </property>
        <item>
@@ -681,16 +720,7 @@
       <property name="spacing">
        <number>0</number>
       </property>
-      <property name="leftMargin">
-       <number>0</number>
-      </property>
-      <property name="topMargin">
-       <number>0</number>
-      </property>
-      <property name="rightMargin">
-       <number>0</number>
-      </property>
-      <property name="bottomMargin">
+      <property name="margin">
        <number>0</number>
       </property>
       <item>
@@ -750,7 +780,8 @@
                  </font>
                 </property>
                 <property name="styleSheet">
-                 <string notr="true">font-weight:bold;</string>
+                 <string notr="true">font-weight:bold;
+color: rgb(255, 255, 255);</string>
                 </property>
                 <property name="text">
                  <string>Transaction Fee:</string>
@@ -766,6 +797,9 @@
               </item>
               <item>
                <widget class="QPushButton" name="buttonChooseFee">
+                <property name="styleSheet">
+                 <string notr="true">color: rgb(255, 255, 255);</string>
+                </property>
                 <property name="text">
                  <string>Choose...</string>
                 </property>
@@ -775,6 +809,9 @@
                <widget class="QPushButton" name="buttonMinimizeFee">
                 <property name="toolTip">
                  <string>collapse fee-settings</string>
+                </property>
+                <property name="styleSheet">
+                 <string notr="true">color: rgb(255, 255, 255);</string>
                 </property>
                 <property name="text">
                  <string>Minimize</string>
@@ -819,16 +856,7 @@
            <property name="spacing">
             <number>0</number>
            </property>
-           <property name="leftMargin">
-            <number>0</number>
-           </property>
-           <property name="topMargin">
-            <number>0</number>
-           </property>
-           <property name="rightMargin">
-            <number>0</number>
-           </property>
-           <property name="bottomMargin">
+           <property name="margin">
             <number>0</number>
            </property>
            <item>
@@ -857,6 +885,9 @@
                    <property name="toolTip">
                     <string>If the custom fee is set to 1000 satoshis and the transaction is only 250 bytes, then &quot;per kilobyte&quot; only pays 250 satoshis in fee, while &quot;total at least&quot; pays 1000 satoshis. For transactions bigger than a kilobyte both pay by kilobyte.</string>
                    </property>
+                   <property name="styleSheet">
+                    <string notr="true">color: rgb(255, 255, 255);</string>
+                   </property>
                    <property name="text">
                     <string>per kilobyte</string>
                    </property>
@@ -872,6 +903,9 @@
                   <widget class="QRadioButton" name="radioCustomAtLeast">
                    <property name="toolTip">
                     <string>If the custom fee is set to 1000 satoshis and the transaction is only 250 bytes, then &quot;per kilobyte&quot; only pays 250 satoshis in fee, while &quot;total at least&quot; pays 1000 satoshis. For transactions bigger than a kilobyte both pay by kilobyte.</string>
+                   </property>
+                   <property name="styleSheet">
+                    <string notr="true">color: rgb(255, 255, 255);</string>
                    </property>
                    <property name="text">
                     <string>total at least</string>
@@ -919,6 +953,9 @@
                    <property name="toolTip">
                     <string>Paying only the minimum fee is just fine as long as there is less transaction volume than space in the blocks. But be aware that this can end up in a never confirming transaction once there is more demand for bitcredit transactions than the network can process.</string>
                    </property>
+                   <property name="styleSheet">
+                    <string notr="true">color: rgb(255, 255, 255);</string>
+                   </property>
                    <property name="text">
                     <string>(read the tooltip)</string>
                    </property>
@@ -948,6 +985,9 @@
               <layout class="QVBoxLayout" name="verticalLayoutFee4" stretch="0,1">
                <item>
                 <widget class="QRadioButton" name="radioSmartFee">
+                 <property name="styleSheet">
+                  <string notr="true">color: rgb(255, 255, 255);</string>
+                 </property>
                  <property name="text">
                   <string>Recommended:</string>
                  </property>
@@ -978,6 +1018,9 @@
               <layout class="QVBoxLayout" name="verticalLayoutFee9" stretch="0,1">
                <item>
                 <widget class="QRadioButton" name="radioCustomFee">
+                 <property name="styleSheet">
+                  <string notr="true">color: rgb(255, 255, 255);</string>
+                 </property>
                  <property name="text">
                   <string>Custom:</string>
                  </property>
@@ -1030,6 +1073,9 @@
                  </item>
                  <item>
                   <widget class="QLabel" name="labelSmartFee2">
+                   <property name="styleSheet">
+                    <string notr="true">color: rgb(255, 255, 255);</string>
+                   </property>
                    <property name="text">
                     <string>(Smart fee not initialized yet. This usually takes a few blocks...)</string>
                    </property>
@@ -1059,6 +1105,9 @@
                   <layout class="QVBoxLayout" name="verticalLayoutFee6">
                    <item>
                     <widget class="QLabel" name="labelSmartFee3">
+                     <property name="styleSheet">
+                      <string notr="true">color: rgb(255, 255, 255);</string>
+                     </property>
                      <property name="text">
                       <string>Confirmation time:</string>
                      </property>
@@ -1119,6 +1168,9 @@
                     <layout class="QHBoxLayout" name="horizontalLayoutFee10">
                      <item>
                       <widget class="QLabel" name="labelSmartFeeNormal">
+                       <property name="styleSheet">
+                        <string notr="true">color: rgb(255, 255, 255);</string>
+                       </property>
                        <property name="text">
                         <string>normal</string>
                        </property>
@@ -1139,6 +1191,9 @@
                      </item>
                      <item>
                       <widget class="QLabel" name="labelSmartFeeFast">
+                       <property name="styleSheet">
+                        <string notr="true">color: rgb(255, 255, 255);</string>
+                       </property>
                        <property name="text">
                         <string>fast</string>
                        </property>
@@ -1177,6 +1232,9 @@
              </property>
              <item>
               <widget class="QCheckBox" name="checkBoxFreeTx">
+               <property name="styleSheet">
+                <string notr="true">color: rgb(255, 255, 255);</string>
+               </property>
                <property name="text">
                 <string>Send as zero-fee transaction if possible</string>
                </property>
@@ -1184,6 +1242,9 @@
              </item>
              <item>
               <widget class="QLabel" name="labelFreeTx">
+               <property name="styleSheet">
+                <string notr="true">color: rgb(255, 255, 255);</string>
+               </property>
                <property name="text">
                 <string>(confirmation may take longer)</string>
                </property>
@@ -1254,6 +1315,9 @@
        <property name="toolTip">
         <string>Confirm the send action</string>
        </property>
+       <property name="styleSheet">
+        <string notr="true">color: rgb(255, 255, 255);</string>
+       </property>
        <property name="text">
         <string>S&amp;end</string>
        </property>
@@ -1280,6 +1344,9 @@
        <property name="toolTip">
         <string>Clear all fields of the form.</string>
        </property>
+       <property name="styleSheet">
+        <string notr="true">color: rgb(255, 255, 255);</string>
+       </property>
        <property name="text">
         <string>Clear &amp;All</string>
        </property>
@@ -1296,6 +1363,9 @@
       <widget class="QPushButton" name="addButton">
        <property name="toolTip">
         <string>Send to multiple recipients at once</string>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">color: rgb(255, 255, 255);</string>
        </property>
        <property name="text">
         <string>Add &amp;Recipient</string>
@@ -1335,6 +1405,9 @@
            <verstretch>0</verstretch>
           </sizepolicy>
          </property>
+         <property name="styleSheet">
+          <string notr="true">color: rgb(255, 255, 255);</string>
+         </property>
          <property name="text">
           <string>Balance:</string>
          </property>
@@ -1351,8 +1424,11 @@
          <property name="cursor">
           <cursorShape>IBeamCursor</cursorShape>
          </property>
+         <property name="styleSheet">
+          <string notr="true">color: rgb(255, 255, 255);</string>
+         </property>
          <property name="text">
-          <string notr="true">123.456 BTC</string>
+          <string notr="true">123.456 BCR</string>
          </property>
          <property name="textInteractionFlags">
           <set>Qt::LinksAccessibleByMouse|Qt::TextSelectableByKeyboard|Qt::TextSelectableByMouse</set>
@@ -1383,7 +1459,7 @@
  </resources>
  <connections/>
  <buttongroups>
-  <buttongroup name="groupFee"/>
   <buttongroup name="groupCustomFee"/>
+  <buttongroup name="groupFee"/>
  </buttongroups>
 </ui>

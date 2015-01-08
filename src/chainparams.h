@@ -70,6 +70,7 @@ public:
     int64_t TargetTimespan2() const { return nTargetTimespan2; }
     int64_t TargetSpacing() const { return nTargetSpacing; }
     int64_t Interval() const { return nTargetTimespan / nTargetSpacing; }
+    int64_t Interval2() const { return nTargetTimespan2 / nTargetSpacing; }
     /** Make miner stop after a block is found. In RPC, don't return until nGenProcLimit blocks are generated */
     bool MineBlocksOnDemand() const { return fMineBlocksOnDemand; }
     /** In the future use NetworkIDString() for RPC fields */

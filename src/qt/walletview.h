@@ -11,7 +11,7 @@
 
 class BitcreditGUI;
 class ClientModel;
-class IRCModel;
+
 class OverviewPage;
 class ReceiveCoinsDialog;
 class SendCoinsDialog;
@@ -52,13 +52,13 @@ public:
     void setWalletModel(WalletModel *walletModel);
 
     bool handlePaymentRequest(const SendCoinsRecipient& recipient);
-	void setIRCModel(IRCModel *ircModel);
+	
 
     void showOutOfSyncWarning(bool fShow);
 
 private:
     ClientModel *clientModel;
-    IRCModel *ircModel;
+    
     WalletModel *walletModel;
 
     OverviewPage *overviewPage;

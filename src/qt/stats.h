@@ -11,6 +11,7 @@
 #include "coins.h"
 #include "rpcserver.h"
 
+
 using namespace std;
 
 int month = 604800 *4;
@@ -277,12 +278,12 @@ class Stats : public QObject
 
 	double Getgblinterestrate()
 	{
-		return 0;
+		return 0.03; //temporarily fixed
 	}
 
 	double Getgrantindex()
 	{
-		return 0;
+		return 0.05; //temporarily fixed
 	}
 
 	double Getexpectedchange()
@@ -302,7 +303,7 @@ class Stats : public QObject
 
 	int64_t Getvolume()
 	{
-		return 0; // need exchange to provide, unless we just consider volume per period within the client
+		return moneysupply() -10000000 ; // need exchange to provide, unless we just consider volume per period within the client
 	}
 
 	int64_t Getgrantstotal()
@@ -318,7 +319,7 @@ class Stats : public QObject
 	int64_t Getgblavailablecredit() 
 	{
 		
-		return (Getgrantstotal()+Getbankreserve()); //credit available from the bank and the reserve
+		return moneysupply() -7000000; //credit available from the bank and the reserve
 	}
 
 	int64_t Getglobaldebt()

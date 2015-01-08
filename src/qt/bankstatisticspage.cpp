@@ -19,15 +19,15 @@ BankStatisticsPage::BankStatisticsPage(QWidget *parent) :
     ui(new Ui::BankStatisticsPage)
 {
     ui->setupUi(this);
-
-    setFixedSize(768, 512);
+	this->setStyleSheet("background-image:url(:/images/background);");
+    //setFixedSize(768, 512);
 
     connect(ui->startButton, SIGNAL(pressed()), this, SLOT(updateStatistics()));
 }
 
 double mincreditscorePrevious = -1, avecreditscorePrevious = -1, glbcreditscorePrevious = -1, bestcreditscorePrevious = -1,
     mintrustPrevious = -1, avetrustPrevious = -1, gbltrustPrevious = -1, besttrustPrevious = -1, grossinterestratePrevious = -1, netinterestratePrevious = -1,
-    gblinterestratePrevious = -1, grantindexPrevious = -1, expectedchangePrevious = -1, inflationindexPrevious = -1, consensusindexPrevious = -1, minsafereserve = -1, 
+    gblinterestratePrevious = -1, grantindexPrevious = -1, inflationindexPrevious = -1, consensusindexPrevious = -1, minsafereserve = -1, 
     maxreserve = -1, reserverequirement = -1;
 
 int64_t marketcapPrevious = -1, gblmoneysupplyPrevious = -1, grantstotalPrevious = -1, bankreservePrevious = -1, gblavailablecreditPrevious = -1,
@@ -53,7 +53,6 @@ void BankStatisticsPage::updateStatistics()
     double netinterestrate = st.Getnetinterestrate();
     double gblinterestrate = st.Getgblinterestrate();
     double grantindex = st.Getgrantindex();
-    double expectedchange = st.Getexpectedchange();
     double nSubsidy = GetBlockValue((chainActive.Tip()->nHeight) ,0)/10000000;
     int nHeight = (chainActive.Tip()->nHeight);
     int64_t volume = st.Getvolume();
@@ -63,7 +62,6 @@ void BankStatisticsPage::updateStatistics()
     int64_t bankreserve = st.Getbankreserve();
     int64_t gblavailablecredit = st.Getgblavailablecredit();
     int64_t globaldebt = st.Getglobaldebt();
-    ui->networkstatus->setText(networkstatus);
     double minsafereserve = gblmoneysupply * 0.05; 
     double maxreserve = gblmoneysupply * 0.25;
     double reserverequirement = gblmoneysupply * 0.1;
@@ -71,42 +69,6 @@ void BankStatisticsPage::updateStatistics()
     double consensusindex = st.Getconsensusindex();
     ui->bankstatus->setText(bankstatusPrevious);
     QString height = QString::number(nHeight);
-
-    if (bankreserve < minsafereserve)
-    {
-        phase = "<p align=\"center\">Critical</p>";
-        ui->progressBar->setValue(bankreserve);
-        ui->progressBar->setMaximum(maxreserve);
-       
-    }
-    else if (bankreserve > minsafereserve && bankreserve <  reserverequirement)
-    {
-        phase = "<p align=\"center\">Warning</p>";
-        ui->progressBar->setValue(bankreserve);;
-        ui->progressBar->setMaximum(maxreserve);
-    }
-    else if (bankreserve > reserverequirement && bankreserve < maxreserve)
-    {
-        phase = "<p align=\"center\">Healthy</p>";
-
-        ui->progressBar->setValue(bankreserve);;
-        ui->progressBar->setMaximum(maxreserve);
-    }
-    else if (bankreserve == maxreserve)
-    {
-        phase = "<p align=\"center\">Perfect</p>";
-
-        ui->progressBar->setValue(bankreserve);
-        ui->progressBar->setMaximum(maxreserve);
-    }
-    else
-    {
-        ui->progressBar->hide();
-        phase = "<p align=\"center\">No Data</p>";
-    }
-    ui->progressBar->setFormat(phase);
-	ui->cBox->setText(phase);
-    
 
     QString qVolume = QLocale(QLocale::English).toString((qlonglong)volume);
     QString nmincreditscore = QString::number(mincreditscore, 'f', 6);
@@ -227,19 +189,6 @@ void BankStatisticsPage::updateStatistics()
     ui->besttrust->setText(nbesttrust);
     }
 
-    if(grossinterestrate > grossinterestratePrevious)
-    {
-        ui->grossinterestrate->setText("<font color=\"green\">" + ngrossinterestrate + "</font>");
-    }
-    else if (grossinterestrate < grossinterestratePrevious)
-    {
-        ui->grossinterestrate->setText("<font color=\"red\">" + ngrossinterestrate + "</font>");
-    }
-    else
-    {
-    ui->grossinterestrate->setText(ngrossinterestrate);
-    }
-
     if(netinterestrate > netinterestratePrevious)
     {
         ui->netinterestrate->setText("<font color=\"green\">" + nnetinterestrate + "</font>");
@@ -255,22 +204,8 @@ void BankStatisticsPage::updateStatistics()
 
     QString ngblinterestrate = QString::number(gblinterestrate, 'f', 6);
     QString ngrantindex = QString::number(grantindex, 'f', 6);
-    QString nexpectedchange = QString::number(expectedchange, 'f', 6);
     QString ninflationindex = QString::number(inflationindex, 'f', 6);
     QString nconsensusindex = QString::number(consensusindex, 'f', 6);
-
-    if(gblinterestrate > gblinterestratePrevious)
-    {
-        ui->gblinterestrate->setText("<font color=\"green\">" + ngblinterestrate + "</font>");
-    }
-    else if (gblinterestrate < gblinterestratePrevious)
-    {
-        ui->gblinterestrate->setText("<font color=\"red\">" + ngblinterestrate + "</font>");
-    }
-    else
-    {
-    ui->gblinterestrate->setText(ngblinterestrate);
-    }
 
     if(grantindex > grantindexPrevious)
     {
@@ -399,7 +334,6 @@ void BankStatisticsPage::updatePrevious(double mincreditscore ,double  avecredit
     gblinterestratePrevious = gblinterestrate;
     marketcapPrevious = marketcap;
     grantindexPrevious = grantindex;
-    expectedchangePrevious = expectedchange;
     inflationindexPrevious = inflationindex;
     consensusindexPrevious = consensusindex;
     gblmoneysupplyPrevious = gblmoneysupply;

@@ -2,6 +2,7 @@
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
+
 #ifndef BITCREDIT_QT_GUICONSTANTS_H
 #define BITCREDIT_QT_GUICONSTANTS_H
 
@@ -12,10 +13,10 @@ static const int MODEL_UPDATE_DELAY = 250;
 static const int MAX_PASSPHRASE_SIZE = 1024;
 
 /* BitcreditGUI -- Size of icons in status bar */
-static const int STATUSBAR_ICONSIZE = 16;
+static const int STATUSBAR_ICONSIZE = 18;
 
 /* Invalid field background style */
-#define STYLE_INVALID "background:#FF8080"
+#define STYLE_INVALID "background:transparent"
 
 /* Transaction list -- unconfirmed transaction */
 #define COLOR_UNCONFIRMED QColor(128, 128, 128)

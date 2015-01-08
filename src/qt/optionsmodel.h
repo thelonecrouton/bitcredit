@@ -93,9 +93,6 @@ private:
 signals:
     void displayUnitChanged(int unit);
     void coinControlFeaturesChanged(bool);
-	void enableTrollboxChanged(bool);
-    void trollNameChanged(QString);
-
 };
 
 #endif // BITCREDIT_QT_OPTIONSMODEL_H

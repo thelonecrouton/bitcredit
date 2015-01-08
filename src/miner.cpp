@@ -106,28 +106,39 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn)
     CMutableTransaction txNew;
     txNew.vin.resize(1);
     txNew.vin[0].prevout.SetNull();
-    txNew.vout.resize(3);
+    txNew.vout.resize(1);
+    txNew.vout[0].scriptPubKey = scriptPubKeyIn;
     
-    {
+    if (chainActive.Tip()->nHeight > 4800) {
       {
 		
 		string grant = "6AtYqDFdDNN6WDKa9cRcqxj9rvMJ6B4mZn";
-		CBitcreditAddress address(grant);
+		CBitcreditAddress address(grant);  
 		CScript scriptPubKeym = GetScriptForDestination(address.Get());
-		txNew.vout[1].scriptPubKey = scriptPubKeym;
-		txNew.vout[1].nValue = GetBlockValue(0, 0)/20;		
+		CMutableTransaction txNew;
+		txNew.vin.resize(1);
+		txNew.vin[0].prevout.SetNull();
+		txNew.vin[0].scriptSig = CScript() << OP_0 << OP_0;
+		txNew.vout.resize(1);
+		txNew.vout[0].scriptPubKey = scriptPubKeym;
+		txNew.vout[0].nValue = GetBlockValue(0, 0)/20;
+		pblock->vtx.push_back(txNew);		
 	   }
 	   
 	   {
-		string grant = "6AtYqDFdDNN6WDKa9cRcqxj9rvMJ6B4mZn";
-		CBitcreditAddress address(grant);
+		string reserve = "632YKoYUMFt7uZVwKw3sQpi9WLNoj9o4ag";
+		CBitcreditAddress address(reserve);
 		CScript scriptPubKeyn = GetScriptForDestination(address.Get());
-		txNew.vout[2].scriptPubKey =scriptPubKeyn;
-		txNew.vout[2].nValue = GetBlockValue(0, 0)/20;	  
+		CMutableTransaction txNew;
+		txNew.vin.resize(1);
+		txNew.vin[0].prevout.SetNull();
+		txNew.vin[0].scriptSig = CScript() << OP_0 << OP_0;
+		txNew.vout.resize(1);
+		txNew.vout[0].scriptPubKey = scriptPubKeyn;
+		txNew.vout[0].nValue = GetBlockValue(0, 0)/20;
+		pblock->vtx.push_back(txNew);  
 	   }
     }
-    
-    txNew.vout[0].scriptPubKey = scriptPubKeyIn;
 
     // Add dummy coinbase tx as first transaction
     pblock->vtx.push_back(CTransaction());

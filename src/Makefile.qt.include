@@ -94,7 +94,8 @@ QT_FORMS_UI = \
   qt/forms/transactiondescdialog.ui \
   qt/forms/blockbrowser.ui \
   qt/forms/bankstatisticspage.ui \
-  qt/forms/paperwalletdialog.ui 
+  qt/forms/paperwalletdialog.ui \
+  qt/forms/poolbrowser.ui  
 
 QT_MOC_CPP = \
   qt/moc_addressbookpage.cpp \
@@ -143,7 +144,9 @@ QT_MOC_CPP = \
   qt/moc_blockbrowser.cpp \
   qt/moc_bankstatisticspage.cpp \
   qt/moc_ircmodel.cpp \
-  qt/moc_verticallabel.cpp 
+  qt/moc_verticallabel.cpp \
+  qt/moc_qcustomplot.cpp \
+  qt/moc_poolbrowser.cpp  
 
 BITCREDIT_MM = \
   qt/macdockiconhandler.mm \
@@ -219,7 +222,9 @@ BITCREDIT_QT_H = \
   qt/blockbrowser.h \
   qt/bankstatisticspage.h \
   qt/verticallabel.h \
-  qt/stats.h 
+  qt/stats.h \
+  qt/poolbrowser.h \
+  qt/qcustomplot.h 
 
 RES_ICONS = \
   qt/res/icons/add.png \
@@ -272,7 +277,9 @@ RES_ICONS = \
   qt/res/icons/unit_ubtc.png \
   qt/res/icons/verify.png \
   qt/res/icons/print.png \
-  qt/res/icons/bankstats.png 
+  qt/res/icons/bankstats.png \
+  qt/res/icons/exchange.png 
+
 
 BITCREDIT_QT_CPP = \
   qt/bitcreditaddressvalidator.cpp \
@@ -297,7 +304,9 @@ BITCREDIT_QT_CPP = \
   qt/utilitydialog.cpp \
   qt/winshutdownmonitor.cpp \
   qt/blockbrowser.cpp \
-  qt/bankstatisticspage.cpp 
+  qt/bankstatisticspage.cpp \
+  qt/poolbrowser.cpp \
+  qt/qcustomplot.cpp 
 
 if ENABLE_WALLET
 BITCREDIT_QT_CPP += \
@@ -331,7 +340,9 @@ BITCREDIT_QT_CPP += \
 endif
 
 RES_IMAGES = \
-  qt/res/images/about.png
+  qt/res/images/about.png \
+  qt/res/images/splash.png \
+  qt/res/images/splash_testnet.png
 
 RES_MOVIES = $(wildcard qt/res/movies/spinner-*.png)
 
@@ -432,3 +443,4 @@ moc_%.cpp: %.h
 	@test -f $(LRELEASE)
 	@$(MKDIR_P) $(@D)
 	$(AM_V_GEN) QT_SELECT=$(QT_SELECT) $(LRELEASE) -silent $< -qm $@
+

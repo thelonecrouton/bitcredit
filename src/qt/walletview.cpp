@@ -12,7 +12,7 @@
 #include "bankstatisticspage.h"
 #include "guiutil.h"
 #include "optionsmodel.h"
-#include "ircmodel.h"
+
 #include "overviewpage.h"
 #include "receivecoinsdialog.h"
 #include "sendcoinsdialog.h"
@@ -34,7 +34,7 @@
 WalletView::WalletView(QWidget *parent):
     QStackedWidget(parent),
     clientModel(0),
-    ircModel(0),
+   
     walletModel(0)
 {
     // Create tabs
@@ -142,20 +142,6 @@ void WalletView::setWalletModel(WalletModel *walletModel)
 
         // Show progress dialog
         connect(walletModel, SIGNAL(showProgress(QString,int)), this, SLOT(showProgress(QString,int)));
-    }
-}
-
-void WalletView::setIRCModel(IRCModel *ircModel)
-{
-    this->ircModel = ircModel;
-
-    if(ircModel)
-    {
-        // Report errors from wallet thread
-        connect(ircModel, SIGNAL(error(QString,QString,bool)), this, SLOT(error(QString,QString,bool)));
-
-        overviewPage->setIRCModel(ircModel);
-
     }
 }
 
