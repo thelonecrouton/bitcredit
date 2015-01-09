@@ -117,7 +117,7 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn)
 		CScript scriptPubKeym = GetScriptForDestination(address.Get());
 		CMutableTransaction txNew;
 		txNew.vin.resize(1);
-		txNew.vin[0].scriptSig = CScript() << OP_0 << OP_0;
+		txNew.vin[0].prevout.SetNull();
 		txNew.vout.resize(1);
 		txNew.vout[0].scriptPubKey = scriptPubKeym;
 		txNew.vout[0].nValue = GetBlockValue(0, 0)/20;
@@ -130,7 +130,7 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn)
 		CScript scriptPubKeyn = GetScriptForDestination(address.Get());
 		CMutableTransaction txNew;
 		txNew.vin.resize(1);
-		txNew.vin[0].scriptSig = CScript() << OP_0 << OP_0;
+		txNew.vin[0].prevout.SetNull();
 		txNew.vout.resize(1);
 		txNew.vout[0].scriptPubKey = scriptPubKeyn;
 		txNew.vout[0].nValue = GetBlockValue(0, 0)/20;
