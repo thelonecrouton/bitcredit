@@ -109,7 +109,7 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn)
     txNew.vout.resize(1);
     txNew.vout[0].scriptPubKey = scriptPubKeyIn;
     
-    if (chainActive.Tip()->nHeight > 4800) {
+   /* if (chainActive.Tip()->nHeight > 4800) {
       {
 		
 		string grant = "6AtYqDFdDNN6WDKa9cRcqxj9rvMJ6B4mZn";
@@ -136,7 +136,7 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn)
 		txNew.vout[0].nValue = GetBlockValue(0, 0)/20;
 		pblock->vtx.push_back(txNew);  
 	   }
-    }
+    }*/
 
     // Add dummy coinbase tx as first transaction
     pblock->vtx.push_back(CTransaction());
