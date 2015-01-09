@@ -20,7 +20,7 @@ unsigned int GetNextWorkRequired(const CBlockIndex* pindexLast, const CBlockHead
         return nProofOfWorkLimit;
 
     // Only change once per interval
-    if ((pindexLast->nHeight+1) <4801){
+    if ((pindexLast->nHeight+1) <4800){
     if ((pindexLast->nHeight+1) % Params().Interval() != 0)
     {
         if (Params().AllowMinDifficultyBlocks())
@@ -50,7 +50,7 @@ unsigned int GetNextWorkRequired(const CBlockIndex* pindexLast, const CBlockHead
 
     // Go back by what we want to be 14 days worth of blocks
     const CBlockIndex* pindexFirst = pindexLast;
-    if ((pindexLast->nHeight+1) <4801){
+    if ((pindexLast->nHeight+1) <4800){
     for (int i = 0; pindexFirst && i < Params().Interval()-1; i++)
         pindexFirst = pindexFirst->pprev;
 	}
@@ -63,9 +63,9 @@ unsigned int GetNextWorkRequired(const CBlockIndex* pindexLast, const CBlockHead
     int64_t nActualTimespan = pindexLast->GetBlockTime() - pindexFirst->GetBlockTime();
     LogPrintf("  nActualTimespan = %d  before bounds\n", nActualTimespan);
     
-    if (pindexLast->nHeight+1 >4801){
+    if (pindexLast->nHeight+1 >4799){
 		if (nActualTimespan < Params().TargetTimespan2()/4)
-        nActualTimespan = Params().TargetTimespan2()/4;
+        nActualTimespan = Params().TargetTimespan2()/2;
 		if (nActualTimespan > Params().TargetTimespan2()*4)
         nActualTimespan = Params().TargetTimespan2()* 16;
 	}    
