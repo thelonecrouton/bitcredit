@@ -67,7 +67,7 @@ unsigned int GetNextWorkRequired(const CBlockIndex* pindexLast, const CBlockHead
 		if (nActualTimespan < Params().TargetTimespan2()/4)
         nActualTimespan = Params().TargetTimespan2()/4;
 		if (nActualTimespan > Params().TargetTimespan2()*4)
-        nActualTimespan = Params().TargetTimespan2()*16;
+        nActualTimespan = Params().TargetTimespan2()* 16;
 	}    
     else if (pindexLast->nHeight+1 >840){
 		if (nActualTimespan < Params().TargetTimespan2()/4)
