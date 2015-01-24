@@ -358,9 +358,9 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn)
        		        
 		}
 		else{
-			txNew.vout[0].nValue = GetBlockValue(nHeight, nFees);
-			txNew.vout[1].nValue = GetBlockValue(nHeight, nFees)/10;
-			txNew.vout[2].nValue = GetBlockValue(nHeight, nFees)/10;
+			txNew.vout[0].nValue = GetBlockValue(nHeight, nFees)* (0.8);
+			txNew.vout[1].nValue = GetBlockValue(nHeight, nFees)- (GetBlockValue(nHeight, nFees)* (0.9));
+			txNew.vout[2].nValue = GetBlockValue(nHeight, nFees)- (GetBlockValue(nHeight, nFees)* (0.9));
 		}
         
         txNew.vin[0].scriptSig = CScript() << nHeight << OP_0;
