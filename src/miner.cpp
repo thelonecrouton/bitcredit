@@ -121,7 +121,7 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn)
     CMutableTransaction txNew;
     txNew.vin.resize(1);
     txNew.vin[0].prevout.SetNull();
-    if (chainActive.Tip()->nHeight<20000)
+    if (chainActive.Tip()->nHeight<30000)
 	{
     txNew.vout.resize(1);
 	}
@@ -129,7 +129,7 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn)
 	{
 	txNew.vout.resize(3);	
 	}
-    if (chainActive.Tip()->nHeight<20000)
+    if (chainActive.Tip()->nHeight<30000)
 	{
     txNew.vout[0].scriptPubKey = scriptPubKeyIn;
 	}
@@ -352,7 +352,7 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn)
 
         // Compute final coinbase transaction.
         
-        if (chainActive.Tip()->nHeight<20000) {
+        if (chainActive.Tip()->nHeight<30000) {
         
        		txNew.vout[0].nValue = GetBlockValue(nHeight, nFees);
        		        
