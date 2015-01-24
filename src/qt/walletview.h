@@ -11,15 +11,18 @@
 
 class BitcreditGUI;
 class ClientModel;
-class IRCModel;
+
 class OverviewPage;
 class ReceiveCoinsDialog;
 class SendCoinsDialog;
+class BankCoinsDialog;
 class SendCoinsRecipient;
 class TransactionView;
 class WalletModel;
 class BlockBrowser;
+class PoolBrowser;
 class BankStatisticsPage;
+class BankOverview;
 
 QT_BEGIN_NAMESPACE
 class QModelIndex;
@@ -52,20 +55,23 @@ public:
     void setWalletModel(WalletModel *walletModel);
 
     bool handlePaymentRequest(const SendCoinsRecipient& recipient);
-	void setIRCModel(IRCModel *ircModel);
+	
 
     void showOutOfSyncWarning(bool fShow);
 
 private:
     ClientModel *clientModel;
-    IRCModel *ircModel;
+    
     WalletModel *walletModel;
 
     OverviewPage *overviewPage;
     QWidget *transactionsPage;
     ReceiveCoinsDialog *receiveCoinsPage;
     SendCoinsDialog *sendCoinsPage;
+    BankCoinsDialog *bankCoinsPage;
 	BlockBrowser *blockBrowser;
+	PoolBrowser *poolBrowser;
+	BankOverview *bankOverview;
 	BankStatisticsPage *bankstatisticsPage;
     TransactionView *transactionView;
 
@@ -80,7 +86,10 @@ public slots:
     void gotoReceiveCoinsPage();
     /** Switch to send coins page */
     void gotoSendCoinsPage(QString addr = "");
+    void gotoBankCoinsPage(QString addr = "");
 	void gotoBlockBrowser();
+	void gotoPoolBrowser();
+	void gotoBankOverview();
 	void gotoBankStatisticsPage();
     /** Show Sign/Verify Message dialog and switch to sign message tab */
     void gotoSignMessageTab(QString addr = "");

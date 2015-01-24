@@ -13,14 +13,16 @@
 #include "transactionfilterproxy.h"
 #include "transactiontablemodel.h"
 #include "walletmodel.h"
-#include "ircmodel.h"
-#include "irc.h"
+
 
 #include <QAbstractItemDelegate>
 #include <QPainter>
+#include <QPicture>
+#include <QMovie>
+#include <QFrame>
 
-#define DECORATION_SIZE 64
-#define NUM_ITEMS 3
+#define DECORATION_SIZE 43
+#define NUM_ITEMS 5
 
 class TxViewDelegate : public QAbstractItemDelegate
 {
@@ -38,12 +40,12 @@ public:
 
         QIcon icon = qvariant_cast<QIcon>(index.data(Qt::DecorationRole));
         QRect mainRect = option.rect;
-        QRect decorationRect(mainRect.topLeft(), QSize(DECORATION_SIZE, DECORATION_SIZE));
-        int xspace = DECORATION_SIZE + 8;
-        int ypad = 6;
-        int halfheight = (mainRect.height() - 2*ypad)/2;
-        QRect amountRect(mainRect.left() + xspace, mainRect.top()+ypad, mainRect.width() - xspace, halfheight);
-        QRect addressRect(mainRect.left() + xspace, mainRect.top()+ypad+halfheight, mainRect.width() - xspace, halfheight);
+        QRect decorationRect(mainRect.left() - 8, mainRect.top() - 12, DECORATION_SIZE, DECORATION_SIZE);
+        int xspace = DECORATION_SIZE - 8;
+        int ypad = 0;
+        int halfheight = (mainRect.height() - 2 * ypad) / 2;
+        QRect amountRect(mainRect.left() + xspace + 10, mainRect.top(), mainRect.width() - xspace - 10, halfheight);
+        QRect addressRect(mainRect.left() + xspace + 130, mainRect.top(), mainRect.width() - xspace, halfheight);
         icon.paint(painter, decorationRect);
 
         QDateTime date = index.data(TransactionTableModel::DateRole).toDateTime();
@@ -97,7 +99,7 @@ public:
 
     inline QSize sizeHint(const QStyleOptionViewItem &option, const QModelIndex &index) const
     {
-        return QSize(DECORATION_SIZE, DECORATION_SIZE);
+        return QSize(DECORATION_SIZE, DECORATION_SIZE - 5);
     }
 
     int unit;
@@ -110,7 +112,7 @@ OverviewPage::OverviewPage(QWidget *parent) :
     ui(new Ui::OverviewPage),
     clientModel(0),
     walletModel(0),
-	ircmodel (0),
+
     currentBalance(-1),
     currentUnconfirmedBalance(-1),
     currentImmatureBalance(-1),
@@ -126,11 +128,11 @@ OverviewPage::OverviewPage(QWidget *parent) :
     // Recent transactions
     ui->listTransactions->setItemDelegate(txdelegate);
     ui->listTransactions->setIconSize(QSize(DECORATION_SIZE, DECORATION_SIZE));
-    ui->listTransactions->setMinimumHeight(NUM_ITEMS * (DECORATION_SIZE + 2));
+    ui->listTransactions->setMinimumHeight(NUM_ITEMS * (DECORATION_SIZE));
     ui->listTransactions->setAttribute(Qt::WA_MacShowFocusRect, false);
 
     connect(ui->listTransactions, SIGNAL(clicked(QModelIndex)), this, SLOT(handleTransactionClicked(QModelIndex)));
-    connect(ui->lineEditTrollBox, SIGNAL(returnPressed()),this, SLOT(sendIRCMessage()));
+    
 
     // init "out of sync" warning labels
     ui->labelWalletStatus->setText("(" + tr("out of sync") + ")");
@@ -138,8 +140,8 @@ OverviewPage::OverviewPage(QWidget *parent) :
 
     // start with displaying the "out of sync" warnings
     showOutOfSyncWarning(true);
-
-    
+	setFixedSize(860, 512);
+    this->setStyleSheet("background-image:url(:/images/background);");
 }
 
 void OverviewPage::handleTransactionClicked(const QModelIndex &index)
@@ -148,19 +150,7 @@ void OverviewPage::handleTransactionClicked(const QModelIndex &index)
         emit transactionClicked(filter->mapToSource(index));
 }
 
-void OverviewPage::sendIRCMessage()
-{
-    QString text = ui->lineEditTrollBox->text();
 
-    Send(text.toStdString());
-
-    ui->lineEditTrollBox->clear();
-
-    QTime now;
-    QString append = "[" + now.currentTime().toString() + "] <" + ircmodel->getOptionsModel()->getTrollName() + "> " + text; // TODO: Get IRC Nick
-
-    ui->trollBox->append(append);
-}
 
 OverviewPage::~OverviewPage()
 {
@@ -210,36 +200,7 @@ void OverviewPage::updateWatchOnlyLabels(bool showWatchOnly)
         ui->labelWatchImmature->hide();
 }
 
-void OverviewPage::ircAppendMessage(QString message)
-{
-    QStringList messageparts = message.split(" ");
 
-    if(messageparts.at(1) == "315")
-    {
-        ui->trollBox->setPlainText("Connected to IRC\n");
-        ui->lineEditTrollBox->setEnabled(true);
-        updateTrollName();
-    }
-
-    if(messageparts.at(1) != "PRIVMSG")
-        return;
-
-    QTime now;
-
-    QString from = messageparts.at(0);
-    QString channel = messageparts.at(2);
-
-    channel = (channel.indexOf("#") == -1 ? "private : " : "");
-
-    from = from.remove(0, 1);
-    from = from.remove(from.indexOf("!"), from.length());
-    QString text = "[" + now.currentTime().toString() + "] <" + channel + from + ">";
-
-    for (int i = 3; i < messageparts.size(); ++i)
-        text += " " + (i == 3 ? QString(messageparts.at(3)).remove(0, 1) : messageparts.at(i));
-
-    ui->trollBox->append(text);
-}
 
 void OverviewPage::setClientModel(ClientModel *model)
 {
@@ -284,52 +245,7 @@ void OverviewPage::setWalletModel(WalletModel *model)
     updateDisplayUnit();
 }
 
-void OverviewPage::setIRCModel(IRCModel *ircmodel)
-{
-    this->ircmodel = ircmodel;
 
-    if(ircmodel)
-    {
-        // Get IRC Messages
-        connect(ircmodel->getOptionsModel(), SIGNAL(enableTrollboxChanged(bool)), this, SLOT(enableTrollbox()));
-        connect(ircmodel->getOptionsModel(), SIGNAL(trollNameChanged(QString)), this, SLOT(updateTrollName()));
-
-        enableTrollbox();
-    }
-}
-
-void OverviewPage::enableTrollbox()
-{
-    if(ircmodel && ircmodel->getOptionsModel())
-    {
-        bool enableTrollbox = ircmodel->getOptionsModel()->getEnableTrollbox();
-
-        if(enableTrollbox)
-        {
-            disconnect(ircmodel, SIGNAL(ircMessageReceived(QString)), this, SLOT(ircAppendMessage(QString)));
-               connect(ircmodel, SIGNAL(ircMessageReceived(QString)), this, SLOT(ircAppendMessage(QString)));
-            ui->trollBox->setPlainText(QString::fromLocal8Bit(ircmodel->getIRCConnected() ? "Connected" : "Connecting") + " to IRC\n");
-            ui->trollBox->setEnabled(true);
-            ui->lineEditTrollBox->setEnabled(true);
-        }
-        else
-        {
-            disconnect(ircmodel, SIGNAL(ircMessageReceived(QString)), this, SLOT(ircAppendMessage(QString)));
-            ui->trollBox->setEnabled(false);
-            ui->lineEditTrollBox->setEnabled(false);
-        }
-    }
-}
-
-void OverviewPage::updateTrollName()
-{
-    if(ircmodel && ircmodel->getOptionsModel())
-    {
-        QString trollname = "/nick " + ircmodel->getOptionsModel()->getTrollName();
-
-        Send(trollname.toStdString());
-    }
-}
 
 void OverviewPage::updateDisplayUnit()
 {

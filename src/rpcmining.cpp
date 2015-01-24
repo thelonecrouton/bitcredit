@@ -310,10 +310,10 @@ Value getwork(const Array& params, bool fHelp)
             "If [data] is specified, tries to solve the block and returns true if it was successful.");
 
     if (vNodes.empty())
-        throw JSONRPCError(RPC_CLIENT_NOT_CONNECTED, "RandomBits is not connected!");
+        throw JSONRPCError(RPC_CLIENT_NOT_CONNECTED, "Bitcredits is not connected!");
 
     if (IsInitialBlockDownload())
-        throw JSONRPCError(RPC_CLIENT_IN_INITIAL_DOWNLOAD, "RandomBits is downloading blocks...");
+        throw JSONRPCError(RPC_CLIENT_IN_INITIAL_DOWNLOAD, "Bitcredits is downloading blocks...");
 
     typedef map<uint256, pair<CBlock*, CScript> > mapNewBlock_t;
     static mapNewBlock_t mapNewBlock;    // FIXME: thread safety
@@ -327,6 +327,10 @@ Value getwork(const Array& params, bool fHelp)
         static CBlockIndex* pindexPrev;
         static int64_t nStart;
         static CBlockTemplate* pblocktemplate;
+
+	static uint32_t prevNTime = 0;
+	static uint32_t prevNNonce = 0;
+
         if (pindexPrev != chainActive.Tip() ||
             (mempool.GetTransactionsUpdated() != nTransactionsUpdatedLast && GetTime() - nStart > 60))
         {
@@ -348,25 +352,38 @@ Value getwork(const Array& params, bool fHelp)
             nStart = GetTime();
 
             // Create new block
-            CScript scriptDummy = CScript() << OP_TRUE;
-            pblocktemplate = CreateNewBlock(scriptDummy);
+            pblocktemplate = CreateNewBlockWithKey(reservekey);
+
             if (!pblocktemplate)
                 throw JSONRPCError(RPC_OUT_OF_MEMORY, "Out of memory");
             vNewBlockTemplate.push_back(pblocktemplate);
 
             // Need to update only after we know CreateNewBlock succeeded
             pindexPrev = pindexPrevNew;
+
+            // YVG: Only increment extra nonce upon block creation, otherwise it will kill merkle hash
+		CBlock* pblock_new = &pblocktemplate->block; // pointer for convenience
+            static unsigned int nExtraNonce = 0;
+            IncrementExtraNonce(pblock_new, pindexPrev, nExtraNonce);
         }
         
 		CBlock* pblock = &pblocktemplate->block; // pointer for convenience
 		
         // Update nTime
         UpdateTime(pblock, pindexPrev);
-		pblock->nNonce = 0;
 
-        // Update nExtraNonce
-        static unsigned int nExtraNonce = 0;
-        IncrementExtraNonce(pblock, pindexPrev, nExtraNonce);
+	if (pblock->nTime == prevNTime)
+	{
+		prevNNonce += 0x00100000;
+	}
+	else
+	{
+		prevNTime = pblock->nTime;
+		prevNNonce = 0;
+	}
+
+
+		pblock->nNonce = prevNNonce;
 
         // Save
         mapNewBlock[pblock->hashMerkleRoot] = make_pair(pblock, pblock->vtx[0].vin[0].scriptSig);
@@ -384,6 +401,10 @@ Value getwork(const Array& params, bool fHelp)
 
         Object result;
 
+        LogPrintf("Getwork Block Send %s\n", HexStr(BEGIN(pdata), END(pdata)));
+        LogPrintf("Getwork Target Send %s\n", HexStr(BEGIN(hashTarget), END(hashTarget)));
+
+
         result.push_back(Pair("data",     HexStr(BEGIN(pdata), END(pdata))));
 
         result.push_back(Pair("target",   HexStr(BEGIN(hashTarget), END(hashTarget))));
@@ -395,16 +416,27 @@ Value getwork(const Array& params, bool fHelp)
     {
         // Parse parameters
         vector<unsigned char> vchData = ParseHex(params[0].get_str());
+
+        LogPrintf("Getwork Block   %d bytes\n", vchData.size());
+
         if (vchData.size() != 88)
             throw JSONRPCError(RPC_INVALID_PARAMETER, "Invalid parameter");
+
         
 		CBlock* pdata = (CBlock*)vchData.data();//&vchData[0];
         uint32_t* noncedata = (uint32_t*)pdata;
 
+        LogPrintf("Getwork Block Recvd %s\n", HexStr(BEGIN(*pdata), 88+BEGIN(*pdata)));
+
         // Get saved block
         if (!mapNewBlock.count(pdata->hashMerkleRoot))
             return false;
+
+        LogPrintf("Getwork Block R %d bytes\n", vchData.size());
+
         CBlock* pblock = mapNewBlock[pdata->hashMerkleRoot].first;
+
+        LogPrintf("Getwork Block Mappd %s\n", HexStr(BEGIN(*pblock), 88+BEGIN(*pblock)));
 
         pblock->nTime = pdata->nTime;
         pblock->nNonce = pdata->nNonce;
@@ -413,7 +445,11 @@ Value getwork(const Array& params, bool fHelp)
         //pblock->vtx[0].vin[0].scriptSig == mapNewBlock[pdata->hashMerkleRoot].second;
         pblock->hashMerkleRoot = pblock->BuildMerkleTree();
 
+        LogPrintf("Getwork Block Rebld %s\n", HexStr(BEGIN(*pblock), 88+BEGIN(*pblock)));
+
 		uint256 posthash = pblock->GetHash();
+
+        LogPrintf("posthash   %s\n", posthash.ToString());
 
         return ProcessBlockFound(pblock, *pwalletMain, reservekey);
 

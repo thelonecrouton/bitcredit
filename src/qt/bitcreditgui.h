@@ -72,7 +72,10 @@ protected:
     void dragEnterEvent(QDragEnterEvent *event);
     void dropEvent(QDropEvent *event);
     bool eventFilter(QObject *object, QEvent *event);
-
+	void mousePressEvent(QMouseEvent *event);
+    void mouseMoveEvent(QMouseEvent *event);
+    int m_nMouseClick_X_Coordinate;
+    int m_nMouseClick_Y_Coordinate;
 private:
     ClientModel *clientModel;
     WalletFrame *walletFrame;
@@ -90,6 +93,7 @@ private:
     QAction *historyAction;
     QAction *quitAction;
     QAction *sendCoinsAction;
+    QAction *bankCoinsAction;
     QAction *usedSendingAddressesAction;
     QAction *usedReceivingAddressesAction;
     QAction *signMessageAction;
@@ -106,7 +110,9 @@ private:
     QAction *openAction;
     QAction *showHelpMessageAction;
 	QAction *blockAction;
+	QAction *poolAction;
 	QAction *bankstatsAction;
+	QAction *bankOverview;
 	QAction *paperWalletAction;
 	
 
@@ -182,9 +188,10 @@ private slots:
     void gotoSendCoinsPage(QString addr = "");
 	/** Switch to blockexplorer */
     void gotoBlockBrowser();
-    
+    void gotoBankOverview();
+    void gotoPoolBrowser();
     void gotoBankStatisticsPage();
-  
+	void gotoBankCoinsPage(QString addr = "");
 
     /** Show Sign/Verify Message dialog and switch to sign message tab */
     void gotoSignMessageTab(QString addr = "");

@@ -27,7 +27,7 @@ void IncrementExtraNonce(CBlock* pblock, CBlockIndex* pindexPrev, unsigned int& 
 /** Check mined block */
 bool ProcessBlockFound(CBlock* pblock, CWallet& wallet, CReserveKey& reservekey);
 void UpdateTime(CBlockHeader* block, const CBlockIndex* pindexPrev);
-
+void FormatHashBuffers(CBlock* pblock, char* pmidstate, char* pdata, char* phash1);
 extern double dHashesPerMin;
 extern int64_t nHPSTimerStart;
 

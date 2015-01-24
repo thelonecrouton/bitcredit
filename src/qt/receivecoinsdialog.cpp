@@ -53,6 +53,8 @@ ReceiveCoinsDialog::ReceiveCoinsDialog(QWidget *parent) :
     connect(copyAmountAction, SIGNAL(triggered()), this, SLOT(copyAmount()));
 
     connect(ui->clearButton, SIGNAL(clicked()), this, SLOT(clear()));
+    
+    this->setStyleSheet("background-image:url(:/images/background);");
 }
 
 void ReceiveCoinsDialog::setModel(WalletModel *model)

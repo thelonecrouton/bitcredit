@@ -55,8 +55,8 @@ const CBlockIndex* getBlockIndex(int height)
 
 std::string getBlockHash(int Height)
 {
-    if(Height > chainActive.Tip()->nHeight) { return "351c6703813172725c6d660aa539ee6a3d7a9fe784c87fae7f36582e3b797058"; }
-    if(Height < 0) { return "351c6703813172725c6d660aa539ee6a3d7a9fe784c87fae7f36582e3b797058"; }
+    if(Height > chainActive.Tip()->nHeight) { return "0df7a63994eb66317fd82c16ee5160adb83acb45f72d5bf359b88e635d7301b8"; }
+    if(Height < 0) { return "0df7a63994eb66317fd82c16ee5160adb83acb45f72d5bf359b88e635d7301b8"; }
     int desiredheight;
     desiredheight = Height;
     if (desiredheight < 0 || desiredheight > chainActive.Height())
@@ -330,10 +330,11 @@ BlockBrowser::BlockBrowser(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    setFixedSize(400, 420);
+    //setFixedSize(400, 420);
         
     connect(ui->blockButton, SIGNAL(pressed()), this, SLOT(blockClicked()));
     connect(ui->txButton, SIGNAL(pressed()), this, SLOT(txClicked()));
+    this->setStyleSheet("background-image:url(:/images/background);");
 }
 
 void BlockBrowser::updateExplorer(bool block)
@@ -363,8 +364,8 @@ void BlockBrowser::updateExplorer(bool block)
             height = chainActive.Tip()->nHeight;
         }
         int Pawrate = getBlockHashrate(height);
-        double Pawrate2 = 0.000;
-        Pawrate2 = ((double)Pawrate / 1000000);
+        double Pawrate2 = 0.000000;
+        Pawrate2 = ((double)Pawrate);
         std::string hash = getBlockHash(height);
         std::string merkle = getBlockMerkle(height);
         int nBits = getBlocknBits(height);
@@ -377,8 +378,8 @@ void BlockBrowser::updateExplorer(bool block)
         QString QBits = QString::number(nBits);
         QString QNonce = QString::number(nNonce);
         QString QTime = QString::number(atime);
-        QString QHardness = QString::number(hardness, 'f', 6);
-        QString QPawrate = QString::number(Pawrate2, 'f', 3);
+        QString QHardness = QString::number(hardness, 'f', 8);
+        QString QPawrate = QString::number(Pawrate2, 'f', 6);
         ui->heightLabel->setText(QHeight);
         ui->hashBox->setText(QHash);
         ui->merkleBox->setText(QMerkle);
@@ -386,7 +387,7 @@ void BlockBrowser::updateExplorer(bool block)
         ui->nonceBox->setText(QNonce);
         ui->timeBox->setText(QTime);     
         ui->hardBox->setText(QHardness);
-        ui->pawBox->setText(QPawrate + " MH/s");
+        ui->pawBox->setText(QPawrate + " H/s");
     } 
     
     if(block == false) {

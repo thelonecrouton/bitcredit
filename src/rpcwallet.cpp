@@ -784,9 +784,7 @@ Value sendtobank(const Array& params, bool fHelp)
     string bank = params[1].get_str();
     string addrStr;
     if (bank == "devbank" || bank == "DEVBANK")
-        addrStr = "1FfmbHfnpaZjKFvyi1okTjJJusN455paPH";
-    if (bank == "glb" || bank == "GLB")
-        addrStr = "1FfmbHfnpaZjKFvyi1okTjJJusN455paPH";
+        addrStr = "6DEVCRjNBJzgoALxYAZ87a4Td25D53WnHR";
     else
         throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid or unknown bank acronym.");
 
@@ -823,9 +821,7 @@ Value sendtoreserve(const Array& params, bool fHelp)
     string reserve = params[1].get_str();
     string addrStr;
     if (reserve == "devreserve" || reserve == "DEVRESERVE")
-        addrStr = "1FfmbHfnpaZjKFvyi1okTjJJusN455paPH";
-    if (reserve == "glb" || reserve == "GLB")
-        addrStr = "1FfmbHfnpaZjKFvyi1okTjJJusN455paPH";
+        addrStr = "632YKoYUMFt7uZVwKw3sQpi9WLNoj9o4ag";
     else
         throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid or unknown reserve acronym.");
 
@@ -862,9 +858,7 @@ Value sendtogrants(const Array& params, bool fHelp)
     string grant = params[1].get_str();
     string addrStr;
     if (grant == "devgrant" || grant == "DEVGRANT")
-        addrStr = "1FfmbHfnpaZjKFvyi1okTjJJusN455paPH";
-    if (grant == "glb" || grant == "GLB")
-        addrStr = "1FfmbHfnpaZjKFvyi1okTjJJusN455paPH";
+        addrStr = "6AtYqDFdDNN6WDKa9cRcqxj9rvMJ6B4mZn";
     else
         throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid or unknown grant acronym.");
 

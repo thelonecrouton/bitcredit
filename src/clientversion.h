@@ -16,7 +16,7 @@
 //! These need to be macros, as clientversion.cpp's and bitcredit*-res.rc's voodoo requires it
 #define CLIENT_VERSION_MAJOR 0
 #define CLIENT_VERSION_MINOR 3
-#define CLIENT_VERSION_REVISION 05
+#define CLIENT_VERSION_REVISION 10
 #define CLIENT_VERSION_BUILD 0
 
 //! Set to true for release, false for prerelease or test build
@@ -38,7 +38,7 @@
 #define DO_STRINGIZE(X) #X
 
 //! Copyright string used in Windows .rc files
-#define COPYRIGHT_STR "2009-" STRINGIZE(COPYRIGHT_YEAR) " The Bitcredit Core Developers"
+#define COPYRIGHT_STR "2014-" STRINGIZE(COPYRIGHT_YEAR) " The Bitcredit Core Developer"
 
 /**
  * bitcreditd-res.rc includes this file, but it cannot cope with real c++ code.

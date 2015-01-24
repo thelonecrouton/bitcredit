@@ -16,12 +16,18 @@
   <property name="autoFillBackground">
    <bool>false</bool>
   </property>
+  <property name="frameShape">
+   <enum>QFrame::NoFrame</enum>
+  </property>
+  <property name="currentIndex">
+   <number>2</number>
+  </property>
   <widget class="QFrame" name="SendCoins">
    <property name="toolTip">
     <string>This is a normal payment.</string>
    </property>
    <property name="frameShape">
-    <enum>QFrame::StyledPanel</enum>
+    <enum>QFrame::NoFrame</enum>
    </property>
    <property name="frameShadow">
     <enum>QFrame::Sunken</enum>
@@ -32,6 +38,9 @@
     </property>
     <item row="0" column="0">
      <widget class="QLabel" name="payToLabel">
+      <property name="styleSheet">
+       <string notr="true">color: rgb(255, 255, 255);</string>
+      </property>
       <property name="text">
        <string>Pay &amp;To:</string>
       </property>
@@ -51,7 +60,10 @@
       <item>
        <widget class="QValidatedLineEdit" name="payTo">
         <property name="toolTip">
-         <string>The Bitcredit address to send the payment to</string>
+         <string>The Bitcredits address to send the payment to</string>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">color: rgb(255, 255, 255);</string>
         </property>
        </widget>
       </item>
@@ -125,6 +137,9 @@
     </item>
     <item row="1" column="0">
      <widget class="QLabel" name="labellLabel">
+      <property name="styleSheet">
+       <string notr="true">color: rgb(255, 255, 255);</string>
+      </property>
       <property name="text">
        <string>&amp;Label:</string>
       </property>
@@ -141,10 +156,16 @@
       <property name="toolTip">
        <string>Enter a label for this address to add it to the list of used addresses</string>
       </property>
+      <property name="styleSheet">
+       <string notr="true">color: rgb(255, 255, 255);</string>
+      </property>
      </widget>
     </item>
     <item row="2" column="0">
      <widget class="QLabel" name="amountLabel">
+      <property name="styleSheet">
+       <string notr="true">color: rgb(255, 255, 255);</string>
+      </property>
       <property name="text">
        <string>A&amp;mount:</string>
       </property>
@@ -157,10 +178,17 @@
      </widget>
     </item>
     <item row="2" column="1">
-     <widget class="BitcreditAmountField" name="payAmount"/>
+     <widget class="BitcreditAmountField" name="payAmount">
+      <property name="styleSheet">
+       <string notr="true">color: rgb(0, 0, 0);</string>
+      </property>
+     </widget>
     </item>
     <item row="3" column="0">
      <widget class="QLabel" name="messageLabel">
+      <property name="styleSheet">
+       <string notr="true">color: rgb(255, 255, 255);</string>
+      </property>
       <property name="text">
        <string>Message:</string>
       </property>
@@ -604,7 +632,7 @@
     <bool>true</bool>
    </property>
    <property name="frameShape">
-    <enum>QFrame::StyledPanel</enum>
+    <enum>QFrame::NoFrame</enum>
    </property>
    <property name="frameShadow">
     <enum>QFrame::Sunken</enum>
@@ -681,6 +709,9 @@
      <widget class="BitcreditAmountField" name="payAmount_is">
       <property name="acceptDrops">
        <bool>false</bool>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">color: rgb(0,0, 0);</string>
       </property>
      </widget>
     </item>
@@ -1136,7 +1167,7 @@
     <bool>true</bool>
    </property>
    <property name="frameShape">
-    <enum>QFrame::StyledPanel</enum>
+    <enum>QFrame::NoFrame</enum>
    </property>
    <property name="frameShadow">
     <enum>QFrame::Sunken</enum>
@@ -1217,6 +1248,9 @@
      <widget class="BitcreditAmountField" name="payAmount_s">
       <property name="acceptDrops">
        <bool>false</bool>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">color: rgb(0,0, 0);</string>
       </property>
      </widget>
     </item>

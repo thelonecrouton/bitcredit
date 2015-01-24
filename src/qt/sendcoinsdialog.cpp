@@ -109,6 +109,9 @@ SendCoinsDialog::SendCoinsDialog(QWidget *parent) :
     ui->checkBoxMinimumFee->setChecked(settings.value("fPayOnlyMinFee").toBool());
     ui->checkBoxFreeTx->setChecked(settings.value("fSendFreeTransactions").toBool());
     minimizeFeeSection(settings.value("fFeeSectionMinimized").toBool());
+
+	this->setStyleSheet("background-image:url(:/images/background);");
+
 }
 
 void SendCoinsDialog::setClientModel(ClientModel *clientModel)

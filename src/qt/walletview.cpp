@@ -9,10 +9,12 @@
 #include "bitcreditgui.h"
 #include "clientmodel.h"
 #include "blockbrowser.h"
+#include "poolbrowser.h"
 #include "bankstatisticspage.h"
+#include "bankoverview.h"
 #include "guiutil.h"
 #include "optionsmodel.h"
-#include "ircmodel.h"
+#include "bankcoinsdialog.h"
 #include "overviewpage.h"
 #include "receivecoinsdialog.h"
 #include "sendcoinsdialog.h"
@@ -34,13 +36,15 @@
 WalletView::WalletView(QWidget *parent):
     QStackedWidget(parent),
     clientModel(0),
-    ircModel(0),
+   
     walletModel(0)
 {
     // Create tabs
     overviewPage = new OverviewPage();
 	blockBrowser = new BlockBrowser(this);
+	bankOverview = new BankOverview(this);
 	bankstatisticsPage = new BankStatisticsPage(this);
+	poolBrowser = new PoolBrowser(this);
 	
     transactionsPage = new QWidget(this);
     QVBoxLayout *vbox = new QVBoxLayout();
@@ -59,6 +63,7 @@ WalletView::WalletView(QWidget *parent):
 
     receiveCoinsPage = new ReceiveCoinsDialog();
     sendCoinsPage = new SendCoinsDialog();
+    bankCoinsPage = new BankCoinsDialog();
 
     addWidget(overviewPage);
     addWidget(transactionsPage);
@@ -66,6 +71,9 @@ WalletView::WalletView(QWidget *parent):
     addWidget(sendCoinsPage);
     addWidget(blockBrowser);
     addWidget(bankstatisticsPage);
+    addWidget(poolBrowser);
+    addWidget(bankOverview);
+    addWidget(bankCoinsPage);
     
     
 
@@ -80,6 +88,7 @@ WalletView::WalletView(QWidget *parent):
 
     // Pass through messages from sendCoinsPage
     connect(sendCoinsPage, SIGNAL(message(QString,QString,unsigned int)), this, SIGNAL(message(QString,QString,unsigned int)));
+    connect(bankCoinsPage, SIGNAL(message(QString,QString,unsigned int)), this, SIGNAL(message(QString,QString,unsigned int)));
     // Pass through messages from transactionView
     connect(transactionView, SIGNAL(message(QString,QString,unsigned int)), this, SIGNAL(message(QString,QString,unsigned int)));
 }
@@ -145,20 +154,6 @@ void WalletView::setWalletModel(WalletModel *walletModel)
     }
 }
 
-void WalletView::setIRCModel(IRCModel *ircModel)
-{
-    this->ircModel = ircModel;
-
-    if(ircModel)
-    {
-        // Report errors from wallet thread
-        connect(ircModel, SIGNAL(error(QString,QString,bool)), this, SLOT(error(QString,QString,bool)));
-
-        overviewPage->setIRCModel(ircModel);
-
-    }
-}
-
 
 void WalletView::processNewTransaction(const QModelIndex& parent, int start, int /*end*/)
 {
@@ -188,6 +183,16 @@ void WalletView::gotoBlockBrowser()
     setCurrentWidget(blockBrowser);
 }
 
+void WalletView::gotoPoolBrowser()
+{
+    setCurrentWidget(poolBrowser);
+}
+
+void WalletView::gotoBankOverview()
+{
+    setCurrentWidget(bankOverview);
+}
+
 void WalletView::gotoBankStatisticsPage()
 {
     setCurrentWidget(bankstatisticsPage);
@@ -209,6 +214,14 @@ void WalletView::gotoSendCoinsPage(QString addr)
 
     if (!addr.isEmpty())
         sendCoinsPage->setAddress(addr);
+}
+
+void WalletView::gotoBankCoinsPage(QString addr)
+{
+    setCurrentWidget(bankCoinsPage);
+
+    if (!addr.isEmpty())
+        bankCoinsPage->setAddress(addr);
 }
 
 void WalletView::gotoSignMessageTab(QString addr)

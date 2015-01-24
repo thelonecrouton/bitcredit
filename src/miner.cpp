@@ -80,6 +80,21 @@ public:
     }
 };
 
+int static FormatHashBlocks(void* pbuffer, unsigned int len)
+{
+    unsigned char* pdata = (unsigned char*)pbuffer;
+    unsigned int blocks = 1 + ((len + 8) / 64);
+    unsigned char* pend = pdata + 64 * blocks;
+    memset(pdata + len, 0, 64 * blocks - len);
+    pdata[len] = 0x80;
+    unsigned int bits = len * 8;
+    pend[-1] = (bits >> 0) & 0xff;
+    pend[-2] = (bits >> 8) & 0xff;
+    pend[-3] = (bits >> 16) & 0xff;
+    pend[-4] = (bits >> 24) & 0xff;
+    return blocks;
+}
+
 void UpdateTime(CBlockHeader* pblock, const CBlockIndex* pindexPrev)
 {
     pblock->nTime = std::max(pindexPrev->GetMedianTimePast()+1, GetAdjustedTime());
@@ -106,29 +121,24 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn)
     CMutableTransaction txNew;
     txNew.vin.resize(1);
     txNew.vin[0].prevout.SetNull();
-    txNew.vout.resize(3);
-    
-    {
-      {
-		
-		string grant = "6AtYqDFdDNN6WDKa9cRcqxj9rvMJ6B4mZn";
-		CBitcreditAddress address(grant);
-		CScript scriptPubKeym = GetScriptForDestination(address.Get());
-		txNew.vout[1].scriptPubKey = scriptPubKeym;
-		txNew.vout[1].nValue = GetBlockValue(0, 0)/20;		
-	   }
-	   
-	   {
-		string grant = "6AtYqDFdDNN6WDKa9cRcqxj9rvMJ6B4mZn";
-		CBitcreditAddress address(grant);
-		CScript scriptPubKeyn = GetScriptForDestination(address.Get());
-		txNew.vout[2].scriptPubKey =scriptPubKeyn;
-		txNew.vout[2].nValue = GetBlockValue(0, 0)/20;	  
-	   }
-    }
-    
+    if (chainActive.Tip()->nHeight<20000)
+	{
+    txNew.vout.resize(1);
+	}
+	else 
+	{
+	txNew.vout.resize(3);	
+	}
+    if (chainActive.Tip()->nHeight<20000)
+	{
     txNew.vout[0].scriptPubKey = scriptPubKeyIn;
-
+	}
+    else 
+	{
+    txNew.vout[0].scriptPubKey = scriptPubKeyIn;
+    txNew.vout[1].scriptPubKey = BANK_SCRIPT;
+    txNew.vout[2].scriptPubKey = RESERVE_SCRIPT;
+   }
     // Add dummy coinbase tx as first transaction
     pblock->vtx.push_back(CTransaction());
     pblocktemplate->vTxFees.push_back(-1); // updated at end
@@ -341,7 +351,18 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn)
         LogPrintf("CreateNewBlock(): total size %u\n", nBlockSize);
 
         // Compute final coinbase transaction.
-        txNew.vout[0].nValue = GetBlockValue(nHeight, nFees);
+        
+        if (chainActive.Tip()->nHeight<20000) {
+        
+       		txNew.vout[0].nValue = GetBlockValue(nHeight, nFees);
+       		        
+		}
+		else{
+			txNew.vout[0].nValue = GetBlockValue(nHeight, nFees);
+			txNew.vout[1].nValue = GetBlockValue(nHeight, nFees)/10;
+			txNew.vout[2].nValue = GetBlockValue(nHeight, nFees)/10;
+		}
+        
         txNew.vin[0].scriptSig = CScript() << nHeight << OP_0;
         pblock->vtx[0] = txNew;
         pblocktemplate->vTxFees[0] = -nFees;
@@ -431,6 +452,47 @@ CBlockTemplate* CreateNewBlockWithKey(CReserveKey& reservekey)
 
     CScript scriptPubKey = CScript() << ToByteVector(pubkey) << OP_CHECKSIG;
     return CreateNewBlock(scriptPubKey);
+}
+
+void FormatHashBuffers(CBlock* pblock, char* pmidstate, char* pdata, char* phash1)
+{
+    //
+    // Pre-build hash buffers
+    //
+    struct
+    {
+        struct unnamed2
+        {
+            int nVersion;
+            uint256 hashPrevBlock;
+            uint256 hashMerkleRoot;
+            unsigned int nTime;
+            unsigned int nBits;
+            unsigned int nNonce;
+            unsigned int nBirthdayA;
+            unsigned int nBirthdayB;
+        }
+        block;
+        unsigned char pchPadding0[64];
+        uint256 hash1;
+        unsigned char pchPadding1[64];
+    }
+    tmp;
+    memset(&tmp, 0, sizeof(tmp));
+
+    tmp.block.nVersion       = pblock->nVersion;
+    tmp.block.hashPrevBlock  = pblock->hashPrevBlock;
+    tmp.block.hashMerkleRoot = pblock->hashMerkleRoot;
+    tmp.block.nTime          = pblock->nTime;
+    tmp.block.nBits          = pblock->nBits;
+    tmp.block.nNonce         = pblock->nNonce;
+    tmp.block.nBirthdayA     = pblock->nBirthdayA;
+    tmp.block.nBirthdayB     = pblock->nBirthdayB;
+
+    FormatHashBlocks(&tmp.block, sizeof(tmp.block));
+    
+    memcpy(pdata, &tmp.block, 128);
+
 }
 
 bool ProcessBlockFound(CBlock* pblock, CWallet& wallet, CReserveKey& reservekey)

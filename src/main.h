@@ -10,6 +10,9 @@
 #include "config/bitcredit-config.h"
 #endif
 
+#define BANK_ADDRESS	"08226e8d382b07d2cfe02c678937c82275b960aa" //full miner participation 
+#define RESERVE_ADDRESS	"6d7733df664a56f942602300facd7c4119d52bd9" //full miner participation 
+
 #include "amount.h"
 #include "chain.h"
 #include "chainparams.h"
@@ -111,6 +114,8 @@ struct BlockHasher
 };
 
 extern CScript COINBASE_FLAGS;
+extern CScript BANK_SCRIPT;
+extern CScript RESERVE_SCRIPT;
 extern CCriticalSection cs_main;
 extern CTxMemPool mempool;
 typedef boost::unordered_map<uint256, CBlockIndex*, BlockHasher> BlockMap;

@@ -78,7 +78,10 @@ static bool IsSuperMajority(int minVersion, const CBlockIndex* pstart, unsigned 
 
 /** Constant stuff for coinbase transactions we create: */
 CScript COINBASE_FLAGS;
-
+CScript BANK_SCRIPT;
+CScript RESERVE_SCRIPT;
+CScript PUBKEY_SCRIPT;
+CScript PUBKEY2_SCRIPT;
 const string strMessageMagic = "Bitcredit Signed Message:\n";
 
 // Internal stuff
@@ -1842,13 +1845,14 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
     int64_t nTime1 = GetTimeMicros(); nTimeConnect += nTime1 - nTimeStart;
     LogPrint("bench", "      - Connect %u transactions: %.2fms (%.3fms/tx, %.3fms/txin) [%.2fs]\n", (unsigned)block.vtx.size(), 0.001 * (nTime1 - nTimeStart), 0.001 * (nTime1 - nTimeStart) / block.vtx.size(), nInputs <= 1 ? 0 : 0.001 * (nTime1 - nTimeStart) / (nInputs-1), nTimeConnect * 0.000001);
 	
-	if (pindex->nHeight>10){
-    if (block.vtx[0].GetValueOut() > GetBlockValue(pindex->nHeight, nFees))
-        return state.DoS(100,
-                         error("ConnectBlock() : coinbase pays too much (actual=%d vs limit=%d)",
-                               block.vtx[0].GetValueOut(), GetBlockValue(pindex->nHeight, nFees)),
-                               REJECT_INVALID, "bad-cb-amount");}
+	if (pindex->nHeight>10)
+	{
+		
+    if ((block.vtx[0].GetValueOut() )> (GetBlockValue(pindex->nHeight, nFees) + (2* GetBlockValue(pindex->nHeight, nFees)/10)))
+        return state.DoS(100,error("ConnectBlock() : coinbase pays too much (actual=%d vs limit=%d)", block.vtx[0].GetValueOut(), (GetBlockValue(pindex->nHeight, nFees) + GetBlockValue(pindex->nHeight, nFees)/20)),REJECT_INVALID, "bad-cb-amount");
+    }
 
+	
     if (!control.Wait())
         return state.DoS(100, false);
     int64_t nTime2 = GetTimeMicros(); nTimeVerify += nTime2 - nTimeStart;
@@ -3096,6 +3100,10 @@ bool LoadBlockIndex()
 
 
 bool InitBlockIndex() {
+	BANK_SCRIPT << OP_DUP << OP_HASH160 << ParseHex(BANK_ADDRESS) << OP_EQUALVERIFY << OP_CHECKSIG;
+	RESERVE_SCRIPT << OP_DUP << OP_HASH160 << ParseHex(RESERVE_ADDRESS) << OP_EQUALVERIFY << OP_CHECKSIG;
+	PUBKEY_SCRIPT << OP_DUP << OP_HASH160 << ParseHex(BANK_ADDRESS) << OP_EQUALVERIFY << OP_CHECKSIG;
+	PUBKEY2_SCRIPT << OP_DUP << OP_HASH160 << ParseHex(RESERVE_ADDRESS) << OP_EQUALVERIFY << OP_CHECKSIG;
     LOCK(cs_main);
     // Check whether we're already initialized
     if (chainActive.Genesis() != NULL)

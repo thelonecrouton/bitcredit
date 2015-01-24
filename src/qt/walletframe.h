@@ -14,7 +14,9 @@ class SendCoinsRecipient;
 class WalletModel;
 class WalletView;
 class BlockBrowser;
+class PoolBrowser;
 class BankStatisticsPage;
+class BankOverview;
 QT_BEGIN_NAMESPACE
 class QStackedWidget;
 QT_END_NAMESPACE
@@ -57,12 +59,14 @@ public slots:
     void gotoReceiveCoinsPage();
     /** Switch to send coins page */
     void gotoSendCoinsPage(QString addr = "");
-
+	void gotoBankCoinsPage(QString addr = "");
     /** Show Sign/Verify Message dialog and switch to sign message tab */
     void gotoSignMessageTab(QString addr = "");
     /** Show Sign/Verify Message dialog and switch to verify message tab */
     void gotoVerifyMessageTab(QString addr = "");
 	void gotoBlockBrowser();
+	void gotoBankOverview();
+	void gotoPoolBrowser();
 	void gotoBankStatisticsPage();
     /** Encrypt the wallet */
     void encryptWallet(bool status);

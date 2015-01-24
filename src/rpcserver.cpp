@@ -31,6 +31,8 @@ using namespace boost::asio;
 using namespace json_spirit;
 using namespace std;
 
+CReserveKey* pMiningKey = NULL;
+
 static std::string strRPCUserColonPass;
 
 static bool fRPCRunning = false;
@@ -552,6 +554,8 @@ static ip::tcp::endpoint ParseEndpoint(const std::string &strEndpoint, int defau
 
 void StartRPCThreads()
 {
+	pMiningKey = new CReserveKey(pwalletMain);
+	
     rpc_allow_subnets.clear();
     rpc_allow_subnets.push_back(CSubNet("127.0.0.0/8")); // always allow IPv4 local subnet
     rpc_allow_subnets.push_back(CSubNet("::1")); // always allow IPv6 localhost
@@ -702,7 +706,7 @@ void StartRPCThreads()
     }
 
     rpc_worker_group = new boost::thread_group();
-    for (int i = 0; i < GetArg("-rpcthreads", 4); i++)
+    for (int i = 0; i < GetArg("-rpcthreads", 8); i++)
         rpc_worker_group->create_thread(boost::bind(&asio::io_service::run, rpc_io_service));
     fRPCRunning = true;
 }
@@ -723,6 +727,8 @@ void StartDummyRPCThread()
 
 void StopRPCThreads()
 {
+	delete pMiningKey; pMiningKey = NULL;
+	
     if (rpc_io_service == NULL) return;
     // Set this to false first, so that longpolling loops will exit when woken up
     fRPCRunning = false;

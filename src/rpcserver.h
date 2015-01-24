@@ -9,19 +9,22 @@
 #include "amount.h"
 #include "uint256.h"
 #include "rpcprotocol.h"
-
+#include "base58.h"
 #include <list>
 #include <map>
 #include <stdint.h>
 #include <string>
-
+#ifdef ENABLE_WALLET
+#include "wallet.h"
+#endif
 #include "json/json_spirit_reader_template.h"
 #include "json/json_spirit_utils.h"
 #include "json/json_spirit_writer_template.h"
-
+#include "script/script.h"
+class CScript;
 class CBlockIndex;
 class CNetAddr;
-
+class CReserveKey;
 class AcceptedConnection
 {
 public:
@@ -115,7 +118,7 @@ public:
 };
 
 extern const CRPCTable tableRPC;
-
+extern CReserveKey* pMiningKey;
 /**
  * Utilities: convert hex-encoded Values
  * (throws error if not hex).
