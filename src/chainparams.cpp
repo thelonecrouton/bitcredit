@@ -58,15 +58,6 @@ static Checkpoints::MapCheckpoints mapCheckpoints =
         ( 50, uint256("0x05743f466ecb2e1252779730ac3658400960ef44dd17453032ae340b6e1eedc0"))
         ( 798, uint256("0x0000ea5d57ecf0193788783a010695c934485352002dc6355d0c459a2b259436")) 
         ( 4798, uint256("0x00165e5b7a69a00cfbb27a8ce183bdb036c922f3355a20f696fd3c574d210ca9"))
-<<<<<<< HEAD
-        ;
-static const Checkpoints::CCheckpointData data = {
-        &mapCheckpoints,
-        1420722877, // * UNIX timestamp of last checkpoint block
-        1579,   // * total number of transactions between genesis and last checkpoint
-                    //   (the tx=... number in the SetBestChain debug.log lines)
-        1000.0     // * estimated number of transactions per day after checkpoint
-=======
         ( 11921, uint256("0x0001f822b95475978cb2cffdc35dee11c69bb7eff3330f14e298f8f5030b8397"))
         ( 12730, uint256("0x00078729870af9ea8f24d31973fca4382e676fa3a88fb5b3e1ed997549ba063e"))
         ;
@@ -76,7 +67,6 @@ static const Checkpoints::CCheckpointData data = {
         13278,   // * total number of transactions between genesis and last checkpoint
                     //   (the tx=... number in the SetBestChain debug.log lines)
         1440.0     // * estimated number of transactions per day after checkpoint
->>>>>>> origin/master2
     };
 
 static Checkpoints::MapCheckpoints mapCheckpointsTestnet =
@@ -204,13 +194,8 @@ public:
         nRejectBlockOutdatedMajority = 75;
         nToCheckBlockUpgradeMajority = 100;
         nMinerThreads = 0;
-<<<<<<< HEAD
-        nTargetTimespan = 14 * 24 * 60 * 60; //! two weeks
-        nTargetSpacing = 10 * 60;
-=======
         nTargetTimespan = 60; //! two weeks
         nTargetSpacing = 60;
->>>>>>> origin/master2
 
         // Modify the testnet genesis block so the timestamp is valid for a later start.
         genesis.nTime    = 1421419789;
@@ -252,12 +237,6 @@ public:
         vFixedSeeds.clear();
         vSeeds.clear();
         vSeeds.push_back(CDNSSeedData("alexykot.me", "testnet-seed.alexykot.me"));
-<<<<<<< HEAD
-        vSeeds.push_back(CDNSSeedData("bitcredit.petertodd.org", "testnet-seed.bitcredit.petertodd.org"));
-        vSeeds.push_back(CDNSSeedData("bluematt.me", "testnet-seed.bluematt.me"));
-        vSeeds.push_back(CDNSSeedData("bitcredit.schildbach.de", "testnet-seed.bitcredit.schildbach.de"));
-=======
->>>>>>> origin/master2
 
         base58Prefixes[PUBKEY_ADDRESS] = list_of(12);
         base58Prefixes[SCRIPT_ADDRESS] = list_of(8);

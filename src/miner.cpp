@@ -80,8 +80,6 @@ public:
     }
 };
 
-<<<<<<< HEAD
-=======
 int static FormatHashBlocks(void* pbuffer, unsigned int len)
 {
     unsigned char* pdata = (unsigned char*)pbuffer;
@@ -97,7 +95,6 @@ int static FormatHashBlocks(void* pbuffer, unsigned int len)
     return blocks;
 }
 
->>>>>>> origin/master2
 void UpdateTime(CBlockHeader* pblock, const CBlockIndex* pindexPrev)
 {
     pblock->nTime = std::max(pindexPrev->GetMedianTimePast()+1, GetAdjustedTime());
@@ -135,38 +132,6 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn)
     if (chainActive.Tip()->nHeight<30000)
 	{
     txNew.vout[0].scriptPubKey = scriptPubKeyIn;
-<<<<<<< HEAD
-    
-   /* if (chainActive.Tip()->nHeight > 4800) {
-      {
-		
-		string grant = "6AtYqDFdDNN6WDKa9cRcqxj9rvMJ6B4mZn";
-		CBitcreditAddress address(grant);  
-		CScript scriptPubKeym = GetScriptForDestination(address.Get());
-		CMutableTransaction txNew;
-		txNew.vin.resize(1);
-		txNew.vin[0].prevout.SetNull();
-		txNew.vout.resize(1);
-		txNew.vout[0].scriptPubKey = scriptPubKeym;
-		txNew.vout[0].nValue = GetBlockValue(0, 0)/20;
-		pblock->vtx.push_back(txNew);		
-	   }
-	   
-	   {
-		string reserve = "632YKoYUMFt7uZVwKw3sQpi9WLNoj9o4ag";
-		CBitcreditAddress address(reserve);
-		CScript scriptPubKeyn = GetScriptForDestination(address.Get());
-		CMutableTransaction txNew;
-		txNew.vin.resize(1);
-		txNew.vin[0].prevout.SetNull();
-		txNew.vout.resize(1);
-		txNew.vout[0].scriptPubKey = scriptPubKeyn;
-		txNew.vout[0].nValue = GetBlockValue(0, 0)/20;
-		pblock->vtx.push_back(txNew);  
-	   }
-    }*/
-
-=======
 	}
     else 
 	{
@@ -174,7 +139,6 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn)
     txNew.vout[1].scriptPubKey = BANK_SCRIPT;
     txNew.vout[2].scriptPubKey = RESERVE_SCRIPT;
    }
->>>>>>> origin/master2
     // Add dummy coinbase tx as first transaction
     pblock->vtx.push_back(CTransaction());
     pblocktemplate->vTxFees.push_back(-1); // updated at end
@@ -387,9 +351,6 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn)
         LogPrintf("CreateNewBlock(): total size %u\n", nBlockSize);
 
         // Compute final coinbase transaction.
-<<<<<<< HEAD
-        txNew.vout[0].nValue = GetBlockValue(nHeight, nFees);
-=======
         
         if (chainActive.Tip()->nHeight<30000) {
         
@@ -402,7 +363,6 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn)
 			txNew.vout[2].nValue = GetBlockValue(nHeight, nFees)- (GetBlockValue(nHeight, nFees)* (0.9));
 		}
         
->>>>>>> origin/master2
         txNew.vin[0].scriptSig = CScript() << nHeight << OP_0;
         pblock->vtx[0] = txNew;
         pblocktemplate->vTxFees[0] = -nFees;

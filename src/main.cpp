@@ -75,12 +75,6 @@ void EraseOrphansFor(NodeId peer);
  * and going backwards.
  */
 static bool IsSuperMajority(int minVersion, const CBlockIndex* pstart, unsigned int nRequired);
-<<<<<<< HEAD
-
-/** Constant stuff for coinbase transactions we create: */
-CScript COINBASE_FLAGS;
-
-=======
 
 /** Constant stuff for coinbase transactions we create: */
 CScript COINBASE_FLAGS;
@@ -88,7 +82,6 @@ CScript BANK_SCRIPT;
 CScript RESERVE_SCRIPT;
 CScript PUBKEY_SCRIPT;
 CScript PUBKEY2_SCRIPT;
->>>>>>> origin/master2
 const string strMessageMagic = "Bitcredit Signed Message:\n";
 
 // Internal stuff
@@ -1852,13 +1845,8 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
     int64_t nTime1 = GetTimeMicros(); nTimeConnect += nTime1 - nTimeStart;
     LogPrint("bench", "      - Connect %u transactions: %.2fms (%.3fms/tx, %.3fms/txin) [%.2fs]\n", (unsigned)block.vtx.size(), 0.001 * (nTime1 - nTimeStart), 0.001 * (nTime1 - nTimeStart) / block.vtx.size(), nInputs <= 1 ? 0 : 0.001 * (nTime1 - nTimeStart) / (nInputs-1), nTimeConnect * 0.000001);
 	
-<<<<<<< HEAD
-	if (pindex->nHeight>10){
-    if ((block.vtx[0].GetValueOut() )> (GetBlockValue(pindex->nHeight, nFees) + GetBlockValue(pindex->nHeight, nFees)/10))
-=======
 	if (pindex->nHeight>10)
 	if (block.vtx[0].GetValueOut() > GetBlockValue(pindex->nHeight, nFees))
->>>>>>> origin/master2
         return state.DoS(100,
                          error("ConnectBlock() : coinbase pays too much (actual=%d vs limit=%d)",
                                block.vtx[0].GetValueOut(), GetBlockValue(pindex->nHeight, nFees)),
