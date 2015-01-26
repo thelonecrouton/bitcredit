@@ -9,19 +9,22 @@
 #include "amount.h"
 #include "uint256.h"
 #include "rpcprotocol.h"
-
+#include "base58.h"
 #include <list>
 #include <map>
 #include <stdint.h>
 #include <string>
-
+#ifdef ENABLE_WALLET
+#include "wallet.h"
+#endif
 #include "json/json_spirit_reader_template.h"
 #include "json/json_spirit_utils.h"
 #include "json/json_spirit_writer_template.h"
-
+#include "script/script.h"
+class CScript;
 class CBlockIndex;
 class CNetAddr;
-
+class CReserveKey;
 class AcceptedConnection
 {
 public:
@@ -52,10 +55,17 @@ extern int txrvd, txsnt, totalrvd, totalsnt;
 void SetRPCWarmupStatus(const std::string& newStatus);
 /* Mark warmup as done.  RPC calls will be processed from now on.  */
 void SetRPCWarmupFinished();
+<<<<<<< HEAD
 
 /* returns the current warmup state.  */
 bool RPCIsInWarmup(std::string *statusOut);
 
+=======
+
+/* returns the current warmup state.  */
+bool RPCIsInWarmup(std::string *statusOut);
+
+>>>>>>> origin/master2
 /**
  * Type-check arguments; throws JSONRPCError if wrong type given. Does not check that
  * the right number of arguments are passed, just that any passed are the correct type.
@@ -115,7 +125,11 @@ public:
 };
 
 extern const CRPCTable tableRPC;
+<<<<<<< HEAD
 
+=======
+extern CReserveKey* pMiningKey;
+>>>>>>> origin/master2
 /**
  * Utilities: convert hex-encoded Values
  * (throws error if not hex).

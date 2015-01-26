@@ -62,8 +62,20 @@ unsigned int GetNextWorkRequired(const CBlockIndex* pindexLast, const CBlockHead
     // Limit adjustment step
     int64_t nActualTimespan = pindexLast->GetBlockTime() - pindexFirst->GetBlockTime();
     LogPrintf("  nActualTimespan = %d  before bounds\n", nActualTimespan);
+<<<<<<< HEAD
     
     if (pindexLast->nHeight+1 >4799){
+=======
+   
+   if (pindexLast->nHeight+1 >29999){
+		if (nActualTimespan < Params().TargetTimespan2()/4)
+        nActualTimespan = Params().TargetTimespan2()/2;
+		if (nActualTimespan > Params().TargetTimespan2()*4)
+        nActualTimespan = Params().TargetTimespan2()* 8;
+	}
+    
+   else if (pindexLast->nHeight+1 >4799){
+>>>>>>> origin/master2
 		if (nActualTimespan < Params().TargetTimespan2()/4)
         nActualTimespan = Params().TargetTimespan2()/2;
 		if (nActualTimespan > Params().TargetTimespan2()*4)

@@ -9,8 +9,13 @@
    <rect>
     <x>0</x>
     <y>0</y>
+<<<<<<< HEAD
     <width>958</width>
     <height>552</height>
+=======
+    <width>895</width>
+    <height>503</height>
+>>>>>>> origin/master2
    </rect>
   </property>
   <property name="windowTitle">
@@ -130,6 +135,7 @@
        <string>=</string>
       </property>
      </widget>
+<<<<<<< HEAD
      <zorder>label_13</zorder>
      <zorder>bitcoin</zorder>
      <zorder>label_31</zorder>
@@ -138,6 +144,8 @@
      <zorder>egal</zorder>
      <zorder>All</zorder>
      <zorder>All</zorder>
+=======
+>>>>>>> origin/master2
     </widget>
    </item>
    <item row="1" column="0">
@@ -157,7 +165,11 @@
         <rect>
          <x>0</x>
          <y>0</y>
+<<<<<<< HEAD
          <width>1000</width>
+=======
+         <width>831</width>
+>>>>>>> origin/master2
          <height>400</height>
         </rect>
        </property>
@@ -168,7 +180,11 @@
         <enum>QTabWidget::South</enum>
        </property>
        <property name="currentIndex">
+<<<<<<< HEAD
         <number>0</number>
+=======
+        <number>1</number>
+>>>>>>> origin/master2
        </property>
        <widget class="QWidget" name="mainsBittrex">
         <attribute name="title">
@@ -179,8 +195,13 @@
           <rect>
            <x>0</x>
            <y>0</y>
+<<<<<<< HEAD
            <width>1000</width>
            <height>600</height>
+=======
+           <width>871</width>
+           <height>461</height>
+>>>>>>> origin/master2
           </rect>
          </property>
          <property name="sizePolicy">
@@ -217,7 +238,11 @@
             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:12pt;&quot;&gt;Ask&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
            </property>
           </widget>
+<<<<<<< HEAD
           <widget class="QLabel" name="askBTCBittrexLabel">
+=======
+          <widget class="QLabel" name="askBTCBittrex">
+>>>>>>> origin/master2
            <property name="geometry">
             <rect>
              <x>10</x>
@@ -233,7 +258,11 @@
             <string>0.00000000 BTC</string>
            </property>
           </widget>
+<<<<<<< HEAD
           <widget class="QLabel" name="askUSDBittrexLabel">
+=======
+          <widget class="QLabel" name="askUSDBittrex">
+>>>>>>> origin/master2
            <property name="geometry">
             <rect>
              <x>10</x>
@@ -275,7 +304,11 @@
             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:12pt;&quot;&gt;Bid&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
            </property>
           </widget>
+<<<<<<< HEAD
           <widget class="QLabel" name="bidBTCBittrexLabel">
+=======
+          <widget class="QLabel" name="bidBTCBittrex">
+>>>>>>> origin/master2
            <property name="geometry">
             <rect>
              <x>10</x>
@@ -288,7 +321,11 @@
             <string>0.00000000 BTC</string>
            </property>
           </widget>
+<<<<<<< HEAD
           <widget class="QLabel" name="bidUSDBittrexLabel">
+=======
+          <widget class="QLabel" name="bidUSDBittrex">
+>>>>>>> origin/master2
            <property name="geometry">
             <rect>
              <x>10</x>
@@ -305,7 +342,11 @@
          <widget class="QLabel" name="label_26">
           <property name="geometry">
            <rect>
+<<<<<<< HEAD
             <x>490</x>
+=======
+            <x>460</x>
+>>>>>>> origin/master2
             <y>20</y>
             <width>161</width>
             <height>21</height>
@@ -343,7 +384,11 @@
             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:12pt;&quot;&gt;Last Price&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
            </property>
           </widget>
+<<<<<<< HEAD
           <widget class="QLabel" name="lastBTCBittrexLabel">
+=======
+          <widget class="QLabel" name="lastBTCBittrex">
+>>>>>>> origin/master2
            <property name="geometry">
             <rect>
              <x>10</x>
@@ -359,7 +404,11 @@
             <string>0.00000000 BTC</string>
            </property>
           </widget>
+<<<<<<< HEAD
           <widget class="QLabel" name="lastUSDBittrexLabel">
+=======
+          <widget class="QLabel" name="lastUSDBittrex">
+>>>>>>> origin/master2
            <property name="geometry">
             <rect>
              <x>10</x>
@@ -376,7 +425,11 @@
            </property>
           </widget>
          </widget>
+<<<<<<< HEAD
          <widget class="QLabel" name="yestMintpal">
+=======
+         <widget class="QLabel" name="yest">
+>>>>>>> origin/master2
           <property name="geometry">
            <rect>
             <x>130</x>
@@ -392,7 +445,11 @@
          <widget class="QWidget" name="widget_7" native="true">
           <property name="geometry">
            <rect>
+<<<<<<< HEAD
             <x>480</x>
+=======
+            <x>450</x>
+>>>>>>> origin/master2
             <y>40</y>
             <width>311</width>
             <height>161</height>
@@ -416,14 +473,22 @@
              </widget>
             </item>
             <item row="1" column="1">
+<<<<<<< HEAD
              <widget class="QLabel" name="volumeUSDBittrexLabel">
+=======
+             <widget class="QLabel" name="volumeUSDBittrex">
+>>>>>>> origin/master2
               <property name="text">
                <string>0000 $</string>
               </property>
              </widget>
             </item>
             <item row="0" column="1">
+<<<<<<< HEAD
              <widget class="QLabel" name="volumesBTCBittrexLabel">
+=======
+             <widget class="QLabel" name="volumeBTCBittrex">
+>>>>>>> origin/master2
               <property name="text">
                <string>0</string>
               </property>
@@ -437,7 +502,11 @@
              </widget>
             </item>
             <item row="3" column="1">
+<<<<<<< HEAD
              <widget class="QLabel" name="highBittrexLabel">
+=======
+             <widget class="QLabel" name="highBittrex">
+>>>>>>> origin/master2
               <property name="text">
                <string>0.000000000</string>
               </property>
@@ -451,7 +520,11 @@
              </widget>
             </item>
             <item row="4" column="1">
+<<<<<<< HEAD
              <widget class="QLabel" name="lowBittrexLabel">
+=======
+             <widget class="QLabel" name="lowBittrex">
+>>>>>>> origin/master2
               <property name="text">
                <string>0.000000000</string>
               </property>
@@ -515,9 +588,15 @@
          <widget class="QTreeWidget" name="buyQuantityTable">
           <property name="geometry">
            <rect>
+<<<<<<< HEAD
             <x>490</x>
             <y>240</y>
             <width>411</width>
+=======
+            <x>460</x>
+            <y>240</y>
+            <width>351</width>
+>>>>>>> origin/master2
             <height>121</height>
            </rect>
           </property>
@@ -554,7 +633,11 @@
            <rect>
             <x>0</x>
             <y>240</y>
+<<<<<<< HEAD
             <width>411</width>
+=======
+            <width>351</width>
+>>>>>>> origin/master2
             <height>121</height>
            </rect>
           </property>
@@ -601,7 +684,11 @@
          <widget class="QLabel" name="label_34">
           <property name="geometry">
            <rect>
+<<<<<<< HEAD
             <x>490</x>
+=======
+            <x>460</x>
+>>>>>>> origin/master2
             <y>220</y>
             <width>71</width>
             <height>16</height>
@@ -629,7 +716,11 @@
            <height>371</height>
           </rect>
          </property>
+<<<<<<< HEAD
          <widget class="QCustomPlot" name="priceBittrexPlot" native="true">
+=======
+         <widget class="QCustomPlot" name="volumeSatoshiPlotBittrex" native="true">
+>>>>>>> origin/master2
           <property name="geometry">
            <rect>
             <x>10</x>
@@ -655,7 +746,11 @@
            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Price chart for the last 100 trades&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
           </property>
          </widget>
+<<<<<<< HEAD
          <widget class="QTreeWidget" name="tradesBittrexTable">
+=======
+         <widget class="QTreeWidget" name="tradesTableBittrex">
+>>>>>>> origin/master2
           <property name="geometry">
            <rect>
             <x>10</x>

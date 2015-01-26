@@ -58,6 +58,7 @@ static Checkpoints::MapCheckpoints mapCheckpoints =
         ( 50, uint256("0x05743f466ecb2e1252779730ac3658400960ef44dd17453032ae340b6e1eedc0"))
         ( 798, uint256("0x0000ea5d57ecf0193788783a010695c934485352002dc6355d0c459a2b259436")) 
         ( 4798, uint256("0x00165e5b7a69a00cfbb27a8ce183bdb036c922f3355a20f696fd3c574d210ca9"))
+<<<<<<< HEAD
         ;
 static const Checkpoints::CCheckpointData data = {
         &mapCheckpoints,
@@ -65,22 +66,33 @@ static const Checkpoints::CCheckpointData data = {
         1579,   // * total number of transactions between genesis and last checkpoint
                     //   (the tx=... number in the SetBestChain debug.log lines)
         1000.0     // * estimated number of transactions per day after checkpoint
+=======
+        ( 11921, uint256("0x0001f822b95475978cb2cffdc35dee11c69bb7eff3330f14e298f8f5030b8397"))
+        ( 12730, uint256("0x00078729870af9ea8f24d31973fca4382e676fa3a88fb5b3e1ed997549ba063e"))
+        ;
+static const Checkpoints::CCheckpointData data = {
+        &mapCheckpoints,
+        1421510470, // * UNIX timestamp of last checkpoint block
+        13278,   // * total number of transactions between genesis and last checkpoint
+                    //   (the tx=... number in the SetBestChain debug.log lines)
+        1440.0     // * estimated number of transactions per day after checkpoint
+>>>>>>> origin/master2
     };
 
 static Checkpoints::MapCheckpoints mapCheckpointsTestnet =
         boost::assign::map_list_of
-        ( 546, uint256("0x0ed0e0d9ddb1101a16db4e37f848cf15e56a3872ff72fac959a8d633c49559a2"))
+        ( 0, uint256("0x04f7a847af5a8af914941f4f779680fa00b01aca5411532dfca24d2bcd38e35a"))
         ;
 static const Checkpoints::CCheckpointData dataTestnet = {
         &mapCheckpointsTestnet,
-        1337966069,
-        1488,
-        300
+        1421419789,
+        1,
+        5
     };
 
 static Checkpoints::MapCheckpoints mapCheckpointsRegtest =
         boost::assign::map_list_of
-        ( 0, uint256("0x0df7a63994eb66317fd82c16ee5160adb83acb45f72d5bf359b88e635d7301b8"))
+        ( 0, uint256("0x"))
         ;
 static const Checkpoints::CCheckpointData dataRegtest = {
         &mapCheckpointsRegtest,
@@ -106,7 +118,7 @@ public:
         vAlertPubKey = ParseHex("04fc9702847840aaf195de8442ebecedf5b095cdbb9bc716bda9110971b28a49e0ead8564ff0db22209e0374782c093bb899692d524e9d6a6956e7c5ecbcd68284");
         nDefaultPort = 8877;
         bnProofOfWorkLimit = ~uint256(0) >> 4;
-        nSubsidyHalvingInterval = 21000;
+        nSubsidyHalvingInterval = 210000;
         nEnforceBlockUpgradeMajority = 750;
         nRejectBlockOutdatedMajority = 950;
         nToCheckBlockUpgradeMajority = 1000;
@@ -192,26 +204,63 @@ public:
         nRejectBlockOutdatedMajority = 75;
         nToCheckBlockUpgradeMajority = 100;
         nMinerThreads = 0;
+<<<<<<< HEAD
         nTargetTimespan = 14 * 24 * 60 * 60; //! two weeks
         nTargetSpacing = 10 * 60;
+=======
+        nTargetTimespan = 60; //! two weeks
+        nTargetSpacing = 60;
+>>>>>>> origin/master2
 
         // Modify the testnet genesis block so the timestamp is valid for a later start.
-        genesis.nTime    = 1418504572;
+        genesis.nTime    = 1421419789;
         genesis.nNonce   = 2;
-        genesis.nBirthdayA   = 26230443;
-        genesis.nBirthdayB   = 60109707;
+        genesis.nBirthdayA   = 6252506;
+        genesis.nBirthdayB   = 10141203;
+        
+       /* {
+		printf("Generating new genesis block...\n");
+		uint256 hashTarget = uint256().SetCompact(genesis.nBits);
+		uint256 testHash;
+		genesis.nNonce = 0;
+		genesis.nBirthdayA = 0;
+		genesis.nBirthdayB = 0;
+		
+		for (;;)
+		{
+			genesis.nNonce=genesis.nNonce+1;
+			testHash=genesis.CalculateBestBirthdayHash();
+			printf("testHash %s\n", testHash.ToString().c_str());
+			printf("Hash Target %s\n", hashTarget.ToString().c_str());
+			if(testHash<hashTarget){
+				printf("Found Genesis Block Hash: %s\n", testHash.ToString().c_str());
+				printf("Found Genesis Block Merkle Root: %s\n", genesis.hashMerkleRoot.ToString().c_str());
+				printf("Found Genesis Block nNonce: %d\n", genesis.nNonce);
+				printf("Found Genesis Block nTime: %d\n", genesis.nTime);
+				printf("Found Genesis Block nBirthdayA: %d\n", genesis.nBirthdayA);
+				printf("Found Genesis Block nBirthdayB: %d\n", genesis.nBirthdayB);
+				
+				break;
+			}
+		}
+    }*/
+         
+        
         hashGenesisBlock = genesis.GetHash();
-        assert(hashGenesisBlock == uint256("0x0df7a63994eb66317fd82c16ee5160adb83acb45f72d5bf359b88e635d7301b8"));
+        assert(hashGenesisBlock == uint256("0x04f7a847af5a8af914941f4f779680fa00b01aca5411532dfca24d2bcd38e35a"));
 
         vFixedSeeds.clear();
         vSeeds.clear();
         vSeeds.push_back(CDNSSeedData("alexykot.me", "testnet-seed.alexykot.me"));
+<<<<<<< HEAD
         vSeeds.push_back(CDNSSeedData("bitcredit.petertodd.org", "testnet-seed.bitcredit.petertodd.org"));
         vSeeds.push_back(CDNSSeedData("bluematt.me", "testnet-seed.bluematt.me"));
         vSeeds.push_back(CDNSSeedData("bitcredit.schildbach.de", "testnet-seed.bitcredit.schildbach.de"));
+=======
+>>>>>>> origin/master2
 
-        base58Prefixes[PUBKEY_ADDRESS] = list_of(111);
-        base58Prefixes[SCRIPT_ADDRESS] = list_of(196);
+        base58Prefixes[PUBKEY_ADDRESS] = list_of(12);
+        base58Prefixes[SCRIPT_ADDRESS] = list_of(8);
         base58Prefixes[SECRET_KEY]     = list_of(239);
         base58Prefixes[EXT_PUBLIC_KEY] = list_of(0x04)(0x35)(0x87)(0xCF);
         base58Prefixes[EXT_SECRET_KEY] = list_of(0x04)(0x35)(0x83)(0x94);

@@ -9,10 +9,19 @@
 #include "bitcreditgui.h"
 #include "clientmodel.h"
 #include "blockbrowser.h"
+<<<<<<< HEAD
 #include "bankstatisticspage.h"
 #include "guiutil.h"
 #include "optionsmodel.h"
 
+=======
+#include "poolbrowser.h"
+#include "bankstatisticspage.h"
+#include "bankoverview.h"
+#include "guiutil.h"
+#include "optionsmodel.h"
+#include "bankcoinsdialog.h"
+>>>>>>> origin/master2
 #include "overviewpage.h"
 #include "receivecoinsdialog.h"
 #include "sendcoinsdialog.h"
@@ -40,7 +49,13 @@ WalletView::WalletView(QWidget *parent):
     // Create tabs
     overviewPage = new OverviewPage();
 	blockBrowser = new BlockBrowser(this);
+<<<<<<< HEAD
 	bankstatisticsPage = new BankStatisticsPage(this);
+=======
+	bankOverview = new BankOverview(this);
+	bankstatisticsPage = new BankStatisticsPage(this);
+	poolBrowser = new PoolBrowser(this);
+>>>>>>> origin/master2
 	
     transactionsPage = new QWidget(this);
     QVBoxLayout *vbox = new QVBoxLayout();
@@ -59,6 +74,7 @@ WalletView::WalletView(QWidget *parent):
 
     receiveCoinsPage = new ReceiveCoinsDialog();
     sendCoinsPage = new SendCoinsDialog();
+    bankCoinsPage = new BankCoinsDialog();
 
     addWidget(overviewPage);
     addWidget(transactionsPage);
@@ -66,6 +82,12 @@ WalletView::WalletView(QWidget *parent):
     addWidget(sendCoinsPage);
     addWidget(blockBrowser);
     addWidget(bankstatisticsPage);
+<<<<<<< HEAD
+=======
+    addWidget(poolBrowser);
+    addWidget(bankOverview);
+    addWidget(bankCoinsPage);
+>>>>>>> origin/master2
     
     
 
@@ -80,6 +102,7 @@ WalletView::WalletView(QWidget *parent):
 
     // Pass through messages from sendCoinsPage
     connect(sendCoinsPage, SIGNAL(message(QString,QString,unsigned int)), this, SIGNAL(message(QString,QString,unsigned int)));
+    connect(bankCoinsPage, SIGNAL(message(QString,QString,unsigned int)), this, SIGNAL(message(QString,QString,unsigned int)));
     // Pass through messages from transactionView
     connect(transactionView, SIGNAL(message(QString,QString,unsigned int)), this, SIGNAL(message(QString,QString,unsigned int)));
 }
@@ -174,6 +197,19 @@ void WalletView::gotoBlockBrowser()
     setCurrentWidget(blockBrowser);
 }
 
+<<<<<<< HEAD
+=======
+void WalletView::gotoPoolBrowser()
+{
+    setCurrentWidget(poolBrowser);
+}
+
+void WalletView::gotoBankOverview()
+{
+    setCurrentWidget(bankOverview);
+}
+
+>>>>>>> origin/master2
 void WalletView::gotoBankStatisticsPage()
 {
     setCurrentWidget(bankstatisticsPage);
@@ -195,6 +231,14 @@ void WalletView::gotoSendCoinsPage(QString addr)
 
     if (!addr.isEmpty())
         sendCoinsPage->setAddress(addr);
+}
+
+void WalletView::gotoBankCoinsPage(QString addr)
+{
+    setCurrentWidget(bankCoinsPage);
+
+    if (!addr.isEmpty())
+        bankCoinsPage->setAddress(addr);
 }
 
 void WalletView::gotoSignMessageTab(QString addr)

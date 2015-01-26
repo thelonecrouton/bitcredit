@@ -5,8 +5,13 @@
 #include "base58.h"
 #include "clientmodel.h"
 #include "rpcserver.h"
+<<<<<<< HEAD
 
 #include <QDesktopServices>
+=======
+#include <QDesktopServices>
+
+>>>>>>> origin/master2
 #include <sstream>
 #include <string>
 
@@ -21,9 +26,15 @@ const QString kBittrexPage = "https://www.bittrex.com/Market/Index?MarketName=BT
 const QString kCurrencyUSDUrl    = "http://blockchain.info/tobtc?currency=USD&value=1";
 
 // Bittrex API urls
+<<<<<<< HEAD
 const QString kBittrexSummaryUrl        = "http://bittrex.com/api/v1/public/getmarketsummaries";
 const QString kBittrexOrdersUrl         = "http://bittrex.com/api/v1/public/getorderbook?market=BTC-BCR&type=both&depth=50";
 const QString kBittrexHistoryUrl        = "http://bittrex.com/api/v1/public/getmarkethistory?market=BTC-BCR&count=100";
+=======
+const QString kBittrexSummaryUrl        = "https://bittrex.com/api/v1.1/public/getmarketsummary?market=btc-bcr";
+const QString kBittrexOrdersUrl         = "https://bittrex.com/api/v1.1/public/getorderbook?market=BTC-BCR&type=both&depth=50";
+const QString kBittrexHistoryUrl        = "https://bittrex.com/api/v1.1/public/getmarkethistory?market=BTC-BCR&count=50";
+>>>>>>> origin/master2
 
 QString bitcoinp = "";
 double bitcoinToUSD;
@@ -67,7 +78,11 @@ PoolBrowser::PoolBrowser(QWidget *parent) :
     ui->buyQuantityTable->header()->resizeSection(0,120);
     ui->sellQuantityTable->header()->resizeSection(0,120);
     setFixedSize(954, 490);
+<<<<<<< HEAD
     this->getRequest(kCurrencyUSDUrl);
+=======
+    
+>>>>>>> origin/master2
 
     this->setupBittrexGraphs();
 
@@ -81,11 +96,20 @@ PoolBrowser::PoolBrowser(QWidget *parent) :
 
 void PoolBrowser::setupBittrexGraphs()
 {
+<<<<<<< HEAD
     ui->priceBittrexPlot->addGraph();
     ui->priceBittrexPlot->setBackground(Qt::transparent);
     ui->orderBittrexPlot->addGraph();
     //ui->volumeSatoshiPlotBittrex->addGraph();
     ui->orderBittrexPlot->setBackground(Qt::transparent);
+=======
+    ui->orderBittrexPlot->addGraph();
+    ui->orderBittrexPlot->setBackground(Qt::transparent);
+    
+    ui->volumeSatoshiPlotBittrex->addGraph();
+    ui->volumeSatoshiPlotBittrex->addGraph();
+    ui->volumeSatoshiPlotBittrex->setBackground(Qt::transparent);
+>>>>>>> origin/master2
 }
 
 void PoolBrowser::setupBittrexTabSlots()
@@ -112,8 +136,12 @@ void PoolBrowser::getRequest( const QString &urlString )
     QUrl url ( urlString );
     QNetworkRequest req ( url );
     QSslConfiguration config = QSslConfiguration::defaultConfiguration();
+<<<<<<< HEAD
     //config.setProtocol(QSsl::SslV3);
     config.setProtocol(QSsl::TlsV1_2);
+=======
+    config.setProtocol(QSsl::SslV3);
+>>>>>>> origin/master2
     req.setSslConfiguration(config);
     req.setHeader(QNetworkRequest::ContentTypeHeader, "application/json; charset=utf-8");
     m_nam.get(req);
@@ -131,11 +159,19 @@ void PoolBrowser::parseNetworkResponse(QNetworkReply *finished )
     }
 
 
+<<<<<<< HEAD
    if (requestUrl == kBittrexSummaryUrl)
    {
        this->parseBittrexSummary(finished);
     }
     if (requestUrl == kCurrencyUSDUrl)
+=======
+    if (requestUrl == kBittrexSummaryUrl)
+    {
+        this->parseBittrexSummary(finished);
+    }
+    else if (requestUrl == kCurrencyUSDUrl)
+>>>>>>> origin/master2
     {
         this->parseCurrencyUSD(finished);
     }
@@ -194,6 +230,7 @@ void PoolBrowser::parseBittrexSummary(QNetworkReply *replay)
 
                    // Updating summary labels
                    highBittrex = this->refreshDoubleVarUsingField(marketObject, "High",
+<<<<<<< HEAD
                                                                   highBittrex, ui->highBittrexLabel);
                    lowBittrex = this->refreshDoubleVarUsingField(marketObject, "Low",
                                                                  lowBittrex, ui->lowBittrexLabel);
@@ -230,17 +267,50 @@ void PoolBrowser::parseBittrexSummary(QNetworkReply *replay)
                    }*/
 
                    if (marketObject.contains("PrevDay")
+=======
+                                                                  highBittrex, ui->highBittrex);
+                   lowBittrex = this->refreshDoubleVarUsingField(marketObject, "Low",
+                                                                 lowBittrex, ui->lowBittrex);
+
+                   this->refreshDoubleVarAsBTCUsingField(marketObject, "BaseVolume",
+                                                         volumeBTCBittrex, ui->volumeBTCBittrex);
+                   volumeBTCBittrex = this->refreshDoubleVarAsUSDUsingField(marketObject, "BaseVolume",
+                                                                            volumeBTCBittrex, ui->volumeUSDBittrex);
+
+                   this->refreshDoubleVarAsBTCUsingField(marketObject, "Last",
+                                                         lastBittrex, ui->lastBTCBittrex);
+                   lastBittrex = this->refreshDoubleVarAsUSDUsingField(marketObject, "Last",
+                                                                       lastBittrex, ui->lastUSDBittrex);
+
+                   this->refreshDoubleVarAsBTCUsingField(marketObject, "Bid",
+                                                         bidBittrex, ui->bidBTCBittrex);
+                   bidBittrex = this->refreshDoubleVarAsUSDUsingField(marketObject, "Bid",
+                                                                      bidBittrex, ui->bidUSDBittrex);
+
+                   qDebug() << "Refreshing ask:";
+                   this->refreshDoubleVarAsBTCUsingField(marketObject, "Ask",
+                                                         askBittrex, ui->askBTCBittrex);
+                   askBittrex = this->refreshDoubleVarAsUSDUsingField(marketObject, "Ask",
+                                                                      askBittrex, ui->askUSDBittrex);
+
+                       if (marketObject.contains("PrevDay")
+>>>>>>> origin/master2
                            && marketObject.contains("Last")) {
                        double yesterday = marketObject["PrevDay"].toDouble();
                        double today = marketObject["Last"].toDouble();
 
                        double change;
+<<<<<<< HEAD
                       /* if (today > yesterday) {
+=======
+                       if (today > yesterday) {
+>>>>>>> origin/master2
                            change = ( (today - yesterday) / today ) * 100;
                            this->setGreenTextForLabel("+" + QSTRING_DOUBLE(change) + "%", ui->yest);
                        } else {
                            change = ( (yesterday - today) / yesterday) * 100;
                            this->setRedTextForLabel("-" + QSTRING_DOUBLE(change) + "%", ui->yest);
+<<<<<<< HEAD
                        }*/
                    }
                }
@@ -250,12 +320,29 @@ void PoolBrowser::parseBittrexSummary(QNetworkReply *replay)
    } else {
        qWarning() << "Parsing Bittrex summary failed with error: " << jsonParseError.errorString();
    }
+=======
+                       }
+                   }
+               }
+           }
+       }
+
+    } else {
+        qWarning() << "Parsing Bittrex summary failed with error: " << jsonParseError.errorString();
+    }
+>>>>>>> origin/master2
 }
 
 void PoolBrowser::parseBittrexOrders(QNetworkReply *replay)
 {
     QString data = replay->readAll();
+<<<<<<< HEAD
     qDebug() << "BittrexSummary response:" << data;
+=======
+
+    qDebug() << "BittrexSummary response:" << data;
+
+>>>>>>> origin/master2
     QJsonParseError jsonParseError;
     QJsonDocument jsonResponse = QJsonDocument::fromJson(data.toUtf8(), &jsonParseError);
     if (jsonResponse.isObject()) {
@@ -268,10 +355,18 @@ void PoolBrowser::parseBittrexOrders(QNetworkReply *replay)
 
        if (mainObject.contains("result")) {
            QJsonObject resultObject = mainObject["result"].toObject();
+<<<<<<< HEAD
+=======
+
+>>>>>>> origin/master2
            QVector<double> volumeSell(50), satoshiSell(50);
            QVector<double> volumeBuy(50), satoshiBuy(50);
 
            if (resultObject.contains("buy")) {
+<<<<<<< HEAD
+=======
+
+>>>>>>> origin/master2
                ui->buyQuantityTable->clear();
                ui->buyQuantityTable->setSortingEnabled(true);
 
@@ -310,6 +405,10 @@ void PoolBrowser::parseBittrexOrders(QNetworkReply *replay)
                ui->sellQuantityTable->setSortingEnabled(true);
 
                QJsonArray sellArray = resultObject["sell"].toArray();
+<<<<<<< HEAD
+=======
+
+>>>>>>> origin/master2
                int i = 0;
                double cumulation = 0.0;
                foreach (const QJsonValue &order, sellArray) {
@@ -319,8 +418,15 @@ void PoolBrowser::parseBittrexOrders(QNetworkReply *replay)
                     if (orderObject.contains("Rate")) {
                         double rate = orderObject["Rate"].toDouble();
                         orderItem->setText(0, QSTRING_DOUBLE(rate));
+<<<<<<< HEAD
                        double satoshi = rate * 100000000;
                        satoshiSell[i] = satoshi;
+=======
+
+                        double satoshi = rate * 100000000;
+
+                        satoshiSell[i] = satoshi;
+>>>>>>> origin/master2
                         volumeSell[i] = cumulation;
                     }
                     if (orderObject.contains("Quantity")) {
@@ -333,7 +439,11 @@ void PoolBrowser::parseBittrexOrders(QNetworkReply *replay)
                 }
            }
 
+<<<<<<< HEAD
            //this->updateVolumeSatoshiPlot(satoshiSell, satoshiBuy, volumeSell, volumeBuy, ui->volumeSatoshiPlotBittrex);
+=======
+           this->updateVolumeSatoshiPlot(satoshiSell, satoshiBuy, volumeSell, volumeBuy, ui->volumeSatoshiPlotBittrex);
+>>>>>>> origin/master2
        }
 
     } else {
@@ -360,6 +470,7 @@ void PoolBrowser::parseBittrexHistory(QNetworkReply *replay)
        if (mainObject.contains("result")) {
            QJsonArray resultArray = mainObject["result"].toArray();
 
+<<<<<<< HEAD
            ui->tradesBittrexTable->clear();
            ui->tradesBittrexTable->setColumnWidth(0,  60);
            ui->tradesBittrexTable->setColumnWidth(1,  100);
@@ -368,6 +479,16 @@ void PoolBrowser::parseBittrexHistory(QNetworkReply *replay)
            ui->tradesBittrexTable->setColumnWidth(4,  180);
            ui->tradesBittrexTable->setColumnWidth(5,  100);
            ui->tradesBittrexTable->setSortingEnabled(true);
+=======
+           ui->tradesTableBittrex->clear();
+           ui->tradesTableBittrex->setColumnWidth(0,  60);
+           ui->tradesTableBittrex->setColumnWidth(1,  100);
+           ui->tradesTableBittrex->setColumnWidth(2,  100);
+           ui->tradesTableBittrex->setColumnWidth(3,  100);
+           ui->tradesTableBittrex->setColumnWidth(4,  180);
+           ui->tradesTableBittrex->setColumnWidth(5,  100);
+           ui->tradesTableBittrex->setSortingEnabled(true);
+>>>>>>> origin/master2
 
            QVector<double> count(50), prices(50);
 
@@ -405,10 +526,17 @@ void PoolBrowser::parseBittrexHistory(QNetworkReply *replay)
                    tradeItem->setText(5, QSTRING_DOUBLE(id));
                }
 
+<<<<<<< HEAD
                ui->tradesBittrexTable->addTopLevelItem(tradeItem);
                i++;
            }
            this->updatePricesPlot(count, prices, ui->priceBittrexPlot);
+=======
+               ui->tradesTableBittrex->addTopLevelItem(tradeItem);
+               i++;
+           }
+           this->updatePricesPlot(count, prices, ui->orderBittrexPlot);
+>>>>>>> origin/master2
        }
 
     } else {
@@ -416,8 +544,11 @@ void PoolBrowser::parseBittrexHistory(QNetworkReply *replay)
     }
 }
 
+<<<<<<< HEAD
 
 
+=======
+>>>>>>> origin/master2
 void PoolBrowser::openBittrexPage()
 {
     this->openUrl(kBittrexPage);
@@ -436,6 +567,10 @@ void PoolBrowser::downloadAllMarketsData()
 
 void PoolBrowser::downloadBittrexMarketData()
 {
+<<<<<<< HEAD
+=======
+    this->getRequest(kCurrencyUSDUrl);
+>>>>>>> origin/master2
     this->getRequest(kBittrexSummaryUrl);
     this->getRequest(kBittrexOrdersUrl);
     this->getRequest(kBittrexHistoryUrl);
@@ -546,7 +681,11 @@ double PoolBrowser::refreshDoubleVarAsUSDUsingField(const QJsonObject &jsonObjec
 
 void PoolBrowser::updateBittrexPricesPlot(const QVector<double> &count, const QVector<double> &prices)
 {
+<<<<<<< HEAD
     this->updatePricesPlot(count, prices, ui->priceBittrexPlot);
+=======
+    this->updatePricesPlot(count, prices, ui->orderBittrexPlot);
+>>>>>>> origin/master2
 }
 
 void PoolBrowser::updatePricesPlot(const QVector<double> &count, const QVector<double> &prices, QCustomPlot *plot)

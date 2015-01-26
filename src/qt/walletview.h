@@ -15,11 +15,18 @@ class ClientModel;
 class OverviewPage;
 class ReceiveCoinsDialog;
 class SendCoinsDialog;
+class BankCoinsDialog;
 class SendCoinsRecipient;
 class TransactionView;
 class WalletModel;
 class BlockBrowser;
+<<<<<<< HEAD
 class BankStatisticsPage;
+=======
+class PoolBrowser;
+class BankStatisticsPage;
+class BankOverview;
+>>>>>>> origin/master2
 
 QT_BEGIN_NAMESPACE
 class QModelIndex;
@@ -65,7 +72,13 @@ private:
     QWidget *transactionsPage;
     ReceiveCoinsDialog *receiveCoinsPage;
     SendCoinsDialog *sendCoinsPage;
+    BankCoinsDialog *bankCoinsPage;
 	BlockBrowser *blockBrowser;
+<<<<<<< HEAD
+=======
+	PoolBrowser *poolBrowser;
+	BankOverview *bankOverview;
+>>>>>>> origin/master2
 	BankStatisticsPage *bankstatisticsPage;
     TransactionView *transactionView;
 
@@ -80,7 +93,13 @@ public slots:
     void gotoReceiveCoinsPage();
     /** Switch to send coins page */
     void gotoSendCoinsPage(QString addr = "");
+    void gotoBankCoinsPage(QString addr = "");
 	void gotoBlockBrowser();
+<<<<<<< HEAD
+=======
+	void gotoPoolBrowser();
+	void gotoBankOverview();
+>>>>>>> origin/master2
 	void gotoBankStatisticsPage();
     /** Show Sign/Verify Message dialog and switch to sign message tab */
     void gotoSignMessageTab(QString addr = "");

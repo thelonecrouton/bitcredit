@@ -103,7 +103,11 @@ void setupAddressWidget(QValidatedLineEdit *widget, QWidget *parent)
 #if QT_VERSION >= 0x040700
     // We don't want translators to use own addresses in translations
     // and this is the only place, where this address is supplied.
+<<<<<<< HEAD
     widget->setPlaceholderText(QObject::tr("Enter a Bitcredit address (e.g. %1)").arg("1NS17iag9jJgTHD1VXjvLCEnZuQ3rJDE9L"));
+=======
+    widget->setPlaceholderText(QObject::tr("Enter a Bitcredit address (e.g. %1)").arg("5qoFUCqPUE4pyjus6U6jD6ba4oHR6NZ7c7"));
+>>>>>>> origin/master2
 #endif
     widget->setValidator(new BitcreditAddressEntryValidator(parent));
     widget->setCheckValidator(new BitcreditAddressCheckValidator(parent));
