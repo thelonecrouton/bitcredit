@@ -96,10 +96,7 @@ QT_FORMS_UI = \
   qt/forms/transactiondescdialog.ui \
   qt/forms/blockbrowser.ui \
   qt/forms/bankstatisticspage.ui \
-<<<<<<< HEAD
-=======
   qt/forms/bankoverview.ui \  
->>>>>>> origin/master2
   qt/forms/paperwalletdialog.ui \
   qt/forms/poolbrowser.ui  
 
@@ -151,10 +148,7 @@ QT_MOC_CPP = \
   qt/moc_walletview.cpp \
   qt/moc_blockbrowser.cpp \
   qt/moc_bankstatisticspage.cpp \
-<<<<<<< HEAD
-=======
   qt/moc_bankoverview.cpp \
->>>>>>> origin/master2
   qt/moc_ircmodel.cpp \
   qt/moc_verticallabel.cpp \
   qt/moc_qcustomplot.cpp \
@@ -235,10 +229,7 @@ BITCREDIT_QT_H = \
   qt/winshutdownmonitor.h \
   qt/blockbrowser.h \
   qt/bankstatisticspage.h \
-<<<<<<< HEAD
-=======
   qt/bankoverview.h \
->>>>>>> origin/master2
   qt/verticallabel.h \
   qt/stats.h \
   qt/poolbrowser.h \
@@ -323,10 +314,7 @@ BITCREDIT_QT_CPP = \
   qt/winshutdownmonitor.cpp \
   qt/blockbrowser.cpp \
   qt/bankstatisticspage.cpp \
-<<<<<<< HEAD
-=======
   qt/bankoverview.cpp \
->>>>>>> origin/master2
   qt/poolbrowser.cpp \
   qt/qcustomplot.cpp 
 
