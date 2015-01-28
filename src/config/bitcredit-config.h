@@ -21,7 +21,7 @@
 #define CLIENT_VERSION_MINOR 30
 
 /* Build revision */
-#define CLIENT_VERSION_REVISION 07 
+#define CLIENT_VERSION_REVISION 10 
 
 /* Version is release */
 #define COPYRIGHT_YEAR 2015
@@ -272,7 +272,7 @@
 #define PACKAGE_NAME "Bitcredit Core"
 
 /* Define to the full name and version of this package. */
-#define PACKAGE_STRING "Bitcredit Core 0.30.07"
+#define PACKAGE_STRING "Bitcredit Core 0.30.10"
 
 /* Define to the one symbol short name of this package. */
 #define PACKAGE_TARNAME "bitcredit"
@@ -281,7 +281,7 @@
 #define PACKAGE_URL ""
 
 /* Define to the version of this package. */
-#define PACKAGE_VERSION "0.30.07"
+#define PACKAGE_VERSION "0.30.10"
 
 /* Define to necessary symbol if this constant uses a non-standard name on
    your system. */
