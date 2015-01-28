@@ -151,6 +151,7 @@ void WalletFrame::gotoBankStatisticsPage()
 }
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 void WalletFrame::gotoBankOverview()
 {
@@ -159,6 +160,8 @@ void WalletFrame::gotoBankOverview()
         i.value()->gotoBankOverview();
 }
 
+>>>>>>> origin/master2
+=======
 >>>>>>> origin/master2
 void WalletFrame::gotoSendCoinsPage(QString addr)
 {

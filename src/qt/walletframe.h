@@ -19,7 +19,10 @@ class BankStatisticsPage;
 =======
 class PoolBrowser;
 class BankStatisticsPage;
+<<<<<<< HEAD
 class BankOverview;
+>>>>>>> origin/master2
+=======
 >>>>>>> origin/master2
 QT_BEGIN_NAMESPACE
 class QStackedWidget;
@@ -70,8 +73,11 @@ public slots:
     void gotoVerifyMessageTab(QString addr = "");
 	void gotoBlockBrowser();
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 	void gotoBankOverview();
+=======
+>>>>>>> origin/master2
 	void gotoPoolBrowser();
 >>>>>>> origin/master2
 	void gotoBankStatisticsPage();

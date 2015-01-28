@@ -185,7 +185,11 @@ private slots:
     void gotoSendCoinsPage(QString addr = "");
 	/** Switch to blockexplorer */
     void gotoBlockBrowser();
+<<<<<<< HEAD
     
+=======
+    void gotoPoolBrowser();
+>>>>>>> origin/master2
     void gotoBankStatisticsPage();
   
 

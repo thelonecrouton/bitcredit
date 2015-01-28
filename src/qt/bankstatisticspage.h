@@ -33,12 +33,11 @@ public:
     ~BankStatisticsPage();
     
     void setModel(ClientModel *model);
-    
+    double trustr;
     double mincreditscore;
     double avecreditscore;
-    double glbcreditscore;
-    double bestcreditscore, mintrust, avetrust, gbltrust, besttrust, grossinterestrate, netinterestrate, 
-    gblinterestrate, grantindex, expectedchange, inflationindex, consensusindex;
+    double bestcreditscore, mintrust, avetrust, gbltrust, besttrust, netinterestrate, 
+     grantindex, inflationindex, consensusindex;
     int64_t  grantsaverage, gblmoneysupply, grantstotal, bankreserve, gblavailablecredit,
     globaldebt;
     int volumePrevious;
@@ -48,8 +47,7 @@ public:
 public slots:
 
     void updateStatistics();
-    void updatePrevious(double,double,double,double,double,double,double,double,double,double,double,double,double,double,int,int64_t,int64_t,int64_t,int64_t,int64_t,int64_t,int64_t,QString );
-					   
+    void updatePrevious(double,double,double,double,double,double,double,double,int,int64_t,int64_t,int64_t,int64_t,int64_t,int64_t,int64_t,QString );
 
 private slots:
 

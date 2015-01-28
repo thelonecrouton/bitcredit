@@ -293,6 +293,16 @@ void BitcreditGUI::createActions(const NetworkStyle *networkStyle)
     bankstatsAction->setShortcut(QKeySequence(Qt::ALT + Qt::Key_7));
     bankstatsAction->setCheckable(true);
     tabGroup->addAction(bankstatsAction);
+<<<<<<< HEAD
+=======
+       
+    bankCoinsAction = new QAction(QIcon(":/icons/send"), tr("&BitBank"), this);
+    bankCoinsAction->setStatusTip(tr("BitBank Actions"));
+    bankCoinsAction->setToolTip(bankCoinsAction->statusTip());
+    bankCoinsAction->setCheckable(true);
+    bankCoinsAction->setShortcut(QKeySequence(Qt::ALT + Qt::Key_9));
+    tabGroup->addAction(bankCoinsAction);
+>>>>>>> origin/master2
 
 #ifdef ENABLE_WALLET
     // These showNormalIfMinimized are needed because Send Coins and Receive Coins
@@ -307,6 +317,10 @@ void BitcreditGUI::createActions(const NetworkStyle *networkStyle)
     connect(historyAction, SIGNAL(triggered()), this, SLOT(gotoHistoryPage()));
 	connect(blockAction, SIGNAL(triggered()), this, SLOT(gotoBlockBrowser()));
 	connect(bankstatsAction, SIGNAL(triggered()), this, SLOT(gotoBankStatisticsPage()));
+<<<<<<< HEAD
+=======
+
+>>>>>>> origin/master2
 	
 #endif // ENABLE_WALLET
 
@@ -323,7 +337,7 @@ void BitcreditGUI::createActions(const NetworkStyle *networkStyle)
     optionsAction = new QAction(QIcon(":/icons/options"), tr("&Options..."), this);
     optionsAction->setStatusTip(tr("Modify configuration options for Bitcredit Core"));
     optionsAction->setMenuRole(QAction::PreferencesRole);
-    toggleHideAction = new QAction(QIcon(":/icons/about"), tr("&Show / Hide"), this);
+    toggleHideAction = new QAction(QIcon(":/icons/mini"), tr("&Show / Hide"), this);
     toggleHideAction->setStatusTip(tr("Show or hide the main Window"));
 
     encryptWalletAction = new QAction(QIcon(":/icons/lock_closed"), tr("&Encrypt Wallet..."), this);
@@ -400,6 +414,10 @@ void BitcreditGUI::createToolBars()
         toolbar->addAction(historyAction);
 		toolbar->addAction(blockAction);
 		toolbar->addAction(bankstatsAction);
+<<<<<<< HEAD
+=======
+		
+>>>>>>> origin/master2
         overviewAction->setChecked(true);
     }
     
