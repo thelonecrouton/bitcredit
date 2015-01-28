@@ -9,18 +9,11 @@
 #include "bitcreditgui.h"
 #include "clientmodel.h"
 #include "blockbrowser.h"
-<<<<<<< HEAD
-#include "bankstatisticspage.h"
-#include "guiutil.h"
-#include "optionsmodel.h"
-
-=======
 #include "poolbrowser.h"
 #include "bankstatisticspage.h"
 #include "guiutil.h"
 #include "optionsmodel.h"
 #include "bankcoinsdialog.h"
->>>>>>> origin/master2
 #include "overviewpage.h"
 #include "receivecoinsdialog.h"
 #include "sendcoinsdialog.h"
@@ -48,16 +41,8 @@ WalletView::WalletView(QWidget *parent):
     // Create tabs
     overviewPage = new OverviewPage();
 	blockBrowser = new BlockBrowser(this);
-<<<<<<< HEAD
-<<<<<<< HEAD
-	bankstatisticsPage = new BankStatisticsPage(this);
-=======
-	bankOverview = new BankOverview(this);
-=======
->>>>>>> origin/master2
 	bankstatisticsPage = new BankStatisticsPage(this);
 	poolBrowser = new PoolBrowser(this);
->>>>>>> origin/master2
 	
     transactionsPage = new QWidget(this);
     QVBoxLayout *vbox = new QVBoxLayout();
@@ -84,11 +69,8 @@ WalletView::WalletView(QWidget *parent):
     addWidget(sendCoinsPage);
     addWidget(blockBrowser);
     addWidget(bankstatisticsPage);
-<<<<<<< HEAD
-=======
     addWidget(poolBrowser);
     addWidget(bankCoinsPage);
->>>>>>> origin/master2
     
     
 
@@ -198,22 +180,11 @@ void WalletView::gotoBlockBrowser()
     setCurrentWidget(blockBrowser);
 }
 
-<<<<<<< HEAD
-=======
 void WalletView::gotoPoolBrowser()
 {
     setCurrentWidget(poolBrowser);
 }
 
-<<<<<<< HEAD
-void WalletView::gotoBankOverview()
-{
-    setCurrentWidget(bankOverview);
-}
-
->>>>>>> origin/master2
-=======
->>>>>>> origin/master2
 void WalletView::gotoBankStatisticsPage()
 {
     setCurrentWidget(bankstatisticsPage);

@@ -10,19 +10,9 @@
 
 #ifdef ENABLE_WALLET
 #include "sendcoinsdialog.h"
-<<<<<<< HEAD
-<<<<<<< HEAD
-#include "sendcoinsentry.h"
-=======
-#include "bankcoinsdialog.h"
-#include "sendcoinsentry.h"
-#include "bankcoinsentry.h"
->>>>>>> origin/master2
-=======
 
 #include "sendcoinsentry.h"
 
->>>>>>> origin/master2
 #include "coincontrol.h"
 #include "coincontroldialog.h"
 #endif

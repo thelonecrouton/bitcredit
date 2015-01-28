@@ -42,31 +42,10 @@ void BankStatisticsPage::updateStatistics()
 	Stats st;
     double mincreditscore =  st.Getmincreditscore();
     double avecreditscore = st.Getavecreditscore();
-<<<<<<< HEAD
-<<<<<<< HEAD
-    double glbcreditscore = st.Getglbcreditscore();
-    double bestcreditscore = st.Getbestcreditscore();
-    double mintrust = st.Getmintrust();
-    double avetrust = st.Getavetrust();
-    double gbltrust = st.Getgbltrust();
-    double besttrust = st.Getbesttrust();
-    double grossinterestrate = st.Getgrossinterestrate();
-    double netinterestrate = st.Getnetinterestrate();
-    double gblinterestrate = st.Getgblinterestrate();
-=======
-    
-    
-=======
->>>>>>> origin/master2
     double mintrust = st.Getmintrust();
     double avetrust = st.Getavetrust();
     double netinterestrate = st.Getnetinterestrate();
-<<<<<<< HEAD
-
->>>>>>> origin/master2
-=======
 	double trustr = st.Gettrust();
->>>>>>> origin/master2
     double grantindex = st.Getgrantindex();
     double nSubsidy = GetBlockValue((chainActive.Tip()->nHeight) ,0)/10000000;
     int nHeight = (chainActive.Tip()->nHeight);
@@ -81,11 +60,7 @@ void BankStatisticsPage::updateStatistics()
     double maxreserve = gblmoneysupply * 0.25;
     double reserverequirement = gblmoneysupply * 0.1;
     double inflationindex = st.Getinflationindex();
-<<<<<<< HEAD
-    double consensusindex = st.Getconsensusindex();
-=======
     
->>>>>>> origin/master2
     ui->bankstatus->setText(bankstatusPrevious);
     QString height = QString::number(nHeight);
 
@@ -129,35 +104,6 @@ void BankStatisticsPage::updateStatistics()
     ui->avecreditscore->setText(navecreditscore);
     }
 
-<<<<<<< HEAD
-    if(glbcreditscore > glbcreditscorePrevious)
-    {
-        ui->glbcreditscore->setText("<font color=\"green\">" + nglbcreditscore + "</font>");
-    }
-    else if (glbcreditscore < glbcreditscorePrevious)
-    {
-        ui->glbcreditscore->setText("<font color=\"red\">" + nglbcreditscore + "</font>");
-    }
-    else
-    {
-    ui->glbcreditscore->setText(nglbcreditscore);
-    }
-
-    if(bestcreditscore > bestcreditscorePrevious)
-    {
-        ui->bestcreditscore->setText("<font color=\"green\">" + nbestcreditscore + "</font>");
-    }
-    else if (bestcreditscore < bestcreditscorePrevious)
-    {
-        ui->bestcreditscore->setText("<font color=\"red\">" + nbestcreditscore + "</font>");
-    }
-    else
-    {
-    ui->bestcreditscore->setText(nbestcreditscore);
-    }
-
-=======
->>>>>>> origin/master2
     if(mintrust > mintrustPrevious)
     {
         ui->mintrust->setText("<font color=\"green\">" + nmintrust + "</font>");
@@ -184,34 +130,6 @@ void BankStatisticsPage::updateStatistics()
     ui->avetrust->setText(navetrust);
     }
 
-<<<<<<< HEAD
-    if(gbltrust > gbltrustPrevious)
-    {
-        ui->gbltrust->setText("<font color=\"green\">" + ngbltrust + "</font>");
-    }
-    else if (gbltrust < gbltrustPrevious)
-    {
-        ui->gbltrust->setText("<font color=\"red\">" + ngbltrust + "</font>");
-    }
-    else
-    {
-    ui->gbltrust->setText(ngbltrust);
-    }
-
-    if(besttrust > besttrustPrevious)
-    {
-        ui->besttrust->setText("<font color=\"green\">" + nbesttrust + "</font>");
-    }
-    else if (besttrust < besttrustPrevious)
-    {
-        ui->besttrust->setText("<font color=\"red\">" + nbesttrust + "</font>");
-    }
-    else
-    {
-    ui->besttrust->setText(nbesttrust);
-    }
-=======
->>>>>>> origin/master2
 
     if(netinterestrate > netinterestratePrevious)
     {
@@ -250,32 +168,7 @@ void BankStatisticsPage::updateStatistics()
     else
     {
     ui->inflationindex->setText(ninflationindex);
-<<<<<<< HEAD
-    }
-
-<<<<<<< HEAD
-    if(consensusindex > consensusindexPrevious)
-    {
-        ui->consensusindex->setText("<font color=\"green\">" + nconsensusindex + "</font>");
-    }
-    else if (consensusindex < consensusindexPrevious)
-    {
-        ui->consensusindex->setText("<font color=\"red\">" + nconsensusindex + "</font>");
-    }
-    else
-    {
-    ui->consensusindex->setText(nconsensusindex);
-    }
-=======
->>>>>>> origin/master2
-    
-    QString ngblmoneysupply = QString::number(gblmoneysupply, 'f', 6);
-    QString ngrantstotal = QString::number(grantstotal, 'f', 6);
-    QString ngblavailablecredit = QString::number(gblavailablecredit, 'f', 6);
-    QString nglobaldebt = QString::number(globaldebt, 'f', 6);    
-=======
     }  
->>>>>>> origin/master2
 
 	if(marketcap > marketcapPrevious)
     {

@@ -133,8 +133,6 @@ void WalletFrame::gotoBlockBrowser()
         i.value()->gotoBlockBrowser();
 }
 
-<<<<<<< HEAD
-=======
 void WalletFrame::gotoPoolBrowser()
 {
     QMap<QString, WalletView*>::const_iterator i;
@@ -142,7 +140,6 @@ void WalletFrame::gotoPoolBrowser()
         i.value()->gotoPoolBrowser();
 }
 
->>>>>>> origin/master2
 void WalletFrame::gotoBankStatisticsPage()
 {
     QMap<QString, WalletView*>::const_iterator i;
@@ -150,19 +147,6 @@ void WalletFrame::gotoBankStatisticsPage()
         i.value()->gotoBankStatisticsPage();
 }
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
-void WalletFrame::gotoBankOverview()
-{
-    QMap<QString, WalletView*>::const_iterator i;
-    for (i = mapWalletViews.constBegin(); i != mapWalletViews.constEnd(); ++i)
-        i.value()->gotoBankOverview();
-}
-
->>>>>>> origin/master2
-=======
->>>>>>> origin/master2
 void WalletFrame::gotoSendCoinsPage(QString addr)
 {
     QMap<QString, WalletView*>::const_iterator i;

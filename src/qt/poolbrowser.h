@@ -48,11 +48,7 @@ public:
     void refreshValueLabel(double actualValue, QLabel *label, double newDouble, const QString &suffix, QString newStr);
     void refreshUSDLabel(QLabel *label, double actualValue, double newDouble);
 private:
-<<<<<<< HEAD
-   void setupBittrexGraphs();
-=======
     void setupBittrexGraphs();
->>>>>>> origin/master2
     void setupBittrexTabSlots();
 
     void getRequest( const QString &url );

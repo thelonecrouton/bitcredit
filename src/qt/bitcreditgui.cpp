@@ -136,7 +136,7 @@ BitcreditGUI::BitcreditGUI(const NetworkStyle *networkStyle, QWidget *parent) :
         windowTitle += tr("Node");
     }
     windowTitle += " " + networkStyle->getTitleAddText();
-    qApp->setStyleSheet("QMainWindow { background:rgb(237, 241, 247); font-family:'Proxima Nova Rg'; } #toolbar2 { border:none;width:30px; background:rgb(98, 175, 183); }");
+    qApp->setStyleSheet("QMainWindow { background:rgb(237, 241, 247); font-family:'Proxima Nova Rg'; } #toolbar2 { border:none;width:30px; background:rgb(166, 24, 231); }");
 	
 #ifndef Q_OS_MAC
     QApplication::setWindowIcon(networkStyle->getTrayAndWindowIcon());
@@ -284,17 +284,21 @@ void BitcreditGUI::createActions(const NetworkStyle *networkStyle)
 	
 	blockAction = new QAction(QIcon(":/icons/block"), tr("&Block Crawler"), this);
     blockAction->setToolTip(tr("Explore the BlockChain"));
-    blockAction->setShortcut(QKeySequence(Qt::ALT + Qt::Key_6));
+    blockAction->setShortcut(QKeySequence(Qt::ALT + Qt::Key_5));
     blockAction->setCheckable(true);
     tabGroup->addAction(blockAction);
+    
+    poolAction = new QAction(QIcon(":/icons/exchange"), tr("&Market Data"), this);
+    poolAction->setToolTip(tr("Show market data"));
+    poolAction->setShortcut(QKeySequence(Qt::ALT + Qt::Key_6));
+    poolAction->setCheckable(true);
+    tabGroup->addAction(poolAction);
     
     bankstatsAction = new QAction(QIcon(":/icons/bankstats"), tr("&Bank Statistics"), this);
     bankstatsAction->setToolTip(tr("Explore the BlockChain"));
     bankstatsAction->setShortcut(QKeySequence(Qt::ALT + Qt::Key_7));
     bankstatsAction->setCheckable(true);
     tabGroup->addAction(bankstatsAction);
-<<<<<<< HEAD
-=======
        
     bankCoinsAction = new QAction(QIcon(":/icons/send"), tr("&BitBank"), this);
     bankCoinsAction->setStatusTip(tr("BitBank Actions"));
@@ -302,7 +306,6 @@ void BitcreditGUI::createActions(const NetworkStyle *networkStyle)
     bankCoinsAction->setCheckable(true);
     bankCoinsAction->setShortcut(QKeySequence(Qt::ALT + Qt::Key_9));
     tabGroup->addAction(bankCoinsAction);
->>>>>>> origin/master2
 
 #ifdef ENABLE_WALLET
     // These showNormalIfMinimized are needed because Send Coins and Receive Coins
@@ -311,16 +314,17 @@ void BitcreditGUI::createActions(const NetworkStyle *networkStyle)
     connect(overviewAction, SIGNAL(triggered()), this, SLOT(gotoOverviewPage()));
     connect(sendCoinsAction, SIGNAL(triggered()), this, SLOT(showNormalIfMinimized()));
     connect(sendCoinsAction, SIGNAL(triggered()), this, SLOT(gotoSendCoinsPage()));
+    connect(bankCoinsAction, SIGNAL(triggered()), this, SLOT(showNormalIfMinimized()));
+    connect(bankCoinsAction, SIGNAL(triggered()), this, SLOT(gotoBankCoinsPage()));
     connect(receiveCoinsAction, SIGNAL(triggered()), this, SLOT(showNormalIfMinimized()));
     connect(receiveCoinsAction, SIGNAL(triggered()), this, SLOT(gotoReceiveCoinsPage()));
     connect(historyAction, SIGNAL(triggered()), this, SLOT(showNormalIfMinimized()));
     connect(historyAction, SIGNAL(triggered()), this, SLOT(gotoHistoryPage()));
 	connect(blockAction, SIGNAL(triggered()), this, SLOT(gotoBlockBrowser()));
+	connect(poolAction, SIGNAL(triggered()), this, SLOT(showNormalIfMinimized()));
+	connect(poolAction, SIGNAL(triggered()), this, SLOT(gotoPoolBrowser()));
 	connect(bankstatsAction, SIGNAL(triggered()), this, SLOT(gotoBankStatisticsPage()));
-<<<<<<< HEAD
-=======
 
->>>>>>> origin/master2
 	
 #endif // ENABLE_WALLET
 
@@ -411,13 +415,11 @@ void BitcreditGUI::createToolBars()
 		toolbar->addAction(overviewAction);
         toolbar->addAction(sendCoinsAction);
         toolbar->addAction(receiveCoinsAction);
+        toolbar->addAction(bankCoinsAction);
         toolbar->addAction(historyAction);
 		toolbar->addAction(blockAction);
 		toolbar->addAction(bankstatsAction);
-<<<<<<< HEAD
-=======
 		
->>>>>>> origin/master2
         overviewAction->setChecked(true);
     }
     
@@ -500,6 +502,7 @@ void BitcreditGUI::setWalletActionsEnabled(bool enabled)
 {
     overviewAction->setEnabled(enabled);
     sendCoinsAction->setEnabled(enabled);
+    bankCoinsAction->setEnabled(enabled);
     receiveCoinsAction->setEnabled(enabled);
     historyAction->setEnabled(enabled);
     encryptWalletAction->setEnabled(enabled);
@@ -615,6 +618,12 @@ void BitcreditGUI::gotoBlockBrowser()
     if (walletFrame) walletFrame->gotoBlockBrowser();
 }
 
+void BitcreditGUI::gotoPoolBrowser()
+{
+    poolAction->setChecked(true);
+    if (walletFrame) walletFrame->gotoPoolBrowser();
+}
+
 void BitcreditGUI::gotoBankStatisticsPage()
 {
     bankstatsAction->setChecked(true);
@@ -643,6 +652,12 @@ void BitcreditGUI::gotoSendCoinsPage(QString addr)
 {
     sendCoinsAction->setChecked(true);
     if (walletFrame) walletFrame->gotoSendCoinsPage(addr);
+}
+
+void BitcreditGUI::gotoBankCoinsPage(QString addr)
+{
+    bankCoinsAction->setChecked(true);
+    if (walletFrame) walletFrame->gotoBankCoinsPage(addr);
 }
 
 void BitcreditGUI::gotoSignMessageTab(QString addr)

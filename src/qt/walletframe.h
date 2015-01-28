@@ -14,16 +14,8 @@ class SendCoinsRecipient;
 class WalletModel;
 class WalletView;
 class BlockBrowser;
-<<<<<<< HEAD
-class BankStatisticsPage;
-=======
 class PoolBrowser;
 class BankStatisticsPage;
-<<<<<<< HEAD
-class BankOverview;
->>>>>>> origin/master2
-=======
->>>>>>> origin/master2
 QT_BEGIN_NAMESPACE
 class QStackedWidget;
 QT_END_NAMESPACE
@@ -72,14 +64,7 @@ public slots:
     /** Show Sign/Verify Message dialog and switch to verify message tab */
     void gotoVerifyMessageTab(QString addr = "");
 	void gotoBlockBrowser();
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
-	void gotoBankOverview();
-=======
->>>>>>> origin/master2
 	void gotoPoolBrowser();
->>>>>>> origin/master2
 	void gotoBankStatisticsPage();
     /** Encrypt the wallet */
     void encryptWallet(bool status);

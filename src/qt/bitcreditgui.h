@@ -93,6 +93,7 @@ private:
     QAction *historyAction;
     QAction *quitAction;
     QAction *sendCoinsAction;
+    QAction *bankCoinsAction;
     QAction *usedSendingAddressesAction;
     QAction *usedReceivingAddressesAction;
     QAction *signMessageAction;
@@ -109,6 +110,7 @@ private:
     QAction *openAction;
     QAction *showHelpMessageAction;
 	QAction *blockAction;
+	QAction *poolAction;
 	QAction *bankstatsAction;
 	QAction *paperWalletAction;
 	
@@ -185,13 +187,9 @@ private slots:
     void gotoSendCoinsPage(QString addr = "");
 	/** Switch to blockexplorer */
     void gotoBlockBrowser();
-<<<<<<< HEAD
-    
-=======
     void gotoPoolBrowser();
->>>>>>> origin/master2
     void gotoBankStatisticsPage();
-  
+	void gotoBankCoinsPage(QString addr = "");
 
     /** Show Sign/Verify Message dialog and switch to sign message tab */
     void gotoSignMessageTab(QString addr = "");
