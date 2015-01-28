@@ -3,7 +3,7 @@ AC_PREREQ([2.60])
 define(_CLIENT_VERSION_MAJOR, 0)
 define(_CLIENT_VERSION_MINOR, 30)
 <<<<<<< HEAD
-define(_CLIENT_VERSION_REVISION, 07)
+define(_CLIENT_VERSION_REVISION, 10)
 =======
 define(_CLIENT_VERSION_REVISION, 10)
 >>>>>>> origin/master2
