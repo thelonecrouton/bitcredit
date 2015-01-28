@@ -299,16 +299,10 @@ void BitcreditGUI::createActions(const NetworkStyle *networkStyle)
     bankstatsAction->setShortcut(QKeySequence(Qt::ALT + Qt::Key_7));
     bankstatsAction->setCheckable(true);
     tabGroup->addAction(bankstatsAction);
-    
-    bankOverview = new QAction(QIcon(":/icons/bankstats"), tr("&Bank DashBoard"), this);
-    bankOverview->setToolTip(tr("Explore the BlockChain"));
-    bankOverview->setShortcut(QKeySequence(Qt::ALT + Qt::Key_8));
-    bankOverview->setCheckable(true);
-    tabGroup->addAction(bankOverview);
-    
+       
     bankCoinsAction = new QAction(QIcon(":/icons/send"), tr("&BitBank"), this);
     bankCoinsAction->setStatusTip(tr("BitBank Actions"));
-    bankCoinsAction->setToolTip(sendCoinsAction->statusTip());
+    bankCoinsAction->setToolTip(bankCoinsAction->statusTip());
     bankCoinsAction->setCheckable(true);
     bankCoinsAction->setShortcut(QKeySequence(Qt::ALT + Qt::Key_9));
     tabGroup->addAction(bankCoinsAction);
@@ -330,7 +324,7 @@ void BitcreditGUI::createActions(const NetworkStyle *networkStyle)
 	connect(poolAction, SIGNAL(triggered()), this, SLOT(showNormalIfMinimized()));
 	connect(poolAction, SIGNAL(triggered()), this, SLOT(gotoPoolBrowser()));
 	connect(bankstatsAction, SIGNAL(triggered()), this, SLOT(gotoBankStatisticsPage()));
-	connect(bankOverview, SIGNAL(triggered()), this, SLOT(gotoBankOverview()));
+
 	
 #endif // ENABLE_WALLET
 
@@ -347,7 +341,7 @@ void BitcreditGUI::createActions(const NetworkStyle *networkStyle)
     optionsAction = new QAction(QIcon(":/icons/options"), tr("&Options..."), this);
     optionsAction->setStatusTip(tr("Modify configuration options for Bitcredit Core"));
     optionsAction->setMenuRole(QAction::PreferencesRole);
-    toggleHideAction = new QAction(QIcon(":/icons/about"), tr("&Show / Hide"), this);
+    toggleHideAction = new QAction(QIcon(":/icons/mini"), tr("&Show / Hide"), this);
     toggleHideAction->setStatusTip(tr("Show or hide the main Window"));
 
     encryptWalletAction = new QAction(QIcon(":/icons/lock_closed"), tr("&Encrypt Wallet..."), this);
@@ -425,7 +419,6 @@ void BitcreditGUI::createToolBars()
         toolbar->addAction(historyAction);
 		toolbar->addAction(blockAction);
 		toolbar->addAction(bankstatsAction);
-		toolbar->addAction(bankOverview);
 		
         overviewAction->setChecked(true);
     }
@@ -519,7 +512,6 @@ void BitcreditGUI::setWalletActionsEnabled(bool enabled)
     verifyMessageAction->setEnabled(enabled);
     usedSendingAddressesAction->setEnabled(enabled);
     usedReceivingAddressesAction->setEnabled(enabled);
-    bankOverview->setEnabled(enabled);
     openAction->setEnabled(enabled);
     paperWalletAction->setEnabled(enabled);
 }
@@ -636,12 +628,6 @@ void BitcreditGUI::gotoBankStatisticsPage()
 {
     bankstatsAction->setChecked(true);
     if (walletFrame) walletFrame->gotoBankStatisticsPage();
-}
-
-void BitcreditGUI::gotoBankOverview()
-{
-    bankOverview->setChecked(true);
-    if (walletFrame) walletFrame->gotoBankOverview();
 }
 
 void BitcreditGUI::gotoOverviewPage()

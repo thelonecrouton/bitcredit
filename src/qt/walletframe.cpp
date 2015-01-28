@@ -147,13 +147,6 @@ void WalletFrame::gotoBankStatisticsPage()
         i.value()->gotoBankStatisticsPage();
 }
 
-void WalletFrame::gotoBankOverview()
-{
-    QMap<QString, WalletView*>::const_iterator i;
-    for (i = mapWalletViews.constBegin(); i != mapWalletViews.constEnd(); ++i)
-        i.value()->gotoBankOverview();
-}
-
 void WalletFrame::gotoSendCoinsPage(QString addr)
 {
     QMap<QString, WalletView*>::const_iterator i;

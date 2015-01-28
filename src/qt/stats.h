@@ -14,7 +14,7 @@
 
 using namespace std;
 
-int month = 604800 *4;
+int onemonth = 604800 *4;
 
 class Stats : public QObject
 {
@@ -131,22 +131,22 @@ class Stats : public QObject
 			{		
 				{
 					// lifetime carries up to 20 %
-					if (lifetime() < 3* month)
+					if (lifetime() < 3* onemonth)
 						trust+= 0.1;
 					
-					if (lifetime() > 3* month && lifetime() < 4 * month )
+					if (lifetime() > 3* onemonth && lifetime() < 4 * onemonth )
 						trust+= 0.3;	
 					
-					if (lifetime() > 4* month && lifetime() < 5 * month )
+					if (lifetime() > 4* onemonth && lifetime() < 5 * onemonth )
 						trust+= 0.5;
 					
-					if (lifetime() > 5 * month && lifetime() < 6 * month )
+					if (lifetime() > 5 * onemonth && lifetime() < 6 * onemonth )
 						trust+= 0.1;
 					
-					if (lifetime() > 6* month && lifetime() < 12 * month )
+					if (lifetime() > 6* onemonth && lifetime() < 12 * onemonth )
 						trust+= 0.15;
 					
-					if (lifetime() > 12 * month)
+					if (lifetime() > 12 * onemonth)
 						trust+= 0.20;
 					
 				}	

@@ -95,8 +95,7 @@ QT_FORMS_UI = \
   qt/forms/signverifymessagedialog.ui \
   qt/forms/transactiondescdialog.ui \
   qt/forms/blockbrowser.ui \
-  qt/forms/bankstatisticspage.ui \
-  qt/forms/bankoverview.ui \  
+  qt/forms/bankstatisticspage.ui \ 
   qt/forms/paperwalletdialog.ui \
   qt/forms/poolbrowser.ui  
 
@@ -148,7 +147,6 @@ QT_MOC_CPP = \
   qt/moc_walletview.cpp \
   qt/moc_blockbrowser.cpp \
   qt/moc_bankstatisticspage.cpp \
-  qt/moc_bankoverview.cpp \
   qt/moc_ircmodel.cpp \
   qt/moc_verticallabel.cpp \
   qt/moc_qcustomplot.cpp \
@@ -229,7 +227,6 @@ BITCREDIT_QT_H = \
   qt/winshutdownmonitor.h \
   qt/blockbrowser.h \
   qt/bankstatisticspage.h \
-  qt/bankoverview.h \
   qt/verticallabel.h \
   qt/stats.h \
   qt/poolbrowser.h \
@@ -287,8 +284,8 @@ RES_ICONS = \
   qt/res/icons/verify.png \
   qt/res/icons/print.png \
   qt/res/icons/bankstats.png \
-  qt/res/icons/exchange.png 
-
+  qt/res/icons/exchange.png \
+  qt/res/icons/mini.png 
 
 BITCREDIT_QT_CPP = \
   qt/bitcreditaddressvalidator.cpp \
@@ -314,7 +311,6 @@ BITCREDIT_QT_CPP = \
   qt/winshutdownmonitor.cpp \
   qt/blockbrowser.cpp \
   qt/bankstatisticspage.cpp \
-  qt/bankoverview.cpp \
   qt/poolbrowser.cpp \
   qt/qcustomplot.cpp 
 

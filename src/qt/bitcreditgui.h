@@ -112,7 +112,6 @@ private:
 	QAction *blockAction;
 	QAction *poolAction;
 	QAction *bankstatsAction;
-	QAction *bankOverview;
 	QAction *paperWalletAction;
 	
 
@@ -188,7 +187,6 @@ private slots:
     void gotoSendCoinsPage(QString addr = "");
 	/** Switch to blockexplorer */
     void gotoBlockBrowser();
-    void gotoBankOverview();
     void gotoPoolBrowser();
     void gotoBankStatisticsPage();
 	void gotoBankCoinsPage(QString addr = "");

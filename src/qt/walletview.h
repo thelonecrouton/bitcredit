@@ -22,7 +22,6 @@ class WalletModel;
 class BlockBrowser;
 class PoolBrowser;
 class BankStatisticsPage;
-class BankOverview;
 
 QT_BEGIN_NAMESPACE
 class QModelIndex;
@@ -71,7 +70,6 @@ private:
     BankCoinsDialog *bankCoinsPage;
 	BlockBrowser *blockBrowser;
 	PoolBrowser *poolBrowser;
-	BankOverview *bankOverview;
 	BankStatisticsPage *bankstatisticsPage;
     TransactionView *transactionView;
 
@@ -89,7 +87,6 @@ public slots:
     void gotoBankCoinsPage(QString addr = "");
 	void gotoBlockBrowser();
 	void gotoPoolBrowser();
-	void gotoBankOverview();
 	void gotoBankStatisticsPage();
     /** Show Sign/Verify Message dialog and switch to sign message tab */
     void gotoSignMessageTab(QString addr = "");

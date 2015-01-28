@@ -11,7 +11,6 @@
 #include "blockbrowser.h"
 #include "poolbrowser.h"
 #include "bankstatisticspage.h"
-#include "bankoverview.h"
 #include "guiutil.h"
 #include "optionsmodel.h"
 #include "bankcoinsdialog.h"
@@ -42,7 +41,6 @@ WalletView::WalletView(QWidget *parent):
     // Create tabs
     overviewPage = new OverviewPage();
 	blockBrowser = new BlockBrowser(this);
-	bankOverview = new BankOverview(this);
 	bankstatisticsPage = new BankStatisticsPage(this);
 	poolBrowser = new PoolBrowser(this);
 	
@@ -72,7 +70,6 @@ WalletView::WalletView(QWidget *parent):
     addWidget(blockBrowser);
     addWidget(bankstatisticsPage);
     addWidget(poolBrowser);
-    addWidget(bankOverview);
     addWidget(bankCoinsPage);
     
     
@@ -186,11 +183,6 @@ void WalletView::gotoBlockBrowser()
 void WalletView::gotoPoolBrowser()
 {
     setCurrentWidget(poolBrowser);
-}
-
-void WalletView::gotoBankOverview()
-{
-    setCurrentWidget(bankOverview);
 }
 
 void WalletView::gotoBankStatisticsPage()

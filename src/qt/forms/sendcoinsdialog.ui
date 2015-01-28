@@ -13,6 +13,9 @@
   <property name="windowTitle">
    <string>Send Coins</string>
   </property>
+  <property name="styleSheet">
+   <string notr="true">background:transparent;</string>
+  </property>
   <layout class="QVBoxLayout" name="verticalLayout" stretch="0,1,0,0">
    <property name="bottomMargin">
     <number>8</number>
@@ -710,6 +713,9 @@
        <height>16777215</height>
       </size>
      </property>
+     <property name="styleSheet">
+      <string notr="true">background:transparent;</string>
+     </property>
      <property name="frameShape">
       <enum>QFrame::StyledPanel</enum>
      </property>
@@ -1316,7 +1322,7 @@ color: rgb(255, 255, 255);</string>
         <string>Confirm the send action</string>
        </property>
        <property name="styleSheet">
-        <string notr="true">color: rgb(255, 255, 255);</string>
+        <string notr="true">color: rgb(255, 255, 255);background:transparent;</string>
        </property>
        <property name="text">
         <string>S&amp;end</string>
@@ -1345,7 +1351,7 @@ color: rgb(255, 255, 255);</string>
         <string>Clear all fields of the form.</string>
        </property>
        <property name="styleSheet">
-        <string notr="true">color: rgb(255, 255, 255);</string>
+        <string notr="true">color: rgb(255, 255, 255);background:transparent;</string>
        </property>
        <property name="text">
         <string>Clear &amp;All</string>
@@ -1365,7 +1371,7 @@ color: rgb(255, 255, 255);</string>
         <string>Send to multiple recipients at once</string>
        </property>
        <property name="styleSheet">
-        <string notr="true">color: rgb(255, 255, 255);</string>
+        <string notr="true">color: rgb(255, 255, 255);background:transparent;</string>
        </property>
        <property name="text">
         <string>Add &amp;Recipient</string>
