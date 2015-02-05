@@ -29,10 +29,7 @@ config.log
 config.status
 configure
 libtool
-<<<<<<< HEAD
-=======
 src/config/bitcredit-config.h
->>>>>>> origin/master2
 src/config/bitcredit-config.h.in
 src/config/stamp-h1
 share/setup.nsi
