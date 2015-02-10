@@ -737,8 +737,13 @@ Value getblocktemplate(const Array& params, bool fHelp)
     result.push_back(Pair("previousblockhash", pblock->hashPrevBlock.GetHex()));
     result.push_back(Pair("transactions", transactions));
     result.push_back(Pair("coinbaseaux", aux));
-    result.push_back(Pair("coinbasevalue", (GetBlockValue(chainActive.Tip()->nHeight, 0))));
 // result.push_back(Pair("coinbasevalue", (int64_t)pblock->vtx[0].vout[0].nValue));
+	int64_t _coinbasevalue = 0;
+	for (unsigned int i = 0; i < pblock->vtx[0].vout.size(); i++)
+	{
+	_coinbasevalue += (int64_t)pblock->vtx[0].vout[i].nValue;
+	}
+	result.push_back(Pair("coinbasevalue", _coinbasevalue));
     result.push_back(Pair("longpollid", chainActive.Tip()->GetBlockHash().GetHex() + i64tostr(nTransactionsUpdatedLast)));
     result.push_back(Pair("target", hashTarget.GetHex()));
     result.push_back(Pair("mintime", (int64_t)pindexPrev->GetMedianTimePast()+1));
