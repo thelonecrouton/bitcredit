@@ -6,6 +6,7 @@
 #include "ui_intro.h"
 
 #include "guiutil.h"
+#include "scicon.h"
 
 #include "util.h"
 

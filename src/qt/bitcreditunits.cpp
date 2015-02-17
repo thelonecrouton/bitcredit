@@ -36,17 +36,6 @@ bool BitcreditUnits::valid(int unit)
     }
 }
 
-QString BitcreditUnits::id(int unit)
-{
-    switch(unit)
-    {
-    case BCR: return QString("btc");
-    case mBCR: return QString("mbtc");
-    case uBCR: return QString("ubtc");
-    default: return QString("???");
-    }
-}
-
 QString BitcreditUnits::name(int unit)
 {
     switch(unit)
