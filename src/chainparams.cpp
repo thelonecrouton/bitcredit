@@ -62,11 +62,12 @@ static Checkpoints::MapCheckpoints mapCheckpoints =
         ( 12730, uint256("0x00078729870af9ea8f24d31973fca4382e676fa3a88fb5b3e1ed997549ba063e"))
         ( 22600, uint256("0x0000b696853b6c7ed8911a68d80f2cab1501f33786ca034ff0bbf3a1014ff9bc"))
         ( 35530, uint256("0x00002499426b282c8a9e575e83ea471aa374e3eb66be6e6072acbd63e7cceeb5"))
+		( 40500, uint256("0x000abee3e3b98c2d36472aa0109a9d300c305410333eb3c60d52c8b1d45a563d"))
         ;
 static const Checkpoints::CCheckpointData data = {
         &mapCheckpoints,
-        1423598764, // * UNIX timestamp of last checkpoint block
-        36653,   // * total number of transactions between genesis and last checkpoint
+        1424122231, // * UNIX timestamp of last checkpoint block
+        41958,   // * total number of transactions between genesis and last checkpoint
                     //   (the tx=... number in the SetBestChain debug.log lines)
         1440.0     // * estimated number of transactions per day after checkpoint
     };
@@ -111,9 +112,9 @@ public:
         nDefaultPort = 8877;
         bnProofOfWorkLimit = ~uint256(0) >> 4;
         nSubsidyHalvingInterval = 210000;
-        nEnforceBlockUpgradeMajority = 750;
-        nRejectBlockOutdatedMajority = 950;
-        nToCheckBlockUpgradeMajority = 1000;
+        nEnforceBlockUpgradeMajority = 51;
+        nRejectBlockOutdatedMajority = 75;
+        nToCheckBlockUpgradeMajority = 100;
         nMinerThreads = 0;
         nTargetTimespan = 1 * 60 *60; // one hour
         nTargetTimespan2 = 1 * 60; // per block basis 
@@ -154,7 +155,7 @@ public:
         vSeeds.push_back(CDNSSeedData("198.52.160.64", "198.52.160.64"));
         vSeeds.push_back(CDNSSeedData("198.52.160.59", "198.52.160.59"));
         vSeeds.push_back(CDNSSeedData("198.52.160.60", "198.52.160.60"));
- 
+ 		vSeeds.push_back(CDNSSeedData("213.165.94.246:8877", "213.165.94.246:8877"));
 
         base58Prefixes[PUBKEY_ADDRESS] = list_of(12);
         base58Prefixes[SCRIPT_ADDRESS] = list_of(8);
