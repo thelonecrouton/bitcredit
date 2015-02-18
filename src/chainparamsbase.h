@@ -32,6 +32,7 @@ protected:
 
     int nRPCPort;
     std::string strDataDir;
+    Network networkID;
 };
 
 /**

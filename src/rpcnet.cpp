@@ -34,8 +34,7 @@ Value getconnectioncount(const Array& params, bool fHelp)
             + HelpExampleRpc("getconnectioncount", "")
         );
 
-    LOCK2(cs_main, cs_vNodes);
-
+    LOCK(cs_vNodes);
     return (int)vNodes.size();
 }
 
@@ -53,8 +52,7 @@ Value ping(const Array& params, bool fHelp)
         );
 
     // Request that each node send a ping during next message processing pass
-    LOCK2(cs_main, cs_vNodes);
-
+    LOCK(cs_vNodes);
     BOOST_FOREACH(CNode* pNode, vNodes) {
         pNode->fPingQueued = true;
     }
@@ -93,7 +91,6 @@ Value getpeerinfo(const Array& params, bool fHelp)
             "    \"bytessent\": n,            (numeric) The total bytes sent\n"
             "    \"bytesrecv\": n,            (numeric) The total bytes received\n"
             "    \"conntime\": ttt,           (numeric) The connection time in seconds since epoch (Jan 1 1970 GMT)\n"
-            "    \"timeoffset\": ttt,         (numeric) The time offset in seconds\n"
             "    \"pingtime\": n,             (numeric) ping time\n"
             "    \"pingwait\": n,             (numeric) ping wait\n"
             "    \"version\": v,              (numeric) The peer version, such as 7001\n"
@@ -115,8 +112,6 @@ Value getpeerinfo(const Array& params, bool fHelp)
             + HelpExampleRpc("getpeerinfo", "")
         );
 
-    LOCK(cs_main);
-
     vector<CNodeStats> vstats;
     CopyNodeStats(vstats);
 
@@ -136,7 +131,6 @@ Value getpeerinfo(const Array& params, bool fHelp)
         obj.push_back(Pair("bytessent", stats.nSendBytes));
         obj.push_back(Pair("bytesrecv", stats.nRecvBytes));
         obj.push_back(Pair("conntime", stats.nTimeConnected));
-        obj.push_back(Pair("timeoffset", stats.nTimeOffset));
         obj.push_back(Pair("pingtime", stats.dPingTime));
         if (stats.dPingWait > 0.0)
             obj.push_back(Pair("pingwait", stats.dPingWait));
@@ -414,8 +408,6 @@ Value getnetworkinfo(const Array& params, bool fHelp)
             + HelpExampleCli("getnetworkinfo", "")
             + HelpExampleRpc("getnetworkinfo", "")
         );
-
-    LOCK(cs_main);
 
     Object obj;
     obj.push_back(Pair("version",       CLIENT_VERSION));

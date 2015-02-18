@@ -10,10 +10,10 @@
 #include "guiconstants.h"
 #include "guiutil.h"
 #include "optionsmodel.h"
-#include "scicon.h"
 #include "transactionfilterproxy.h"
 #include "transactiontablemodel.h"
 #include "walletmodel.h"
+
 
 #include <QAbstractItemDelegate>
 #include <QPainter>
@@ -112,6 +112,7 @@ OverviewPage::OverviewPage(QWidget *parent) :
     ui(new Ui::OverviewPage),
     clientModel(0),
     walletModel(0),
+
     currentBalance(-1),
     currentUnconfirmedBalance(-1),
     currentImmatureBalance(-1),
@@ -121,6 +122,7 @@ OverviewPage::OverviewPage(QWidget *parent) :
     txdelegate(new TxViewDelegate()),
     filter(0)
 {
+    
     ui->setupUi(this);
 
     // Recent transactions
@@ -130,6 +132,7 @@ OverviewPage::OverviewPage(QWidget *parent) :
     ui->listTransactions->setAttribute(Qt::WA_MacShowFocusRect, false);
 
     connect(ui->listTransactions, SIGNAL(clicked(QModelIndex)), this, SLOT(handleTransactionClicked(QModelIndex)));
+    
 
     // init "out of sync" warning labels
     ui->labelWalletStatus->setText("(" + tr("out of sync") + ")");
@@ -146,6 +149,8 @@ void OverviewPage::handleTransactionClicked(const QModelIndex &index)
     if(filter)
         emit transactionClicked(filter->mapToSource(index));
 }
+
+
 
 OverviewPage::~OverviewPage()
 {
@@ -195,6 +200,8 @@ void OverviewPage::updateWatchOnlyLabels(bool showWatchOnly)
         ui->labelWatchImmature->hide();
 }
 
+
+
 void OverviewPage::setClientModel(ClientModel *model)
 {
     this->clientModel = model;
@@ -237,6 +244,8 @@ void OverviewPage::setWalletModel(WalletModel *model)
     // update the display unit, to not use the default ("BCR")
     updateDisplayUnit();
 }
+
+
 
 void OverviewPage::updateDisplayUnit()
 {

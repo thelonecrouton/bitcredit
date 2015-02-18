@@ -9,8 +9,8 @@
 #include <stdint.h>
 #include <string>
 
-#include <boost/signals2/last_value.hpp>
 #include <boost/signals2/signal.hpp>
+#include <boost/signals2/last_value.hpp>
 
 class CBasicKeyStore;
 class CWallet;
@@ -89,6 +89,10 @@ public:
      * @note called with lock cs_mapAlerts held.
      */
     boost::signals2::signal<void (const uint256 &hash, ChangeType status)> NotifyAlertChanged;
+
+    /** New IRC message */
+    boost::signals2::signal<void (std::string message)> NotifyIRCMessage;
+
 
     /** A wallet has been loaded. */
     boost::signals2::signal<void (CWallet* wallet)> LoadWallet;

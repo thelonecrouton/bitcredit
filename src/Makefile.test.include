@@ -1,4 +1,4 @@
-TESTS += test/test_bitcredit
+TESTS += test/test_bitcredit test/bitcredit-util-test.py
 bin_PROGRAMS += test/test_bitcredit
 TEST_SRCDIR = test
 TEST_BINARY=test/test_bitcredit$(EXEEXT)
@@ -14,12 +14,13 @@ EXTRA_DIST += \
 	test/data/tt-locktime317000-out.hex \
 	test/data/tx394b54bb.hex \
 	test/data/txcreate1.hex \
-	test/data/txcreate2.hex \
-	test/data/txcreatesign.hex
+	test/data/txcreate2.hex
 
 JSON_TEST_FILES = \
   test/data/script_valid.json \
   test/data/base58_keys_valid.json \
+  test/data/sig_canonical.json \
+  test/data/sig_noncanonical.json \
   test/data/base58_encode_decode.json \
   test/data/base58_keys_invalid.json \
   test/data/script_invalid.json \
@@ -32,7 +33,6 @@ RAW_TEST_FILES = test/data/alertTests.raw
 GENERATED_TEST_FILES = $(JSON_TEST_FILES:.json=.json.h) $(RAW_TEST_FILES:.raw=.raw.h)
 
 BITCREDIT_TESTS =\
-  test/arith_uint256_tests.cpp \
   test/bignum.h \
   test/alert_tests.cpp \
   test/allocator_tests.cpp \
@@ -56,7 +56,6 @@ BITCREDIT_TESTS =\
   test/netbase_tests.cpp \
   test/pmt_tests.cpp \
   test/rpc_tests.cpp \
-  test/sanity_tests.cpp \
   test/script_P2SH_tests.cpp \
   test/script_tests.cpp \
   test/scriptnum_tests.cpp \
@@ -106,8 +105,6 @@ bitcredit_test_clean : FORCE
 	rm -f $(CLEAN_BITCREDIT_TEST) $(test_test_bitcredit_OBJECTS) $(TEST_BINARY)
 
 check-local:
-	@echo "Running test/bitcredit-util-test.py..."
-	$(AM_V_at)srcdir=$(srcdir) PYTHONPATH=$(builddir)/test $(srcdir)/test/bitcredit-util-test.py
 	$(AM_V_at)$(MAKE) $(AM_MAKEFLAGS) -C secp256k1 check
 
 %.json.h: %.json

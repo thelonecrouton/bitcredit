@@ -1,5 +1,5 @@
 // Copyright (c) 2009-2010 Satoshi Nakamoto
-// Copyright (c) 2009-2015 The Bitcredit Core developers
+// Copyright (c) 2009-2014 The Bitcredit Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -28,7 +28,7 @@ uint256 CBlock::GetVerifiedHash() const
 	uint256 r = Hash(BEGIN(nVersion), END(nBirthdayB));
 
  	if(!bts::momentum_verify( midHash, nBirthdayA, nBirthdayB)){
- 		return uint256S("0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffeeee");
+ 		return uint256("0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffeeee");
  	}
    
      return r;
@@ -40,8 +40,7 @@ uint256 CBlock::CalculateBestBirthdayHash() {
 	std::vector< std::pair<uint32_t,uint32_t> > results =bts::momentum_search( midHash );
 	uint32_t candidateBirthdayA=0;
 	uint32_t candidateBirthdayB=0;
-	uint256 smallestHashSoFar;
-	smallestHashSoFar == uint256S("0xfffffffffffffffffffffffffffffffffffffffffffffffffffffffffffdddd");
+	uint256 smallestHashSoFar("0xfffffffffffffffffffffffffffffffffffffffffffffffffffffffffffdddd");
 	for (unsigned i=0; i < results.size(); i++) {
 	nBirthdayA = results[i].first;
 	nBirthdayB = results[i].second;
@@ -119,7 +118,7 @@ uint256 CBlock::BuildMerkleTree(bool* fMutated) const
     if (fMutated) {
         *fMutated = mutated;
     }
-    return (vMerkleTree.empty() ? uint256() : vMerkleTree.back());
+    return (vMerkleTree.empty() ? 0 : vMerkleTree.back());
 }
 
 std::vector<uint256> CBlock::GetMerkleBranch(int nIndex) const
@@ -141,7 +140,7 @@ std::vector<uint256> CBlock::GetMerkleBranch(int nIndex) const
 uint256 CBlock::CheckMerkleBranch(uint256 hash, const std::vector<uint256>& vMerkleBranch, int nIndex)
 {
     if (nIndex == -1)
-        return uint256();
+        return 0;
     for (std::vector<uint256>::const_iterator it(vMerkleBranch.begin()); it != vMerkleBranch.end(); ++it)
     {
         if (nIndex & 1)

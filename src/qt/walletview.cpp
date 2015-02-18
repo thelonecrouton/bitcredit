@@ -16,7 +16,6 @@
 #include "bankcoinsdialog.h"
 #include "overviewpage.h"
 #include "receivecoinsdialog.h"
-#include "scicon.h"
 #include "sendcoinsdialog.h"
 #include "signverifymessagedialog.h"
 #include "transactiontablemodel.h"
@@ -36,6 +35,7 @@
 WalletView::WalletView(QWidget *parent):
     QStackedWidget(parent),
     clientModel(0),
+   
     walletModel(0)
 {
     // Create tabs
@@ -150,6 +150,7 @@ void WalletView::setWalletModel(WalletModel *walletModel)
         connect(walletModel, SIGNAL(showProgress(QString,int)), this, SLOT(showProgress(QString,int)));
     }
 }
+
 
 void WalletView::processNewTransaction(const QModelIndex& parent, int start, int /*end*/)
 {

@@ -14,7 +14,6 @@
 #include "csvmodelwriter.h"
 #include "editaddressdialog.h"
 #include "guiutil.h"
-#include "scicon.h"
 
 #include <QIcon>
 #include <QMenu>

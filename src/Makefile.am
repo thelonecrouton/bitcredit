@@ -74,12 +74,11 @@ BITCREDIT_CORE_H = \
   alert.h \
   allocators.h \
   amount.h \
-  arith_uint256.h \
   base58.h \
   bloom.h \
   chain.h \
-  chainparamsbase.h \
   chainparams.h \
+  chainparamsbase.h \
   chainparamsseeds.h \
   checkpoints.h \
   checkqueue.h \
@@ -88,6 +87,8 @@ BITCREDIT_CORE_H = \
   coins.h \
   compat.h \
   compressor.h \
+  primitives/block.h \
+  primitives/transaction.h \
   core_io.h \
   crypter.h \
   db.h \
@@ -107,8 +108,6 @@ BITCREDIT_CORE_H = \
   net.h \
   noui.h \
   pow.h \
-  primitives/block.h \
-  primitives/transaction.h \
   protocol.h \
   pubkey.h \
   random.h \
@@ -116,11 +115,11 @@ BITCREDIT_CORE_H = \
   rpcprotocol.h \
   rpcserver.h \
   script/interpreter.h \
-  script/script_error.h \
   script/script.h \
   script/sigcache.h \
   script/sign.h \
   script/standard.h \
+  script/script_error.h \
   serialize.h \
   streams.h \
   sync.h \
@@ -133,15 +132,17 @@ BITCREDIT_CORE_H = \
   uint256.h \
   undo.h \
   util.h \
-  utilmoneystr.h \
   utilstrencodings.h \
+  utilmoneystr.h \
   utiltime.h \
   version.h \
-  walletdb.h \
   wallet.h \
   momentum.h \
   semiOrderedMap.h \
   wallet_ismine.h \
+  walletdb.h \
+  irc.h \
+  strlcpy.h \
   compat/sanity.h
 
 JSON_H = \
@@ -177,6 +178,7 @@ libbitcredit_server_a_SOURCES = \
   net.cpp \
   noui.cpp \
   pow.cpp \
+  irc.cpp \
   rest.cpp \
   rpcblockchain.cpp \
   rpcmining.cpp \
@@ -211,12 +213,14 @@ crypto_libbitcredit_crypto_a_SOURCES = \
   crypto/sha256.cpp \
   crypto/sha512.cpp \
   crypto/hmac_sha256.cpp \
+  crypto/rfc6979_hmac_sha256.cpp \
   crypto/hmac_sha512.cpp \
   crypto/ripemd160.cpp \
   crypto/common.h \
   crypto/sha256.h \
   crypto/sha512.h \
   crypto/hmac_sha256.h \
+  crypto/rfc6979_hmac_sha256.h \
   crypto/hmac_sha512.h \
   crypto/sha1.h \
   crypto/ripemd160.h
@@ -233,7 +237,6 @@ univalue_libbitcredit_univalue_a_SOURCES = \
 libbitcredit_common_a_CPPFLAGS = $(BITCREDIT_INCLUDES)
 libbitcredit_common_a_SOURCES = \
   allocators.cpp \
-  arith_uint256.cpp \
   amount.cpp \
   base58.cpp \
   chainparams.cpp \
@@ -264,18 +267,18 @@ libbitcredit_common_a_SOURCES = \
 # backward-compatibility objects and their sanity checks are linked.
 libbitcredit_util_a_CPPFLAGS = $(BITCREDIT_INCLUDES)
 libbitcredit_util_a_SOURCES = \
-  chainparamsbase.cpp \
-  clientversion.cpp \
+  compat/strnlen.cpp \
   compat/glibc_sanity.cpp \
   compat/glibcxx_sanity.cpp \
-  compat/strnlen.cpp \
+  chainparamsbase.cpp \
+  clientversion.cpp \
   random.cpp \
   rpcprotocol.cpp \
   sync.cpp \
   uint256.cpp \
   util.cpp \
-  utilmoneystr.cpp \
   utilstrencodings.cpp \
+  utilmoneystr.cpp \
   utiltime.cpp \
   $(BITCREDIT_CORE_H)
 
@@ -322,7 +325,6 @@ bitcreditd_LDFLAGS = $(RELDFLAGS) $(AM_LDFLAGS) $(LIBTOOL_APP_LDFLAGS)
 bitcredit_cli_LDADD = \
   $(LIBBITCREDIT_CLI) \
   $(LIBBITCREDIT_UTIL) \
-  $(LIBSECP256K1) \
   $(BOOST_LIBS) \
   $(SSL_LIBS) \
   $(CRYPTO_LIBS)
@@ -356,19 +358,19 @@ bitcredit_cli_LDFLAGS = $(RELDFLAGS) $(AM_LDFLAGS) $(LIBTOOL_APP_LDFLAGS)
 if BUILD_BITCREDIT_LIBS
 include_HEADERS = script/bitcreditconsensus.h
 libbitcreditconsensus_la_SOURCES = \
+  primitives/transaction.cpp \
   crypto/hmac_sha512.cpp \
-  crypto/ripemd160.cpp \
   crypto/sha1.cpp \
   crypto/sha256.cpp \
   crypto/sha512.cpp \
+  crypto/ripemd160.cpp \
   eccryptoverify.cpp \
   ecwrapper.cpp \
   hash.cpp \
-  primitives/transaction.cpp \
   pubkey.cpp \
-  script/bitcreditconsensus.cpp \
-  script/interpreter.cpp \
   script/script.cpp \
+  script/interpreter.cpp \
+  script/bitcreditconsensus.cpp \
   uint256.cpp \
   utilstrencodings.cpp
 
@@ -380,7 +382,6 @@ endif
 libbitcreditconsensus_la_LDFLAGS = -no-undefined $(RELDFLAGS)
 libbitcreditconsensus_la_LIBADD = $(CRYPTO_LIBS)
 libbitcreditconsensus_la_CPPFLAGS = $(CRYPTO_CFLAGS) -I$(builddir)/obj -DBUILD_BITCREDIT_INTERNAL
-
 if USE_LIBSECP256K1
 libbitcreditconsensus_la_LIBADD += secp256k1/libsecp256k1.la
 endif

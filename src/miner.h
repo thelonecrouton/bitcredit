@@ -6,21 +6,16 @@
 #ifndef BITCREDIT_MINER_H
 #define BITCREDIT_MINER_H
 
-#include "primitives/block.h"
-
 #include <stdint.h>
 
+class CBlock;
+class CBlockHeader;
 class CBlockIndex;
 class CReserveKey;
 class CScript;
 class CWallet;
 
-struct CBlockTemplate
-{
-    CBlock block;
-    std::vector<CAmount> vTxFees;
-    std::vector<int64_t> vTxSigOps;
-};
+struct CBlockTemplate;
 
 /** Run the miner threads */
 void GenerateBitcredits(bool fGenerate, CWallet* pwallet, int nThreads);

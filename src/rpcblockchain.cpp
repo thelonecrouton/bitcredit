@@ -70,7 +70,7 @@ Object blockToJSON(const CBlock& block, const CBlockIndex* blockindex, bool txDe
         if(txDetails)
         {
             Object objTx;
-            TxToJSON(tx, uint256(), objTx);
+            TxToJSON(tx, uint256(0), objTx);
             txs.push_back(objTx);
         }
         else
@@ -79,6 +79,8 @@ Object blockToJSON(const CBlock& block, const CBlockIndex* blockindex, bool txDe
     result.push_back(Pair("tx", txs));
     result.push_back(Pair("time", block.GetBlockTime()));
     result.push_back(Pair("nonce", (uint64_t)block.nNonce));
+    result.push_back(Pair("BirthdayA", (uint64_t)block.nBirthdayA));
+    result.push_back(Pair("BirthdayB", (uint64_t)block.nBirthdayB));
     result.push_back(Pair("bits", strprintf("%08x", block.nBits)));
     result.push_back(Pair("difficulty", GetDifficulty(blockindex)));
     result.push_back(Pair("chainwork", blockindex->nChainWork.GetHex()));
@@ -105,7 +107,6 @@ Value getblockcount(const Array& params, bool fHelp)
             + HelpExampleRpc("getblockcount", "")
         );
 
-    LOCK(cs_main);
     return chainActive.Height();
 }
 
@@ -122,7 +123,6 @@ Value getbestblockhash(const Array& params, bool fHelp)
             + HelpExampleRpc("getbestblockhash", "")
         );
 
-    LOCK(cs_main);
     return chainActive.Tip()->GetBlockHash().GetHex();
 }
 
@@ -139,7 +139,6 @@ Value getdifficulty(const Array& params, bool fHelp)
             + HelpExampleRpc("getdifficulty", "")
         );
 
-    LOCK(cs_main);
     return GetDifficulty();
 }
 
@@ -175,8 +174,6 @@ Value getrawmempool(const Array& params, bool fHelp)
             + HelpExampleCli("getrawmempool", "true")
             + HelpExampleRpc("getrawmempool", "true")
         );
-
-    LOCK(cs_main);
 
     bool fVerbose = false;
     if (params.size() > 0)
@@ -238,8 +235,6 @@ Value getblockhash(const Array& params, bool fHelp)
             + HelpExampleRpc("getblockhash", "1000")
         );
 
-    LOCK(cs_main);
-
     int nHeight = params[0].get_int();
     if (nHeight < 0 || nHeight > chainActive.Height())
         throw JSONRPCError(RPC_INVALID_PARAMETER, "Block height out of range");
@@ -284,10 +279,8 @@ Value getblock(const Array& params, bool fHelp)
             + HelpExampleRpc("getblock", "\"00000000c937983704a73af28acdec37b049d214adbda81d7e2a3dd146f6ed09\"")
         );
 
-    LOCK(cs_main);
-
     std::string strHash = params[0].get_str();
-    uint256 hash(uint256S(strHash));
+    uint256 hash(strHash);
 
     bool fVerbose = true;
     if (params.size() > 1)
@@ -334,8 +327,6 @@ Value gettxoutsetinfo(const Array& params, bool fHelp)
             + HelpExampleCli("gettxoutsetinfo", "")
             + HelpExampleRpc("gettxoutsetinfo", "")
         );
-
-    LOCK(cs_main);
 
     Object ret;
 
@@ -391,12 +382,10 @@ Value gettxout(const Array& params, bool fHelp)
             + HelpExampleRpc("gettxout", "\"txid\", 1")
         );
 
-    LOCK(cs_main);
-
     Object ret;
 
     std::string strHash = params[0].get_str();
-    uint256 hash(uint256S(strHash));
+    uint256 hash(strHash);
     int n = params[1].get_int();
     bool fMempool = true;
     if (params.size() > 2)
@@ -449,8 +438,6 @@ Value verifychain(const Array& params, bool fHelp)
             + HelpExampleRpc("verifychain", "")
         );
 
-    LOCK(cs_main);
-
     int nCheckLevel = GetArg("-checklevel", 3);
     int nCheckDepth = GetArg("-checkblocks", 288);
     if (params.size() > 0)
@@ -481,8 +468,6 @@ Value getblockchaininfo(const Array& params, bool fHelp)
             + HelpExampleCli("getblockchaininfo", "")
             + HelpExampleRpc("getblockchaininfo", "")
         );
-
-    LOCK(cs_main);
 
     Object obj;
     obj.push_back(Pair("chain",                 Params().NetworkIDString()));
@@ -542,8 +527,6 @@ Value getchaintips(const Array& params, bool fHelp)
             + HelpExampleCli("getchaintips", "")
             + HelpExampleRpc("getchaintips", "")
         );
-
-    LOCK(cs_main);
 
     /* Build up a list of chain tips.  We start with the list of all
        known blocks, and successively remove blocks that appear as pprev
@@ -638,7 +621,7 @@ Value invalidateblock(const Array& params, bool fHelp)
         );
 
     std::string strHash = params[0].get_str();
-    uint256 hash(uint256S(strHash));
+    uint256 hash(strHash);
     CValidationState state;
 
     {
@@ -677,7 +660,7 @@ Value reconsiderblock(const Array& params, bool fHelp)
         );
 
     std::string strHash = params[0].get_str();
-    uint256 hash(uint256S(strHash));
+    uint256 hash(strHash);
     CValidationState state;
 
     {
