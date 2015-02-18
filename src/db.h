@@ -23,8 +23,6 @@
 class CDiskBlockIndex;
 class COutPoint;
 
-struct CBlockLocator;
-
 extern unsigned int nWalletDBUpdated;
 
 void ThreadFlushWalletDB(const std::string& strWalletFile);
@@ -99,8 +97,9 @@ protected:
     std::string strFile;
     DbTxn* activeTxn;
     bool fReadOnly;
+    bool fFlushOnClose;
 
-    explicit CDB(const std::string& strFilename, const char* pszMode = "r+");
+    explicit CDB(const std::string& strFilename, const char* pszMode = "r+", bool fFlushOnCloseIn=true);
     ~CDB() { Close(); }
 
 public:

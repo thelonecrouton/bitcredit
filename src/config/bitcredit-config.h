@@ -21,7 +21,7 @@
 #define CLIENT_VERSION_MINOR 30
 
 /* Build revision */
-#define CLIENT_VERSION_REVISION 12
+#define CLIENT_VERSION_REVISION 13
 
 /* Version is release */
 #define COPYRIGHT_YEAR 2015
@@ -115,7 +115,7 @@
 /* #undef HAVE_GETADDRINFO_A */
 
 /* Define this symbol if you have inet_pton */
-/* #undef HAVE_INET_PTON */
+#define HAVE_INET_PTON 1
 
 /* Define to 1 if you have the <inttypes.h> header file. */
 #define HAVE_INTTYPES_H 1
@@ -272,7 +272,7 @@
 #define PACKAGE_NAME "Bitcredit Core"
 
 /* Define to the full name and version of this package. */
-#define PACKAGE_STRING "Bitcredit Core 0.30.12"
+#define PACKAGE_STRING "Bitcredit Core 0.30.13"
 
 /* Define to the one symbol short name of this package. */
 #define PACKAGE_TARNAME "bitcredit"
@@ -281,7 +281,7 @@
 #define PACKAGE_URL ""
 
 /* Define to the version of this package. */
-#define PACKAGE_VERSION "0.30.12"
+#define PACKAGE_VERSION "0.30.13"
 
 /* Define to necessary symbol if this constant uses a non-standard name on
    your system. */
@@ -309,11 +309,11 @@
 /* #undef USE_DBUS */
 
 /* Define if QR support should be compiled in */
-/* #undef USE_QRCODE */
+#define USE_QRCODE 1
 
 /* UPnP support not compiled if undefined, otherwise value (0 or 1) determines
    default state */
-#define USE_UPNP 1
+#define USE_UPNP 0
 
 /* Define WORDS_BIGENDIAN to 1 if your processor stores words with the most
    significant byte first (like Motorola and SPARC, unlike Intel). */

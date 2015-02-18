@@ -8,7 +8,7 @@
 #include "walletview.h"
 
 #include <cstdio>
-#include <iostream>
+
 #include <QHBoxLayout>
 #include <QLabel>
 

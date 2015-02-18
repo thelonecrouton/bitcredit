@@ -49,7 +49,7 @@ int getBlockHashrate(int height)
 const CBlockIndex* getBlockIndex(int height)
 {
     std::string hex = getBlockHash(height);
-    uint256 hash(hex);
+    uint256 hash (uint256S(hex));
     return mapBlockIndex[hash];
 }
 
@@ -72,7 +72,7 @@ std::string getBlockHash(int Height)
 int getBlockTime(int Height)
 {
     std::string strHash = getBlockHash(Height);
-    uint256 hash(strHash);
+    uint256 hash(uint256S(strHash));
 
     if (mapBlockIndex.count(hash) == 0)
         return 0;
@@ -85,7 +85,7 @@ int getBlockTime(int Height)
 std::string getBlockMerkle(int Height)
 {
     std::string strHash = getBlockHash(Height);
-    uint256 hash(strHash);
+    uint256 hash(uint256S(strHash));
 
     if (mapBlockIndex.count(hash) == 0)
         return 0;
@@ -98,7 +98,7 @@ std::string getBlockMerkle(int Height)
 int getBlocknBits(int Height)
 {
     std::string strHash = getBlockHash(Height);
-    uint256 hash(strHash);
+    uint256 hash(uint256S(strHash));;
 
     if (mapBlockIndex.count(hash) == 0)
         return 0;
@@ -111,7 +111,7 @@ int getBlocknBits(int Height)
 int getBlockNonce(int Height)
 {
     std::string strHash = getBlockHash(Height);
-    uint256 hash(strHash);
+    uint256 hash(uint256S(strHash));
 
     if (mapBlockIndex.count(hash) == 0)
         return 0;
@@ -124,7 +124,7 @@ int getBlockNonce(int Height)
 std::string getBlockDebug(int Height)
 {
     std::string strHash = getBlockHash(Height);
-    uint256 hash(strHash);
+    uint256 hash(uint256S(strHash));
 
     if (mapBlockIndex.count(hash) == 0)
         return 0;
@@ -163,7 +163,7 @@ double getTxTotalValue(std::string txid)
     hash.SetHex(txid);
 
     CTransaction tx;
-    uint256 hashBlock = 0;
+    uint256 hashBlock = uint256();
     if (!GetTransaction(hash, tx, hashBlock, true))
         return GetBlockValue(0, 0);
 
@@ -194,7 +194,7 @@ std::string getOutputs(std::string txid)
     hash.SetHex(txid);
 
     CTransaction tx;
-    uint256 hashBlock = 0;
+    uint256 hashBlock = uint256();
     if (!GetTransaction(hash, tx, hashBlock, true))
         return "fail";
 
@@ -227,7 +227,7 @@ std::string getInputs(std::string txid)
     hash.SetHex(txid);
 
     CTransaction tx;
-    uint256 hashBlock = 0;
+    uint256 hashBlock = uint256();
     if (!GetTransaction(hash, tx, hashBlock, true))
         return "fail";
 
@@ -241,7 +241,7 @@ std::string getInputs(std::string txid)
         const CTxIn& vin = tx.vin[i];
         hash.SetHex(vin.prevout.hash.ToString());
         CTransaction wtxPrev;
-        uint256 hashBlock = 0;
+        uint256 hashBlock = uint256();
         if (!GetTransaction(hash, wtxPrev, hashBlock, true))
              return "fail";
 
@@ -285,7 +285,7 @@ double getTxFees(std::string txid)
 
 
     CTransaction tx;
-    uint256 hashBlock = 0;
+    uint256 hashBlock = uint256();
     if (!GetTransaction(hash, tx, hashBlock, true))
         return 0.0001;
 
@@ -310,7 +310,7 @@ double getTxFees(std::string txid)
         const CTxIn& vin = tx.vin[i];
         hash0.SetHex(vin.prevout.hash.ToString());
         CTransaction wtxPrev;
-        uint256 hashBlock0 = 0;
+        uint256 hashBlock0 = uint256();
         if (!GetTransaction(hash0, wtxPrev, hashBlock0, true))
              return 0;
         CDataStream ssTx(SER_NETWORK, PROTOCOL_VERSION);

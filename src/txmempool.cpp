@@ -192,7 +192,7 @@ private:
             // Neither or both fee and priority sufficient to get confirmed:
             // don't know why they got confirmed.
         }
-        LogPrint("estimatefee", "Seen TX confirm: %s : %s fee/%g priority, took %d blocks\n",
+        LogPrint("estimatefee", "Seen TX confirm: %s: %s fee/%g priority, took %d blocks\n",
                  assignedTo, feeRate.ToString(), dPriority, nBlocksAgo);
     }
 
@@ -585,9 +585,9 @@ void CTxMemPool::check(const CCoinsViewCache *pcoins) const
         if (fDependsWait)
             waitingOnDependants.push_back(&it->second);
         else {
-            CValidationState state; CTxUndo undo;
+            CValidationState state;
             assert(CheckInputs(tx, state, mempoolDuplicate, false, 0, false, NULL));
-            UpdateCoins(tx, state, mempoolDuplicate, undo, 1000000);
+            UpdateCoins(tx, state, mempoolDuplicate, 1000000);
         }
     }
     unsigned int stepsSinceLastRemove = 0;
@@ -601,8 +601,7 @@ void CTxMemPool::check(const CCoinsViewCache *pcoins) const
             assert(stepsSinceLastRemove < waitingOnDependants.size());
         } else {
             assert(CheckInputs(entry->GetTx(), state, mempoolDuplicate, false, 0, false, NULL));
-            CTxUndo undo;
-            UpdateCoins(entry->GetTx(), state, mempoolDuplicate, undo, 1000000);
+            UpdateCoins(entry->GetTx(), state, mempoolDuplicate, 1000000);
             stepsSinceLastRemove = 0;
         }
     }
@@ -659,7 +658,7 @@ CTxMemPool::WriteFeeEstimates(CAutoFile& fileout) const
         minerPolicyEstimator->Write(fileout);
     }
     catch (const std::exception&) {
-        LogPrintf("CTxMemPool::WriteFeeEstimates() : unable to write policy estimator data (non-fatal)");
+        LogPrintf("CTxMemPool::WriteFeeEstimates(): unable to write policy estimator data (non-fatal)");
         return false;
     }
     return true;
@@ -672,13 +671,13 @@ CTxMemPool::ReadFeeEstimates(CAutoFile& filein)
         int nVersionRequired, nVersionThatWrote;
         filein >> nVersionRequired >> nVersionThatWrote;
         if (nVersionRequired > CLIENT_VERSION)
-            return error("CTxMemPool::ReadFeeEstimates() : up-version (%d) fee estimate file", nVersionRequired);
+            return error("CTxMemPool::ReadFeeEstimates(): up-version (%d) fee estimate file", nVersionRequired);
 
         LOCK(cs);
         minerPolicyEstimator->Read(filein, minRelayFee);
     }
     catch (const std::exception&) {
-        LogPrintf("CTxMemPool::ReadFeeEstimates() : unable to read policy estimator data (non-fatal)");
+        LogPrintf("CTxMemPool::ReadFeeEstimates(): unable to read policy estimator data (non-fatal)");
         return false;
     }
     return true;

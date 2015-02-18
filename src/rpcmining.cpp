@@ -44,7 +44,7 @@ Value GetNetworkHashPS(int lookup, int height) {
 
     // If lookup is -1, then use blocks since last difficulty change.
     if (lookup <= 0)
-        lookup = pb->nHeight % 2016 + 1;
+        lookup = pb->nHeight % Params().Interval() + 1;
 
     // If lookup is larger than chain, then set it to chain length.
     if (lookup > pb->nHeight)
@@ -64,7 +64,7 @@ Value GetNetworkHashPS(int lookup, int height) {
     if (minTime == maxTime)
         return 0;
 
-    uint256 workDiff = pb->nChainWork - pb0->nChainWork;
+    arith_uint256 workDiff = pb->nChainWork - pb0->nChainWork;
     int64_t timeDiff = maxTime - minTime;
 
     return (int64_t)(workDiff.getdouble() / timeDiff);
@@ -88,6 +88,7 @@ Value getnetworkhashps(const Array& params, bool fHelp)
             + HelpExampleRpc("getnetworkhashps", "")
        );
 
+    LOCK(cs_main);
     return GetNetworkHashPS(params.size() > 0 ? params[0].get_int() : 120, params.size() > 1 ? params[1].get_int() : -1);
 }
 
@@ -107,6 +108,7 @@ Value getgenerate(const Array& params, bool fHelp)
             + HelpExampleRpc("getgenerate", "")
         );
 
+    LOCK(cs_main);
     return GetBoolArg("-gen", false);
 }
 
@@ -247,6 +249,9 @@ Value getmininginfo(const Array& params, bool fHelp)
             + HelpExampleRpc("getmininginfo", "")
         );
 
+
+    LOCK(cs_main);
+
     Object obj;
     obj.push_back(Pair("blocks",           (int)chainActive.Height()));
     obj.push_back(Pair("currentblocksize", (uint64_t)nLastBlockSize));
@@ -288,9 +293,9 @@ Value prioritisetransaction(const Array& params, bool fHelp)
             + HelpExampleRpc("prioritisetransaction", "\"txid\", 0.0, 10000")
         );
 
-    uint256 hash;
-    hash.SetHex(params[0].get_str());
+    LOCK(cs_main);
 
+    uint256 hash = ParseHashStr(params[0].get_str(), "txid");
     CAmount nAmount = params[2].get_int64();
 
     mempool.PrioritiseTransaction(hash, params[0].get_str(), params[1].get_real(), nAmount);
@@ -394,7 +399,7 @@ Value getwork(const Array& params, bool fHelp)
         pblock->nBirthdayA = 0;
         pblock->nBirthdayB = 0;
 
-        uint256 hashTarget = uint256().SetCompact(pblock->nBits);
+        arith_uint256 hashTarget = arith_uint256().SetCompact(pblock->nBits);
 		uint256 initHash = pblock->GetHash();
 
 		memcpy( pdata, (char*)pblock, 88);
@@ -537,6 +542,8 @@ Value getblocktemplate(const Array& params, bool fHelp)
             + HelpExampleRpc("getblocktemplate", "")
          );
 
+    LOCK(cs_main);
+
     std::string strMode = "template";
     Value lpval = Value::null;
     if (params.size() > 0)
@@ -618,10 +625,6 @@ Value getblocktemplate(const Array& params, bool fHelp)
         }
 
         // Release the wallet and main lock while waiting
-#ifdef ENABLE_WALLET
-        if(pwalletMain)
-            LEAVE_CRITICAL_SECTION(pwalletMain->cs_wallet);
-#endif
         LEAVE_CRITICAL_SECTION(cs_main);
         {
             checktxtime = boost::get_system_time() + boost::posix_time::minutes(1);
@@ -639,10 +642,6 @@ Value getblocktemplate(const Array& params, bool fHelp)
             }
         }
         ENTER_CRITICAL_SECTION(cs_main);
-#ifdef ENABLE_WALLET
-        if(pwalletMain)
-            ENTER_CRITICAL_SECTION(pwalletMain->cs_wallet);
-#endif
 
         if (!IsRPCRunning())
             throw JSONRPCError(RPC_CLIENT_NOT_CONNECTED, "Shutting down");
@@ -721,7 +720,7 @@ Value getblocktemplate(const Array& params, bool fHelp)
     Object aux;
     aux.push_back(Pair("flags", HexStr(COINBASE_FLAGS.begin(), COINBASE_FLAGS.end())));
 
-    uint256 hashTarget = uint256().SetCompact(pblock->nBits);
+    arith_uint256 hashTarget = arith_uint256().SetCompact(pblock->nBits);
 
     static Array aMutable;
     if (aMutable.empty())
@@ -737,7 +736,6 @@ Value getblocktemplate(const Array& params, bool fHelp)
     result.push_back(Pair("previousblockhash", pblock->hashPrevBlock.GetHex()));
     result.push_back(Pair("transactions", transactions));
     result.push_back(Pair("coinbaseaux", aux));
-// result.push_back(Pair("coinbasevalue", (int64_t)pblock->vtx[0].vout[0].nValue));
 	int64_t _coinbasevalue = 0;
 	for (unsigned int i = 0; i < pblock->vtx[0].vout.size(); i++)
 	{
@@ -838,7 +836,7 @@ Value estimatefee(const Array& params, bool fHelp)
         throw runtime_error(
             "estimatefee nblocks\n"
             "\nEstimates the approximate fee per kilobyte\n"
-            "needed for a transaction to get confirmed\n"
+            "needed for a transaction to begin confirmation\n"
             "within nblocks blocks.\n"
             "\nArguments:\n"
             "1. nblocks     (numeric)\n"
@@ -870,7 +868,7 @@ Value estimatepriority(const Array& params, bool fHelp)
         throw runtime_error(
             "estimatepriority nblocks\n"
             "\nEstimates the approximate priority\n"
-            "a zero-fee transaction needs to get confirmed\n"
+            "a zero-fee transaction needs to begin confirmation\n"
             "within nblocks blocks.\n"
             "\nArguments:\n"
             "1. nblocks     (numeric)\n"

@@ -45,8 +45,6 @@ public:
         DatabaseCache,          // int
         SpendZeroConfChange,    // bool
         Listen,                 // bool
-		EnableTrollbox, // bool
-        TrollName, // QString
         OptionIDRowCount,
     };
 
@@ -68,9 +66,6 @@ public:
     bool getCoinControlFeatures() { return fCoinControlFeatures; }
     const QString& getOverriddenByCommandLine() { return strOverriddenByCommandLine; }
 
-    bool getEnableTrollbox();
-    QString getTrollName() { return trollname; }
-
     /* Restart flag helper */
     void setRestartRequired(bool fRequired);
     bool isRestartRequired();
@@ -85,8 +80,7 @@ private:
     bool fCoinControlFeatures;
     /* settings that were overriden by command-line */
     QString strOverriddenByCommandLine;
-	bool fEnableTrollbox;
-    QString trollname;
+
     /// Add option to list of GUI options overridden through command line/config file
     void addOverriddenOption(const std::string &option);
 

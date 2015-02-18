@@ -8,6 +8,7 @@
 #include "clientmodel.h"
 #include "guiutil.h"
 #include "peertablemodel.h"
+#include "scicon.h"
 
 #include "main.h"
 #include "chainparams.h"
@@ -212,6 +213,7 @@ RPCConsole::RPCConsole(QWidget *parent) :
 #ifndef Q_OS_MAC
     ui->openDebugLogfileButton->setIcon(QIcon(":/icons/export"));
 #endif
+    ui->clearButton->setIcon(QIcon(":/icons/remove"));
 
     // Install event filter for up and down arrow
     ui->lineEdit->installEventFilter(this);
@@ -608,6 +610,7 @@ void RPCConsole::updateNodeDetail(const CNodeCombinedStats *stats)
     ui->peerBytesRecv->setText(FormatBytes(stats->nodeStats.nRecvBytes));
     ui->peerConnTime->setText(GUIUtil::formatDurationStr(GetTime() - stats->nodeStats.nTimeConnected));
     ui->peerPingTime->setText(GUIUtil::formatPingTime(stats->nodeStats.dPingTime));
+    ui->timeoffset->setText(GUIUtil::formatTimeOffset(stats->nodeStats.nTimeOffset));
     ui->peerVersion->setText(QString("%1").arg(stats->nodeStats.nVersion));
     ui->peerSubversion->setText(QString::fromStdString(stats->nodeStats.cleanSubVer));
     ui->peerDirection->setText(stats->nodeStats.fInbound ? tr("Inbound") : tr("Outbound"));

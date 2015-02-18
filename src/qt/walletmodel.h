@@ -111,7 +111,8 @@ public:
         DuplicateAddress,
         TransactionCreationFailed, // Error returned when wallet is still locked
         TransactionCommitFailed,
-        InsaneFee
+        AbsurdFee,
+        PaymentRequestExpired
     };
 
     enum EncryptionStatus
