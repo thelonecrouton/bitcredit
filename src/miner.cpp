@@ -310,7 +310,8 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn)
             if (!CheckInputs(tx, state, view, true, MANDATORY_SCRIPT_VERIFY_FLAGS, true))
                 continue;
 
-            UpdateCoins(tx, state, view, nHeight);
+            CTxUndo txundo;
+            UpdateCoins(tx, state, view, txundo, nHeight);
 
             // Added
             pblock->vtx.push_back(tx);
@@ -375,7 +376,7 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn)
 
         CValidationState state;
         if (!TestBlockValidity(state, *pblock, pindexPrev, false, false))
-            throw std::runtime_error("CreateNewBlock(): TestBlockValidity failed");
+            throw std::runtime_error("CreateNewBlock() : TestBlockValidity failed");
     }
 
     return pblocktemplate.release();
@@ -436,8 +437,10 @@ bool static ScanHash(const CBlockHeader *pblock, uint32_t& nNonce, uint256 *phas
             return true;
 
         // If nothing found after trying for a while, return -1
-        if ((nNonce & 0xfff) == 0)
+        if ((nNonce & 0xffff) == 0)
             return false;
+        if ((nNonce & 0xfff) == 0)
+            boost::this_thread::interruption_point();
     }
 }
 
@@ -495,9 +498,9 @@ void FormatHashBuffers(CBlock* pblock, char* pmidstate, char* pdata, char* phash
 bool ProcessBlockFound(CBlock* pblock, CWallet& wallet, CReserveKey& reservekey)
 {
     uint256 hash = pblock->GetVerifiedHash();
-    arith_uint256 hashTarget = arith_uint256().SetCompact(pblock->nBits);
+    uint256 hashTarget = uint256().SetCompact(pblock->nBits);
 
-    if (UintToArith256(hash) > hashTarget)
+    if (hash > hashTarget)
         return false;
     LogPrintf("%s\n", pblock->ToString());
     LogPrintf("generated %s\n", FormatMoney(pblock->vtx[0].vout[0].nValue));
@@ -506,7 +509,7 @@ bool ProcessBlockFound(CBlock* pblock, CWallet& wallet, CReserveKey& reservekey)
     {
         LOCK(cs_main);
         if (pblock->hashPrevBlock != chainActive.Tip()->GetBlockHash())
-            return error("BitcreditMiner: generated block is stale");
+            return error("BitcreditMiner : generated block is stale");
     }
 
     // Remove key from key pool
@@ -521,7 +524,7 @@ bool ProcessBlockFound(CBlock* pblock, CWallet& wallet, CReserveKey& reservekey)
     // Process this block the same as if we had received it from another node
     CValidationState state;
     if (!ProcessNewBlock(state, NULL, pblock))
-        return error("BitcreditMiner: ProcessNewBlock, block not accepted");
+        return error("BitcreditMiner : ProcessNewBlock, block not accepted");
 
     return true;
 }
@@ -567,7 +570,7 @@ void static BitcreditMiner(CWallet *pwallet)
             // Search
             //
             int64_t nStart = GetTime();
-            arith_uint256 hashTarget = arith_uint256().SetCompact(pblock->nBits);
+            uint256 hashTarget = uint256().SetCompact(pblock->nBits);
             uint256 testHash;
         for (;;)
         {
@@ -581,7 +584,7 @@ void static BitcreditMiner(CWallet *pwallet)
             printf("testHash %s\n", testHash.ToString().c_str());
             printf("Hash Target %s\n", hashTarget.ToString().c_str());
 
-            if(UintToArith256(testHash) < hashTarget){
+            if(testHash<hashTarget){
                 nNonceFound=pblock->nNonce;
                 printf("Found Hash %s\n", testHash.ToString().c_str());
                 break;
@@ -591,7 +594,7 @@ void static BitcreditMiner(CWallet *pwallet)
             if (nNonceFound != (unsigned int) -1)
             {
 
-                if (UintToArith256(testHash) <= hashTarget)
+                if (testHash <= hashTarget)
                 {
                     // Found a solution
 

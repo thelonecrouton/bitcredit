@@ -26,6 +26,8 @@
 #include "json/json_spirit_writer_template.h"
 
 using namespace std;
+using namespace boost;
+using namespace boost::asio;
 using namespace json_spirit;
 
 //! Number of bytes to allocate and read at most at once in post data

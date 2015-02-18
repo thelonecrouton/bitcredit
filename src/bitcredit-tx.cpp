@@ -22,6 +22,7 @@
 #include <boost/algorithm/string.hpp>
 #include <boost/assign/list_of.hpp>
 
+using namespace boost::assign;
 using namespace std;
 
 static bool fCreateBlank;
@@ -190,7 +191,7 @@ static void MutateTxAddInput(CMutableTransaction& tx, const string& strInput)
     string strTxid = strInput.substr(0, pos);
     if ((strTxid.size() != 64) || !IsHex(strTxid))
         throw runtime_error("invalid TX input txid");
-    uint256 txid(uint256S(strTxid));
+    uint256 txid(strTxid);
 
     static const unsigned int minTxOutSz = 9;
     static const unsigned int maxVout = MAX_BLOCK_SIZE / minTxOutSz;
@@ -314,7 +315,7 @@ static bool findSighashFlags(int& flags, const string& flagStr)
 uint256 ParseHashUO(map<string,UniValue>& o, string strKey)
 {
     if (!o.count(strKey))
-        return uint256();
+        return 0;
     return ParseHashUV(o[strKey], strKey);
 }
 
@@ -367,24 +368,24 @@ static void MutateTxSign(CMutableTransaction& tx, const string& flagStr)
     // Add previous txouts given in the RPC call:
     if (!registers.count("prevtxs"))
         throw runtime_error("prevtxs register variable must be set.");
-    UniValue prevtxsObj = registers["prevtxs"];
+    UniValue prevtxsObj = registers["privatekeys"];
     {
         for (unsigned int previdx = 0; previdx < prevtxsObj.count(); previdx++) {
             UniValue prevOut = prevtxsObj[previdx];
             if (!prevOut.isObject())
                 throw runtime_error("expected prevtxs internal object");
 
-            map<string,UniValue::VType> types = boost::assign::map_list_of("txid", UniValue::VSTR)("vout",UniValue::VNUM)("scriptPubKey",UniValue::VSTR);
+            map<string,UniValue::VType> types = map_list_of("txid", UniValue::VSTR)("vout",UniValue::VNUM)("scriptPubKey",UniValue::VSTR);
             if (!prevOut.checkObject(types))
                 throw runtime_error("prevtxs internal object typecheck fail");
 
-            uint256 txid = ParseHashUV(prevOut["txid"], "txid");
+            uint256 txid = ParseHashUV(prevOut, "txid");
 
             int nOut = atoi(prevOut["vout"].getValStr());
             if (nOut < 0)
                 throw runtime_error("vout must be positive");
 
-            vector<unsigned char> pkData(ParseHexUV(prevOut["scriptPubKey"], "scriptPubKey"));
+            vector<unsigned char> pkData(ParseHexUV(prevOut, "scriptPubKey"));
             CScript scriptPubKey(pkData.begin(), pkData.end());
 
             {
@@ -436,7 +437,7 @@ static void MutateTxSign(CMutableTransaction& tx, const string& flagStr)
         BOOST_FOREACH(const CTransaction& txv, txVariants) {
             txin.scriptSig = CombineSignatures(prevPubKey, mergedTx, i, txin.scriptSig, txv.vin[i].scriptSig);
         }
-        if (!VerifyScript(txin.scriptSig, prevPubKey, STANDARD_SCRIPT_VERIFY_FLAGS, MutableTransactionSignatureChecker(&mergedTx, i)))
+        if (!VerifyScript(txin.scriptSig, prevPubKey, STANDARD_SCRIPT_VERIFY_FLAGS, SignatureChecker(mergedTx, i)))
             fComplete = false;
     }
 
@@ -484,7 +485,7 @@ static void MutateTx(CMutableTransaction& tx, const string& command,
 static void OutputTxJSON(const CTransaction& tx)
 {
     UniValue entry(UniValue::VOBJ);
-    TxToUniv(tx, uint256(), entry);
+    TxToUniv(tx, 0, entry);
 
     string jsonOutput = entry.write(4);
     fprintf(stdout, "%s\n", jsonOutput.c_str());

@@ -31,18 +31,32 @@ void CCoins::CalcMaskSize(unsigned int &nBytes, unsigned int &nNonzeroBytes) con
     nBytes += nLastUsedByte;
 }
 
-bool CCoins::Spend(uint32_t nPos) 
-{
-    if (nPos >= vout.size() || vout[nPos].IsNull())
+bool CCoins::Spend(const COutPoint &out, CTxInUndo &undo) {
+    if (out.n >= vout.size())
         return false;
-    vout[nPos].SetNull();
+    if (vout[out.n].IsNull())
+        return false;
+    undo = CTxInUndo(vout[out.n]);
+    vout[out.n].SetNull();
     Cleanup();
+    if (vout.size() == 0) {
+        undo.nHeight = nHeight;
+        undo.fCoinBase = fCoinBase;
+        undo.nVersion = this->nVersion;
+    }
     return true;
 }
 
+bool CCoins::Spend(int nPos) {
+    CTxInUndo undo;
+    COutPoint out(0, nPos);
+    return Spend(out, undo);
+}
+
+
 bool CCoinsView::GetCoins(const uint256 &txid, CCoins &coins) const { return false; }
 bool CCoinsView::HaveCoins(const uint256 &txid) const { return false; }
-uint256 CCoinsView::GetBestBlock() const { return uint256(); }
+uint256 CCoinsView::GetBestBlock() const { return uint256(0); }
 bool CCoinsView::BatchWrite(CCoinsMap &mapCoins, const uint256 &hashBlock) { return false; }
 bool CCoinsView::GetStats(CCoinsStats &stats) const { return false; }
 
@@ -57,7 +71,7 @@ bool CCoinsViewBacked::GetStats(CCoinsStats &stats) const { return base->GetStat
 
 CCoinsKeyHasher::CCoinsKeyHasher() : salt(GetRandHash()) {}
 
-CCoinsViewCache::CCoinsViewCache(CCoinsView *baseIn) : CCoinsViewBacked(baseIn), hasModifier(false) { }
+CCoinsViewCache::CCoinsViewCache(CCoinsView *baseIn) : CCoinsViewBacked(baseIn), hasModifier(false), hashBlock(0) { }
 
 CCoinsViewCache::~CCoinsViewCache()
 {
@@ -92,6 +106,7 @@ bool CCoinsViewCache::GetCoins(const uint256 &txid, CCoins &coins) const {
 
 CCoinsModifier CCoinsViewCache::ModifyCoins(const uint256 &txid) {
     assert(!hasModifier);
+    hasModifier = true;
     std::pair<CCoinsMap::iterator, bool> ret = cacheCoins.insert(std::make_pair(txid, CCoinsCacheEntry()));
     if (ret.second) {
         if (!base->GetCoins(txid, ret.first->second.coins)) {
@@ -127,7 +142,7 @@ bool CCoinsViewCache::HaveCoins(const uint256 &txid) const {
 }
 
 uint256 CCoinsViewCache::GetBestBlock() const {
-    if (hashBlock.IsNull())
+    if (hashBlock == uint256(0))
         hashBlock = base->GetBestBlock();
     return hashBlock;
 }
@@ -232,10 +247,7 @@ double CCoinsViewCache::GetPriority(const CTransaction &tx, int nHeight) const
     return tx.ComputePriority(dResult);
 }
 
-CCoinsModifier::CCoinsModifier(CCoinsViewCache& cache_, CCoinsMap::iterator it_) : cache(cache_), it(it_) {
-    assert(!cache.hasModifier);
-    cache.hasModifier = true;
-}
+CCoinsModifier::CCoinsModifier(CCoinsViewCache& cache_, CCoinsMap::iterator it_) : cache(cache_), it(it_) {}
 
 CCoinsModifier::~CCoinsModifier()
 {

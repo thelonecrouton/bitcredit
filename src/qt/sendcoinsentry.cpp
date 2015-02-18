@@ -9,7 +9,6 @@
 #include "addresstablemodel.h"
 #include "guiutil.h"
 #include "optionsmodel.h"
-#include "scicon.h"
 #include "walletmodel.h"
 
 #include <QApplication>

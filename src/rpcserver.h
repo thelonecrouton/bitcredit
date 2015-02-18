@@ -20,17 +20,8 @@
 #include "json/json_spirit_reader_template.h"
 #include "json/json_spirit_utils.h"
 #include "json/json_spirit_writer_template.h"
-
-class CRPCCommand;
-
-namespace RPCServer
-{
-    void OnStarted(boost::function<void ()> slot);
-    void OnStopped(boost::function<void ()> slot);
-    void OnPreCommand(boost::function<void (const CRPCCommand&)> slot);
-    void OnPostCommand(boost::function<void (const CRPCCommand&)> slot);
-}
-
+#include "script/script.h"
+class CScript;
 class CBlockIndex;
 class CNetAddr;
 class CReserveKey;
@@ -56,7 +47,7 @@ void StartDummyRPCThread();
 void StopRPCThreads();
 /** Query whether RPC is running */
 bool IsRPCRunning();
-
+extern int txrvd, txsnt, totalrvd, totalsnt;
 /** 
  * Set the RPC warmup status.  When this is done, all RPC calls will error out
  * immediately with RPC_IN_WARMUP.
