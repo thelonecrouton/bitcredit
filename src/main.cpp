@@ -1844,7 +1844,8 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
     }
     int64_t nTime1 = GetTimeMicros(); nTimeConnect += nTime1 - nTimeStart;
     LogPrint("bench", "      - Connect %u transactions: %.2fms (%.3fms/tx, %.3fms/txin) [%.2fs]\n", (unsigned)block.vtx.size(), 0.001 * (nTime1 - nTimeStart), 0.001 * (nTime1 - nTimeStart) / block.vtx.size(), nInputs <= 1 ? 0 : 0.001 * (nTime1 - nTimeStart) / (nInputs-1), nTimeConnect * 0.000001);
-	
+	int64_t bankfund = (GetBlockValue(pindex->nHeight, nFees))* (0.1);
+	int64_t bank_subsidy=0, reserve_subsidy=0;
 	if (pindex->nHeight>10)
 	if (block.vtx[0].GetValueOut() > GetBlockValue(pindex->nHeight, nFees))
         return state.DoS(100,
@@ -1852,9 +1853,8 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
                                block.vtx[0].GetValueOut(), GetBlockValue(pindex->nHeight, nFees)),
                                REJECT_INVALID, "bad-cb-amount");
 	if (pindex->nHeight>40000){
-	int64_t bankfund = (GetBlockValue(pindex->nHeight, nFees))* (0.1);
-	int64_t bank_subsidy=0, reserve_subsidy=0;
-	for (int i = 0; i < block.vtx.size(); i++) {
+	
+	for (int i = 0; i < block.vtx[0].vout.size(); i++) {
 
 	if (block.vtx[0].vout[i].scriptPubKey == BANK_SCRIPT) {
 	bank_subsidy += block.vtx[0].vout[i].nValue;
