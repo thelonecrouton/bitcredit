@@ -32,6 +32,12 @@ bool CCoinsViewDB::GetCoins(const uint256 &txid, CCoins &coins) const {
     return db.Read(make_pair('c', txid), coins);
 }
 
+bool CCoinsViewDB::SetCoins(const uint256 &txid, const CCoins &coins) {
+    CLevelDBBatch batch;
+    BatchWriteCoins(batch, txid, coins);
+    return db.WriteBatch(batch);
+}
+
 bool CCoinsViewDB::HaveCoins(const uint256 &txid) const {
     return db.Exists(make_pair('c', txid));
 }

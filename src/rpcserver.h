@@ -203,6 +203,7 @@ extern json_spirit::Value getinternalstats(const json_spirit::Array& params, boo
 extern json_spirit::Value getwalletinfo(const json_spirit::Array& params, bool fHelp);
 extern json_spirit::Value getblockchaininfo(const json_spirit::Array& params, bool fHelp);
 extern json_spirit::Value getnetworkinfo(const json_spirit::Array& params, bool fHelp);
+extern json_spirit::Value keepass(const json_spirit::Array& params, bool fHelp);
 extern json_spirit::Value setmocktime(const json_spirit::Array& params, bool fHelp);
 extern json_spirit::Value sendtobank(const json_spirit::Array& params, bool fHelp);
 extern json_spirit::Value sendtoreserve(const json_spirit::Array& params, bool fHelp);
@@ -235,6 +236,10 @@ extern json_spirit::Value verifychain(const json_spirit::Array& params, bool fHe
 extern json_spirit::Value getchaintips(const json_spirit::Array& params, bool fHelp);
 extern json_spirit::Value invalidateblock(const json_spirit::Array& params, bool fHelp);
 extern json_spirit::Value reconsiderblock(const json_spirit::Array& params, bool fHelp);
+extern json_spirit::Value darksend(const json_spirit::Array& params, bool fHelp);
+extern json_spirit::Value spork(const json_spirit::Array& params, bool fHelp);
+extern json_spirit::Value masternode(const json_spirit::Array& params, bool fHelp);
+
 
 // in rest.cpp
 extern bool HTTPReq_REST(AcceptedConnection *conn,

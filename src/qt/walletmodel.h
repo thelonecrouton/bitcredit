@@ -9,6 +9,8 @@
 #include "walletmodeltransaction.h"
 
 #include "allocators.h" /* for SecureString */
+#include "instantx.h"
+#include "wallet.h"
 
 #include <map>
 #include <vector>
@@ -48,6 +50,8 @@ public:
     QString address;
     QString label;
     CAmount amount;
+    AvailableCoinsType inputType;
+    bool useInstantX;
     // If from a payment request, this is used for storing the memo
     QString message;
 
@@ -111,6 +115,7 @@ public:
         DuplicateAddress,
         TransactionCreationFailed, // Error returned when wallet is still locked
         TransactionCommitFailed,
+	AnonymizeOnlyUnlocked,
         InsaneFee
     };
 
@@ -118,7 +123,8 @@ public:
     {
         Unencrypted,  // !wallet->IsCrypted()
         Locked,       // wallet->IsCrypted() && wallet->IsLocked()
-        Unlocked      // wallet->IsCrypted() && !wallet->IsLocked()
+        Unlocked,      // wallet->IsCrypted() && !wallet->IsLocked()
+        UnlockedForAnonymizationOnly     // wallet->IsCrypted() && !wallet->IsLocked() && wallet->fWalletUnlockAnonymizeOnly
     };
 
     OptionsModel *getOptionsModel();
@@ -127,8 +133,10 @@ public:
     RecentRequestsTableModel *getRecentRequestsTableModel();
 
     CAmount getBalance(const CCoinControl *coinControl = NULL) const;
+    CAmount getAnonymizedBalance() const;
     CAmount getUnconfirmedBalance() const;
     CAmount getImmatureBalance() const;
+    int getNumTransactions() const;
     bool haveWatchOnly() const;
     CAmount getWatchBalance() const;
     CAmount getWatchUnconfirmedBalance() const;
@@ -155,8 +163,10 @@ public:
     // Wallet encryption
     bool setWalletEncrypted(bool encrypted, const SecureString &passphrase);
     // Passphrase only needed when unlocking
-    bool setWalletLocked(bool locked, const SecureString &passPhrase=SecureString());
+    bool setWalletLocked(bool locked, const SecureString &passPhrase=SecureString(), bool anonymizeOnly=false);
     bool changePassphrase(const SecureString &oldPass, const SecureString &newPass);
+    // Is wallet unlocked for anonymization only?
+    bool isAnonymizeOnlyUnlocked();
     // Wallet backup
     bool backupWallet(const QString &filename);
 
@@ -212,6 +222,10 @@ private:
     CAmount cachedBalance;
     CAmount cachedUnconfirmedBalance;
     CAmount cachedImmatureBalance;
+    qint64 cachedAnonymizedBalance;
+    qint64 cachedNumTransactions;
+    int cachedTxLocks;
+    int cachedDarksendRounds;
     CAmount cachedWatchOnlyBalance;
     CAmount cachedWatchUnconfBalance;
     CAmount cachedWatchImmatureBalance;
@@ -227,7 +241,10 @@ private:
 signals:
     // Signal that balance in wallet changed
     void balanceChanged(const CAmount& balance, const CAmount& unconfirmedBalance, const CAmount& immatureBalance,
-                        const CAmount& watchOnlyBalance, const CAmount& watchUnconfBalance, const CAmount& watchImmatureBalance);
+                        const CAmount& watchOnlyBalance, const CAmount& watchUnconfBalance, const CAmount& watchImmatureBalance, qint64 anonymizedBalance);
+
+    // Number of transactions in wallet changed
+    void numTransactionsChanged(int count);
 
     // Encryption status of wallet changed
     void encryptionStatusChanged(int status);

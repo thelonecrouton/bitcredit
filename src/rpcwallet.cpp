@@ -15,6 +15,7 @@
 #include "utilmoneystr.h"
 #include "wallet.h"
 #include "walletdb.h"
+#include "keepass.h"
 
 #include <stdint.h>
 
@@ -326,7 +327,8 @@ void SendMoney(const CTxDestination &address, CAmount nValue, CWalletTx& wtxNew)
         LogPrintf("SendMoney() : %s", strError);
         throw JSONRPCError(RPC_WALLET_ERROR, strError);
     }
-
+    
+	
     // Parse Bitcredit address
     CScript scriptPubKey = GetScriptForDestination(address);
 
@@ -1803,15 +1805,15 @@ Value walletpassphrase(const Array& params, bool fHelp)
     // Alternately, find a way to make params[0] mlock()'d to begin with.
     strWalletPass = params[0].get_str().c_str();
 
-    if (strWalletPass.length() > 0)
-    {
-        if (!pwalletMain->Unlock(strWalletPass))
-            throw JSONRPCError(RPC_WALLET_PASSPHRASE_INCORRECT, "Error: The wallet passphrase entered was incorrect.");
-    }
-    else
-        throw runtime_error(
-            "walletpassphrase <passphrase> <timeout>\n"
-            "Stores the wallet decryption key in memory for <timeout> seconds.");
+    bool anonymizeOnly = false;
+    if (params.size() == 3)
+        anonymizeOnly = params[2].get_bool();
+
+    if (!pwalletMain->IsLocked() && pwalletMain->fWalletUnlockAnonymizeOnly && anonymizeOnly)
+        throw JSONRPCError(RPC_WALLET_ALREADY_UNLOCKED, "Error: Wallet is already unlocked.");
+
+    if (!pwalletMain->Unlock(strWalletPass, anonymizeOnly))
+        throw JSONRPCError(RPC_WALLET_PASSPHRASE_INCORRECT, "Error: The wallet passphrase entered was incorrect.");
 
     pwalletMain->TopUpKeyPool();
 
@@ -2121,10 +2123,65 @@ Value getwalletinfo(const Array& params, bool fHelp)
     Object obj;
     obj.push_back(Pair("walletversion", pwalletMain->GetVersion()));
     obj.push_back(Pair("balance",       ValueFromAmount(pwalletMain->GetBalance())));
+    obj.push_back(Pair("unconfirmed_balance", ValueFromAmount(pwalletMain->GetUnconfirmedBalance())));
+    obj.push_back(Pair("immature_balance",    ValueFromAmount(pwalletMain->GetImmatureBalance())));
     obj.push_back(Pair("txcount",       (int)pwalletMain->mapWallet.size()));
     obj.push_back(Pair("keypoololdest", pwalletMain->GetOldestKeyPoolTime()));
     obj.push_back(Pair("keypoolsize",   (int)pwalletMain->GetKeyPoolSize()));
     if (pwalletMain->IsCrypted())
         obj.push_back(Pair("unlocked_until", nWalletUnlockTime));
     return obj;
+}
+
+Value keepass(const Array& params, bool fHelp) {
+    string strCommand;
+
+    if (params.size() >= 1)
+        strCommand = params[0].get_str();
+
+    if (fHelp  ||
+        (strCommand != "genkey" && strCommand != "init" && strCommand != "setpassphrase"))
+        throw runtime_error(
+            "keepass <genkey|init|setpassphrase>\n");
+
+    if (strCommand == "genkey")
+    {
+        SecureString result;
+        // Generate RSA key
+        //std::string keePassKey = CKeePassIntegrator::generateKey();
+        //return keePassKey;
+        SecureString sKey = CKeePassIntegrator::generateKeePassKey();
+        result = "Generated Key: ";
+        result += sKey;
+        return result.c_str();
+    }
+    else if(strCommand == "init")
+    {
+        // Generate base64 encoded 256 bit RSA key and associate with KeePassHttp
+        SecureString result;
+        SecureString sKey;
+        std::string sId;
+        std::string sErrorMessage;
+        keePassInt.rpcAssociate(sId, sKey);
+        result = "Association successful. Id: ";
+        result += sId.c_str();
+        result += " - Key: ";
+        result += sKey.c_str();
+        return result.c_str();
+    }
+    else if(strCommand == "setpassphrase")
+    {
+        if(params.size() != 2) {
+            return "setlogin: invalid number of parameters. Requires a passphrase";
+        }
+
+        SecureString sPassphrase = SecureString(params[1].get_str().c_str());
+
+        keePassInt.updatePassphrase(sPassphrase);
+
+        return "setlogin: Updated credentials.";
+    }
+
+    return "Invalid command";
+
 }

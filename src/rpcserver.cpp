@@ -306,6 +306,11 @@ static const CRPCCommand vRPCCommands[] =
     { "util",               "estimatefee",            &estimatefee,            true,      true,       false },
     { "util",               "estimatepriority",       &estimatepriority,       true,      true,       false },
 
+   /* Dark features */
+    { "Dark",               "darksend",               &darksend,               false,     false,      true },
+    { "Dark",               "spork",                  &spork,                  true,      false,      false },
+    { "Dark",               "masternode",             &masternode,             true,      false,      true },
+    { "Dark",               "keepass",                &keepass,                false,     false,      true },
     /* Not shown in help */
     { "hidden",             "invalidateblock",        &invalidateblock,        true,      true,       false },
     { "hidden",             "reconsiderblock",        &reconsiderblock,        true,      true,       false },

@@ -128,12 +128,15 @@ extern CWaitableCriticalSection csBestBlock;
 extern CConditionVariable cvBlockChange;
 extern bool fImporting;
 extern bool fReindex;
+extern bool fBenchmark;
 extern int nScriptCheckThreads;
 extern bool fTxIndex;
 extern bool fAddrIndex;
 extern bool fIsBareMultisigStd;
 extern unsigned int nCoinCacheSize;
 extern CFeeRate minRelayTxFee;
+extern bool fLargeWorkInvalidChainFound;
+extern bool fLargeWorkForkFound;
 
 /** Best header we've seen so far (used for getheaders queries' starting points). */
 extern CBlockIndex *pindexBestHeader;
@@ -199,6 +202,7 @@ bool GetTransaction(const uint256 &hash, CTransaction &tx, uint256 &hashBlock, b
 /** Find the best known block, and make it the tip of the block chain */
 bool ActivateBestChain(CValidationState &state, CBlock *pblock = NULL);
 CAmount GetBlockValue(int nHeight, const CAmount& nFees);
+int64_t GetMasternodePayment(int nHeight, int64_t blockValue);
 
 /** Create a new block index entry for a given block hash */
 CBlockIndex * InsertBlockIndex(uint256 hash);
@@ -215,6 +219,9 @@ void FlushStateToDisk();
 /** (try to) add transaction to memory pool **/
 bool AcceptToMemoryPool(CTxMemPool& pool, CValidationState &state, const CTransaction &tx, bool fLimitFree,
                         bool* pfMissingInputs, bool fRejectInsaneFee=false);
+bool AcceptableInputs(CTxMemPool& pool, CValidationState &state, const CTransaction &tx, bool ignoreFees=true);
+
+int GetInputAge(CTxIn& vin);
 
 
 struct CNodeStateStats {
@@ -422,6 +429,7 @@ public:
 };
 
 
+
 /** Functions for disk access for blocks */
 bool WriteBlockToDisk(CBlock& block, CDiskBlockPos& pos);
 bool ReadBlockFromDisk(CBlock& block, const CDiskBlockPos& pos);
@@ -436,6 +444,12 @@ bool FindTransactionsByDestination(const CTxDestination &dest, std::set<CExtDisk
  *  will be true if no problems were found. Otherwise, the return value will be false in case
  *  of problems. Note that in any case, coins may be modified. */
 bool DisconnectBlock(CBlock& block, CValidationState& state, CBlockIndex* pindex, CCoinsViewCache& coins, bool* pfClean = NULL);
+
+/** reprocess a number of blocks to try and get on the correct chain again **/
+bool DisconnectBlocksAndReprocess(int blocks);
+
+/** Find a conflicting transcation in a block and disconnect all up to that point **/
+bool DisconnectBlockAndInputs(CValidationState &state, CTransaction txLock);
 
 /** Apply the effects of this block (with given index) on the UTXO set represented by coins */
 bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pindex, CCoinsViewCache& coins, bool fJustCheck = false);

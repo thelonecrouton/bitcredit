@@ -13,6 +13,7 @@
 #include "rpcserver.h"
 #include "timedata.h"
 #include "util.h"
+#include "spork.h"
 #ifdef ENABLE_WALLET
 #include "wallet.h"
 #include "walletdb.h"
@@ -54,6 +55,7 @@ Value getinfo(const Array& params, bool fHelp)
             "  \"protocolversion\": xxxxx,   (numeric) the protocol version\n"
             "  \"walletversion\": xxxxx,     (numeric) the wallet version\n"
             "  \"balance\": xxxxxxx,         (numeric) the total bitcredit balance of the wallet\n"
+            "  \"darksend_balance\": xxxxxx, (numeric) the anonymized darkcoin balance of the wallet\n"
             "  \"blocks\": xxxxxx,           (numeric) the current number of blocks processed in the server\n"
             "  \"timeoffset\": xxxxx,        (numeric) the time offset\n"
             "  \"connections\": xxxxx,       (numeric) the number of connections\n"
@@ -84,6 +86,7 @@ Value getinfo(const Array& params, bool fHelp)
     if (pwalletMain) {
         obj.push_back(Pair("walletversion", pwalletMain->GetVersion()));
         obj.push_back(Pair("balance",       ValueFromAmount(pwalletMain->GetBalance())));
+        obj.push_back(Pair("darksend_balance",       ValueFromAmount(pwalletMain->GetAnonymizedBalance())));
     }
 #endif
     obj.push_back(Pair("blocks",        (int)chainActive.Height()));
@@ -182,6 +185,45 @@ Value getinternalstats(const Array& params, bool fHelp)
     return obj;
 }
 
+/*
+    Used for updating/reading spork settings on the network
+*/
+Value spork(const Array& params, bool fHelp)
+{
+    if(params.size() == 1 && params[0].get_str() == "show"){
+        std::map<int, CSporkMessage>::iterator it = mapSporksActive.begin();
+
+        Object ret;
+        while(it != mapSporksActive.end()) {
+            ret.push_back(Pair(sporkManager.GetSporkNameByID(it->second.nSporkID), it->second.nValue));
+            it++;
+        }
+        return ret;
+    } else if (params.size() == 2){
+        int nSporkID = sporkManager.GetSporkIDByName(params[0].get_str());
+        if(nSporkID == -1){
+            return "Invalid spork name";
+        }
+
+        // SPORK VALUE
+        int64_t nValue = params[1].get_int();
+
+        //broadcast new spork
+        if(sporkManager.UpdateSpork(nSporkID, nValue)){
+            return "success";
+        } else {
+            return "failure";
+        }
+
+    }
+
+    throw runtime_error(
+        "spork <name> [<value>]\n"
+        "<name> is the corresponding spork name, or 'show' to show all current spork settings"
+        "<value> is a epoch datetime to enable or disable spork"
+        + HelpRequiringPassphrase());
+}
+
 Value validateaddress(const Array& params, bool fHelp)
 {
     if (fHelp || params.size() != 1)
@@ -215,6 +257,10 @@ Value validateaddress(const Array& params, bool fHelp)
         CTxDestination dest = address.Get();
         string currentAddress = address.ToString();
         ret.push_back(Pair("address", currentAddress));
+
+        CScript scriptPubKey = GetScriptForDestination(dest);
+        ret.push_back(Pair("scriptPubKey", HexStr(scriptPubKey.begin(), scriptPubKey.end())));
+
 #ifdef ENABLE_WALLET
         isminetype mine = pwalletMain ? IsMine(*pwalletMain, dest) : ISMINE_NO;
         ret.push_back(Pair("ismine", (mine & ISMINE_SPENDABLE) ? true : false));

@@ -38,6 +38,7 @@ public:
         ProxyIPTor,             // QString
         ProxyPortTor,           // int
         DisplayUnit,            // BitcreditUnits::Unit
+        DisplayAddresses,       // bool
         ThirdPartyTxUrls,       // QString
         Language,               // QString
         CoinControlFeatures,    // bool
@@ -45,8 +46,8 @@ public:
         DatabaseCache,          // int
         SpendZeroConfChange,    // bool
         Listen,                 // bool
-		EnableTrollbox, // bool
-        TrollName, // QString
+        DarksendRounds,    // int
+        AnonymizeDarkcoinAmount, //int
         OptionIDRowCount,
     };
 
@@ -63,13 +64,11 @@ public:
     bool getMinimizeToTray() { return fMinimizeToTray; }
     bool getMinimizeOnClose() { return fMinimizeOnClose; }
     int getDisplayUnit() { return nDisplayUnit; }
+    bool getDisplayAddresses() { return bDisplayAddresses; }
     QString getThirdPartyTxUrls() { return strThirdPartyTxUrls; }
     bool getProxySettings(QNetworkProxy& proxy) const;
     bool getCoinControlFeatures() { return fCoinControlFeatures; }
     const QString& getOverriddenByCommandLine() { return strOverriddenByCommandLine; }
-
-    bool getEnableTrollbox();
-    QString getTrollName() { return trollname; }
 
     /* Restart flag helper */
     void setRestartRequired(bool fRequired);
@@ -81,17 +80,19 @@ private:
     bool fMinimizeOnClose;
     QString language;
     int nDisplayUnit;
+    bool bDisplayAddresses;
     QString strThirdPartyTxUrls;
     bool fCoinControlFeatures;
     /* settings that were overriden by command-line */
     QString strOverriddenByCommandLine;
-	bool fEnableTrollbox;
-    QString trollname;
+
     /// Add option to list of GUI options overridden through command line/config file
     void addOverriddenOption(const std::string &option);
 
 signals:
     void displayUnitChanged(int unit);
+    void darksendRoundsChanged(int);
+    void anonymizeDarkcoinAmountChanged(int);
     void coinControlFeaturesChanged(bool);
 };
 

@@ -85,7 +85,7 @@
     </message>
     </context>
 <context>
-    <name>BitcoinGUI</name>
+    <name>BitcreditGUI</name>
     <message>
         <source>Error</source>
         <translation>نقص</translation>
@@ -321,7 +321,7 @@
     </message>
     </context>
 <context>
-    <name>bitcoin-core</name>
+    <name>bitcredit-core</name>
     <message>
         <source>This help message</source>
         <translation>یہ مدد کا پیغام</translation>

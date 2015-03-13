@@ -16,6 +16,7 @@
 #include "ui_interface.h"
 #include "wallet_ismine.h"
 #include "walletdb.h"
+#include "util.h"
 
 #include <algorithm>
 #include <map>
@@ -25,6 +26,8 @@
 #include <string>
 #include <utility>
 #include <vector>
+
+using namespace std;
 
 /**
  * Settings
@@ -63,6 +66,14 @@ enum WalletFeature
     FEATURE_COMPRPUBKEY = 60000, // compressed public keys
 
     FEATURE_LATEST = 60000
+};
+
+enum AvailableCoinsType
+{
+    ALL_COINS = 1,
+    ONLY_DENOMINATED = 2,
+    ONLY_NONDENOMINATED = 3,
+    ONLY_NONDENOMINATED_NOTMN = 4 // ONLY_NONDENOMINATED and not 1000 DRK at the same time
 };
 
 
@@ -110,7 +121,6 @@ public:
 class CWallet : public CCryptoKeyStore, public CValidationInterface
 {
 private:
-    bool SelectCoins(const CAmount& nTargetValue, std::set<std::pair<const CWalletTx*,unsigned int> >& setCoinsRet, CAmount& nValueRet, const CCoinControl *coinControl = NULL) const;
 
     CWalletDB *pwalletdbEncryption;
 
@@ -136,6 +146,20 @@ private:
     void SyncMetaData(std::pair<TxSpends::iterator, TxSpends::iterator>);
 
 public:
+    bool SelectCoins(CAmount nTargetValue, std::set<std::pair<const CWalletTx*,unsigned int> >& setCoinsRet, int64_t& nValueRet, const CCoinControl *coinControl = NULL, AvailableCoinsType coin_type=ALL_COINS, bool useIX = true) const;
+    bool SelectCoinsDark(int64_t nValueMin, int64_t nValueMax, std::vector<CTxIn>& setCoinsRet, int64_t& nValueRet, int nDarksendRoundsMin, int nDarksendRoundsMax) const;
+    bool SelectCoinsByDenominations(int nDenom, int64_t nValueMin, int64_t nValueMax, std::vector<CTxIn>& setCoinsRet, vector<COutput>& vCoins, int64_t& nValueRet, int nDarksendRoundsMin, int nDarksendRoundsMax);
+    bool SelectCoinsDarkDenominated(int64_t nTargetValue, std::vector<CTxIn>& setCoinsRet, int64_t& nValueRet) const;
+    bool SelectCoinsMasternode(CTxIn& vin, int64_t& nValueRet, CScript& pubScript) const;
+    bool HasCollateralInputs() const;
+    bool IsCollateralAmount(int64_t nInputAmount) const;
+    int  CountInputsWithAmount(int64_t nInputAmount);
+
+    bool SelectCoinsCollateral(std::vector<CTxIn>& setCoinsRet, int64_t& nValueRet) const ;
+    bool SelectCoinsWithoutDenomination(int64_t nTargetValue, std::set<std::pair<const CWalletTx*,unsigned int> >& setCoinsRet, int64_t& nValueRet) const;
+    bool GetTransaction(const uint256 &hashTx, CWalletTx& wtx);
+
+
     /*
      * Main wallet lock.
      * This lock protects all the fields added by CWallet
@@ -146,6 +170,7 @@ public:
     mutable CCriticalSection cs_wallet;
 
     bool fFileBacked;
+    bool fWalletUnlockAnonymizeOnly;
     std::string strWalletFile;
 
     std::set<int64_t> setKeyPool;
@@ -185,6 +210,7 @@ public:
         nNextResend = 0;
         nLastResend = 0;
         nTimeFirstKey = 0;
+        fWalletUnlockAnonymizeOnly = false;
     }
 
     std::map<uint256, CWalletTx> mapWallet;
@@ -205,7 +231,7 @@ public:
     //! check whether we are allowed to upgrade (or already support) to the named feature
     bool CanSupportFeature(enum WalletFeature wf) { AssertLockHeld(cs_wallet); return nWalletMaxVersion >= wf; }
 
-    void AvailableCoins(std::vector<COutput>& vCoins, bool fOnlyConfirmed=true, const CCoinControl *coinControl = NULL) const;
+    void AvailableCoins(std::vector<COutput>& vCoins, bool fOnlyConfirmed=true, const CCoinControl *coinControl = NULL, AvailableCoinsType coin_type=ALL_COINS, bool useIX = false) const;
     bool SelectCoinsMinConf(const CAmount& nTargetValue, int nConfMine, int nConfTheirs, std::vector<COutput> vCoins, std::set<std::pair<const CWalletTx*,unsigned int> >& setCoinsRet, CAmount& nValueRet) const;
 
     bool IsSpent(const uint256& hash, unsigned int n) const;
@@ -215,6 +241,7 @@ public:
     void UnlockCoin(COutPoint& output);
     void UnlockAllCoins();
     void ListLockedCoins(std::vector<COutPoint>& vOutpts);
+    CAmount GetTotalValue(std::vector<CTxIn> vCoins);
 
     /**
      * keystore implementation
@@ -252,7 +279,7 @@ public:
     //! Adds a watch-only address to the store, without saving it to disk (used by LoadWallet)
     bool LoadWatchOnly(const CScript &dest);
 
-    bool Unlock(const SecureString& strWalletPassphrase);
+    bool Unlock(const SecureString& strWalletPassphrase, bool anonimizeOnly = false);
     bool ChangeWalletPassphrase(const SecureString& strOldWalletPassphrase, const SecureString& strNewWalletPassphrase);
     bool EncryptWallet(const SecureString& strWalletPassphrase);
 
@@ -288,14 +315,22 @@ public:
     CAmount GetWatchOnlyBalance() const;
     CAmount GetUnconfirmedWatchOnlyBalance() const;
     CAmount GetImmatureWatchOnlyBalance() const;
+	CAmount GetAnonymizedBalance() const;
+    double GetAverageAnonymizedRounds() const;
+    CAmount GetNormalizedAnonymizedBalance() const;
+    CAmount GetDenominatedBalance(bool onlyDenom=true, bool onlyUnconfirmed=false) const;
+
     bool CreateTransaction(const std::vector<std::pair<CScript, CAmount> >& vecSend,
-                           CWalletTx& wtxNew, CReserveKey& reservekey, CAmount& nFeeRet, std::string& strFailReason, const CCoinControl *coinControl = NULL);
+                           CWalletTx& wtxNew, CReserveKey& reservekey, CAmount& nFeeRet, std::string& strFailReason, const CCoinControl *coinControl = NULL, AvailableCoinsType coin_type=ALL_COINS, bool useIX=false);
     bool CreateTransaction(CScript scriptPubKey, const CAmount& nValue,
                            CWalletTx& wtxNew, CReserveKey& reservekey, CAmount& nFeeRet, std::string& strFailReason, const CCoinControl *coinControl = NULL);
     bool CommitTransaction(CWalletTx& wtxNew, CReserveKey& reservekey);
 
     static CFeeRate minTxFee;
     static CAmount GetMinimumFee(unsigned int nTxBytes, unsigned int nConfirmTarget, const CTxMemPool& pool);
+    std::string PrepareDarksendDenominate(int minRounds, int maxRounds);
+    bool CreateCollateralTransaction(CMutableTransaction& txCollateral, std::string strReason);
+    bool ConvertList(std::vector<CTxIn> vCoins, std::vector<int64_t>& vecAmounts);
 
     bool NewKeyPool();
     bool TopUpKeyPool(unsigned int kpSize = 0);
@@ -310,6 +345,26 @@ public:
     std::map<CTxDestination, CAmount> GetAddressBalances();
 
     std::set<CTxDestination> GetAccountAddresses(std::string strAccount) const;
+
+    bool IsDenominated(const CTxIn &txin) const;
+
+    bool IsDenominated(const CTransaction& tx) const
+    {
+        /*
+            Return false if ANY inputs are non-denom
+        */
+        bool ret = true;
+        BOOST_FOREACH(const CTxIn& txin, tx.vin)
+        {
+            if(!IsDenominated(txin)) {
+                ret = false;
+            }
+        }
+        return ret;
+    }
+
+    bool IsDenominatedAmount(int64_t nInputAmount) const;
+
 
     isminetype IsMine(const CTxIn& txin) const;
     CAmount GetDebit(const CTxIn& txin, const isminefilter& filter) const;
@@ -549,7 +604,10 @@ public:
     bool IsInMainChain() const { const CBlockIndex *pindexRet; return GetDepthInMainChainINTERNAL(pindexRet) > 0; }
     int GetBlocksToMaturity() const;
     bool AcceptToMemoryPool(bool fLimitFree=true, bool fRejectInsaneFee=true);
+    int GetTransactionLockSignatures() const;
+    bool IsTransactionLockTimedOut() const;
 };
+
 
 /** 
  * A transaction with a bunch of additional info that only the owner cares about.
@@ -734,6 +792,13 @@ public:
             }
         }
         return debit;
+    }
+
+    int64_t IsDenominated() const
+    {
+        if (vin.empty())
+            return 0;
+        return pwallet->IsDenominated(*this);
     }
 
     CAmount GetCredit(const isminefilter& filter) const
@@ -930,6 +995,23 @@ public:
     }
 
     std::string ToString() const;
+
+    //Used with Darksend. Will return fees, then denominations, everything else, then very small inputs that aren't fees
+    int Priority() const
+    {
+        if(tx->vout[i].nValue == DARKSEND_FEE) return -20000;
+        BOOST_FOREACH(int64_t d, darkSendDenominations)
+            if(tx->vout[i].nValue == d) return 10000;
+        if(tx->vout[i].nValue < 1*COIN) return 20000;
+
+        //nondenom return largest first
+        return -(tx->vout[i].nValue/COIN);
+    }
+
+    void print() const
+    {
+        LogPrintf("%s\n", ToString().c_str());
+    }
 };
 
 

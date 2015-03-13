@@ -109,7 +109,7 @@
     </message>
     </context>
 <context>
-    <name>BitcoinGUI</name>
+    <name>BitcreditGUI</name>
     <message>
         <source>Synchronizing with network...</source>
         <translation>Sinchroniseer met die netwerk ...</translation>
@@ -147,8 +147,8 @@
         <translation>&amp;Opsies</translation>
     </message>
     <message>
-        <source>Bitcoin</source>
-        <translation>Bitcoin</translation>
+        <source>Bitcredit</source>
+        <translation>Bitcredit</translation>
     </message>
     <message>
         <source>Wallet</source>
@@ -633,7 +633,7 @@
     <name>WalletView</name>
     </context>
 <context>
-    <name>bitcoin-core</name>
+    <name>bitcredit-core</name>
     <message>
         <source>Options:</source>
         <translation>Opsies:</translation>

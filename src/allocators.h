@@ -15,6 +15,10 @@
 #include <boost/thread/once.hpp>
 
 #include <openssl/crypto.h> // for OPENSSL_cleanse()
+#include <boost/date_time/posix_time/posix_time.hpp>
+#include <openssl/bio.h>
+#include <openssl/evp.h>
+#include <openssl/buffer.h>
 
 /**
  * Thread-safe class to keep track of locked (ie, non-swappable) memory pages.

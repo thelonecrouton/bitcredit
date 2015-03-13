@@ -19,7 +19,7 @@
 #ifdef ENABLE_WALLET
 #include "wallet.h"
 #endif
-
+#include "masternode.h"
 #include <boost/thread.hpp>
 #include <boost/tuple/tuple.hpp>
 
@@ -116,7 +116,7 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn)
     // -blockversion=N to test forking scenarios
     if (Params().MineBlocksOnDemand())
         pblock->nVersion = GetArg("-blockversion", pblock->nVersion);
-
+	int payments = 1;
     // Create coinbase tx
     CMutableTransaction txNew;
     txNew.vin.resize(1);
@@ -159,6 +159,13 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn)
     unsigned int nBlockMinSize = GetArg("-blockminsize", DEFAULT_BLOCK_MIN_SIZE);
     nBlockMinSize = std::min(nBlockMaxSize, nBlockMinSize);
 
+    // start masternode payments
+       bool bMasterNodePayment = false;
+
+    if (GetTimeMicros() > START_MASTERNODE_PAYMENTS)
+         bMasterNodePayment = true;
+        
+
     // Collect memory pool transactions into the block
     CAmount nFees = 0;
 
@@ -167,6 +174,35 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn)
         CBlockIndex* pindexPrev = chainActive.Tip();
         const int nHeight = pindexPrev->nHeight + 1;
         CCoinsViewCache view(pcoinsTip);
+
+        if(bMasterNodePayment) {
+            bool hasPayment = true;
+            //spork
+            if(!masternodePayments.GetBlockPayee(pindexPrev->nHeight+1, pblock->payee)){
+                //no masternode detected
+                int winningNode = GetCurrentMasterNode(1);
+                if(winningNode >= 0){
+                    pblock->payee =GetScriptForDestination(vecMasternodes[winningNode].pubkey.GetID());
+                } else {
+                    LogPrintf("CreateNewBlock: Failed to detect masternode to pay\n");
+                    hasPayment = false;
+                }
+            }
+
+            if(hasPayment){
+                payments++;
+                txNew.vout.resize(payments);
+
+                txNew.vout[payments-1].scriptPubKey = pblock->payee;
+                txNew.vout[payments-1].nValue = 0;
+
+                CTxDestination address1;
+                ExtractDestination(pblock->payee, address1);
+                CBitcreditAddress address2(address1);
+
+                LogPrintf("Masternode payment to %s\n", address2.ToString().c_str());
+            }
+        }
 
         // Priority order to process transactions
         list<COrphan> vOrphan; // list memory doesn't move

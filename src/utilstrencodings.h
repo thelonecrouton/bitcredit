@@ -12,6 +12,18 @@
 #include <stdint.h>
 #include <string>
 #include <vector>
+#include "serialize.h"
+#include "allocators.h"
+
+
+#include <boost/date_time/posix_time/posix_time.hpp>
+#include <openssl/bio.h>
+#include <openssl/evp.h>
+#include <openssl/buffer.h>
+#include <openssl/crypto.h> // for OPENSSL_cleanse()
+#include <openssl/rand.h>
+#include <openssl/bn.h>
+
 
 #define BEGIN(a)            ((char*)&(a))
 #define END(a)              ((char*)&((&(a))[1]))
@@ -31,10 +43,14 @@ std::vector<unsigned char> DecodeBase64(const char* p, bool* pfInvalid = NULL);
 std::string DecodeBase64(const std::string& str);
 std::string EncodeBase64(const unsigned char* pch, size_t len);
 std::string EncodeBase64(const std::string& str);
+SecureString DecodeBase64Secure(const SecureString& input);
+SecureString EncodeBase64Secure(const SecureString& input);
 std::vector<unsigned char> DecodeBase32(const char* p, bool* pfInvalid = NULL);
 std::string DecodeBase32(const std::string& str);
 std::string EncodeBase32(const unsigned char* pch, size_t len);
 std::string EncodeBase32(const std::string& str);
+bool WildcardMatch(const char* psz, const char* mask);
+bool WildcardMatch(const std::string& str, const std::string& mask);
 
 std::string i64tostr(int64_t n);
 std::string itostr(int n);

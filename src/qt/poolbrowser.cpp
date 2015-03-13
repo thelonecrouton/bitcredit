@@ -17,7 +17,7 @@ using namespace json_spirit;
 // Markets pages
 const QString kBittrexPage = "https://www.bittrex.com/Market/Index?MarketName=BTC-BCR";
 
-// Bitcoin to USD
+// Bitcredit to USD
 const QString kCurrencyUSDUrl    = "http://blockchain.info/tobtc?currency=USD&value=1";
 
 // Bittrex API urls
@@ -25,10 +25,10 @@ const QString kBittrexSummaryUrl        = "https://bittrex.com/api/v1.1/public/g
 const QString kBittrexOrdersUrl         = "https://bittrex.com/api/v1.1/public/getorderbook?market=BTC-BCR&type=both&depth=50";
 const QString kBittrexHistoryUrl        = "https://bittrex.com/api/v1.1/public/getmarkethistory?market=BTC-BCR&count=50";
 
-QString bitcoinp = "";
-double bitcoinToUSD;
+QString bitcreditp = "";
+double bitcreditToUSD;
 double lastuG;
-QString bitcoing;
+QString bitcreditg;
 QString dollarg;
 int mode=1;
 QString lastp = "";
@@ -95,7 +95,7 @@ void PoolBrowser::setupBittrexTabSlots()
     connect(ui->bittrexButton, SIGNAL(pressed()), this, SLOT( openBittrexPage()));
 }
 
-void PoolBrowser::updateBitcoinPrice()
+void PoolBrowser::updateBitcreditPrice()
 {
     this->getRequest(kCurrencyUSDUrl);
 }
@@ -104,7 +104,7 @@ void PoolBrowser::egaldo()
 {
     QString temps = ui->egals->text();
     double totald = lastuG * temps.toDouble();
-    double totaldq = bitcoing.toDouble() * temps.toDouble();
+    double totaldq = bitcreditg.toDouble() * temps.toDouble();
     ui->egald->setText(QString::number(totald) + " $ / "+QString::number(totaldq)+" BTC");
 }
 
@@ -155,18 +155,18 @@ void PoolBrowser::parseNetworkResponse(QNetworkReply *finished )
 void PoolBrowser::parseCurrencyUSD(QNetworkReply *replay)
 {
     // QNetworkReply is a QIODevice. So we read from it just like it was a file
-    QString bitcoin = replay->readAll();
-    bitcoinToUSD = (1 / bitcoin.toDouble());
-    bitcoin = QSTRING_DOUBLE(bitcoinToUSD);
-    if(bitcoin > bitcoinp) {
-        ui->bitcoin->setText("<b><font color=\"green\">" + bitcoin + " $</font></b>");
-    } else if (bitcoin < bitcoinp) {
-        ui->bitcoin->setText("<b><font color=\"red\">" + bitcoin + " $</font></b>");
+    QString bitcredit = replay->readAll();
+    bitcreditToUSD = (1 / bitcredit.toDouble());
+    bitcredit = QSTRING_DOUBLE(bitcreditToUSD);
+    if(bitcredit > bitcreditp) {
+        ui->bitcredit->setText("<b><font color=\"green\">" + bitcredit + " $</font></b>");
+    } else if (bitcredit < bitcreditp) {
+        ui->bitcredit->setText("<b><font color=\"red\">" + bitcredit + " $</font></b>");
     } else {
-        ui->bitcoin->setText(bitcoin + " $");
+        ui->bitcredit->setText(bitcredit + " $");
     }
 
-    bitcoinp = bitcoin;
+    bitcreditp = bitcredit;
 }
 
 void PoolBrowser::parseBittrexSummary(QNetworkReply *replay)
@@ -507,8 +507,8 @@ double PoolBrowser::refreshStringVarAsBTCUsingField(const QJsonObject &jsonObjec
 
 void PoolBrowser::refreshUSDLabel(QLabel *label, double actualValue, double newDouble)
 {
-    double newUSD = newDouble * bitcoinToUSD;
-    double prevUSD = actualValue * bitcoinToUSD;
+    double newUSD = newDouble * bitcreditToUSD;
+    double prevUSD = actualValue * bitcreditToUSD;
     qDebug() << "newUSD " << newUSD << " prevUSD " << prevUSD;
     this->setColoredTextBasedOnValues(QSTRING_DOUBLE(newUSD) + " $", label, prevUSD, newUSD);
 }

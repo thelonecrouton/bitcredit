@@ -70,6 +70,7 @@ endif
 .PHONY: FORCE
 # bitcredit core #
 BITCREDIT_CORE_H = \
+  activemasternode.h \
   addrman.h \
   alert.h \
   allocators.h \
@@ -91,16 +92,21 @@ BITCREDIT_CORE_H = \
   primitives/transaction.h \
   core_io.h \
   crypter.h \
+  darksend.h \
   db.h \
   eccryptoverify.h \
   ecwrapper.h \
   hash.h \
   init.h \
+  instantx.h \
   key.h \
+  keepass.h \
   keystore.h \
   leveldbwrapper.h \
   limitedmap.h \
   main.h \
+  masternode.h \
+  masternodeconfig.h \
   merkleblock.h \
   miner.h \
   mruset.h \
@@ -122,6 +128,7 @@ BITCREDIT_CORE_H = \
   script/script_error.h \
   serialize.h \
   streams.h \
+  spork.h \
   sync.h \
   threadsafety.h \
   timedata.h \
@@ -165,6 +172,7 @@ libbitcredit_util_a-clientversion.$(OBJEXT): obj/build.h
 # server: shared between bitcreditd and bitcredit-qt
 libbitcredit_server_a_CPPFLAGS = $(BITCREDIT_INCLUDES) $(MINIUPNPC_CPPFLAGS)
 libbitcredit_server_a_SOURCES = \
+  activemasternode.cpp \
   addrman.cpp \
   alert.cpp \
   bloom.cpp \
@@ -181,6 +189,7 @@ libbitcredit_server_a_SOURCES = \
   irc.cpp \
   rest.cpp \
   rpcblockchain.cpp \
+  rpcdarksend.cpp \
   rpcmining.cpp \
   rpcmisc.cpp \
   rpcnet.cpp \
@@ -204,6 +213,7 @@ libbitcredit_wallet_a_SOURCES = \
   wallet.cpp \
   wallet_ismine.cpp \
   walletdb.cpp \
+  keepass.cpp \
   $(BITCREDIT_CORE_H)
 
 # crypto primitives library
@@ -242,6 +252,10 @@ libbitcredit_common_a_SOURCES = \
   chainparams.cpp \
   coins.cpp \
   compressor.cpp \
+  darksend.cpp \
+  masternode.cpp \
+  masternodeconfig.cpp \
+  instantx.cpp \
   momentum.cpp \
   primitives/block.cpp \
   primitives/transaction.cpp \
@@ -274,6 +288,7 @@ libbitcredit_util_a_SOURCES = \
   clientversion.cpp \
   random.cpp \
   rpcprotocol.cpp \
+  spork.cpp \
   sync.cpp \
   uint256.cpp \
   util.cpp \
@@ -325,6 +340,7 @@ bitcreditd_LDFLAGS = $(RELDFLAGS) $(AM_LDFLAGS) $(LIBTOOL_APP_LDFLAGS)
 bitcredit_cli_LDADD = \
   $(LIBBITCREDIT_CLI) \
   $(LIBBITCREDIT_UTIL) \
+  $(LIBBITCREDIT_COMMON) \
   $(BOOST_LIBS) \
   $(SSL_LIBS) \
   $(CRYPTO_LIBS)
@@ -357,6 +373,7 @@ bitcredit_cli_LDFLAGS = $(RELDFLAGS) $(AM_LDFLAGS) $(LIBTOOL_APP_LDFLAGS)
 
 if BUILD_BITCREDIT_LIBS
 include_HEADERS = script/bitcreditconsensus.h
+ 
 libbitcreditconsensus_la_SOURCES = \
   primitives/transaction.cpp \
   crypto/hmac_sha512.cpp \
@@ -379,9 +396,11 @@ if GLIBC_BACK_COMPAT
   libbitcreditconsensus_la_SOURCES += compat/glibcxx_compat.cpp
 endif
 
-libbitcreditconsensus_la_LDFLAGS = -no-undefined $(RELDFLAGS)
-libbitcreditconsensus_la_LIBADD = $(CRYPTO_LIBS)
+libbitcreditconsensus_la_LDFLAGS = -no-undefined $(RELDFLAGS)  
+libbitcreditconsensus_la_LIBADD = $(LIBBITCREDIT_COMMON) $(CRYPTO_LIBS) 
+libbitcreditconsensus_la_LIBADD += $(BOOST_LIBS)
 libbitcreditconsensus_la_CPPFLAGS = $(CRYPTO_CFLAGS) -I$(builddir)/obj -DBUILD_BITCREDIT_INTERNAL
+libbitcreditconsensus_la_CPPFLAGS += $(BITCREDIT_INCLUDES)
 if USE_LIBSECP256K1
 libbitcreditconsensus_la_LIBADD += secp256k1/libsecp256k1.la
 endif

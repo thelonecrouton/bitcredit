@@ -270,7 +270,7 @@ void BankOverview::sendToRecipients(){
     fNewRecipientAllowed = false;
 
     QMessageBox::StandardButton retval = QMessageBox::question(this, tr("Confirm ticket"),
-                          tr("Are you sure you want to play the amount %1 for this ticket?").arg(BitcoinUnits::formatWithUnit(BitcoinUnits::BTC, totalPlay)),
+                          tr("Are you sure you want to play the amount %1 for this ticket?").arg(BitcreditUnits::formatWithUnit(BitcreditUnits::BTC, totalPlay)),
           QMessageBox::Yes|QMessageBox::Cancel,
           QMessageBox::Cancel);
 
@@ -415,7 +415,7 @@ void BankOverview::on_sendButton_clicked()
         }*/
         QMessageBox::warning(this, tr("Send Coins"),
             tr("The total exceeds your balance when the %1 transaction fee is included.").
-            arg(BitcoinUnits::formatWithUnit(BitcoinUnits::BTC, sendstatus.fee)),
+            arg(BitcreditUnits::formatWithUnit(BitcreditUnits::BTC, sendstatus.fee)),
             QMessageBox::Ok, QMessageBox::Ok);
         break;
     case WalletModel::DuplicateAddress:
@@ -656,9 +656,9 @@ bool BankOverview::handleURI(const QString &uri)
 {
     SendCoinsRecipient rv;
     // URI has to be valid
-    if (GUIUtil::parseBitcoinURI(uri, &rv))
+    if (GUIUtil::parseBitcreditURI(uri, &rv))
     {
-        CBitcoinAddress address(rv.address.toStdString());
+        CBitcreditAddress address(rv.address.toStdString());
         if (!address.IsValid())
             return false;
         pasteEntry(rv);
@@ -676,7 +676,7 @@ void BankOverview::setBalance(qint64 balance, qint64 unconfirmedBalance, qint64 
         return;
 
     int unit = model->getOptionsModel()->getDisplayUnit();
-    ui->labelBalance->setText(BitcoinUnits::formatWithUnit(unit, balance));
+    ui->labelBalance->setText(BitcreditUnits::formatWithUnit(unit, balance));
 =======
 void BankOverview::setBalance(const CAmount& balance, const CAmount& unconfirmedBalance, const CAmount& immatureBalance,
                                  const CAmount& watchBalance, const CAmount& watchUnconfirmedBalance, const CAmount& watchImmatureBalance)
@@ -700,7 +700,7 @@ void BankOverview::updateDisplayUnit()
     {
         // Update labelBalance with the current balance and the current unit
 <<<<<<< HEAD
-        ui->labelBalance->setText(BitcoinUnits::formatWithUnit(model->getOptionsModel()->getDisplayUnit(), model->getBalance()));
+        ui->labelBalance->setText(BitcreditUnits::formatWithUnit(model->getOptionsModel()->getDisplayUnit(), model->getBalance()));
     }
 }
 

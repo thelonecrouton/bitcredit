@@ -61,7 +61,7 @@
     <name>AskPassphraseDialog</name>
     </context>
 <context>
-    <name>BitcoinGUI</name>
+    <name>BitcreditGUI</name>
     <message>
         <source>&amp;Options...</source>
         <translation>Pilihan</translation>
@@ -193,6 +193,6 @@
     </message>
     </context>
 <context>
-    <name>bitcoin-core</name>
+    <name>bitcredit-core</name>
     </context>
 </TS>

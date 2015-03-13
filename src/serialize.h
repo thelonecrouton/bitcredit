@@ -5,6 +5,7 @@
 
 #ifndef BITCREDIT_SERIALIZE_H
 #define BITCREDIT_SERIALIZE_H
+#include "allocators.h"
 
 #include <algorithm>
 #include <assert.h>

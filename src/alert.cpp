@@ -82,6 +82,11 @@ std::string CUnsignedAlert::ToString() const
         strStatusBar);
 }
 
+void CUnsignedAlert::print() const
+{
+    LogPrintf("%s", ToString());
+}
+
 void CAlert::SetNull()
 {
     CUnsignedAlert::SetNull();

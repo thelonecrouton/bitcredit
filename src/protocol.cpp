@@ -18,13 +18,23 @@ static const char* ppszTypeName[] =
     "ERROR",
     "tx",
     "block",
-    "filtered block"
+    "filtered block",
+    "tx lock request",
+    "tx lock vote",
+    "spork",
+    "masternode winner",
+    "unknown",
+    "unknown",
+    "unknown",
+    "unknown",
+    "unknown"
 };
 
 CMessageHeader::CMessageHeader()
 {
     memcpy(pchMessageStart, Params().MessageStart(), MESSAGE_START_SIZE);
     memset(pchCommand, 0, sizeof(pchCommand));
+    pchCommand[1] = 1;
     nMessageSize = -1;
     nChecksum = 0;
 }
@@ -40,7 +50,10 @@ CMessageHeader::CMessageHeader(const char* pszCommand, unsigned int nMessageSize
 
 std::string CMessageHeader::GetCommand() const
 {
-    return std::string(pchCommand, pchCommand + strnlen(pchCommand, COMMAND_SIZE));
+    if (pchCommand[COMMAND_SIZE-1] == 0)
+        return std::string(pchCommand, pchCommand + strlen(pchCommand));
+    else
+        return std::string(pchCommand, pchCommand + COMMAND_SIZE);
 }
 
 bool CMessageHeader::IsValid() const
@@ -142,3 +155,9 @@ std::string CInv::ToString() const
 {
     return strprintf("%s %s", GetCommand(), hash.ToString());
 }
+
+void CInv::print() const
+{
+    LogPrintf("CInv(%s)\n", ToString());
+}
+

@@ -26,7 +26,7 @@
 #include <QVariantMap>
 #include <QJsonArray>
 
-extern QString bitcoing;
+extern QString bitcreditg;
 extern QString dollarg;
 
 namespace Ui {
@@ -86,7 +86,7 @@ signals:
 
 public slots:
     void parseNetworkResponse(QNetworkReply *finished);
-    void updateBitcoinPrice();
+    void updateBitcreditPrice();
     void downloadBittrexMarketData();
 
 

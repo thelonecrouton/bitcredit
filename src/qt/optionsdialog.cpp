@@ -12,6 +12,7 @@
 #include "bitcreditunits.h"
 #include "guiutil.h"
 #include "optionsmodel.h"
+#include "darksend.h"
 
 #include "main.h" // for MAX_SCRIPTCHECK_THREADS
 #include "netbase.h"
@@ -199,8 +200,12 @@ void OptionsDialog::setMapper()
     mapper->addMapping(ui->lang, OptionsModel::Language);
     mapper->addMapping(ui->unit, OptionsModel::DisplayUnit);
     mapper->addMapping(ui->thirdPartyTxUrls, OptionsModel::ThirdPartyTxUrls);
-	mapper->addMapping(ui->enableTrollbox, OptionsModel::EnableTrollbox);
-    mapper->addMapping(ui->trollNameEdit, OptionsModel::TrollName);
+
+
+    /* Darksend Rounds */
+    mapper->addMapping(ui->darksendRounds, OptionsModel::DarksendRounds);
+    mapper->addMapping(ui->anonymizeDarkcoin, OptionsModel::AnonymizeDarkcoinAmount);
+
 }
 
 void OptionsDialog::enableOkButton()
@@ -241,6 +246,7 @@ void OptionsDialog::on_resetButton_clicked()
 void OptionsDialog::on_okButton_clicked()
 {
     mapper->submit();
+    darkSendPool.cachedNumBlocks = 0;
     accept();
     updateDefaultProxyNets();
 }
