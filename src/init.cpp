@@ -362,7 +362,7 @@ std::string HelpMessage(HelpMessageMode mode)
     strUsage += "\n" + _("Darksend options:") + "\n";
     strUsage += "  -enabledarksend=<n>          " + _("Enable use of automated darksend for funds stored in this wallet (0-1, default: 0)") + "\n";
     strUsage += "  -darksendrounds=<n>          " + _("Use N separate masternodes to anonymize funds  (2-8, default: 2)") + "\n";
-    strUsage += "  -anonymizedarkcoinamount=<n> " + _("Keep N darkcoin anonymized (default: 0)") + "\n";
+    strUsage += "  -anonymizebitcreditamount=<n> " + _("Keep N bitcredit anonymized (default: 0)") + "\n";
     strUsage += "  -liquidityprovider=<n>       " + _("Provide liquidity to Darksend by infrequently mixing coins on a continual basis (0-100, default: 0, 1=very frequent, high fees, 100=very infrequent, low fees)") + "\n";
 
     strUsage += "\n" + _("InstantX options:") + "\n";
@@ -1334,15 +1334,15 @@ bool AppInit2(boost::thread_group& threadGroup)
         nDarksendRounds = 99999;
     }
 
-    nAnonymizeDarkcoinAmount = GetArg("-anonymizedarkcoinamount", 0);
-    if(nAnonymizeDarkcoinAmount > 999999) nAnonymizeDarkcoinAmount = 999999;
-    if(nAnonymizeDarkcoinAmount < 2) nAnonymizeDarkcoinAmount = 2;
+    nAnonymizeBitcreditAmount = GetArg("-anonymizebitcreditamount", 0);
+    if(nAnonymizeBitcreditAmount > 999999) nAnonymizeBitcreditAmount = 999999;
+    if(nAnonymizeBitcreditAmount < 2) nAnonymizeBitcreditAmount = 2;
 
     bool fEnableInstantX = GetBoolArg("-enableinstantx", true);
     if(fEnableInstantX){
         nInstantXDepth = GetArg("-instantxdepth", 5);
         if(nInstantXDepth > 60) nInstantXDepth = 60;
-        if(nInstantXDepth < 0) nAnonymizeDarkcoinAmount = 0;
+        if(nInstantXDepth < 0) nAnonymizeBitcreditAmount = 0;
     } else {
         nInstantXDepth = 0;
     }
@@ -1356,7 +1356,7 @@ bool AppInit2(boost::thread_group& threadGroup)
     LogPrintf("fLiteMode %d\n", fLiteMode);
     LogPrintf("nInstantXDepth %d\n", nInstantXDepth);
     LogPrintf("Darksend rounds %d\n", nDarksendRounds);
-    LogPrintf("Anonymize Darkcoin Amount %d\n", nAnonymizeDarkcoinAmount);
+    LogPrintf("Anonymize Bitcredit Amount %d\n", nAnonymizeBitcreditAmount);
 
     /* Denominations
 
@@ -1367,10 +1367,13 @@ bool AppInit2(boost::thread_group& threadGroup)
        1DRK+1000 == (.1DRK+100)*10
        10DRK+10000 == (1DRK+1000)*10
     */
-    darkSendDenominations.push_back( (100      * COIN)+100000 );
-    darkSendDenominations.push_back( (10       * COIN)+10000 );
-    darkSendDenominations.push_back( (1        * COIN)+1000 );
-    darkSendDenominations.push_back( (.1       * COIN)+100 );
+    darkSendDenominations.push_back( (100000      * COIN)+100000000 );    
+    darkSendDenominations.push_back( (10000       * COIN)+10000000 );
+    darkSendDenominations.push_back( (1000        * COIN)+1000000 );
+    darkSendDenominations.push_back( (100         * COIN)+100000 );
+    darkSendDenominations.push_back( (10          * COIN)+10000 );
+    darkSendDenominations.push_back( (1           * COIN)+1000 );
+    darkSendDenominations.push_back( (.1          * COIN)+100 );
     /* Disabled till we need them
     darkSendDenominations.push_back( (.01      * COIN)+10 );
     darkSendDenominations.push_back( (.001     * COIN)+1 );

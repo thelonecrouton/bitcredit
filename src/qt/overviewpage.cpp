@@ -327,7 +327,7 @@ void OverviewPage::updateDarksendProgress()
     }
 
     //Get the anon threshold
-    int64_t nMaxToAnonymize = nAnonymizeDarkcoinAmount*COIN;
+    int64_t nMaxToAnonymize = nAnonymizeBitcreditAmount*COIN;
 
     // If it's more than the wallet amount, limit to that.
     if(nMaxToAnonymize > nBalance) nMaxToAnonymize = nBalance;
@@ -382,7 +382,7 @@ void OverviewPage::darkSendStatus()
         strSettings.prepend(QString::number(nDarksendRounds)).prepend(" / ");
         strSettings.prepend(BitcreditUnits::formatWithUnit(
             walletModel->getOptionsModel()->getDisplayUnit(),
-            nAnonymizeDarkcoinAmount * COIN)
+            nAnonymizeBitcreditAmount * COIN)
         );
 
         ui->labelAmountRounds->setText(strSettings);
@@ -542,7 +542,7 @@ void OverviewPage::toggleDarksend(){
 
         /* show darksend configuration if client has defaults set */
 
-        if(nAnonymizeDarkcoinAmount == 0){
+        if(nAnonymizeBitcreditAmount == 0){
             DarksendConfig dlg(this);
             dlg.setModel(walletModel);
             dlg.exec();

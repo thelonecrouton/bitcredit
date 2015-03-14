@@ -127,7 +127,7 @@ QList<TransactionRecord> TransactionRecord::decomposeTransaction(const CWallet *
                 CTxDestination address;
                 if (ExtractDestination(wtx.vout[0].scriptPubKey, address))
                 {
-                    // Sent to Darkcoin Address
+                    // Sent to Bitcredit Address
                     sub.address = CBitcreditAddress(address).ToString();
                 }
                 else

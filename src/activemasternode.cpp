@@ -6,7 +6,7 @@
 #include "clientversion.h"
 
 //
-// Bootup the masternode, look for a 1000DRK input and register on the network
+// Bootup the masternode, look for a 250 000 BCR input and register on the network
 //
 void CActiveMasternode::ManageStatus()
 {

@@ -177,12 +177,12 @@
             <string notr="true"/>
            </property>
            <property name="text">
-            <string>Amount of Darkcoin to keep anonymized</string>
+            <string>Amount of Bitcredit to keep anonymized</string>
            </property>
           </widget>
          </item>
          <item>
-          <widget class="QSpinBox" name="anonymizeDarkcoin">
+          <widget class="QSpinBox" name="anonymizeBitcredit">
            <property name="minimum">
             <number>2</number>
            </property>

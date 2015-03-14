@@ -47,7 +47,7 @@ CActiveMasternode activeMasternode;
 // count peers we've requested the list from
 int RequestedMasterNodeList = 0;
 
-/* *** BEGIN DARKSEND MAGIC - DARKCOIN **********
+/* *** BEGIN DARKSEND MAGIC  **********
     Copyright 2014, Darkcoin Developers
         eduffield - evan@darkcoin.io
 */
@@ -768,7 +768,7 @@ void CDarkSendPool::ChargeRandomFees(){
 
                 Being that DarkSend has "no fees" we need to have some kind of cost associated
                 with using it to stop abuse. Otherwise it could serve as an attack vector and
-                allow endless transaction that would bloat Darkcoin and make it unusable. To
+                allow endless transaction that would bloat Bitcredit and make it unusable. To
                 stop these kinds of attacks 1 in 50 successful transactions are charged. This
                 adds up to a cost of 0.002DRK per transaction on average.
             */
@@ -1400,7 +1400,7 @@ bool CDarkSendPool::DoAutomaticDenominating(bool fDryRun, bool ready)
         // should have some additional amount for them
         nLowestDenom += (DARKSEND_COLLATERAL*4)+DARKSEND_FEE*2;
 
-    int64_t nBalanceNeedsAnonymized = nAnonymizeDarkcoinAmount*COIN - pwalletMain->GetAnonymizedBalance();
+    int64_t nBalanceNeedsAnonymized = nAnonymizeBitcreditAmount*COIN - pwalletMain->GetAnonymizedBalance();
 
     // if balanceNeedsAnonymized is more than pool max, take the pool max
     if(nBalanceNeedsAnonymized > DARKSEND_POOL_MAX) nBalanceNeedsAnonymized = DARKSEND_POOL_MAX;
@@ -1458,8 +1458,8 @@ bool CDarkSendPool::DoAutomaticDenominating(bool fDryRun, bool ready)
         //randomize the amounts we mix
         if(sessionTotalValue > nBalanceNeedsAnonymized) sessionTotalValue = nBalanceNeedsAnonymized;
 
-        double fDarkcoinSubmitted = (sessionTotalValue / CENT);
-        LogPrintf("Submitting Darksend for %f DRK CENT - sessionTotalValue %d\n", fDarkcoinSubmitted, sessionTotalValue);
+        double fBitcreditSubmitted = (sessionTotalValue / CENT);
+        LogPrintf("Submitting Darksend for %f DRK CENT - sessionTotalValue %d\n", fBitcreditSubmitted, sessionTotalValue);
 
         if(pwalletMain->GetDenominatedBalance(true, true) > 0){ //get denominated unconfirmed inputs
             LogPrintf("DoAutomaticDenominating -- Found unconfirmed denominated outputs, will wait till they confirm to continue.\n");
@@ -1937,10 +1937,13 @@ int CDarkSendPool::GetDenominationsByAmount(int64_t nAmount, int nDenomTarget){
     BOOST_REVERSE_FOREACH(int64_t v, darkSendDenominations){
         if(nDenomTarget != 0){
             bool fAccepted = false;
-            if((nDenomTarget & (1 << 0)) &&      v == ((100*COIN)+100000)) {fAccepted = true;}
-            else if((nDenomTarget & (1 << 1)) && v == ((10*COIN) +10000)) {fAccepted = true;}
-            else if((nDenomTarget & (1 << 2)) && v == ((1*COIN)  +1000)) {fAccepted = true;}
-            else if((nDenomTarget & (1 << 3)) && v == ((.1*COIN) +100)) {fAccepted = true;}
+            if((nDenomTarget & (1 << 0)) &&      v == ((100000*COIN)+100000000)) {fAccepted = true;}
+            else if((nDenomTarget & (1 << 1)) && v == ((10000*COIN) +10000000)) {fAccepted = true;}
+            else if((nDenomTarget & (1 << 2)) && v == ((1000*COIN)  +1000000)) {fAccepted = true;}
+            else if((nDenomTarget & (1 << 3)) && v == ((100*COIN)   +100000)) {fAccepted = true;}
+            else if((nDenomTarget & (1 << 4)) && v == ((10*COIN)    +10000)) {fAccepted = true;}
+            else if((nDenomTarget & (1 << 5)) && v == ((1*COIN)     +1000)) {fAccepted = true;}
+            else if((nDenomTarget & (1 << 6)) && v == ((.1*COIN)    +100)) {fAccepted = true;}
             if(!fAccepted) continue;
         }
 
@@ -2182,7 +2185,7 @@ void ThreadCheckDarkSendPool()
                     darkSendPool.SendRandomPaymentToSelf();
                     int nLeftToAnon = ((pwalletMain->GetBalance() - pwalletMain->GetAnonymizedBalance())/COIN)-3;
                     if(nLeftToAnon > 999) nLeftToAnon = 999;
-                    nAnonymizeDarkcoinAmount = (rand() % nLeftToAnon)+3;
+                    nAnonymizeBitcreditAmount = (rand() % nLeftToAnon)+3;
                 } else {
                     darkSendPool.DoAutomaticDenominating();
                 }

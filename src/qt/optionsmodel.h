@@ -47,7 +47,7 @@ public:
         SpendZeroConfChange,    // bool
         Listen,                 // bool
         DarksendRounds,    // int
-        AnonymizeDarkcoinAmount, //int
+        anonymizeBitcreditAmount, //int
         OptionIDRowCount,
     };
 
@@ -92,7 +92,7 @@ private:
 signals:
     void displayUnitChanged(int unit);
     void darksendRoundsChanged(int);
-    void anonymizeDarkcoinAmountChanged(int);
+    void anonymizeBitcreditAmountChanged(int);
     void coinControlFeaturesChanged(bool);
 };
 

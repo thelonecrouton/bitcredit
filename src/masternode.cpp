@@ -6,7 +6,6 @@
 #include "addrman.h"
 #include <boost/lexical_cast.hpp>
 
-
 /** The list of active masternodes */
 std::vector<CMasterNode> vecMasternodes;
 /** Object for who's going to get paid on which blocks */
@@ -271,7 +270,7 @@ void ProcessMessageMasternode(CNode* pfrom, std::string& strCommand, CDataStream
 
         if(vin == CTxIn()) { //only should ask for this once
             //local network
-            if(!pfrom->addr.IsRFC1918() )
+            if(!pfrom->addr.IsRFC1918()&& !Params().MineBlocksOnDemand())
             {
                 std::map<CNetAddr, int64_t>::iterator i = askedForMasternodeList.find(pfrom->addr);
                 if (i != askedForMasternodeList.end())

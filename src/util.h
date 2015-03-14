@@ -33,7 +33,7 @@ extern bool fMasterNode;
 extern bool fLiteMode;
 extern int nInstantXDepth;
 extern int nDarksendRounds;
-extern int nAnonymizeDarkcoinAmount;
+extern int nAnonymizeBitcreditAmount;
 extern int nLiquidityProvider;
 extern bool fEnableDarksend;
 extern int64_t enforceMasternodePaymentsTime;

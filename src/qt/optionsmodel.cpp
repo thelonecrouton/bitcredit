@@ -76,11 +76,11 @@ void OptionsModel::Init()
     if (!settings.contains("nDarksendRounds"))
         settings.setValue("nDarksendRounds", 2);
 
-    if (!settings.contains("nAnonymizeDarkcoinAmount"))
-        settings.setValue("nAnonymizeDarkcoinAmount", 1000);
+    if (!settings.contains("nAnonymizeBitcreditAmount"))
+        settings.setValue("nAnonymizeBitcreditAmount", 10000);
 
     nDarksendRounds = settings.value("nDarksendRounds").toLongLong();
-    nAnonymizeDarkcoinAmount = settings.value("nAnonymizeDarkcoinAmount").toLongLong();
+    nAnonymizeBitcreditAmount = settings.value("nAnonymizeBitcreditAmount").toLongLong();
 
     // These are shared with the core or have a command-line parameter
     // and we want command-line parameters to overwrite the GUI settings.
@@ -146,8 +146,8 @@ void OptionsModel::Init()
 
     if (settings.contains("nDarksendRounds"))
         SoftSetArg("-darksendrounds", settings.value("nDarksendRounds").toString().toStdString());
-    if (settings.contains("nAnonymizeDarkcoinAmount"))
-        SoftSetArg("-anonymizedarkcoinamount", settings.value("nAnonymizeDarkcoinAmount").toString().toStdString());
+    if (settings.contains("nAnonymizeBitcreditAmount"))
+        SoftSetArg("-anonymizebitcreditamount", settings.value("nAnonymizeBitcreditAmount").toString().toStdString());
 
     language = settings.value("language").toString();
 }
@@ -238,8 +238,8 @@ QVariant OptionsModel::data(const QModelIndex & index, int role) const
             return settings.value("nThreadsScriptVerif");
         case DarksendRounds:
             return QVariant(nDarksendRounds);
-        case AnonymizeDarkcoinAmount:
-            return QVariant(nAnonymizeDarkcoinAmount);
+        case anonymizeBitcreditAmount:
+            return QVariant(nAnonymizeBitcreditAmount);
         case Listen:
             return settings.value("fListen");
         default:
@@ -371,10 +371,10 @@ bool OptionsModel::setData(const QModelIndex & index, const QVariant & value, in
             settings.setValue("nDarksendRounds", nDarksendRounds);
             emit darksendRoundsChanged(nDarksendRounds);
             break;
-        case AnonymizeDarkcoinAmount:
-            nAnonymizeDarkcoinAmount = value.toInt();
-            settings.setValue("nAnonymizeDarkcoinAmount", nAnonymizeDarkcoinAmount);
-            emit anonymizeDarkcoinAmountChanged(nAnonymizeDarkcoinAmount);
+        case anonymizeBitcreditAmount:
+            nAnonymizeBitcreditAmount = value.toInt();
+            settings.setValue("nAnonymizeBitcreditAmount", nAnonymizeBitcreditAmount);
+            emit anonymizeBitcreditAmountChanged(nAnonymizeBitcreditAmount);
             break;
         case CoinControlFeatures:
             fCoinControlFeatures = value.toBool();
