@@ -1,5 +1,3 @@
-<<<<<<< HEAD
-=======
 // Copyright (c) 2011-2013 The Bitcredit Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
@@ -100,5 +98,4 @@ private slots:
 };
 
 #endif // BITCREDIT_QT_OVERVIEWPAGE_H
->>>>>>> origin/master2
 
