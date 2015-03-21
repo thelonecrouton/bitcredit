@@ -4,8 +4,8 @@
 #include "messagemodel.h"
 #include "optionsmodel.h"
 #include "sendmessagesdialog.h"
-#include "bitcoinunits.h"
-#include "bitcoingui.h"
+#include "bitcreditunits.h"
+#include "bitcreditgui.h"
 #include "guiutil.h"
 
 #include <QSortFilterProxyModel>
@@ -155,5 +155,5 @@ void InvoiceViewPage::updateTotal()
             model->newInvoiceItem();
     }
 
-    ui->total->setText(BitcoinUnits::formatWithUnit(model->getMessageModel()->getOptionsModel()->getDisplayUnit(), total));
+    ui->total->setText(BitcreditUnits::formatWithUnit(model->getMessageModel()->getOptionsModel()->getDisplayUnit(), total));
 }

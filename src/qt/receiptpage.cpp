@@ -1,11 +1,11 @@
 #include "receiptpage.h"
 #include "ui_receiptpage.h"
 
-#include "bitcoinunits.h"
+#include "bitcreditunits.h"
 #include "sendmessagesdialog.h"
 #include "invoiceviewpage.h"
 #include "messagemodel.h"
-#include "bitcoingui.h"
+#include "bitcreditgui.h"
 #include "csvmodelwriter.h"
 #include "guiutil.h"
 

@@ -3,7 +3,7 @@
 
 #include "sendmessagesdialog.h"
 #include "messagemodel.h"
-#include "bitcoingui.h"
+#include "bitcreditgui.h"
 #include "csvmodelwriter.h"
 #include "guiutil.h"
 

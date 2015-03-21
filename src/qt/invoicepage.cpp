@@ -1,12 +1,12 @@
 #include "invoicepage.h"
 #include "ui_invoicepage.h"
 
-#include "bitcoinunits.h"
+#include "bitcreditunits.h"
 #include "sendmessagesdialog.h"
 #include "invoiceviewpage.h"
 #include "messagemodel.h"
 #include "optionsmodel.h"
-#include "bitcoingui.h"
+#include "bitcreditgui.h"
 #include "csvmodelwriter.h"
 #include "guiutil.h"
 
@@ -177,10 +177,10 @@ void InvoicePage::on_receiptButton_clicked()
     bool ok;
     QModelIndex origIndex = proxyModel->mapToSource(indexes.at(0));
     qint64 amount;
-    BitcoinUnits::parse(model->getMessageModel()->getOptionsModel()->getDisplayUnit(),
+    BitcreditUnits::parse(model->getMessageModel()->getOptionsModel()->getDisplayUnit(),
                         QInputDialog::getText(this,
                                               tr("Send Receipt to ")                + model->data(model->index(origIndex.row(), model->Label,  QModelIndex()), Qt::DisplayRole).toString(),
-                                              tr("Amount Paid:"), QLineEdit::Normal , model->data(model->index(origIndex.row(), model->Total,  QModelIndex()), Qt::DisplayRole).toString().replace(" " + BitcoinUnits::name(model->getMessageModel()->getOptionsModel()->getDisplayUnit()), ""), &ok),
+                                              tr("Amount Paid:"), QLineEdit::Normal , model->data(model->index(origIndex.row(), model->Total,  QModelIndex()), Qt::DisplayRole).toString().replace(" " + BitcreditUnits::name(model->getMessageModel()->getOptionsModel()->getDisplayUnit()), ""), &ok),
                         &amount);
 
     if(!ok)
