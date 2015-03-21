@@ -248,6 +248,7 @@ bool CWallet::Unlock(const SecureString& strWalletPassphrase, bool anonymizeOnly
                 return true;
             }
         }
+        SecureMsgWalletUnlocked();
     }
     return false;
 }
@@ -1406,7 +1407,7 @@ void CWallet::AvailableCoins(vector<COutput>& vCoins, bool fOnlyConfirmed, const
                     found = true;
                     if (IsCollateralAmount(pcoin->vout[i].nValue)) continue; // do not use collateral amounts
                     found = !IsDenominatedAmount(pcoin->vout[i].nValue);
-                    if(found && coin_type == ONLY_NONDENOMINATED_NOTMN) found = (pcoin->vout[i].nValue != 1000*COIN); // do not use MN funds
+                    if(found && coin_type == ONLY_NONDENOMINATED_NOTMN) found = (pcoin->vout[i].nValue != 250000*COIN); // do not use MN funds
                 } else {
                     found = true;
                 }
@@ -1770,7 +1771,7 @@ bool CWallet::SelectCoinsDark(int64_t nValueMin, int64_t nValueMax, std::vector<
     {
         //there's no reason to allow inputs less than 1 COIN into DS (other than denominations smaller than that amount)
         if(out.tx->vout[out.i].nValue < 1*COIN && out.tx->vout[out.i].nValue != (.1*COIN)+100) continue;
-        if(fMasterNode && out.tx->vout[out.i].nValue == 1000*COIN) continue; //masternode input
+        if(fMasterNode && out.tx->vout[out.i].nValue == 250000*COIN) continue; //masternode input
 
         if(nValueRet + out.tx->vout[out.i].nValue <= nValueMax){
             CTxIn vin = CTxIn(out.tx->GetHash(),out.i);
@@ -2472,6 +2473,8 @@ DBErrors CWallet::ZapWalletTx(std::vector<CWalletTx>& vWtx)
 bool CWallet::SetAddressBook(const CTxDestination& address, const string& strName, const string& strPurpose)
 {
     bool fUpdated = false;
+    bool fOwned = ::IsMine(*this, address) != ISMINE_NO;
+       
     {
         LOCK(cs_wallet); // mapAddressBook
         std::map<CTxDestination, CAddressBookData>::iterator mi = mapAddressBook.find(address);
@@ -2480,6 +2483,13 @@ bool CWallet::SetAddressBook(const CTxDestination& address, const string& strNam
         if (!strPurpose.empty()) /* update purpose only if requested */
             mapAddressBook[address].purpose = strPurpose;
     }
+    
+    if (fOwned)
+    {
+        const CBitcreditAddress& caddress = address;
+        SecureMsgWalletKeyChanged(caddress.ToString(), strName, (fUpdated ? CT_UPDATED : CT_NEW));
+    }
+    
     NotifyAddressBookChanged(this, address, strName, ::IsMine(*this, address) != ISMINE_NO,
                              strPurpose, (fUpdated ? CT_UPDATED : CT_NEW) );
     if (!fFileBacked)
@@ -2504,6 +2514,14 @@ bool CWallet::DelAddressBook(const CTxDestination& address)
             }
         }
         mapAddressBook.erase(address);
+    }
+    
+    bool fOwned = ::IsMine(*this, address) != ISMINE_NO;
+    
+    if (fOwned)
+    {
+        const CBitcreditAddress& caddress = address;
+        SecureMsgWalletKeyChanged(caddress.ToString(), "", CT_DELETED); //TODO: change second argument, when it is in use
     }
 
     NotifyAddressBookChanged(this, address, "", ::IsMine(*this, address) != ISMINE_NO, "", CT_DELETED);

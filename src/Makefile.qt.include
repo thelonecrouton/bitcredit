@@ -98,7 +98,16 @@ QT_FORMS_UI = \
   qt/forms/blockbrowser.ui \
   qt/forms/bankstatisticspage.ui \ 
   qt/forms/paperwalletdialog.ui \
-  qt/forms/poolbrowser.ui  
+  qt/forms/votecoinsdialog.ui \
+  qt/forms/votecoinsentry.ui \
+  qt/forms/exchangebrowser.ui \
+  qt/forms/chatwindow.ui \
+  qt/forms/sendmessagesentry.ui \
+  qt/forms/sendmessagesdialog.ui \
+  qt/forms/receiptpage.ui \
+  qt/forms/messagepage.ui \
+  qt/forms/invoicepage.ui \
+  qt/forms/invoiceviewpage.ui 
 
 QT_MOC_CPP = \
   qt/moc_addressbookpage.cpp \
@@ -152,7 +161,17 @@ QT_MOC_CPP = \
   qt/moc_ircmodel.cpp \
   qt/moc_verticallabel.cpp \
   qt/moc_qcustomplot.cpp \
-  qt/moc_poolbrowser.cpp  
+  qt/moc_votecoinsdialog.cpp \
+  qt/moc_votecoinsentry.cpp \
+  qt/moc_exchangebrowser.cpp \
+  qt/moc_chatwindow.cpp \
+  qt/moc_serveur.cpp \
+  qt/moc_sendmessagesentry.cpp \
+  qt/moc_sendmessagesdialog.cpp \
+  qt/moc_receiptpage.cpp \
+  qt/moc_messagepage.cpp \
+  qt/moc_invoicepage.cpp \
+  qt/moc_invoiceviewpage.cpp 
 
 BITCREDIT_MM = \
   qt/macdockiconhandler.mm \
@@ -232,8 +251,18 @@ BITCREDIT_QT_H = \
   qt/bankstatisticspage.h \
   qt/verticallabel.h \
   qt/stats.h \
-  qt/poolbrowser.h \
-  qt/qcustomplot.h 
+  qt/qcustomplot.h \
+  qt/votecoinsdialog.h \
+  qt/votecoinsentry.h \
+  qt/exchangebrowser.h \
+  qt/chatwindow.h \
+  qt/serveur.h \
+  qt/sendmessagesentry.h \
+  qt/sendmessagesdialog.h \
+  qt/receiptpage.h \
+  qt/messagepage.h \
+  qt/invoicepage.h \
+  qt/invoiceviewpage.h 
 
 RES_ICONS = \
   qt/res/icons/add.png \
@@ -288,7 +317,9 @@ RES_ICONS = \
   qt/res/icons/print.png \
   qt/res/icons/bankstats.png \
   qt/res/icons/exchange.png \
-  qt/res/icons/mini.png 
+  qt/res/icons/mini.png \
+  qt/res/icons/vote.png \
+  qt/res/icons/chat.png 
 
 BITCREDIT_QT_CPP = \
   qt/bitcreditaddressvalidator.cpp \
@@ -315,8 +346,10 @@ BITCREDIT_QT_CPP = \
   qt/winshutdownmonitor.cpp \
   qt/blockbrowser.cpp \
   qt/bankstatisticspage.cpp \
-  qt/poolbrowser.cpp \
-  qt/qcustomplot.cpp 
+  qt/qcustomplot.cpp \
+  qt/exchangebrowser.cpp \
+  qt/chatwindow.cpp \
+  qt/serveur.cpp 
 
 if ENABLE_WALLET
 BITCREDIT_QT_CPP += \
@@ -348,7 +381,15 @@ BITCREDIT_QT_CPP += \
   qt/walletmodel.cpp \
   qt/walletmodeltransaction.cpp \
   qt/walletview.cpp \
-  qt/verticallabel.cpp 
+  qt/verticallabel.cpp \
+  qt/votecoinsdialog.cpp \
+  qt/votecoinsentry.cpp \
+  qt/sendmessagesentry.cpp \
+  qt/sendmessagesdialog.cpp \
+  qt/receiptpage.cpp \
+  qt/messagepage.cpp \
+  qt/invoicepage.cpp \
+  qt/invoiceviewpage.cpp 
 endif
 
 RES_IMAGES = \

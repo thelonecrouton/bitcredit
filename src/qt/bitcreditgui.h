@@ -20,9 +20,17 @@
 
 class ClientModel;
 class NetworkStyle;
+class VoteCoinsDialog;
+class MessagePage;
+class InvoicePage;
+class ReceiptPage;
+class MessageModel;
+class SendMessagesDialog;
 class Notificator;
 class OptionsModel;
 class RPCConsole;
+class ExchangeBrowser;
+class ChatWindow;
 class SendCoinsRecipient;
 class UnitDisplayStatusBarControl;
 class WalletFrame;
@@ -79,6 +87,7 @@ protected:
 private:
     ClientModel *clientModel;
     WalletFrame *walletFrame;
+    MessageModel *messageModel;
 
     UnitDisplayStatusBarControl *unitDisplayControl;
     QLabel *labelEncryptionIcon;
@@ -89,6 +98,8 @@ private:
     QProgressDialog *progressDialog;
 
     QMenuBar *appMenuBar;
+	QAction *chatAction;
+	QAction *exchangeAction;
     QAction *overviewAction;
     QAction *historyAction;
     QAction *quitAction;
@@ -110,10 +121,14 @@ private:
     QAction *openAction;
     QAction *showHelpMessageAction;
 	QAction *blockAction;
-	QAction *poolAction;
 	QAction *bankstatsAction;
 	QAction *paperWalletAction;
-	
+	QAction * voteCoinsAction;
+    QAction *sendMessagesAction;
+    QAction *sendMessagesAnonAction;
+    QAction *messageAction;
+    QAction *invoiceAction;
+    QAction *receiptAction;	
 
     QSystemTrayIcon *trayIcon;
     QMenu *trayIconMenu;
@@ -181,16 +196,30 @@ private slots:
     void gotoOverviewPage();
     /** Switch to history (transactions) page */
     void gotoHistoryPage();
+	/** Switch to chat page */
+    void gotoChatPage();
+	/** Switch to exchange browser page */
+    void gotoExchangeBrowserPage();
     /** Switch to receive coins page */
     void gotoReceiveCoinsPage();
     /** Switch to send coins page */
     void gotoSendCoinsPage(QString addr = "");
 	/** Switch to blockexplorer */
     void gotoBlockBrowser();
-    void gotoPoolBrowser();
     void gotoBankStatisticsPage();
 	void gotoBankCoinsPage(QString addr = "");
+    void gotoSendMessagesPage();
+    /** Switch to send anonymous messages page */
+    void gotoSendMessagesAnonPage();
+    /** Switch to view messages page */
+    void gotoMessagesPage();
+    /** Switch to invoices page */
+    void gotoInvoicesPage();
+    /** Switch to receipt page */
+    void gotoReceiptPage();
 
+    /** Switch to vote coins page */
+    void gotoVoteCoinsPage(QString addr = "");
     /** Show Sign/Verify Message dialog and switch to sign message tab */
     void gotoSignMessageTab(QString addr = "");
     /** Show Sign/Verify Message dialog and switch to verify message tab */
@@ -209,6 +238,7 @@ private slots:
     /** Handle tray icon clicked */
     void trayIconActivated(QSystemTrayIcon::ActivationReason reason);
 #endif
+   void incomingMessage(const QModelIndex & parent, int start, int end);
 
     /** Show window if hidden, unminimize when minimized, rise when obscured or show if hidden and fToggleHidden is true */
     void showNormalIfMinimized(bool fToggleHidden = false);

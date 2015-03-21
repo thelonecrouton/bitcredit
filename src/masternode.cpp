@@ -6,6 +6,10 @@
 #include "addrman.h"
 #include <boost/lexical_cast.hpp>
 
+
+int CMasterNode::minProtoVersion = MIN_MN_PROTO_VERSION;
+
+
 /** The list of active masternodes */
 std::vector<CMasterNode> vecMasternodes;
 /** Object for who's going to get paid on which blocks */
@@ -75,7 +79,7 @@ void ProcessMessageMasternode(CNode* pfrom, std::string& strCommand, CDataStream
 
         strMessage = addr.ToString() + boost::lexical_cast<std::string>(sigTime) + vchPubKey + vchPubKey2 + boost::lexical_cast<std::string>(protocolVersion);
 
-        if(protocolVersion < nMasternodeMinProtocol) {
+        if(protocolVersion < MIN_MN_PROTO_VERSION) {
             LogPrintf("dsee - ignoring outdated masternode %s protocol version %d\n", vin.ToString().c_str(), protocolVersion);
             return;
         }
@@ -149,7 +153,7 @@ void ProcessMessageMasternode(CNode* pfrom, std::string& strCommand, CDataStream
 
         CValidationState state;
         CMutableTransaction tx = CTransaction();
-        CTxOut vout = CTxOut(999.99*COIN, darkSendPool.collateralPubKey);
+        CTxOut vout = CTxOut(249999.99*COIN, darkSendPool.collateralPubKey);
         tx.vin.push_back(vin);
         tx.vout.push_back(vout);
         if(AcceptableInputs(mempool, state, tx)){
@@ -587,7 +591,7 @@ void CMasterNode::Check()
     if(!unitTest){
         CValidationState state;
         CMutableTransaction tx = CTransaction();
-        CTxOut vout = CTxOut(999.99*COIN, darkSendPool.collateralPubKey);
+        CTxOut vout = CTxOut(249999.99*COIN, darkSendPool.collateralPubKey);
         tx.vin.push_back(vin);
         tx.vout.push_back(vout);
 

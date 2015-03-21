@@ -119,6 +119,55 @@ void WalletFrame::gotoHistoryPage()
         i.value()->gotoHistoryPage();
 }
 
+void WalletFrame::gotoSendMessagesPage()
+{
+    QMap<QString, WalletView*>::const_iterator i;
+    for (i = mapWalletViews.constBegin(); i != mapWalletViews.constEnd(); ++i)
+        i.value()->gotoSendMessagesPage();
+}
+
+void WalletFrame::gotoSendMessagesAnonPage()
+{
+    QMap<QString, WalletView*>::const_iterator i;
+    for (i = mapWalletViews.constBegin(); i != mapWalletViews.constEnd(); ++i)
+        i.value()->gotoSendMessagesAnonPage();
+}
+
+void WalletFrame::gotoMessagesPage()
+{
+    QMap<QString, WalletView*>::const_iterator i;
+    for (i = mapWalletViews.constBegin(); i != mapWalletViews.constEnd(); ++i)
+        i.value()->gotoMessagesPage();
+}
+
+void WalletFrame::gotoInvoicesPage()
+{
+    QMap<QString, WalletView*>::const_iterator i;
+    for (i = mapWalletViews.constBegin(); i != mapWalletViews.constEnd(); ++i)
+        i.value()->gotoInvoicesPage();
+}
+
+void WalletFrame::gotoReceiptPage()
+{
+    QMap<QString, WalletView*>::const_iterator i;
+    for (i = mapWalletViews.constBegin(); i != mapWalletViews.constEnd(); ++i)
+        i.value()->gotoReceiptPage();
+}
+    
+void WalletFrame::gotoChatPage()
+{
+    QMap<QString, WalletView*>::const_iterator i;
+    for (i = mapWalletViews.constBegin(); i != mapWalletViews.constEnd(); ++i)
+        i.value()->gotoChatPage();
+}
+
+void WalletFrame::gotoExchangeBrowserPage()
+{
+    QMap<QString, WalletView*>::const_iterator i;
+    for (i = mapWalletViews.constBegin(); i != mapWalletViews.constEnd(); ++i)
+        i.value()->gotoExchangeBrowserPage();
+}
+
 void WalletFrame::gotoReceiveCoinsPage()
 {
     QMap<QString, WalletView*>::const_iterator i;
@@ -133,13 +182,6 @@ void WalletFrame::gotoBlockBrowser()
         i.value()->gotoBlockBrowser();
 }
 
-void WalletFrame::gotoPoolBrowser()
-{
-    QMap<QString, WalletView*>::const_iterator i;
-    for (i = mapWalletViews.constBegin(); i != mapWalletViews.constEnd(); ++i)
-        i.value()->gotoPoolBrowser();
-}
-
 void WalletFrame::gotoBankStatisticsPage()
 {
     QMap<QString, WalletView*>::const_iterator i;
@@ -152,6 +194,13 @@ void WalletFrame::gotoSendCoinsPage(QString addr)
     QMap<QString, WalletView*>::const_iterator i;
     for (i = mapWalletViews.constBegin(); i != mapWalletViews.constEnd(); ++i)
         i.value()->gotoSendCoinsPage(addr);
+}
+
+void WalletFrame::gotoVoteCoinsPage(QString addr)
+{
+    QMap<QString, WalletView*>::const_iterator i;
+    for (i = mapWalletViews.constBegin(); i != mapWalletViews.constEnd(); ++i)
+        i.value()->gotoVoteCoinsPage(addr);
 }
 
 void WalletFrame::gotoBankCoinsPage(QString addr)

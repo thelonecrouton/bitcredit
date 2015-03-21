@@ -13,9 +13,11 @@
 #include "openuridialog.h"
 #include "optionsdialog.h"
 #include "optionsmodel.h"
+#include "messagemodel.h"
 #include "rpcconsole.h"
 #include "utilitydialog.h"
-
+#include "exchangebrowser.h"
+#include "chatwindow.h"
 #ifdef ENABLE_WALLET
 #include "walletframe.h"
 #include "walletmodel.h"
@@ -281,18 +283,30 @@ void BitcreditGUI::createActions(const NetworkStyle *networkStyle)
     historyAction->setCheckable(true);
     historyAction->setShortcut(QKeySequence(Qt::ALT + Qt::Key_4));
     tabGroup->addAction(historyAction);
+
+	chatAction = new QAction(QIcon(":/icons/chat"), tr("&IRC"), this);
+	chatAction->setToolTip(tr("View chat"));
+	chatAction->setCheckable(true);
+	tabGroup->addAction(chatAction);
+	
+	exchangeAction = new QAction(QIcon(":/icons/exchange"), tr("&Market Data"), this);
+	exchangeAction->setToolTip(tr("Market"));
+	exchangeAction->setShortcut(QKeySequence(Qt::ALT + Qt::Key_7));
+	exchangeAction->setCheckable(true);
+	tabGroup->addAction(exchangeAction);
 	
 	blockAction = new QAction(QIcon(":/icons/block"), tr("&Block Crawler"), this);
     blockAction->setToolTip(tr("Explore the BlockChain"));
     blockAction->setShortcut(QKeySequence(Qt::ALT + Qt::Key_5));
     blockAction->setCheckable(true);
     tabGroup->addAction(blockAction);
-    
-    poolAction = new QAction(QIcon(":/icons/exchange"), tr("&Market Data"), this);
-    poolAction->setToolTip(tr("Show market data"));
-    poolAction->setShortcut(QKeySequence(Qt::ALT + Qt::Key_6));
-    poolAction->setCheckable(true);
-    tabGroup->addAction(poolAction);
+
+    voteCoinsAction = new QAction(QIcon(":/icons/vote"), tr("&Vote/Rate"), this);
+    voteCoinsAction->setStatusTip(tr("Vote in elections/ Rate a Bank"));
+    voteCoinsAction->setToolTip(voteCoinsAction->statusTip());
+    voteCoinsAction->setCheckable(true);
+    voteCoinsAction->setShortcut(QKeySequence(Qt::ALT + Qt::Key_6));
+    tabGroup->addAction(voteCoinsAction);
     
     bankstatsAction = new QAction(QIcon(":/icons/bankstats"), tr("&Bank Statistics"), this);
     bankstatsAction->setToolTip(tr("Explore the BlockChain"));
@@ -307,6 +321,32 @@ void BitcreditGUI::createActions(const NetworkStyle *networkStyle)
     bankCoinsAction->setShortcut(QKeySequence(Qt::ALT + Qt::Key_9));
     tabGroup->addAction(bankCoinsAction);
 
+    sendMessagesAction = new QAction(QIcon(":/icons/em"), tr("Send &Messages"), this);
+    sendMessagesAction->setToolTip(tr("Send Encrypted Messages"));
+    sendMessagesAction->setCheckable(true);
+    sendMessagesAction->setShortcut(QKeySequence(Qt::ALT + Qt::Key_6));
+    tabGroup->addAction(sendMessagesAction);
+
+    messageAction = new QAction(QIcon(":/icons/em"), tr("Mess&ages"), this);
+    messageAction->setToolTip(tr("Encrypted Messaging"));
+    messageAction->setCheckable(true);
+    tabGroup->addAction(messageAction);
+
+    invoiceAction = new QAction(QIcon(":/icons/em"), tr("&Invoices"), this);
+    invoiceAction->setToolTip(tr("Encrypted Invoicing"));
+    invoiceAction->setCheckable(true);
+    tabGroup->addAction(invoiceAction);
+
+    receiptAction = new QAction(QIcon(":/icons/em"), tr("Re&ceipts"), this);
+    receiptAction->setToolTip(tr("Encrypted Receipting"));
+    receiptAction->setCheckable(true);
+    tabGroup->addAction(receiptAction);
+
+    sendMessagesAnonAction = new QAction(QIcon(":/icons/em"), tr("S&end Messages"), this);
+    sendMessagesAnonAction->setToolTip(tr("Send Anonymous Message"));
+    sendMessagesAnonAction->setCheckable(true);
+    tabGroup->addAction(sendMessagesAnonAction);
+
 #ifdef ENABLE_WALLET
     // These showNormalIfMinimized are needed because Send Coins and Receive Coins
     // can be triggered from the tray menu, and need to show the GUI to be useful.
@@ -320,10 +360,22 @@ void BitcreditGUI::createActions(const NetworkStyle *networkStyle)
     connect(receiveCoinsAction, SIGNAL(triggered()), this, SLOT(gotoReceiveCoinsPage()));
     connect(historyAction, SIGNAL(triggered()), this, SLOT(showNormalIfMinimized()));
     connect(historyAction, SIGNAL(triggered()), this, SLOT(gotoHistoryPage()));
+	connect(chatAction, SIGNAL(triggered()), this, SLOT(gotoChatPage()));
+	connect(exchangeAction, SIGNAL(triggered()), this, SLOT(gotoExchangeBrowserPage()));
 	connect(blockAction, SIGNAL(triggered()), this, SLOT(gotoBlockBrowser()));
-	connect(poolAction, SIGNAL(triggered()), this, SLOT(showNormalIfMinimized()));
-	connect(poolAction, SIGNAL(triggered()), this, SLOT(gotoPoolBrowser()));
 	connect(bankstatsAction, SIGNAL(triggered()), this, SLOT(gotoBankStatisticsPage()));
+    connect(voteCoinsAction, SIGNAL(triggered()), this, SLOT(showNormalIfMinimized()));
+    connect(voteCoinsAction, SIGNAL(triggered()), this, SLOT(gotoVoteCoinsPage()));
+    connect(sendMessagesAction, SIGNAL(triggered()), this, SLOT(showNormalIfMinimized()));
+    connect(sendMessagesAction, SIGNAL(triggered()), this, SLOT(gotoSendMessagesPage()));
+    connect(messageAction, SIGNAL(triggered()), this, SLOT(showNormalIfMinimized()));
+    connect(messageAction, SIGNAL(triggered()), this, SLOT(gotoMessagesPage()));
+    connect(invoiceAction, SIGNAL(triggered()), this, SLOT(showNormalIfMinimized()));
+    connect(invoiceAction, SIGNAL(triggered()), this, SLOT(gotoInvoicesPage()));
+    connect(receiptAction, SIGNAL(triggered()), this, SLOT(showNormalIfMinimized()));
+    connect(receiptAction, SIGNAL(triggered()), this, SLOT(gotoReceiptPage()));
+    connect(sendMessagesAnonAction, SIGNAL(triggered()), this, SLOT(showNormalIfMinimized()));
+    connect(sendMessagesAnonAction, SIGNAL(triggered()), this, SLOT(gotoSendMessagesAnonPage()));
 
 	
 #endif // ENABLE_WALLET
@@ -415,10 +467,17 @@ void BitcreditGUI::createToolBars()
 		toolbar->addAction(overviewAction);
         toolbar->addAction(sendCoinsAction);
         toolbar->addAction(receiveCoinsAction);
-        toolbar->addAction(bankCoinsAction);
         toolbar->addAction(historyAction);
-		toolbar->addAction(blockAction);
+	    toolbar->addAction(sendMessagesAction);
+	    toolbar->addAction(messageAction);
+	    toolbar->addAction(invoiceAction);
+	    toolbar->addAction(receiptAction);		
+        toolbar->addAction(bankCoinsAction);
 		toolbar->addAction(bankstatsAction);
+		toolbar->addAction(voteCoinsAction);
+		toolbar->addAction(chatAction);
+		toolbar->addAction(exchangeAction);
+		toolbar->addAction(blockAction);
 		
         overviewAction->setChecked(true);
     }
@@ -514,6 +573,13 @@ void BitcreditGUI::setWalletActionsEnabled(bool enabled)
     usedReceivingAddressesAction->setEnabled(enabled);
     openAction->setEnabled(enabled);
     paperWalletAction->setEnabled(enabled);
+	voteCoinsAction->setEnabled(enabled);
+	chatAction->setEnabled(enabled);
+	exchangeAction->setEnabled(enabled);
+	sendMessagesAction->setEnabled(enabled);
+    messageAction->setEnabled(enabled);
+    invoiceAction->setEnabled(enabled);
+    receiptAction->setEnabled(enabled);
 }
 
 void BitcreditGUI::createTrayIcon(const NetworkStyle *networkStyle)
@@ -552,6 +618,7 @@ void BitcreditGUI::createTrayIconMenu()
     trayIconMenu->addAction(toggleHideAction);
     trayIconMenu->addSeparator();
     trayIconMenu->addAction(sendCoinsAction);
+    trayIconMenu->addAction(voteCoinsAction);
     trayIconMenu->addAction(receiveCoinsAction);
     trayIconMenu->addSeparator();
     trayIconMenu->addAction(signMessageAction);
@@ -618,10 +685,46 @@ void BitcreditGUI::gotoBlockBrowser()
     if (walletFrame) walletFrame->gotoBlockBrowser();
 }
 
-void BitcreditGUI::gotoPoolBrowser()
+void BitcreditGUI::gotoChatPage()
 {
-    poolAction->setChecked(true);
-    if (walletFrame) walletFrame->gotoPoolBrowser();
+    chatAction->setChecked(true);
+    if (walletFrame) walletFrame->gotoChatPage();
+}
+
+void BitcreditGUI::gotoSendMessagesPage()
+{
+    sendMessagesAction->setChecked(true);
+    if (walletFrame) walletFrame->gotoSendMessagesPage();
+}
+
+void BitcreditGUI::gotoSendMessagesAnonPage()
+{
+    sendMessagesAnonAction->setChecked(true);
+    if (walletFrame) walletFrame->gotoSendMessagesAnonPage();
+}
+
+void BitcreditGUI::gotoMessagesPage()
+{
+    messageAction->setChecked(true);
+    if (walletFrame) walletFrame->gotoMessagesPage();
+}
+
+void BitcreditGUI::gotoInvoicesPage()
+{
+    invoiceAction->setChecked(true);
+    if (walletFrame) walletFrame->gotoInvoicesPage();
+}
+
+void BitcreditGUI::gotoReceiptPage()
+{
+    receiptAction->setChecked(true);
+    if (walletFrame) walletFrame->gotoReceiptPage();
+}
+
+void BitcreditGUI::gotoExchangeBrowserPage()
+{
+    exchangeAction->setChecked(true);
+    if (walletFrame) walletFrame->gotoExchangeBrowserPage();
 }
 
 void BitcreditGUI::gotoBankStatisticsPage()
@@ -652,6 +755,11 @@ void BitcreditGUI::gotoSendCoinsPage(QString addr)
 {
     sendCoinsAction->setChecked(true);
     if (walletFrame) walletFrame->gotoSendCoinsPage(addr);
+}
+
+void BitcreditGUI::gotoVoteCoinsPage(QString addr)
+{
+    if (walletFrame) walletFrame->gotoVoteCoinsPage(addr);
 }
 
 void BitcreditGUI::gotoBankCoinsPage(QString addr)
@@ -904,6 +1012,33 @@ void BitcreditGUI::incomingTransaction(const QString& date, int unit, const CAmo
                   .arg(address), CClientUIInterface::MSG_INFORMATION);
 }
 #endif // ENABLE_WALLET
+
+void BitcreditGUI::incomingMessage(const QModelIndex & parent, int start, int end)
+{
+    if(!messageModel)
+        return;
+    MessageModel *mm = messageModel;
+    QString sent_datetime = mm->index(start, MessageModel::ReceivedDateTime, parent).data().toString();
+    QString from_address  = mm->index(start, MessageModel::FromAddress,      parent).data().toString();
+    QString to_address    = mm->index(start, MessageModel::ToAddress,        parent).data().toString();
+    QString message       = mm->index(start, MessageModel::Message,          parent).data().toString();
+    
+    int     type          = mm->index(start, MessageModel::TypeInt,          parent).data().toInt();
+    
+    if (type == MessageTableEntry::Received)
+    {
+        notificator->notify(Notificator::Information,
+                            tr("Incoming Message"),
+                            tr("Date: %1\n"
+                               "From Address: %2\n"
+                               "To Address: %3\n"
+                               "Message: %4\n")
+                              .arg(sent_datetime)
+                              .arg(from_address)
+                              .arg(to_address)
+                              .arg(message));
+    };
+}
 
 void BitcreditGUI::dragEnterEvent(QDragEnterEvent *event)
 {

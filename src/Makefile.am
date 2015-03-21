@@ -1,7 +1,6 @@
 DIST_SUBDIRS = secp256k1
 AM_LDFLAGS = $(PTHREAD_CFLAGS) $(LIBTOOL_LDFLAGS)
 
-
 if EMBEDDED_LEVELDB
 LEVELDB_CPPFLAGS += -I$(srcdir)/leveldb/include
 LEVELDB_CPPFLAGS += -I$(srcdir)/leveldb/helpers/memenv
@@ -104,11 +103,13 @@ BITCREDIT_CORE_H = \
   keystore.h \
   leveldbwrapper.h \
   limitedmap.h \
+  lz4/lz4.h \
   main.h \
   masternode.h \
   masternodeconfig.h \
   merkleblock.h \
   miner.h \
+  momentum.h \
   mruset.h \
   netbase.h \
   net.h \
@@ -118,6 +119,7 @@ BITCREDIT_CORE_H = \
   pubkey.h \
   random.h \
   rpcclient.h \
+  rpcsmessage.h \
   rpcprotocol.h \
   rpcserver.h \
   script/interpreter.h \
@@ -126,7 +128,9 @@ BITCREDIT_CORE_H = \
   script/sign.h \
   script/standard.h \
   script/script_error.h \
+  semiOrderedMap.h \
   serialize.h \
+  smessage.h \
   streams.h \
   spork.h \
   sync.h \
@@ -143,14 +147,14 @@ BITCREDIT_CORE_H = \
   utilmoneystr.h \
   utiltime.h \
   version.h \
+  voting.h \
   wallet.h \
-  momentum.h \
-  semiOrderedMap.h \
   wallet_ismine.h \
   walletdb.h \
   irc.h \
   strlcpy.h \
-  compat/sanity.h
+  compat/sanity.h \
+  xxhash/xxhash.h 
 
 JSON_H = \
   json/json_spirit.h \
@@ -180,6 +184,7 @@ libbitcredit_server_a_SOURCES = \
   checkpoints.cpp \
   init.cpp \
   leveldbwrapper.cpp \
+  lz4/lz4.c \
   main.cpp \
   merkleblock.cpp \
   miner.cpp \
@@ -190,15 +195,18 @@ libbitcredit_server_a_SOURCES = \
   rest.cpp \
   rpcblockchain.cpp \
   rpcdarksend.cpp \
+  rpcsmessage.cpp \
   rpcmining.cpp \
   rpcmisc.cpp \
   rpcnet.cpp \
   rpcrawtransaction.cpp \
   rpcserver.cpp \
   script/sigcache.cpp \
+  smessage.cpp \
   timedata.cpp \
   txdb.cpp \
   txmempool.cpp \
+  xxhash/xxhash.c \
   $(JSON_H) \
   $(BITCREDIT_CORE_H)
 
@@ -274,6 +282,7 @@ libbitcredit_common_a_SOURCES = \
   script/sign.cpp \
   script/standard.cpp \
   script/script_error.cpp \
+  voting.cpp \
   $(BITCREDIT_CORE_H)
 
 # util: shared between all executables.

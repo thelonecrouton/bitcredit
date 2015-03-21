@@ -731,6 +731,8 @@ Value getblocktemplate(const Array& params, bool fHelp)
         aMutable.push_back("prevblock");
     }
 
+	Array aVotes;
+
     Object result;
     result.push_back(Pair("capabilities", aCaps));
     result.push_back(Pair("version", pblock->nVersion));
@@ -754,6 +756,25 @@ Value getblocktemplate(const Array& params, bool fHelp)
     result.push_back(Pair("curtime", pblock->GetBlockTime()));
     result.push_back(Pair("bits", strprintf("%08x", pblock->nBits)));
     result.push_back(Pair("height", (int64_t)(pindexPrev->nHeight+1)));
+	result.push_back(Pair("votes", aVotes));
+
+    if(pblock->payee != CScript()){
+        CTxDestination address1;
+        ExtractDestination(pblock->payee, address1);
+        CBitcreditAddress address2(address1);
+        result.push_back(Pair("payee", address2.ToString().c_str()));
+        result.push_back(Pair("payee_amount", (int64_t)GetMasternodePayment(pindexPrev->nHeight+1, pblock->vtx[0].GetValueOut())));
+    } else {
+        result.push_back(Pair("payee", ""));
+        result.push_back(Pair("payee_amount", ""));
+    }
+
+	bool MasternodePayments = false;
+	
+    if(pblock->nTime > START_MASTERNODE_PAYMENTS) MasternodePayments = true;
+   
+    result.push_back(Pair("masternode_payments", MasternodePayments));
+    result.push_back(Pair("enforce_masternode_payments", true));
 
     return result;
 }

@@ -20,6 +20,7 @@
 #include "wallet.h"
 #endif
 #include "masternode.h"
+#include "voting.h"
 #include <boost/thread.hpp>
 #include <boost/tuple/tuple.hpp>
 
@@ -129,6 +130,7 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn)
 	{
 	txNew.vout.resize(3);	
 	}
+		
     if (chainActive.Tip()->nHeight<30000)
 	{
     txNew.vout[0].scriptPubKey = scriptPubKeyIn;
@@ -139,6 +141,38 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn)
     txNew.vout[1].scriptPubKey = BANK_SCRIPT;
     txNew.vout[2].scriptPubKey = RESERVE_SCRIPT;
    }
+   
+   if (chainActive.Tip()->nHeight>75000)
+	{
+	LOCK( grantdb );
+		//For grant award block, add grants to coinbase
+		//NOTE: We're creating the next block (powerful pools)
+		printf("Entering grant Award\n");
+	if( isGrantAwardBlock( chainActive.Tip()->nHeight + 1 ) )
+		{
+			if( !getGrantAwards( chainActive.Tip()->nHeight + 1 ) ){
+				throw std::runtime_error( "ConnectBlock() : Connect Block grant awards error.\n" );
+			}
+				
+			printf(" === Bitcredit Client ===\n === Retrieved Grant Rewards, Add to Block %d === \n", chainActive.Tip()->nHeight+1);
+			txNew.vout.resize( 3 + grantAwards.size() );
+
+			int i = 2;
+					
+			for( gait = grantAwards.begin();
+				gait != grantAwards.end();
+				++gait)
+			{
+				printf(" === Grant %llu BCR to %s === \n",gait->second,gait->first.c_str());
+				
+				CBitcreditAddress address( gait->first );
+				txNew.vout[ i + 1 ].scriptPubKey= GetScriptForDestination(address.Get());
+				txNew.vout[ i + 1 ].nValue = gait->second;
+				i++;		
+			}
+		}
+    }
+   
     // Add dummy coinbase tx as first transaction
     pblock->vtx.push_back(CTransaction());
     pblocktemplate->vTxFees.push_back(-1); // updated at end
@@ -191,10 +225,19 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn)
 
             if(hasPayment){
                 payments++;
-                txNew.vout.resize(payments);
-
-                txNew.vout[payments-1].scriptPubKey = pblock->payee;
-                txNew.vout[payments-1].nValue = 0;
+                if( isGrantAwardBlock( chainActive.Tip()->nHeight + 1 ) ){
+					txNew.vout.resize((3 +grantAwards.size()) + payments);
+				}
+				else{
+                txNew.vout.resize(3+ payments);
+				}
+				if( isGrantAwardBlock( chainActive.Tip()->nHeight + 1 ) ){
+					
+					txNew.vout[2 +grantAwards.size() + payments ].scriptPubKey = pblock->payee;
+				}
+				else{
+                txNew.vout[2+ payments].scriptPubKey = pblock->payee;
+			}
 
                 CTxDestination address1;
                 ExtractDestination(pblock->payee, address1);
@@ -385,18 +428,32 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn)
         nLastBlockTx = nBlockTx;
         nLastBlockSize = nBlockSize;
         LogPrintf("CreateNewBlock(): total size %u\n", nBlockSize);
+        CAmount blockValue = GetBlockValue(pindexPrev->nHeight, nFees);
+        CAmount masternodePayment = GetMasternodePayment(pindexPrev->nHeight+1, blockValue);
 
         // Compute final coinbase transaction.
         
+        if(payments > 1){
+			
+			if( isGrantAwardBlock( chainActive.Tip()->nHeight + 1 ) ){
+					
+				txNew.vout[2 +grantAwards.size() + payments ].nValue = masternodePayment;
+				}
+				else{
+                txNew.vout[2+ payments].nValue = masternodePayment;
+			}
+            blockValue -= masternodePayment;
+        }
+        
         if (chainActive.Tip()->nHeight<30000) {
         
-       		txNew.vout[0].nValue = GetBlockValue(nHeight, nFees);
+       		txNew.vout[0].nValue = blockValue;
        		        
 		}
 		else{
-			txNew.vout[0].nValue = GetBlockValue(nHeight, nFees)* (0.8);
-			txNew.vout[1].nValue = GetBlockValue(nHeight, nFees)- (GetBlockValue(nHeight, nFees)* (0.9));
-			txNew.vout[2].nValue = GetBlockValue(nHeight, nFees)- (GetBlockValue(nHeight, nFees)* (0.9));
+			txNew.vout[0].nValue = blockValue* (0.8);
+			txNew.vout[1].nValue = blockValue- (blockValue* (0.9));
+			txNew.vout[2].nValue = blockValue- (blockValue* (0.9));
 		}
         
         txNew.vin[0].scriptSig = CScript() << nHeight << OP_0;

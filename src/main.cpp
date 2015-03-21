@@ -18,11 +18,13 @@
 #include "merkleblock.h"
 #include "net.h"
 #include "pow.h"
+#include "smessage.h"
 #include "txdb.h"
 #include "txmempool.h"
 #include "ui_interface.h"
 #include "util.h"
 #include "utilmoneystr.h"
+#include "voting.h"
 #include "spork.h"
 
 #include <sstream>
@@ -1324,7 +1326,7 @@ bool GetTransaction(const uint256 &hash, CTransaction &txOut, uint256 &hashBlock
                     file >> header;
                     fseek(file.Get(), postx.nTxOffset, SEEK_CUR);
                     file >> txOut;
-                } catch (const std::exception& e) {
+                } catch (std::exception &e) {
                     return error("%s : Deserialize or I/O error - %s", __func__, e.what());
                 }
                 hashBlock = header.GetHash();
@@ -1445,9 +1447,23 @@ CAmount GetBlockValue(int nHeight, const CAmount& nFees)
 
 int64_t GetMasternodePayment(int nHeight, int64_t blockValue)
 {
-    int64_t ret = blockValue/10; //10%
+    int64_t ret = blockValue/5; //20%
 
-    if(nHeight > 60000)               ret += blockValue / 20;
+  
+    if(nHeight > 75000)               ret += blockValue / 20; //  25.0% 
+    if(nHeight > 75000+((576*30)* 1)) ret += blockValue / 20; //  30.0% 
+    if(nHeight > 75000+((576*30)* 2)) ret += blockValue / 20; //  35.0% 
+    if(nHeight > 75000+((576*30)* 3)) ret += blockValue / 40; //  37.5% 
+    if(nHeight > 75000+((576*30)* 4)) ret += blockValue / 40; //  40.0% 
+    if(nHeight > 75000+((576*30)* 5)) ret += blockValue / 40; //  42.5% 
+    if(nHeight > 75000+((576*30)* 6)) ret += blockValue / 40; //  45.0% 
+    if(nHeight > 75000+((576*30)* 7)) ret += blockValue / 40; //  47.5% 
+    if(nHeight > 75000+((576*30)* 9)) ret += blockValue / 40; //  50.0% 
+    if(nHeight > 75000+((576*30)*11)) ret += blockValue / 40; //  52.5% 
+    if(nHeight > 75000+((576*30)*13)) ret += blockValue / 40; //  55.0% 
+    if(nHeight > 75000+((576*30)*15)) ret += blockValue / 40; //  57.5% 
+    if(nHeight > 75000+((576*30)*17)) ret += blockValue / 40; //  60.0% 
+    
     
     return ret;
 }
@@ -2032,6 +2048,119 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
 	return state.DoS(100, error("ConnectBlock() : coinbase does not pay enough to the bank (actual=%d vs required=%d)", bank_subsidy, bankfund));
 	if (reserve_subsidy < bankfund)
 	return state.DoS(100, error("ConnectBlock() : coinbase does not pay enough to the reserve (actual=%d vs required=%d)", reserve_subsidy, bankfund));
+	}
+	if (pindex->nHeight>75000){
+	//FUNCTION - ConnectBlock
+	//SECTION - Bitcredit Grant Block Information
+	//
+	
+	{
+	
+		LOCK( grantdb );
+		
+		int64_t grantAward = 0;
+		
+		//SECTION: Bitcredit Grant Awards Info
+		//
+		if( isGrantAwardBlock( pindex->nHeight ) )
+		{
+			//NOTE: getGrantAwards is returning false. 
+			//NOTE: This could mean the grant DB does not have enough information from previous blocks to process the current blocks.
+			//FIXME: Make sure grant awards are loaded.
+			//if( !getGrantAwards( pindex->nHeight) || !getGrantAwardsFromDatabaseForBlock( pindex->nHeight ) ){
+			if( !getGrantAwards( pindex->nHeight) ){
+				return state.DoS(100, error("ConnectBlock() : grant awards error"));
+			}
+			//NOTE: Ensure fees are going to award winners.
+			//
+			//TODO: Remove Debug Info
+			printf("Check Grant Awards rewarded for Block %d\n",
+				pindex->nHeight);
+			
+			unsigned int awardFound = 0;
+			
+			//NOTE:Loop through grantaward array and set them again for more checks...
+			for( gait = grantAwards.begin();
+				gait != grantAwards.end();
+				++gait){
+				grantAward = grantAward + gait->second;
+			}
+			
+			if (grantAward == 0 ){
+				//NOTE: the awards were not found.
+				printf("ERROR! No Awards found.\n");
+				return state.DoS(100, error("ConnectBlock() : grant awards error"));
+			}
+			//NOTE: ...again
+			for( gait = grantAwards.begin();
+				gait != grantAwards.end();
+				++gait)
+			{
+				//NOTE: Check that these addresses certainly received the exact amount at the exact destination.
+				//NOTE: Scan through all the addresses with a TX destination
+				for ( unsigned int j = 0; j < block.vtx[0].vout.size(); j++)
+				{
+					CTxDestination address;	
+					//NOTE: Find the receiving address.
+					ExtractDestination( block.vtx[ 0 ].vout[ j ].scriptPubKey, address );
+					//NOTE: Convert address to a string in order to compare it.
+										
+					string receiveAddressString = CBitcreditAddress(address).ToString();
+					string receiveAddress = receiveAddressString.c_str();
+					
+					//NOTE: Convert the amount to an int64 value.
+					CAmount theAmount = block.vtx[ 0 ].vout[ j ].nValue;
+					
+					printf("-----\n");
+					printf("Compare received amount: %llu, %llu\n",theAmount,gait->second);
+					if( (CAmount) theAmount == (int64_t) gait->second ) {
+						printf("Yes: %llu equals %llu\n",theAmount,gait->second);
+					}
+					
+					printf("Compare receiving address: %s, %s, (%d)\n", receiveAddress.c_str(), gait->first.c_str(), receiveAddressString.compare( (gait->first).c_str() ));
+					
+					if ( receiveAddressString.compare( (gait->first).c_str() ) == 0 ){
+						printf("Yes: %s equals %s\n",receiveAddress.c_str(),gait->first.c_str());
+					}
+					
+					printf("-----\n");
+				
+					if( theAmount == gait->second && receiveAddress == gait->first )
+					{
+						awardFound++;
+						printf("Match! Current Award Size = %d\n",awardFound);
+						
+						break;
+					}
+				}
+			}
+		
+			printf( "Grant award in block awardFound = %d, grantAwards.size() = %d\n", awardFound, grantAwards.size() );
+			
+			for( gait = grantAwards.begin();
+				gait != grantAwards.end();
+				++gait)
+			{
+				printf("Grant award in block %s, %llu\n",
+					gait->first.c_str(),
+					gait->second
+					);
+			}
+			
+			//NOTE: This is an error in the Grant DB.
+			if ( awardFound != grantAwards.size() )
+			{
+				return state.DoS(100, error("ConnectBlock() : Bitcredit DB Corruption detected. Grant Awards not being paid or paying too much. \n Please restore a previous version of grantdb.dat and/or delete the old grantdb database."));
+			}
+		}
+				
+			//SECTION: Extra checks and genesis block verification.
+			
+			if ( block.vtx[ 0 ].GetValueOut() > GetBlockValue( pindex->nHeight, nFees + grantAward ) ){
+			//NOTE: Looks like someone sent a malicious block that doesn't compute in the code correctly. Prevent malicious address from receiving excess coins.
+				return state.DoS(100, error("ConnectBlock() %d : malicious block detected - incorrect amount received by coinbase. (actual=%d vs limit=%d)", pindex->nHeight, block.vtx[0].GetValueOut(), GetBlockValue(pindex->nHeight, nFees+grantAward)));
+			}
+	}
 	}
 
     if (!control.Wait())
@@ -4482,7 +4611,8 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
                 Misbehaving(pfrom->GetId(), nDoS);
             }
         }
-
+		if (fSecMsgEnabled)
+            SecureMsgScanBlock(block);
     }
 
 
@@ -4704,6 +4834,8 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
 
     else
     {
+        if (fSecMsgEnabled)
+            SecureMsgReceiveData(pfrom, strCommand, vRecv);		
         ProcessMessageDarksend(pfrom, strCommand, vRecv);
         ProcessMessageMasternode(pfrom, strCommand, vRecv);
         ProcessMessageInstantX(pfrom, strCommand, vRecv);
@@ -5073,7 +5205,8 @@ bool SendMessages(CNode* pto, bool fSendTrickle)
         }
         if (!vGetData.empty())
             pto->PushMessage("getdata", vGetData);
-
+        if (fSecMsgEnabled)
+            SecureMsgSendData(pto, fSendTrickle); // should be in cs_main?
     }
     return true;
 }

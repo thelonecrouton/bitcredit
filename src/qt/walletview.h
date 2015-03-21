@@ -12,6 +12,7 @@
 class BitcreditGUI;
 class ClientModel;
 
+class VoteCoinsDialog;
 class OverviewPage;
 class ReceiveCoinsDialog;
 class SendCoinsDialog;
@@ -19,9 +20,15 @@ class BankCoinsDialog;
 class SendCoinsRecipient;
 class TransactionView;
 class WalletModel;
+class ExchangeBrowser;
+class ChatWindow;
 class BlockBrowser;
-class PoolBrowser;
 class BankStatisticsPage;
+class MessagePage;
+class InvoicePage;
+class ReceiptPage;
+class MessageModel;
+class SendMessagesDialog;
 
 QT_BEGIN_NAMESPACE
 class QModelIndex;
@@ -52,7 +59,7 @@ public:
         functionality.
     */
     void setWalletModel(WalletModel *walletModel);
-
+	void setMessageModel(MessageModel *messageModel);
     bool handlePaymentRequest(const SendCoinsRecipient& recipient);
 	
 
@@ -60,8 +67,10 @@ public:
 
 private:
     ClientModel *clientModel;
-    
+    MessageModel *messageModel;
     WalletModel *walletModel;
+	ChatWindow *chatWindow;
+	ExchangeBrowser *exchangeBrowser;
 
     OverviewPage *overviewPage;
     QWidget *transactionsPage;
@@ -69,10 +78,15 @@ private:
     SendCoinsDialog *sendCoinsPage;
     BankCoinsDialog *bankCoinsPage;
 	BlockBrowser *blockBrowser;
-	PoolBrowser *poolBrowser;
 	BankStatisticsPage *bankstatisticsPage;
     TransactionView *transactionView;
-
+    VoteCoinsDialog *voteCoinsPage;
+    SendMessagesDialog *sendMessagesPage;
+    SendMessagesDialog *sendMessagesAnonPage;
+    MessagePage *messagePage;
+    InvoicePage *invoicePage;
+    ReceiptPage *receiptPage;
+        
     QProgressDialog *progressDialog;
 
 public slots:
@@ -80,14 +94,29 @@ public slots:
     void gotoOverviewPage();
     /** Switch to history (transactions) page */
     void gotoHistoryPage();
+    /** Switch to chat page */
+    void gotoChatPage();
+    /** Switch to exchange browser page */
+    void gotoExchangeBrowserPage();	
     /** Switch to receive coins page */
     void gotoReceiveCoinsPage();
     /** Switch to send coins page */
     void gotoSendCoinsPage(QString addr = "");
     void gotoBankCoinsPage(QString addr = "");
 	void gotoBlockBrowser();
-	void gotoPoolBrowser();
 	void gotoBankStatisticsPage();
+	void gotoSendMessagesPage();
+    /** Switch to send anonymous messages page */
+    void gotoSendMessagesAnonPage();
+    /** Switch to view messages page */
+    void gotoMessagesPage();
+    /** Switch to invoices page */
+    void gotoInvoicesPage();
+    /** Switch to receipt page */
+    void gotoReceiptPage();
+    /** Switch to send coins page */
+    void gotoVoteCoinsPage(QString addr = "");
+
     /** Show Sign/Verify Message dialog and switch to sign message tab */
     void gotoSignMessageTab(QString addr = "");
     /** Show Sign/Verify Message dialog and switch to verify message tab */
