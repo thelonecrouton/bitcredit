@@ -5,6 +5,7 @@
 #include "messagemodel.h"
 #include "addressbookpage.h"
 #include "optionsmodel.h"
+#include "guiutil.h"
 #include "sendmessagesentry.h"
 //#include "guiutil.h"
 
@@ -183,7 +184,7 @@ void SendMessagesDialog::on_sendButton_clicked()
     QStringList formatted;
     foreach(const SendMessagesRecipient &rcp, recipients)
     {
-        formatted.append(tr("<b>%1</b> to %2 (%3)").arg(rcp.message, Qt::escape(rcp.label), rcp.address));
+        formatted.append(tr("<b>%1</b> to %2 (%3)").arg(rcp.message, GUIUtil::HtmlEscape(rcp.label), rcp.address));
     }
 
     fNewRecipientAllowed = false;
@@ -207,7 +208,7 @@ void SendMessagesDialog::on_sendButton_clicked()
     if(mode == SendMessagesDialog::Anonymous)
         sendstatus = model->sendMessages(recipients);
     else
-        sendstatus = model->sendMessages(recipients, ui->addressFrom->text());
+        //sendstatus = model->sendMessages(recipients, ui->addressFrom->text());
 
     switch(sendstatus)
     {

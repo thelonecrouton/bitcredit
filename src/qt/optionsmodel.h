@@ -46,6 +46,7 @@ public:
         DatabaseCache,          // int
         SpendZeroConfChange,    // bool
         Listen,                 // bool
+		EnableMessageSendConf, // bool
         DarksendRounds,    // int
         anonymizeBitcreditAmount, //int
         OptionIDRowCount,
@@ -69,7 +70,7 @@ public:
     bool getProxySettings(QNetworkProxy& proxy) const;
     bool getCoinControlFeatures() { return fCoinControlFeatures; }
     const QString& getOverriddenByCommandLine() { return strOverriddenByCommandLine; }
-
+	bool getEnableMessageSendConf();
     /* Restart flag helper */
     void setRestartRequired(bool fRequired);
     bool isRestartRequired();
@@ -85,7 +86,7 @@ private:
     bool fCoinControlFeatures;
     /* settings that were overriden by command-line */
     QString strOverriddenByCommandLine;
-
+	bool fEnableMessageSendConf;
     /// Add option to list of GUI options overridden through command line/config file
     void addOverriddenOption(const std::string &option);
 
@@ -94,6 +95,7 @@ signals:
     void darksendRoundsChanged(int);
     void anonymizeBitcreditAmountChanged(int);
     void coinControlFeaturesChanged(bool);
+    void enableMessageSendConfChanged(bool);
 };
 
 #endif // BITCREDIT_QT_OPTIONSMODEL_H

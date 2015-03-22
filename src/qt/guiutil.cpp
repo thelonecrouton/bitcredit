@@ -232,7 +232,7 @@ bool isDust(const QString& address, const CAmount& amount)
 QString HtmlEscape(const QString& str, bool fMultiLine)
 {
 #if QT_VERSION < 0x050000
-    QString escaped = Qt::escape(str);
+    QString escaped = GUIUtil::HtmlEscape(str);
 #else
     QString escaped = str.toHtmlEscaped();
 #endif

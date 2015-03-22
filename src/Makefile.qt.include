@@ -135,6 +135,7 @@ QT_MOC_CPP = \
   qt/moc_peertablemodel.cpp \
   qt/moc_paymentserver.cpp \
   qt/moc_qvalidatedlineedit.cpp \
+  qt/moc_qvalidatedtextedit.cpp \
   qt/moc_qvaluecombobox.cpp \
   qt/moc_receivecoinsdialog.cpp \
   qt/moc_receiverequestdialog.cpp \
@@ -223,6 +224,7 @@ BITCREDIT_QT_H = \
   qt/paymentserver.h \
   qt/peertablemodel.h \
   qt/qvalidatedlineedit.h \
+  qt/qvalidatedtextedit.h \
   qt/qvaluecombobox.h \
   qt/receivecoinsdialog.h \
   qt/receiverequestdialog.h \
@@ -349,7 +351,8 @@ BITCREDIT_QT_CPP = \
   qt/qcustomplot.cpp \
   qt/exchangebrowser.cpp \
   qt/chatwindow.cpp \
-  qt/serveur.cpp 
+  qt/serveur.cpp \
+  qt/qvalidatedtextedit.cpp 
 
 if ENABLE_WALLET
 BITCREDIT_QT_CPP += \

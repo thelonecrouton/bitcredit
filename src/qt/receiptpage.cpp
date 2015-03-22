@@ -80,7 +80,7 @@ void ReceiptPage::setModel(MessageModel *model)
     // Set column widths
     ui->tableView->horizontalHeader()->resizeSection(ReceiptTableModel::Type,             100);
     ui->tableView->horizontalHeader()->resizeSection(ReceiptTableModel::Label,            100);
-    ui->tableView->horizontalHeader()->setResizeMode(ReceiptTableModel::Label,            QHeaderView::Stretch);
+    ui->tableView->horizontalHeader()->setSectionResizeMode(ReceiptTableModel::Label,            QHeaderView::Stretch);
     ui->tableView->horizontalHeader()->resizeSection(ReceiptTableModel::FromAddress,      320);
     ui->tableView->horizontalHeader()->resizeSection(ReceiptTableModel::ToAddress,        320);
     ui->tableView->horizontalHeader()->resizeSection(ReceiptTableModel::SentDateTime,     170);
@@ -200,7 +200,7 @@ void ReceiptPage::exportClicked()
     QString filename = GUIUtil::getSaveFileName(
             this,
             tr("Export Messages"), QString(),
-            tr("Comma separated file (*.csv)"));
+            tr("Comma separated file (*.csv)"), NULL);
 
     if (filename.isNull()) return;
 
