@@ -204,7 +204,7 @@ signals:
 struct InvoiceItemTableEntry
 {
 
-    std::vector<unsigned char> vchKey;
+    std::vector<unsigned char> chKey;
     MessageTableEntry::Type type;
     QString code;
     QString description;
@@ -214,13 +214,13 @@ struct InvoiceItemTableEntry
 
     InvoiceItemTableEntry(){};
     InvoiceItemTableEntry(const bool newInvoice):
-        vchKey(0), type(MessageTableEntry::Sent), code(""), description(""), quantity(0), price(0)
+        chKey(0), type(MessageTableEntry::Sent), code(""), description(""), quantity(0), price(0)
     {
-        vchKey.resize(3);
-        memcpy(&vchKey[0], "new", 3);
+        chKey.resize(3);
+        memcpy(&chKey[0], "new", 3);
     };
-    InvoiceItemTableEntry(const std::vector<unsigned char> vchKey, MessageTableEntry::Type type, const QString &code, const QString &description, const int &quantity, const qint64 &price): //, const bool &tax):
-        vchKey(vchKey), type(type), code(code), description(description), quantity(quantity), price(price) {} //, tax(tax) {}
+    InvoiceItemTableEntry(const std::vector<unsigned char> chKey, MessageTableEntry::Type type, const QString &code, const QString &description, const int &quantity, const qint64 &price): //, const bool &tax):
+        chKey(chKey), type(type), code(code), description(description), quantity(quantity), price(price) {} //, tax(tax) {}
 };
 
 
@@ -399,7 +399,7 @@ struct ReceiptTableEntry
         memcpy(&chKey[0], "new", 3);
     };
 
-    ReceiptTableEntry(const std::vector<unsigned char> vchKey, MessageTableEntry::Type type, const QString &label, const QString &to_address, const QString &from_address,
+    ReceiptTableEntry(const std::vector<unsigned char> chKey, MessageTableEntry::Type type, const QString &label, const QString &to_address, const QString &from_address,
                       const QDateTime &sent_datetime, const QDateTime &received_datetime, const QString &invoice_number, const qint64 &amount):
         chKey(chKey), type(type), label(label), to_address(to_address), from_address(from_address), sent_datetime(sent_datetime), received_datetime(received_datetime),
         invoice_number(invoice_number), amount(amount)

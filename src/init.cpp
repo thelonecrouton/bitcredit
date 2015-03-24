@@ -359,7 +359,7 @@ std::string HelpMessage(HelpMessageMode mode)
     strUsage += "  -mnconf=<file>             " + _("Specify masternode configuration file (default: masternode.conf)") + "\n";
     strUsage += "  -masternodeprivkey=<n>     " + _("Set the masternode private key") + "\n";
     strUsage += "  -masternodeaddr=<n>        " + _("Set external address:port to get to this masternode (example: address:port)") + "\n";
-    strUsage += "  -masternodeminprotocol=<n> " + _("Ignore masternodes less than version (example: 70050; default : 0)") + "\n";
+    strUsage += "  -masternodeminprotocol=<n> " + _("Ignore masternodes less than version (example: 70007; default : 0)") + "\n";
 
     strUsage += "\n" + _("Darksend options:") + "\n";
     strUsage += "  -enabledarksend=<n>          " + _("Enable use of automated darksend for funds stored in this wallet (0-1, default: 0)") + "\n";
