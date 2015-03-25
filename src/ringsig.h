@@ -5,7 +5,7 @@
 #ifndef SDC_RINGSIG_H
 #define SDC_RINGSIG_H
 
-#include "state.h"
+#include "util.h"
 
 
 const uint32_t MIN_ANON_OUT_SIZE = 1 + 1 + 1 + 33 + 1 + 33; // OP_RETURN ANON_TOKEN lenPk pkTo lenR R [lenEnarr enarr]

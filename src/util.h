@@ -47,6 +47,7 @@ extern std::map<std::string, std::vector<std::string> > mapMultiArgs;
 extern bool fDebug;
 extern bool fDebugSmsg;
 extern bool fNoSmsg;
+extern bool fDebugRingSig;
 extern bool fPrintToConsole;
 extern bool fPrintToDebugLog;
 extern bool fServer;
@@ -54,7 +55,7 @@ extern std::string strMiscWarning;
 extern bool fLogTimestamps;
 extern bool fLogIPs;
 extern volatile bool fReopenDebugLog;
-
+extern bool fReindexing;
 void SetupEnvironment();
 
 /** Return true if log accepts specified category */

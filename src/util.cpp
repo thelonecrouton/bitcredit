@@ -113,6 +113,7 @@ map<string, string> mapArgs;
 map<string, vector<string> > mapMultiArgs;
 bool fDebug = false;
 bool fDebugSmsg = false;
+bool fDebugRingSig = false;
 bool fPrintToConsole = false;
 bool fPrintToDebugLog = true;
 bool fNoSmsg = false;
@@ -122,6 +123,7 @@ string strMiscWarning;
 bool fLogTimestamps = false;
 bool fLogIPs = false;
 volatile bool fReopenDebugLog = false;
+bool fReindexing = false;
 
 /** Init OpenSSL library multithreading support */
 static CCriticalSection** ppmutexOpenSSL;
