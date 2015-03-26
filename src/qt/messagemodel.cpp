@@ -99,10 +99,11 @@ public:
             leveldb::Iterator* it = dbSmsg.pdb->NewIterator(leveldb::ReadOptions());
             while (dbSmsg.NextSmesg(it, sPrefix, chKey, smsgStored))
             {
-                uint32_t nPayload = smsgStored.vchMessage.size() - SMSG_HDR_LEN;
-                if (SecureMsgDecrypt(false, smsgStored.sAddrTo, &smsgStored.vchMessage[0], &smsgStored.vchMessage[SMSG_HDR_LEN], nPayload, msg) == 0)
+                std::string errorMsg;
+                int error = SecureMsgDecrypt(smsgStored, msg, errorMsg);
+                if (!error)
                 {
-                    label = parent->getWalletModel()->getAddressTableModel()->labelForAddress(QString::fromStdString(msg.sFromAddress));
+                    label = parent->getWalletModel()->getAddressTableModel()->labelForAddress(QString(msg.sFromAddress.c_str()));
 
                     sent_datetime    .setTime_t(msg.timestamp);
                     received_datetime.setTime_t(smsgStored.timeReceived);
@@ -113,11 +114,11 @@ public:
                                                       MessageTableEntry::Received,
                                                       label,
                                                       QString::fromStdString(smsgStored.sAddrTo),
-                                                      QString::fromStdString(msg.sFromAddress),
+                                                      QString(msg.sFromAddress.c_str()),
                                                       sent_datetime,
                                                       received_datetime,
                                                       !(smsgStored.status & SMSG_MASK_UNREAD),
-                                                      (char*)&msg.vchMessage[0]),
+                                                      msg.sMessage.c_str()),
                                     true);
                 }
             };
@@ -128,8 +129,11 @@ public:
             it = dbSmsg.pdb->NewIterator(leveldb::ReadOptions());
             while (dbSmsg.NextSmesg(it, sPrefix, chKey, smsgStored))
             {
-                uint32_t nPayload = smsgStored.vchMessage.size() - SMSG_HDR_LEN;
-                if (SecureMsgDecrypt(false, smsgStored.sAddrOutbox, &smsgStored.vchMessage[0], &smsgStored.vchMessage[SMSG_HDR_LEN], nPayload, msg) == 0)
+                const unsigned char* pPayload = &smsgStored.vchMessage[SMSG_HDR_LEN];
+                SecureMessageHeader smsg(&smsgStored.vchMessage[0]);
+                memcpy(smsg.hash, Hash(&pPayload[0], &pPayload[smsg.nPayload]).begin(), 32);
+                int error = SecureMsgDecrypt(false, smsgStored.sAddrOutbox, smsg, pPayload, msg);
+                if (!error)
                 {
                     label = parent->getWalletModel()->getAddressTableModel()->labelForAddress(QString::fromStdString(smsgStored.sAddrTo));
 
@@ -142,11 +146,11 @@ public:
                                                       MessageTableEntry::Sent,
                                                       label,
                                                       QString::fromStdString(smsgStored.sAddrTo),
-                                                      QString::fromStdString(msg.sFromAddress),
+                                                      QString(msg.sFromAddress.c_str()),
                                                       sent_datetime,
                                                       received_datetime,
                                                       !(smsgStored.status & SMSG_MASK_UNREAD),
-                                                      (char*)&msg.vchMessage[0]),
+                                                      msg.sMessage.c_str()),
                                     true);
                 }
             };
@@ -164,32 +168,31 @@ public:
         QDateTime sent_datetime;
         QDateTime received_datetime;
 
-        uint32_t nPayload = smsgStored.vchMessage.size() - SMSG_HDR_LEN;
-        if (SecureMsgDecrypt(false, smsgStored.sAddrTo, &smsgStored.vchMessage[0], &smsgStored.vchMessage[SMSG_HDR_LEN], nPayload, msg) == 0)
+        std::string errorMsg;
+        int error = SecureMsgDecrypt(smsgStored, msg, errorMsg);
+        if (!error)
         {
-            label = parent->getWalletModel()->getAddressTableModel()->labelForAddress(QString::fromStdString(msg.sFromAddress));
+            label = parent->getWalletModel()->getAddressTableModel()->labelForAddress(QString(msg.sFromAddress.c_str()));
 
             sent_datetime    .setTime_t(msg.timestamp);
             received_datetime.setTime_t(smsgStored.timeReceived);
 
-            std::string sPrefix("im");
-            SecureMessage* psmsg = (SecureMessage*) &smsgStored.vchMessage[0];
-
             std::vector<unsigned char> vchKey;
+            std::string sPrefix("im");
             vchKey.resize(18);
             memcpy(&vchKey[0],  sPrefix.data(),  2);
-            memcpy(&vchKey[2],  &psmsg->timestamp, 8);
+            memcpy(&vchKey[2],  &msg.timestamp, 8);
             memcpy(&vchKey[10], &smsgStored.vchMessage[SMSG_HDR_LEN], 8);    // sample
 
             addMessageEntry(MessageTableEntry(vchKey,
                                               MessageTableEntry::Received,
                                               label,
                                               QString::fromStdString(smsgStored.sAddrTo),
-                                              QString::fromStdString(msg.sFromAddress),
+                                              msg.sFromAddress.c_str(),
                                               sent_datetime,
                                               received_datetime,
                                               !(smsgStored.status & SMSG_MASK_UNREAD),
-                                              (char*)&msg.vchMessage[0]),
+                                              msg.sMessage.c_str()),
                             false);
         }
     }
@@ -203,31 +206,32 @@ public:
         QDateTime sent_datetime;
         QDateTime received_datetime;
 
-        uint32_t nPayload = smsgStored.vchMessage.size() - SMSG_HDR_LEN;
-        if (SecureMsgDecrypt(false, smsgStored.sAddrOutbox, &smsgStored.vchMessage[0], &smsgStored.vchMessage[SMSG_HDR_LEN], nPayload, msg) == 0)
+        const unsigned char* pPayload = &smsgStored.vchMessage[SMSG_HDR_LEN];
+        SecureMessageHeader smsg(&smsgStored.vchMessage[0]);
+        memcpy(smsg.hash, Hash(&pPayload[0], &pPayload[smsg.nPayload]).begin(), 32);
+        int error = SecureMsgDecrypt(false, smsgStored.sAddrOutbox, smsg, pPayload, msg);
+        if (!error)
         {
-            label = parent->getWalletModel()->getAddressTableModel()->labelForAddress(QString::fromStdString(smsgStored.sAddrTo));
+            label = parent->getWalletModel()->getAddressTableModel()->labelForAddress(smsgStored.sAddrTo.c_str());
 
             sent_datetime    .setTime_t(msg.timestamp);
             received_datetime.setTime_t(smsgStored.timeReceived);
 
             std::string sPrefix("sm");
-            SecureMessage* psmsg = (SecureMessage*) &smsgStored.vchMessage[0];
-            std::vector<unsigned char> vchKey;
-            vchKey.resize(18);
+            std::vector<unsigned char> vchKey(18);
             memcpy(&vchKey[0],  sPrefix.data(),  2);
-            memcpy(&vchKey[2],  &psmsg->timestamp, 8);
+            memcpy(&vchKey[2],  &msg.timestamp, 8);
             memcpy(&vchKey[10], &smsgStored.vchMessage[SMSG_HDR_LEN], 8);    // sample
 
             addMessageEntry(MessageTableEntry(vchKey,
                                               MessageTableEntry::Sent,
                                               label,
                                               QString::fromStdString(smsgStored.sAddrTo),
-                                              QString::fromStdString(msg.sFromAddress),
+                                              msg.sFromAddress.c_str(),
                                               sent_datetime,
                                               received_datetime,
                                               !(smsgStored.status & SMSG_MASK_UNREAD),
-                                              (char*)&msg.vchMessage[0]),
+                                              msg.sMessage.c_str()),
                             false);
         }
     }
@@ -552,7 +556,7 @@ bool MessageModel::getAddressOrPubkey(QString &address, QString &pubkey) const
             return false;
 
         address = destinationAddress.ToString().c_str();
-        pubkey = EncodeBase58(&pubKey[0], &pubKey[pubKey.size()];
+        pubkey = QString::fromStdString(EncodeBase58(&destinationKey[0], destinationKey.end()));
 
         return true;
     }
@@ -607,7 +611,7 @@ MessageModel::StatusCode MessageModel::sendMessage(const QString &address, const
 
 MessageModel::StatusCode MessageModel::sendMessages(const QList<SendMessagesRecipient> &recipients)
 {
-    return sendMessage(recipients, "anon");
+    return sendMessage(recipients, QString("anon"));
 }
 
 QVariant MessageModel::data(const QModelIndex &index, int role) const
