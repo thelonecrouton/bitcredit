@@ -611,7 +611,12 @@ MessageModel::StatusCode MessageModel::sendMessage(const QString &address, const
 
 MessageModel::StatusCode MessageModel::sendMessages(const QList<SendMessagesRecipient> &recipients)
 {
-    return sendMessage(recipients, QString("anon"));
+       
+    for(int i=0; i<recipients.size(); ++i){
+    QString str =(recipients[i]);
+ 
+    return sendMessage(str, QString("message"),  QString("addressFrom"));
+    }
 }
 
 QVariant MessageModel::data(const QModelIndex &index, int role) const
@@ -760,7 +765,7 @@ void MessageModel::setEncryptionStatus(int status)
 
     priv->refreshMessageTable();
 
-    reset(); // reload table view
+    //reset(); // reload table view
 }
 
 bool MessageModel::markMessageAsRead(const QString &key) const
@@ -1058,7 +1063,7 @@ bool InvoiceTableModel::removeRows(int row, int count, const QModelIndex & paren
         LOCK(cs_smsgDB);
         SecMsgDB dbSmsg;
 
-        dbSmsg.EraseSmesg(rec->chKey);
+        dbSmsg.EraseSmesg(&rec.chKey[0]);
 
     } else
     if(rec.type == MessageTableEntry::Sent)
@@ -1066,7 +1071,7 @@ bool InvoiceTableModel::removeRows(int row, int count, const QModelIndex & paren
         LOCK(cs_smsgDB);
         SecMsgDB dbSmsg;
 
-        dbSmsg.EraseSmesg(rec.vchKey);
+        dbSmsg.EraseSmesg(&rec.chKey[0]);
     }
 
     beginRemoveRows(parent, row, row);
@@ -1424,7 +1429,7 @@ bool ReceiptTableModel::removeRows(int row, int count, const QModelIndex & paren
         LOCK(cs_smsgDB);
         SecMsgDB dbSmsg;
 
-        dbSmsg.EraseSmesg(rec->vchKey);
+        dbSmsg.EraseSmesg(&rec.chKey[0]);
 
     } else
     if(rec.type == MessageTableEntry::Sent)
@@ -1432,7 +1437,7 @@ bool ReceiptTableModel::removeRows(int row, int count, const QModelIndex & paren
         LOCK(cs_smsgDB);
         SecMsgDB dbSmsg;
 
-        dbSmsg.EraseSmesg(rec.chKey);
+        dbSmsg.EraseSmesg(&rec.chKey[0]);
     }
 
     beginRemoveRows(parent, row, row);

@@ -1450,19 +1450,19 @@ int64_t GetMasternodePayment(int nHeight, int64_t blockValue)
     int64_t ret = blockValue/5; //20%
 
   
-    if(nHeight > 75000)               ret += blockValue / 20; //  25.0% 
-    if(nHeight > 75000+((576*30)* 1)) ret += blockValue / 20; //  30.0% 
-    if(nHeight > 75000+((576*30)* 2)) ret += blockValue / 20; //  35.0% 
-    if(nHeight > 75000+((576*30)* 3)) ret += blockValue / 40; //  37.5% 
-    if(nHeight > 75000+((576*30)* 4)) ret += blockValue / 40; //  40.0% 
-    if(nHeight > 75000+((576*30)* 5)) ret += blockValue / 40; //  42.5% 
-    if(nHeight > 75000+((576*30)* 6)) ret += blockValue / 40; //  45.0% 
-    if(nHeight > 75000+((576*30)* 7)) ret += blockValue / 40; //  47.5% 
-    if(nHeight > 75000+((576*30)* 9)) ret += blockValue / 40; //  50.0% 
-    if(nHeight > 75000+((576*30)*11)) ret += blockValue / 40; //  52.5% 
-    if(nHeight > 75000+((576*30)*13)) ret += blockValue / 40; //  55.0% 
-    if(nHeight > 75000+((576*30)*15)) ret += blockValue / 40; //  57.5% 
-    if(nHeight > 75000+((576*30)*17)) ret += blockValue / 40; //  60.0% 
+    if(nHeight > 85000)               ret += blockValue / 20; //  25.0% 
+    if(nHeight > 85000+((576*30)* 1)) ret += blockValue / 20; //  30.0% 
+    if(nHeight > 85000+((576*30)* 2)) ret += blockValue / 20; //  35.0% 
+    if(nHeight > 85000+((576*30)* 3)) ret += blockValue / 40; //  37.5% 
+    if(nHeight > 85000+((576*30)* 4)) ret += blockValue / 40; //  40.0% 
+    if(nHeight > 85000+((576*30)* 5)) ret += blockValue / 40; //  42.5% 
+    if(nHeight > 85000+((576*30)* 6)) ret += blockValue / 40; //  45.0% 
+    if(nHeight > 85000+((576*30)* 7)) ret += blockValue / 40; //  47.5% 
+    if(nHeight > 85000+((576*30)* 9)) ret += blockValue / 40; //  50.0% 
+    if(nHeight > 85000+((576*30)*11)) ret += blockValue / 40; //  52.5% 
+    if(nHeight > 85000+((576*30)*13)) ret += blockValue / 40; //  55.0% 
+    if(nHeight > 85000+((576*30)*15)) ret += blockValue / 40; //  57.5% 
+    if(nHeight > 85000+((576*30)*17)) ret += blockValue / 40; //  60.0% 
     
     
     return ret;
@@ -2049,7 +2049,7 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
 	if (reserve_subsidy < bankfund)
 	return state.DoS(100, error("ConnectBlock() : coinbase does not pay enough to the reserve (actual=%d vs required=%d)", reserve_subsidy, bankfund));
 	}
-	if (pindex->nHeight>75000){
+	if (pindex->nHeight>85000){
 	//FUNCTION - ConnectBlock
 	//SECTION - Bitcredit Grant Block Information
 	//

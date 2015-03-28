@@ -207,7 +207,7 @@ void SendMessagesDialog::on_sendButton_clicked()
 
     if(mode == SendMessagesDialog::Anonymous)
         sendstatus = model->sendMessages(recipients);
-    else
+    
         //sendstatus = model->sendMessages(recipients, ui->addressFrom->text());
 
     switch(sendstatus)

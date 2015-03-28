@@ -85,7 +85,7 @@ bool isGrantAwardBlock(int64_t nHeight){
 	//NOTE: CALLED EVERY BLOCK. (Minimize computations here.)
 	//printf("isGrantAwardBlock");
 	
-	if ( chainActive.Tip()->nHeight > 75000 && (chainActive.Tip()->nHeight % 5 == 0))
+	if ( chainActive.Tip()->nHeight > 85000 && (chainActive.Tip()->nHeight % 5 == 0))
 	//Grants were not being rewarded...
 	{
 		printf(" === Bitcredit Client === \n Is (%d) a grant block? : Yes \n", nHeight);
