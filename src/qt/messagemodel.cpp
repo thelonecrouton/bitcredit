@@ -613,9 +613,9 @@ MessageModel::StatusCode MessageModel::sendMessages(const QList<SendMessagesReci
 {
        
     for(int i=0; i<recipients.size(); ++i){
-    QString str =(recipients[i]);
- 
-    return sendMessage(str, QString("message"),  QString("addressFrom"));
+    QString str =(recipients[i].address);
+	QString msg =(recipients[i].message);
+    return sendMessage(str, msg,  QString("anon"));
     }
 }
 

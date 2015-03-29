@@ -189,7 +189,7 @@ public slots:
     /* Check for new messages */
     void newMessage(const SecMsgStored& smsg);
     void newOutboxMessage(const SecMsgStored& smsg);
-    void walletUnlocked();
+    //void walletUnlocked();
     
     void setEncryptionStatus(int status);
 
