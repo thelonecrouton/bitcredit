@@ -88,10 +88,10 @@ bool isGrantAwardBlock(int64_t nHeight){
 	if ( chainActive.Tip()->nHeight > 85000 && (chainActive.Tip()->nHeight % 5 == 0))
 	//Grants were not being rewarded...
 	{
-		printf(" === Bitcredit Client === \n Is (%d) a grant block? : Yes \n", nHeight);
+		printf(" === Bitcredit Client === \n Is (%ld) a grant block? : Yes \n", nHeight);
 		return true;
 	}else{
-		printf(" === Bitcredit Client === \n Is (%d) a grant block? : No \n", nHeight);
+		printf(" === Bitcredit Client === \n Is (%ld) a grant block? : No \n", nHeight);
 		return false;
 	}
 }
@@ -102,7 +102,7 @@ bool isGrantAwardBlock(int64_t nHeight){
 //TODO: This could be compressed and/or encrypted to save space.
 void serializeGrantDB(string filename){
 		//NOTE: Debug Information
-		printf(" === Bitcredit Client === \nSerialize Grant Info Database: Current Grant Database Block Height: %llu\n",grantDatabaseBlockHeight);
+		printf(" === Bitcredit Client === \nSerialize Grant Info Database: Current Grant Database Block Height: %ld\n",grantDatabaseBlockHeight);
 		
 		//NOTE: Setup the filestream object and open the file.
 		ofstream grantdb;
@@ -174,7 +174,7 @@ void serializeGrantDB(string filename){
 bool deSerializeGrantDB( string filename, int64_t maxWanted ){
 	//NOTE: This takes a while to load Grant DB.
 	//TODO: Disable debug information.
-	printf(" === Bitcredit Client === \nDe-Serialize Grant Info Database\n Max Blocks Wanted: %d\n", maxWanted);
+	printf(" === Bitcredit Client === \nDe-Serialize Grant Info Database\n Max Blocks Wanted: %ld\n", maxWanted);
 	
 	std::string line;
 	std::string line2;
@@ -190,7 +190,7 @@ bool deSerializeGrantDB( string filename, int64_t maxWanted ){
 	//NOTE: Cannot open file. Looks like we have to start all over again.
 	if ( !myfile.is_open() ){
 	
-		printf("Could not load Grant Info Database from %s, Max Wanted: %d\n",filename.c_str(), maxWanted);
+		printf("Could not load Grant Info Database from %s, Max Wanted: %ld\n",filename.c_str(), maxWanted);
 		
 		return false;
 	
@@ -202,7 +202,7 @@ bool deSerializeGrantDB( string filename, int64_t maxWanted ){
 		grantDatabaseBlockHeight = atoi64( line.c_str() );
 		
 		//TODO: Remove debug information.
-		printf("Deserialize Grant Info Database Found.\n Height %llu, Max Wanted %d\n",grantDatabaseBlockHeight, maxWanted);
+		printf("Deserialize Grant Info Database Found.\n Height %ld, Max Wanted %ld\n",grantDatabaseBlockHeight, maxWanted);
 		
 		//NOTE: This condition disables the deserialization of the Grant DB.
 		//NOTE: maxWanted is an int64_t passed to this function.
@@ -309,13 +309,14 @@ bool deSerializeGrantDB( string filename, int64_t maxWanted ){
 	
 		return true;
 	}
+	return 0;
 }
 
 
 bool getGrantAwards(int64_t nHeight){
 	//nHeight is the current block height
 	if( !isGrantAwardBlock( nHeight ) ){
-		printf("Error - calling getgrantawards for non grant award block, nHeight requested: %d", nHeight);
+		printf("Error - calling getgrantawards for non grant award block, nHeight requested: %ld", nHeight);
 		return false;
 	}else{
 		return ensureGrantDatabaseUptoDate( nHeight );
@@ -324,7 +325,7 @@ bool getGrantAwards(int64_t nHeight){
 
 bool ensureGrantDatabaseUptoDate(int64_t nHeight){
 	//NOTE: This sets up the initial database
-	printf(" === Grant Database Block Height %d === \n", grantDatabaseBlockHeight);
+	printf(" === Grant Database Block Height %ld === \n", grantDatabaseBlockHeight);
     //This should always be true on startup
     if( grantDatabaseBlockHeight == -1 ){
 			//string newCV="xxx";
@@ -361,7 +362,7 @@ bool ensureGrantDatabaseUptoDate(int64_t nHeight){
 	int64_t requiredGrantDatabaseHeight =nHeight-GRANTBLOCKINTERVAL;
 	
 	
- 	printf("=== Bitcredit Client: Making sure that Grant Database is up to date. ===\n=== Required Height of Database: %lld, Height requested from: %d ===\n",requiredGrantDatabaseHeight, nHeight);
+ 	printf("=== Bitcredit Client: Making sure that Grant Database is up to date. ===\n=== Required Height of Database: %ld, Height requested from: %ld ===\n",requiredGrantDatabaseHeight, nHeight);
     //Maybe we don't have to count votes from the start - let's check if there's a recent vote database stored
     if( grantDatabaseBlockHeight == -1){
 			deSerializeGrantDB( ( GetDataDir() / "blocks/grantdb.dat" ).string().c_str(), requiredGrantDatabaseHeight );
@@ -459,7 +460,7 @@ void printVotingPrefs(std::string address){
 
 void processNextBlockIntoGrantDatabase(){
 
-	printf(" === Bitcredit Client === \n Processing the Next Block into the Grant Database for Block: %d\n",grantDatabaseBlockHeight+1);
+	printf(" === Bitcredit Client === \n Processing the Next Block into the Grant Database for Block: %ld\n",grantDatabaseBlockHeight+1);
 	
 	//NOTE: Process the latest block.
 	CBlock block;
@@ -519,7 +520,7 @@ void processNextBlockIntoGrantDatabase(){
 			&& 
 				startsWith( receiveAddress.c_str(), "MVTE" ) )
 			{
-				printf(" == Bitcredit Client === \nWe found a vote!\n: Vote found -- Candidate: %s, Preference: %llu\n ======\n",receiveAddress.c_str() , theAmount);
+				printf(" == Bitcredit Client === \nWe found a vote!\n: Vote found -- Candidate: %s, Preference: %ld\n ======\n",receiveAddress.c_str() , theAmount);
 				votes[ receiveAddress ] = theAmount;
 			}
 		}
@@ -558,7 +559,7 @@ void processNextBlockIntoGrantDatabase(){
 					++votesit)
 				{
 					//NOTE: (Why are we still debugging?)
-                    printf(" === Bitcredit Client === \nVote found: %s, %llu\n",votesit->first.c_str(),votesit->second);
+                    printf(" === Bitcredit Client === \nVote found: %s, %ld\n",votesit->first.c_str(),votesit->second);
 					string grantVoteAddress = ( votesit->first );	 
 					int electedOfficeNumber = getOfficeNumberFromAddress( grantVoteAddress, gdBlockPointer->nHeight );
 					
@@ -585,7 +586,7 @@ void processNextBlockIntoGrantDatabase(){
 	//NOTE: Run after the above loop scans through the size of the block for every transaction.
 	grantDatabaseBlockHeight++;
 	
-	printf("Block has been processed. Grant Database Block Height is now updated to Block # %d\n", grantDatabaseBlockHeight);
+	printf("Block has been processed. Grant Database Block Height is now updated to Block # %ld\n", grantDatabaseBlockHeight);
 	if ( isGrantAwardBlock( grantDatabaseBlockHeight + GRANTBLOCKINTERVAL ) ) 
 	{
 		getGrantAwardsFromDatabaseForBlock( grantDatabaseBlockHeight + GRANTBLOCKINTERVAL );
@@ -676,10 +677,10 @@ void printBalances( int64_t howMany, bool printVoting, bool printWasted ){
 
 bool getGrantAwardsFromDatabaseForBlock(int64_t nHeight){
 	
-    printf( " === Bitcredit Client === \n getGrantAwardsFromDatabaseForBlock %llu\n", nHeight );
+    printf( " === Bitcredit Client === \n getGrantAwardsFromDatabaseForBlock %ld\n", nHeight );
 	if (( grantDatabaseBlockHeight != nHeight - GRANTBLOCKINTERVAL ))
 	{ 
-        printf(" === Bitcredit Client === \ngetGrantAwardsFromDatabase is being called when no awards are due. %llu %llu\n",grantDatabaseBlockHeight,nHeight);
+        printf(" === Bitcredit Client === \ngetGrantAwardsFromDatabase is being called when no awards are due. %ld %ld\n",grantDatabaseBlockHeight,nHeight);
 
 		return false;
 	}
@@ -1039,8 +1040,6 @@ void eliminateCandidate( string removeid, bool isLastCandidate ){
 	
 }
 
-
-
 void printBallots(){
 	printf("Current Ballot State\n");
 	int cutOff = 0;
@@ -1049,7 +1048,7 @@ void printBallots(){
 		++ballotit)
 	{
 		//if(cutOff<10){
-			printf("Voter: %s Balance: %llu Weight: %f Total: %f\n",
+			printf("Voter: %s Balance: %ld Weight: %f Total: %f\n",
 				ballotit->first.c_str(),
 				ballotBalances[ ballotit->first ] / COIN,
 				ballotWeights[ ballotit->first ],
@@ -1061,7 +1060,7 @@ void printBallots(){
 					svpit2 != ballotit->second.end();
 					++svpit2)
 				{
-					printf( "Preference: (%d) %llu %s \n",
+					printf( "Preference: (%d) %ld %s \n",
 						cutOff2,
 						svpit2->first,
 						svpit2->second.c_str()
