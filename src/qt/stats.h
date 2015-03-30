@@ -45,7 +45,7 @@ class Stats : public QObject
 		CAmount x =ss.nTotalAmount/100000000;
 		return x;
 		}
-		
+		return 0;
 	}
 
 	double blockreward (int nHeight, CAmount& nFees )
@@ -59,7 +59,7 @@ class Stats : public QObject
 
 	double stage ()
 	{
-		int nHeight;
+		
 		if (chainActive.Tip()->nHeight<8000)
 			return 0.0;
 			
@@ -76,7 +76,9 @@ class Stats : public QObject
 			return 4.0;
 			
 		if (chainActive.Tip()->nHeight>100000)
-			return 10.0;				
+			return 10.0;		
+			
+		return 0;
 	}
 
 
@@ -211,6 +213,7 @@ class Stats : public QObject
 				}*/
 				
 			}
+			return trust;
 	}
 
 	double Getmintrust()

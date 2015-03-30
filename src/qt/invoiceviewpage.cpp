@@ -46,7 +46,7 @@ void InvoiceViewPage::setModel(InvoiceTableModel *model)
     // Set column widths
     ui->invoiceItemTableView->horizontalHeader()->resizeSection(InvoiceItemTableModel::Code,             100);
     ui->invoiceItemTableView->horizontalHeader()->resizeSection(InvoiceItemTableModel::Description,      320);
-    ui->invoiceItemTableView->horizontalHeader()->setSectionResizeMode(InvoiceItemTableModel::Description,      QHeaderView::Stretch);
+    ui->invoiceItemTableView->horizontalHeader()->setResizeMode(InvoiceItemTableModel::Description,      QHeaderView::Stretch);
     ui->invoiceItemTableView->horizontalHeader()->resizeSection(InvoiceItemTableModel::Quantity,         100);
     //ui->invoiceItemTableView->horizontalHeader()->resizeSection(InvoiceItemTableModel::Tax,              100);
     ui->invoiceItemTableView->horizontalHeader()->resizeSection(InvoiceItemTableModel::Price,            100);

@@ -87,7 +87,7 @@ void InvoicePage::setModel(MessageModel *model)
     // Set column widths
     ui->tableView->horizontalHeader()->resizeSection(InvoiceTableModel::Type,             100);
     ui->tableView->horizontalHeader()->resizeSection(InvoiceTableModel::Label,            100);
-    ui->tableView->horizontalHeader()->setSectionResizeMode(InvoiceTableModel::Label,            QHeaderView::Stretch);
+    ui->tableView->horizontalHeader()->setResizeMode(InvoiceTableModel::Label,            QHeaderView::Stretch);
     ui->tableView->horizontalHeader()->resizeSection(InvoiceTableModel::FromAddress,      320);
     ui->tableView->horizontalHeader()->resizeSection(InvoiceTableModel::ToAddress,        320);
     ui->tableView->horizontalHeader()->resizeSection(InvoiceTableModel::SentDateTime,     170);
@@ -178,7 +178,7 @@ void InvoicePage::on_receiptButton_clicked()
 
     bool ok;
     QModelIndex origIndex = proxyModel->mapToSource(indexes.at(0));
-    qint64 amount;
+    CAmount amount;
     BitcreditUnits::parse(model->getMessageModel()->getOptionsModel()->getDisplayUnit(),
                         QInputDialog::getText(this,
                                               tr("Send Receipt to ")                + model->data(model->index(origIndex.row(), model->Label,  QModelIndex()), Qt::DisplayRole).toString(),

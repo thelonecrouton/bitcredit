@@ -17,6 +17,7 @@
 #include <QMenu>
 #include <QPoint>
 #include <QSystemTrayIcon>
+#include <QModelIndex>
 
 class ClientModel;
 class NetworkStyle;

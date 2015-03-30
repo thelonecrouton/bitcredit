@@ -222,7 +222,7 @@ QVariant BitcreditUnits::data(const QModelIndex &index, int role) const
             return QVariant(static_cast<int>(unit));
         }
     }
-    return QVariant();
+    return QVariant((int) NULL);
 }
 
 CAmount BitcreditUnits::maxMoney()

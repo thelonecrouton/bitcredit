@@ -1040,6 +1040,8 @@ void eliminateCandidate( string removeid, bool isLastCandidate ){
 	
 }
 
+
+
 void printBallots(){
 	printf("Current Ballot State\n");
 	int cutOff = 0;

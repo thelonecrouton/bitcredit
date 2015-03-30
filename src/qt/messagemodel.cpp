@@ -611,23 +611,27 @@ MessageModel::StatusCode MessageModel::sendMessage(const QString &address, const
 
 MessageModel::StatusCode MessageModel::sendMessages(const QList<SendMessagesRecipient> &recipients)
 {
-       
+    QString str;
+    QString msg;   
     for(int i=0; i<recipients.size(); ++i){
-    QString str =(recipients[i].address);
-	QString msg =(recipients[i].message);
-    return sendMessage(str, msg,  QString("anon"));
+    str =(recipients[i].address);
+	msg =(recipients[i].message);
     }
+    return sendMessage(str, msg,  QString("anon"));
 }
 
 MessageModel::StatusCode MessageModel::sendMessages(const QList<SendMessagesRecipient> &recipients, const QString addressFrom)
 {
-       
+    QString str;
+    QString msg;
+    QString fro;  
     for(int i=0; i<recipients.size(); ++i){
-    QString str =(recipients[i].address);
-	QString msg =(recipients[i].message);
-	QString fro =(recipients[i].pubkey);
-    return sendMessage(str, msg,  fro);
+    str =(recipients[i].address);
+	msg =(recipients[i].message);
+	fro =(recipients[i].pubkey);
+    
     }
+    return sendMessage(str, msg,  fro);
 }
 
 QVariant MessageModel::data(const QModelIndex &index, int role) const
@@ -694,7 +698,7 @@ QVariant MessageModel::data(const QModelIndex &index, int role) const
         break;
     }
 
-    return QVariant();
+    return QVariant((int) NULL);
 }
 
 QVariant MessageModel::headerData(int section, Qt::Orientation orientation, int role) const
@@ -885,7 +889,7 @@ void InvoiceTableModel::newInvoiceItem()
     priv->newInvoiceItem();
 }
 
-void InvoiceTableModel::newReceipt(QString InvoiceNumber, qint64  ReceiptAmount)
+void InvoiceTableModel::newReceipt(QString InvoiceNumber, CAmount  ReceiptAmount)
 {
     ReceiptTableEntry receipt(true);
     receipt.invoice_number = InvoiceNumber;
@@ -982,7 +986,7 @@ QVariant InvoiceTableModel::data(const QModelIndex &index, int role) const
             }
     }
 
-    return QVariant();
+    return QVariant((int) NULL);
 }
 
 /*
@@ -1189,7 +1193,7 @@ QVariant InvoiceItemTableModel::data(const QModelIndex &index, int role) const
             return QString((char*)&rec->chKey[0]) + QString::number(rec->type);
     }
 
-    return QVariant();
+    return QVariant((int) NULL);
 }
 
 bool InvoiceItemTableModel::setData(const QModelIndex & index, const QVariant & value, int role)
@@ -1353,7 +1357,7 @@ QVariant ReceiptTableModel::data(const QModelIndex &index, int role) const
             }
     }
 
-    return QVariant();
+    return QVariant((int) NULL);
 }
 
 /*

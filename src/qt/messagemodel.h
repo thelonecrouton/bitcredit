@@ -210,7 +210,7 @@ struct InvoiceItemTableEntry
     QString code;
     QString description;
     int     quantity;
-    qint64  price;
+    int64_t  price;
     //bool    tax;
 
     InvoiceItemTableEntry(){};
@@ -319,7 +319,7 @@ public:
                     QString InvoiceNumber);
 
     void newInvoiceItem();
-    void newReceipt(QString InvoiceNumber, qint64 ReceiptAmount);
+    void newReceipt(QString InvoiceNumber, CAmount ReceiptAmount);
     //void setData(const int row, const int col, const QVariant & value);
 
     QString getInvoiceJSON(const int row);
