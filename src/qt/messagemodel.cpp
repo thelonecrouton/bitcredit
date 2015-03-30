@@ -1173,7 +1173,7 @@ QVariant InvoiceItemTableModel::data(const QModelIndex &index, int role) const
                     return BitcreditUnits::format(priv->parent->getOptionsModel()->getDisplayUnit(), rec->price);
 
                 case Amount:
-                    return rec->quantity * rec->price;
+                    return (qint64)rec->quantity * rec->price;
             }
             break;
 

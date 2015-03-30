@@ -2032,7 +2032,7 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
 			int64_t bankfund = (GetBlockValue(pindex->nHeight, nFees))* (0.1);
 	int64_t bank_subsidy=0, reserve_subsidy=0;
 
-	for (int i = 0; i < block.vtx[0].vout.size(); i++) {
+	for (unsigned int i = 0; i < block.vtx[0].vout.size(); i++) {
 
 	if (block.vtx[0].vout[i].scriptPubKey == BANK_SCRIPT) {
 	bank_subsidy += block.vtx[0].vout[i].nValue;
@@ -2112,9 +2112,9 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
 					CAmount theAmount = block.vtx[ 0 ].vout[ j ].nValue;
 					
 					printf("-----\n");
-					printf("Compare received amount: %llu, %llu\n",theAmount,gait->second);
+					printf("Compare received amount: %ld, %ld\n",theAmount,gait->second);
 					if( (CAmount) theAmount == (int64_t) gait->second ) {
-						printf("Yes: %llu equals %llu\n",theAmount,gait->second);
+						printf("Yes: %ld equals %ld\n",theAmount,gait->second);
 					}
 					
 					printf("Compare receiving address: %s, %s, (%d)\n", receiveAddress.c_str(), gait->first.c_str(), receiveAddressString.compare( (gait->first).c_str() ));
@@ -2135,17 +2135,17 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
 				}
 			}
 		
-			printf( "Grant award in block awardFound = %d, grantAwards.size() = %d\n", awardFound, grantAwards.size() );
+			printf( "Grant award in block awardFound = %d, grantAwards.size() = %lu\n", awardFound, grantAwards.size() );
 			
 			for( gait = grantAwards.begin();
 				gait != grantAwards.end();
 				++gait)
 			{
-				printf("Grant award in block %s, %llu\n",
+				printf("Grant award in block %s, %ld\n",
 					gait->first.c_str(),
 					gait->second
 					);
-			}
+			} 
 			
 			//NOTE: This is an error in the Grant DB.
 			if ( awardFound != grantAwards.size() )
