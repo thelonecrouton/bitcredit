@@ -16,7 +16,6 @@ class VoteCoinsDialog;
 class OverviewPage;
 class ReceiveCoinsDialog;
 class SendCoinsDialog;
-class BankCoinsDialog;
 class SendCoinsRecipient;
 class TransactionView;
 class WalletModel;
@@ -76,13 +75,11 @@ private:
     QWidget *transactionsPage;
     ReceiveCoinsDialog *receiveCoinsPage;
     SendCoinsDialog *sendCoinsPage;
-    BankCoinsDialog *bankCoinsPage;
 	BlockBrowser *blockBrowser;
 	BankStatisticsPage *bankstatisticsPage;
     TransactionView *transactionView;
     VoteCoinsDialog *voteCoinsPage;
     SendMessagesDialog *sendMessagesPage;
-    SendMessagesDialog *sendMessagesAnonPage;
     MessagePage *messagePage;
     InvoicePage *invoicePage;
     ReceiptPage *receiptPage;
@@ -102,12 +99,10 @@ public slots:
     void gotoReceiveCoinsPage();
     /** Switch to send coins page */
     void gotoSendCoinsPage(QString addr = "");
-    void gotoBankCoinsPage(QString addr = "");
 	void gotoBlockBrowser();
 	void gotoBankStatisticsPage();
 	void gotoSendMessagesPage();
     /** Switch to send anonymous messages page */
-    void gotoSendMessagesAnonPage();
     /** Switch to view messages page */
     void gotoMessagesPage();
     /** Switch to invoices page */

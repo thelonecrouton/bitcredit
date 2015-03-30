@@ -90,9 +90,7 @@ QT_FORMS_UI = \
   qt/forms/receiverequestdialog.ui \
   qt/forms/rpcconsole.ui \
   qt/forms/sendcoinsdialog.ui \
-  qt/forms/sendcoinsentry.ui \
-  qt/forms/bankcoinsdialog.ui \
-  qt/forms/bankcoinsentry.ui \  
+  qt/forms/sendcoinsentry.ui \  
   qt/forms/signverifymessagedialog.ui \
   qt/forms/transactiondescdialog.ui \
   qt/forms/blockbrowser.ui \
@@ -142,9 +140,7 @@ QT_MOC_CPP = \
   qt/moc_recentrequeststablemodel.cpp \
   qt/moc_rpcconsole.cpp \
   qt/moc_sendcoinsdialog.cpp \
-  qt/moc_sendcoinsentry.cpp \
-  qt/moc_bankcoinsdialog.cpp \
-  qt/moc_bankcoinsentry.cpp \  
+  qt/moc_sendcoinsentry.cpp \ 
   qt/moc_signverifymessagedialog.cpp \
   qt/moc_splashscreen.cpp \
   qt/moc_trafficgraphwidget.cpp \
@@ -232,9 +228,7 @@ BITCREDIT_QT_H = \
   qt/recentrequeststablemodel.h \
   qt/rpcconsole.h \
   qt/sendcoinsdialog.h \
-  qt/sendcoinsentry.h \
-  qt/bankcoinsdialog.h \
-  qt/bankcoinsentry.h \  
+  qt/sendcoinsentry.h \ 
   qt/signverifymessagedialog.h \
   qt/splashscreen.h \
   qt/trafficgraphwidget.h \
@@ -323,7 +317,8 @@ RES_ICONS = \
   qt/res/icons/exchange.png \
   qt/res/icons/mini.png \
   qt/res/icons/vote.png \
-  qt/res/icons/chat.png 
+  qt/res/icons/chat.png \
+  qt/res/icons/em.png
 
 BITCREDIT_QT_CPP = \
   qt/bitcreditaddressvalidator.cpp \
@@ -374,8 +369,6 @@ BITCREDIT_QT_CPP += \
   qt/recentrequeststablemodel.cpp \
   qt/sendcoinsdialog.cpp \
   qt/sendcoinsentry.cpp \
-  qt/bankcoinsdialog.cpp \
-  qt/bankcoinsentry.cpp \  
   qt/signverifymessagedialog.cpp \
   qt/transactiondesc.cpp \
   qt/transactiondescdialog.cpp \
@@ -448,7 +441,7 @@ if ENABLE_WALLET
 qt_bitcredit_qt_LDADD += $(LIBBITCREDIT_WALLET)
 endif
 qt_bitcredit_qt_LDADD += $(LIBBITCREDIT_CLI) $(LIBBITCREDIT_COMMON) $(LIBBITCREDIT_UTIL) $(LIBBITCREDIT_CRYPTO) $(LIBBITCREDIT_UNIVALUE) $(LIBLEVELDB) $(LIBMEMENV) \
-  $(BOOST_LIBS) $(QT_LIBS) $(QT_DBUS_LIBS) $(QR_LIBS) $(PROTOBUF_LIBS) $(BDB_LIBS) $(SSL_LIBS) $(CRYPTO_LIBS) $(MINIUPNPC_LIBS) $(LIBSECP256K1) $(JSON_H)
+  $(BOOST_LIBS) $(QT_LIBS) $(QT_DBUS_LIBS) $(QR_LIBS) $(PROTOBUF_LIBS) $(BDB_LIBS) $(SSL_LIBS) $(CRYPTO_LIBS) $(MINIUPNPC_LIBS) $(LIBSECP256K1) 
 qt_bitcredit_qt_LDFLAGS = $(RELDFLAGS) $(AM_LDFLAGS) $(QT_LDFLAGS) $(LIBTOOL_APP_LDFLAGS)
 qt_bitcredit_qt_LIBTOOLFLAGS = --tag CXX
 

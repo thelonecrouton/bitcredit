@@ -50,6 +50,8 @@ SendMessagesDialog::SendMessagesDialog(Mode mode, Type type, QWidget *parent) :
 
     if(type == SendMessagesDialog::Page)
         ui->closeButton->hide();
+        
+        this->setStyleSheet("background-image:url(:/images/background);");
 }
 
 void SendMessagesDialog::setModel(MessageModel *model)
@@ -207,8 +209,8 @@ void SendMessagesDialog::on_sendButton_clicked()
 
     if(mode == SendMessagesDialog::Anonymous)
         sendstatus = model->sendMessages(recipients);
-    
-        //sendstatus = model->sendMessages(recipients, ui->addressFrom->text());
+    else
+        sendstatus = model->sendMessages(recipients, ui->addressFrom->text());
 
     switch(sendstatus)
     {

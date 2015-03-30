@@ -126,13 +126,6 @@ void WalletFrame::gotoSendMessagesPage()
         i.value()->gotoSendMessagesPage();
 }
 
-void WalletFrame::gotoSendMessagesAnonPage()
-{
-    QMap<QString, WalletView*>::const_iterator i;
-    for (i = mapWalletViews.constBegin(); i != mapWalletViews.constEnd(); ++i)
-        i.value()->gotoSendMessagesAnonPage();
-}
-
 void WalletFrame::gotoMessagesPage()
 {
     QMap<QString, WalletView*>::const_iterator i;
@@ -201,13 +194,6 @@ void WalletFrame::gotoVoteCoinsPage(QString addr)
     QMap<QString, WalletView*>::const_iterator i;
     for (i = mapWalletViews.constBegin(); i != mapWalletViews.constEnd(); ++i)
         i.value()->gotoVoteCoinsPage(addr);
-}
-
-void WalletFrame::gotoBankCoinsPage(QString addr)
-{
-    QMap<QString, WalletView*>::const_iterator i;
-    for (i = mapWalletViews.constBegin(); i != mapWalletViews.constEnd(); ++i)
-        i.value()->gotoBankCoinsPage(addr);
 }
 
 void WalletFrame::gotoSignMessageTab(QString addr)

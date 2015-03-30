@@ -59,6 +59,8 @@ InvoicePage::InvoicePage(QWidget *parent) :
     connect(ui->tableView,         SIGNAL (doubleClicked(const QModelIndex&)), this, SLOT (viewInvoice(const QModelIndex&)));
 
     connect(ui->tableView, SIGNAL(customContextMenuRequested(QPoint)), this, SLOT(contextualMenu(QPoint)));
+    
+    //this->setStyleSheet("background-image:url(:/images/background);");
 }
 
 InvoicePage::~InvoicePage()

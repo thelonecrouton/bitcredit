@@ -61,7 +61,6 @@ public slots:
     void gotoReceiveCoinsPage();
     /** Switch to send coins page */
     void gotoSendCoinsPage(QString addr = "");
-	void gotoBankCoinsPage(QString addr = "");
     /** Switch to send coins page */
     void gotoVoteCoinsPage(QString addr = "");
     /** Show Sign/Verify Message dialog and switch to sign message tab */
@@ -72,7 +71,6 @@ public slots:
 	void gotoBankStatisticsPage();
 	void gotoSendMessagesPage();
     /** Switch to send anonymous messages page */
-    void gotoSendMessagesAnonPage();
     /** Switch to view messages page */
     void gotoMessagesPage();
     /** Switch to invoices page */

@@ -21,6 +21,7 @@
 #include "json/json_spirit_utils.h"
 #include "json/json_spirit_writer_template.h"
 #include "script/script.h"
+#include "json_spirit.h"
 class CScript;
 class CBlockIndex;
 class CNetAddr;

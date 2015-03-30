@@ -171,6 +171,7 @@ public:
     void resetFilter();
 	StatusCode sendMessages(const QList<SendMessagesRecipient> &recipients);
     StatusCode sendMessage(const QString &address, const QString &message, const QString &addressFrom);
+	StatusCode sendMessages(const QList<SendMessagesRecipient> &recipients, const QString addressFrom);
 
 private:
     CWallet *wallet;

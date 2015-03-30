@@ -207,6 +207,9 @@ libbitcredit_server_a_SOURCES = \
   txdb.cpp \
   txmempool.cpp \
   xxhash/xxhash.c \
+  json/json_spirit_value.cpp \
+  json/json_spirit_reader.cpp \
+  json/json_spirit_writer.cpp \
   $(JSON_H) \
   $(BITCREDIT_CORE_H)
 

@@ -13,6 +13,9 @@
   <property name="windowTitle">
    <string>Send Messages</string>
   </property>
+  <property name="styleSheet">
+   <string notr="true">background:transparent;</string>
+  </property>
   <layout class="QVBoxLayout" name="verticalLayout" stretch="0,1,0">
    <property name="bottomMargin">
     <number>8</number>
@@ -40,6 +43,10 @@
      <layout class="QHBoxLayout" name="horizontalLayout_3">
       <item>
        <widget class="QLabel" name="addressFromLabel">
+        <property name="styleSheet">
+         <string notr="true">background:transparent;
+color: rgb(255, 255, 255);</string>
+        </property>
         <property name="text">
          <string>Address &amp;From:</string>
         </property>
@@ -54,7 +61,12 @@
          <number>1</number>
         </property>
         <item>
-         <widget class="QValidatedLineEdit" name="addressFrom"/>
+         <widget class="QValidatedLineEdit" name="addressFrom">
+          <property name="styleSheet">
+           <string notr="true">background:transparent;
+color: rgb(255, 255, 255);</string>
+          </property>
+         </widget>
         </item>
         <item>
          <widget class="QToolButton" name="addressBookButton">
@@ -65,7 +77,7 @@
            <string/>
           </property>
           <property name="icon">
-           <iconset resource="../bitcoin.qrc">
+           <iconset resource="../bitcredit.qrc">
             <normaloff>:/icons/address-book</normaloff>:/icons/address-book</iconset>
           </property>
           <property name="shortcut">
@@ -82,7 +94,7 @@
            <string/>
           </property>
           <property name="icon">
-           <iconset resource="../bitcoin.qrc">
+           <iconset resource="../bitcredit.qrc">
             <normaloff>:/icons/editpaste</normaloff>:/icons/editpaste</iconset>
           </property>
           <property name="shortcut">
@@ -106,20 +118,11 @@
         <x>0</x>
         <y>0</y>
         <width>830</width>
-        <height>278</height>
+        <height>296</height>
        </rect>
       </property>
       <layout class="QVBoxLayout" name="verticalLayout_2">
-       <property name="leftMargin">
-        <number>0</number>
-       </property>
-       <property name="topMargin">
-        <number>0</number>
-       </property>
-       <property name="rightMargin">
-        <number>0</number>
-       </property>
-       <property name="bottomMargin">
+       <property name="margin">
         <number>0</number>
        </property>
        <item>
@@ -153,11 +156,15 @@
        <property name="toolTip">
         <string>Send to multiple recipients at once</string>
        </property>
+       <property name="styleSheet">
+        <string notr="true">background:transparent;
+color: rgb(255, 255, 255);</string>
+       </property>
        <property name="text">
         <string>Add &amp;Recipient</string>
        </property>
        <property name="icon">
-        <iconset resource="../bitcoin.qrc">
+        <iconset resource="../bitcredit.qrc">
          <normaloff>:/icons/add</normaloff>:/icons/add</iconset>
        </property>
        <property name="autoDefault">
@@ -176,11 +183,15 @@
        <property name="toolTip">
         <string>Remove all transaction fields</string>
        </property>
+       <property name="styleSheet">
+        <string notr="true">background:transparent;
+color: rgb(255, 255, 255);</string>
+       </property>
        <property name="text">
         <string>Clear &amp;All</string>
        </property>
        <property name="icon">
-        <iconset resource="../bitcoin.qrc">
+        <iconset resource="../bitcredit.qrc">
          <normaloff>:/icons/remove</normaloff>:/icons/remove</iconset>
        </property>
        <property name="autoRepeatDelay">
@@ -215,11 +226,15 @@
        <property name="toolTip">
         <string>Confirm the send action</string>
        </property>
+       <property name="styleSheet">
+        <string notr="true">background:transparent;
+color: rgb(255, 255, 255);</string>
+       </property>
        <property name="text">
         <string>S&amp;end</string>
        </property>
        <property name="icon">
-        <iconset resource="../bitcoin.qrc">
+        <iconset resource="../bitcredit.qrc">
          <normaloff>:/icons/send</normaloff>:/icons/send</iconset>
        </property>
        <property name="default">
@@ -229,6 +244,10 @@
      </item>
      <item>
       <widget class="QPushButton" name="closeButton">
+       <property name="styleSheet">
+        <string notr="true">background:transparent;
+color: rgb(255, 255, 255);</string>
+       </property>
        <property name="text">
         <string>&amp;Close</string>
        </property>
@@ -246,7 +265,7 @@
   </customwidget>
  </customwidgets>
  <resources>
-  <include location="../bitcoin.qrc"/>
+  <include location="../bitcredit.qrc"/>
  </resources>
  <connections/>
 </ui>

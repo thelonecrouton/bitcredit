@@ -13,9 +13,15 @@
   <property name="windowTitle">
    <string>Address Book</string>
   </property>
+  <property name="styleSheet">
+   <string notr="true"/>
+  </property>
   <layout class="QVBoxLayout" name="verticalLayout_2">
    <item>
     <widget class="QLabel" name="labelExplanation">
+     <property name="styleSheet">
+      <string notr="true"/>
+     </property>
      <property name="text">
       <string>These are your sent and received encrypted messages. Click on an item to read it.</string>
      </property>
@@ -34,6 +40,9 @@
      </property>
      <property name="toolTip">
       <string>Click on a message to view it</string>
+     </property>
+     <property name="styleSheet">
+      <string notr="true"/>
      </property>
      <property name="tabKeyNavigation">
       <bool>false</bool>
@@ -59,6 +68,9 @@
     <layout class="QVBoxLayout" name="verticalLayout">
      <item>
       <widget class="QGroupBox" name="messageDetails">
+       <property name="styleSheet">
+        <string notr="true"/>
+       </property>
        <property name="title">
         <string>Message Details</string>
        </property>
@@ -82,6 +94,9 @@
          <layout class="QHBoxLayout" name="horizontalLayout_2">
           <item>
            <widget class="QLabel" name="labelType">
+            <property name="styleSheet">
+             <string notr="true"/>
+            </property>
             <property name="text">
              <string>Type:</string>
             </property>
@@ -115,6 +130,9 @@
            <layout class="QHBoxLayout" name="horizontalLayout_3">
             <item>
              <widget class="QLabel" name="labelContact">
+              <property name="styleSheet">
+               <string notr="true"/>
+              </property>
               <property name="text">
                <string>Contact:</string>
               </property>
@@ -146,6 +164,9 @@
         </item>
         <item>
          <widget class="QLabel" name="messageLabel">
+          <property name="styleSheet">
+           <string notr="true"/>
+          </property>
           <property name="text">
            <string>Message</string>
           </property>
@@ -168,11 +189,14 @@
          <property name="toolTip">
           <string>Sign a message to prove you own a CinniCoin address</string>
          </property>
+         <property name="styleSheet">
+          <string notr="true"/>
+         </property>
          <property name="text">
           <string>&amp;Reply</string>
          </property>
          <property name="icon">
-          <iconset resource="../bitcoin.qrc">
+          <iconset resource="../bitcredit.qrc">
            <normaloff>:/icons/send</normaloff>:/icons/send</iconset>
          </property>
         </widget>
@@ -182,11 +206,14 @@
          <property name="toolTip">
           <string>Copy the currently selected address to the system clipboard</string>
          </property>
+         <property name="styleSheet">
+          <string notr="true"/>
+         </property>
          <property name="text">
           <string>&amp;Copy From Address</string>
          </property>
          <property name="icon">
-          <iconset resource="../bitcoin.qrc">
+          <iconset resource="../bitcredit.qrc">
            <normaloff>:/icons/editcopy</normaloff>:/icons/editcopy</iconset>
          </property>
         </widget>
@@ -196,11 +223,14 @@
          <property name="toolTip">
           <string>Copy the currently selected address to the system clipboard</string>
          </property>
+         <property name="styleSheet">
+          <string notr="true"/>
+         </property>
          <property name="text">
           <string>Copy To &amp;Address</string>
          </property>
          <property name="icon">
-          <iconset resource="../bitcoin.qrc">
+          <iconset resource="../bitcredit.qrc">
            <normaloff>:/icons/editcopy</normaloff>:/icons/editcopy</iconset>
          </property>
         </widget>
@@ -210,11 +240,14 @@
          <property name="toolTip">
           <string>Delete the currently selected address from the list</string>
          </property>
+         <property name="styleSheet">
+          <string notr="true"/>
+         </property>
          <property name="text">
           <string>&amp;Delete</string>
          </property>
          <property name="icon">
-          <iconset resource="../bitcoin.qrc">
+          <iconset resource="../bitcredit.qrc">
            <normaloff>:/icons/remove</normaloff>:/icons/remove</iconset>
          </property>
         </widget>
@@ -239,7 +272,7 @@
   </layout>
  </widget>
  <resources>
-  <include location="../bitcoin.qrc"/>
+  <include location="../bitcredit.qrc"/>
  </resources>
  <connections/>
 </ui>

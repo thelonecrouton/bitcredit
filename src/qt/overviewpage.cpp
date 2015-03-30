@@ -161,7 +161,7 @@ OverviewPage::OverviewPage(QWidget *parent) :
 
     // start with displaying the "out of sync" warnings
     showOutOfSyncWarning(true);
-	setFixedSize(860, 512);
+	setFixedSize(860, 550);
     this->setStyleSheet("background-image:url(:/images/background);");
 }
 

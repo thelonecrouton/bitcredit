@@ -498,7 +498,7 @@ void processNextBlockIntoGrantDatabase(){
 			
 			//Grab the amount of coins "Received to this address"
 			//NOTE:
-			//https://bitcointalk.org/index.php?topic=115488.msg1246315#msg1246315
+			//https://bitcredittalk.org/index.php?topic=115488.msg1246315#msg1246315
 			int64_t theAmount = block.vtx[ i ].vout[ j ].nValue;
 			
 			//Update balance - if no previous balance, should start at 0

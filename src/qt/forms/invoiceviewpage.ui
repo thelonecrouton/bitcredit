@@ -74,7 +74,7 @@
         <string/>
        </property>
        <property name="pixmap">
-        <pixmap resource="../bitcoin.qrc">:/images/backg</pixmap>
+        <pixmap resource="../bitcredit.qrc">:/images/backg</pixmap>
        </property>
        <property name="scaledContents">
         <bool>true</bool>
@@ -283,7 +283,7 @@
   <zorder>horizontalLayoutWidget</zorder>
  </widget>
  <resources>
-  <include location="../bitcoin.qrc"/>
+  <include location="../bitcredit.qrc"/>
  </resources>
  <connections/>
 </ui>

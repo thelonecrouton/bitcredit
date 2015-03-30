@@ -10,8 +10,8 @@
 #include "base58.h"
 #include "init.h"
 #include "util.h"
-#include "json_spirit.h"
-
+#include "rpcserver.h"
+#include "json_spirit_writer.h"
 #include <QSet>
 #include <QTimer>
 #include <QDateTime>
@@ -616,6 +616,17 @@ MessageModel::StatusCode MessageModel::sendMessages(const QList<SendMessagesReci
     QString str =(recipients[i].address);
 	QString msg =(recipients[i].message);
     return sendMessage(str, msg,  QString("anon"));
+    }
+}
+
+MessageModel::StatusCode MessageModel::sendMessages(const QList<SendMessagesRecipient> &recipients, const QString addressFrom)
+{
+       
+    for(int i=0; i<recipients.size(); ++i){
+    QString str =(recipients[i].address);
+	QString msg =(recipients[i].message);
+	QString fro =(recipients[i].pubkey);
+    return sendMessage(str, msg,  fro);
     }
 }
 

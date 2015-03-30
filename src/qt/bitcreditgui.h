@@ -104,7 +104,6 @@ private:
     QAction *historyAction;
     QAction *quitAction;
     QAction *sendCoinsAction;
-    QAction *bankCoinsAction;
     QAction *usedSendingAddressesAction;
     QAction *usedReceivingAddressesAction;
     QAction *signMessageAction;
@@ -207,10 +206,8 @@ private slots:
 	/** Switch to blockexplorer */
     void gotoBlockBrowser();
     void gotoBankStatisticsPage();
-	void gotoBankCoinsPage(QString addr = "");
     void gotoSendMessagesPage();
     /** Switch to send anonymous messages page */
-    void gotoSendMessagesAnonPage();
     /** Switch to view messages page */
     void gotoMessagesPage();
     /** Switch to invoices page */

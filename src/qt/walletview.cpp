@@ -15,7 +15,6 @@
 #include "guiutil.h"
 #include "optionsmodel.h"
 #include "messagemodel.h"
-#include "bankcoinsdialog.h"
 #include "overviewpage.h"
 #include "receiptpage.h"
 #include "sendmessagesdialog.h"
@@ -69,12 +68,10 @@ WalletView::WalletView(QWidget *parent):
 
     receiveCoinsPage = new ReceiveCoinsDialog();
     sendCoinsPage = new SendCoinsDialog();
-    bankCoinsPage = new BankCoinsDialog();
 	voteCoinsPage = new VoteCoinsDialog();
 	
-	sendMessagesPage     = new SendMessagesDialog(SendMessagesDialog::Encrypted, SendMessagesDialog::Page, this);
-    sendMessagesAnonPage = new SendMessagesDialog(SendMessagesDialog::Anonymous, SendMessagesDialog::Page, this);
-	
+	sendMessagesPage     = new SendMessagesDialog(SendMessagesDialog::Encrypted, SendMessagesDialog::Page);
+    	
     messagePage = new MessagePage();
     invoicePage = new InvoicePage();
 
@@ -86,12 +83,10 @@ WalletView::WalletView(QWidget *parent):
     addWidget(sendCoinsPage);
     addWidget(blockBrowser);
     addWidget(bankstatisticsPage);
-    addWidget(bankCoinsPage);
     addWidget(voteCoinsPage);
 	addWidget(chatWindow);
 	addWidget(exchangeBrowser);
 	addWidget(sendMessagesPage);
-    addWidget(sendMessagesAnonPage);
     addWidget(messagePage);
     addWidget(invoicePage);
     addWidget(receiptPage);    
@@ -108,7 +103,6 @@ WalletView::WalletView(QWidget *parent):
 
     // Pass through messages from sendCoinsPage
     connect(sendCoinsPage, SIGNAL(message(QString,QString,unsigned int)), this, SIGNAL(message(QString,QString,unsigned int)));
-    connect(bankCoinsPage, SIGNAL(message(QString,QString,unsigned int)), this, SIGNAL(message(QString,QString,unsigned int)));
     // Pass through messages from transactionView
     connect(transactionView, SIGNAL(message(QString,QString,unsigned int)), this, SIGNAL(message(QString,QString,unsigned int)));
 }
@@ -156,7 +150,7 @@ void WalletView::setWalletModel(WalletModel *walletModel)
     receiveCoinsPage->setModel(walletModel);
     sendCoinsPage->setModel(walletModel);
 	voteCoinsPage->setModel(walletModel);
-	bankCoinsPage->setModel(walletModel);
+
 
     if (walletModel)
     {
@@ -191,7 +185,7 @@ void WalletView::setMessageModel(MessageModel *messageModel)
         invoicePage->setModel(messageModel);
         receiptPage->setModel(messageModel);
         sendMessagesPage->setModel(messageModel);
-        sendMessagesAnonPage->setModel(messageModel);
+
 
         // Balloon pop-up for new message
         connect(messageModel, SIGNAL(rowsInserted(QModelIndex,int,int)),
@@ -243,10 +237,6 @@ void WalletView::gotoSendMessagesPage()
 	setCurrentWidget(sendMessagesPage);
 }
 
-void WalletView::gotoSendMessagesAnonPage()
-{
-    setCurrentWidget(sendMessagesAnonPage);
-}
 
 void WalletView::gotoMessagesPage()
 {
@@ -292,15 +282,6 @@ void WalletView::gotoVoteCoinsPage(QString addr)
     
     if (!addr.isEmpty())
         voteCoinsPage->setAddress(addr);
-}
-
-
-void WalletView::gotoBankCoinsPage(QString addr)
-{
-    setCurrentWidget(bankCoinsPage);
-
-    if (!addr.isEmpty())
-        bankCoinsPage->setAddress(addr);
 }
 
 void WalletView::gotoSignMessageTab(QString addr)
