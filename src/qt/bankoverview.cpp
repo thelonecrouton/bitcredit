@@ -1,25 +1,3 @@
-<<<<<<< HEAD
-#include "bankoverview.h"
-#include "ui_bankoverview.h"
-
-#include "walletmodel.h"
-#include "bitcreditunits.h"
-#include "addressbookpage.h"
-#include "optionsmodel.h"
-#include "guiutil.h"
-#include "askpassphrasedialog.h"
-#include "base58.h"
-#include "walletframe.h"
-
-#include <QMessageBox>
-#include <QTextDocument>
-#include <QScrollBar>
-
-BankOverview::BankOverview(QWidget *parent) :
-    QDialog(parent),
-    ui(new Ui::BankOverview),
-    model(0)
-=======
 // Copyright (c) 2011-2013 The Bitcredit Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
@@ -70,22 +48,12 @@ BankOverview::BankOverview(QWidget *parent) :
 	totalbalancefiat(-1),
 	trustrating(-1),
 	creditscore(-1)
->>>>>>> origin/master2
 {
     ui->setupUi(this);
 #ifdef Q_OS_MAC // Icons on push buttons are very uncommon on Mac
     ui->clearButton->setIcon(QIcon());
     ui->sendButton->setIcon(QIcon());
 #endif
-<<<<<<< HEAD
-
-    addEntry();
-
-    //connect(ui->addButton, SIGNAL(clicked()), this, SLOT(addEntry()));
-    connect(ui->clearButton, SIGNAL(clicked()), this, SLOT(clear()));
-
-    fNewRecipientAllowed = true;
-=======
 	
     
 	setFocusProxy(ui->payAmount);
@@ -156,7 +124,6 @@ void BankOverview::setValue(const SendCoinsRecipient &value)
 void BankOverview::setFocus()
 {
     ui->payAmount->setFocus();
->>>>>>> origin/master2
 }
 
 void BankOverview::setModel(WalletModel *model)
@@ -165,25 +132,12 @@ void BankOverview::setModel(WalletModel *model)
 
     for(int i = 0; i < ui->entries->count(); ++i)
     {
-<<<<<<< HEAD
-        VoteCoinsEntry *entry = qobject_cast<VoteCoinsEntry*>(ui->entries->itemAt(i)->widget());
-=======
         BankOverview *entry = qobject_cast<BankOverview*>(ui->entries->itemAt(i)->widget());
->>>>>>> origin/master2
         if(entry)
         {
             entry->setModel(model);
         }
     }
-<<<<<<< HEAD
-    if(model && model->getOptionsModel())
-    {
-        //setBalance(model->getBalance(), model->getUnconfirmedBalance(), model->getImmatureBalance());
-        //connect(model, SIGNAL(balanceChanged(qint64, qint64, qint64)), this, SLOT(setBalance(qint64, qint64, qint64)));
-        //connect(model->getOptionsModel(), SIGNAL(displayUnitChanged(int)), this, SLOT(updateDisplayUnit()));
-    }
-=======
->>>>>>> origin/master2
 }
 
 
@@ -192,6 +146,7 @@ BankOverview::~BankOverview()
     delete ui;
 }
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 /*void BankOverview::checkSweep(){
     if(model->NeedsSweep()){
@@ -281,6 +236,8 @@ void BankOverview::sendToRecipients(){
     }
 
 =======
+=======
+>>>>>>> origin/master
 void BankOverview::on_sendButton_clicked()
 {
     if(!model || !model->getOptionsModel())
@@ -351,7 +308,6 @@ void BankOverview::on_sendButton_clicked()
     fNewRecipientAllowed = false;
 
 
->>>>>>> origin/master2
     WalletModel::UnlockContext ctx(model->requestUnlock());
     if(!ctx.isValid())
     {
@@ -360,6 +316,7 @@ void BankOverview::on_sendButton_clicked()
         return;
     }
 
+<<<<<<< HEAD
 <<<<<<< HEAD
     WalletModel::SendCoinsReturn sendstatus;
 
@@ -466,6 +423,8 @@ void BankOverview::clear()
 
     ui->sendButton->setDefault(true);
 
+=======
+>>>>>>> origin/master
     // prepare transaction for getting txFee earlier
     WalletModelTransaction currentTransaction(recipients);
     WalletModel::SendCoinsReturn prepareStatus;
@@ -527,7 +486,10 @@ void BankOverview::clear()
         accept();
 
     fNewRecipientAllowed = true;
+<<<<<<< HEAD
 
+=======
+>>>>>>> origin/master
 }
 
 void BankOverview::reject()
@@ -540,79 +502,6 @@ void BankOverview::accept()
     clear();
 }
 
-<<<<<<< HEAD
-VoteCoinsEntry *BankOverview::addEntry()
-{
-    VoteCoinsEntry *entry = new VoteCoinsEntry(this);
-    entry->setModel(model);
-    ui->entries->addWidget(entry);
-    connect(entry, SIGNAL(removeEntry(VoteCoinsEntry*)), this, SLOT(removeEntry(VoteCoinsEntry*)));
-
-    updateRemoveEnabled();
-
-    // Focus the field, so that entry can start immediately
-    //entry->clear();
-    entry->setFocus();
-    //ui->scrollAreaWidgetContents->resize(ui->scrollAreaWidgetContents->sizeHint());
-    qApp->processEvents();
-    //QScrollBar* bar = ui->scrollArea->verticalScrollBar();
-    //if(bar)
-    //    bar->setSliderPosition(bar->maximum());
-    return entry;
-}
-
-void BankOverview::updateRemoveEnabled()
-{
-    // Remove buttons are enabled as soon as there is more than one send-entry
-    bool enabled = (ui->entries->count() > 1);
-    for(int i = 0; i < ui->entries->count(); ++i)
-    {
-        VoteCoinsEntry *entry = qobject_cast<VoteCoinsEntry*>(ui->entries->itemAt(i)->widget());
-        if(entry)
-        {
-            //entry->setRemoveEnabled(enabled);
-        }
-    }
-    //setupTabChain(0);
-}
-
-void BankOverview::removeEntry(VoteCoinsEntry* entry)
-{
-    delete entry;
-    updateRemoveEnabled();
-}
-
-/*QWidget *BankOverview::setupTabChain(QWidget *prev)
-{
-    for(int i = 0; i < ui->entries->count(); ++i)
-    {
-        VoteCoinsEntry *entry = qobject_cast<VoteCoinsEntry*>(ui->entries->itemAt(i)->widget());
-        if(entry)
-        {
-            prev = entry->setupTabChain(prev);
-        }
-    }
-    QWidget::setTabOrder(prev, ui->addButton);
-    QWidget::setTabOrder(ui->addButton, ui->sendButton);
-    return ui->sendButton;
-}*/
-
-void BankOverview::setAddress(const QString &address)
-{
-    VoteCoinsEntry *entry = 0;
-    // Replace the first entry if it is still unused
-    if(ui->entries->count() == 1)
-    {
-        VoteCoinsEntry *first = qobject_cast<VoteCoinsEntry*>(ui->entries->itemAt(0)->widget());
-        /*if(first->isClear())
-        {
-            entry = first;
-        }*/
-    }
-    if(!entry)
-    {
-        entry = addEntry();
-=======
 
 void BankOverview::setAddress(const QString &address)
 {
@@ -622,12 +511,12 @@ void BankOverview::setAddress(const QString &address)
     {
         BankOverview *first = qobject_cast<BankOverview*>(ui->entries->itemAt(0)->widget());
         
->>>>>>> origin/master2
     }
 
     entry->setAddress(address);
 }
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 void BankOverview::pasteEntry(const SendCoinsRecipient &rv)
 {
@@ -678,6 +567,8 @@ void BankOverview::setBalance(qint64 balance, qint64 unconfirmedBalance, qint64 
     int unit = model->getOptionsModel()->getDisplayUnit();
     ui->labelBalance->setText(BitcreditUnits::formatWithUnit(unit, balance));
 =======
+=======
+>>>>>>> origin/master
 void BankOverview::setBalance(const CAmount& balance, const CAmount& unconfirmedBalance, const CAmount& immatureBalance,
                                  const CAmount& watchBalance, const CAmount& watchUnconfirmedBalance, const CAmount& watchImmatureBalance)
 {
@@ -691,7 +582,6 @@ void BankOverview::setBalance(const CAmount& balance, const CAmount& unconfirmed
     {
         ui->labelwallettotal->setText(BitcreditUnits::formatWithUnit(model->getOptionsModel()->getDisplayUnit(), balance));
     }
->>>>>>> origin/master2
 }
 
 void BankOverview::updateDisplayUnit()
@@ -700,15 +590,17 @@ void BankOverview::updateDisplayUnit()
     {
         // Update labelBalance with the current balance and the current unit
 <<<<<<< HEAD
+<<<<<<< HEAD
         ui->labelBalance->setText(BitcreditUnits::formatWithUnit(model->getOptionsModel()->getDisplayUnit(), model->getBalance()));
     }
 }
 
 =======
+=======
+>>>>>>> origin/master
         ui->labelwallettotal->setText(BitcreditUnits::formatWithUnit(model->getOptionsModel()->getDisplayUnit(), model->getBalance()));
     }
 }
 
 
 
->>>>>>> origin/master2
