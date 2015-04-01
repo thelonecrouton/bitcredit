@@ -19,7 +19,7 @@
 
 static const int64_t DARKSEND_COLLATERAL = (0.1*COIN);
 static const int64_t DARKSEND_FEE = (0.0925*COIN);
-static const int64_t DARKSEND_POOL_MAX = (49999.99*COIN);
+static const int64_t DARKSEND_POOL_MAX = (249999.99*COIN);
 
 /*
     At 15 signatures, 1/2 of the masternode network can be owned by
