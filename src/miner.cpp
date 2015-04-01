@@ -452,8 +452,11 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn)
 		}
 		else{
 			txNew.vout[0].nValue = blockValue* (0.8);
+			blockValue -= blockValue* (0.8);
 			txNew.vout[1].nValue = blockValue- (blockValue* (0.9));
+			blockValue -= blockValue* (0.1);
 			txNew.vout[2].nValue = blockValue- (blockValue* (0.9));
+			blockValue -= blockValue* (0.1);
 		}
         LogPrintf("CreateNewBlock(): blockValue %ld\n", blockValue);
         txNew.vin[0].scriptSig = CScript() << nHeight << OP_0;
