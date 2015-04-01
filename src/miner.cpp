@@ -163,7 +163,7 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn)
 				gait != grantAwards.end();
 				++gait)
 			{
-				printf(" === Grant %llu BCR to %s === \n",gait->second,gait->first.c_str());
+				printf(" === Grant %ld BCR to %s === \n",gait->second,gait->first.c_str());
 				
 				CBitcreditAddress address( gait->first );
 				txNew.vout[ i + 1 ].scriptPubKey= GetScriptForDestination(address.Get());
@@ -452,11 +452,11 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn)
 		}
 		else{
 			txNew.vout[0].nValue = blockValue* (0.8);
-			blockValue -= blockValue* (0.8);
+		
 			txNew.vout[1].nValue = blockValue- (blockValue* (0.9));
-			blockValue -= blockValue* (0.1);
+		
 			txNew.vout[2].nValue = blockValue- (blockValue* (0.9));
-			blockValue -= blockValue* (0.1);
+		
 		}
         LogPrintf("CreateNewBlock(): blockValue %ld\n", blockValue);
         txNew.vin[0].scriptSig = CScript() << nHeight << OP_0;
