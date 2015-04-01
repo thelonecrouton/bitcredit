@@ -2154,13 +2154,7 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
 			}
 		}
 				
-			//SECTION: Extra checks and genesis block verification.
-			
-			if ( block.vtx[ 0 ].GetValueOut() > GetBlockValue( pindex->nHeight, nFees + grantAward ) ){
-			//NOTE: Looks like someone sent a malicious block that doesn't compute in the code correctly. Prevent malicious address from receiving excess coins.
-				return state.DoS(100, error("ConnectBlock() %d : malicious block detected - incorrect amount received by coinbase. (actual=%d vs limit=%d)", pindex->nHeight, block.vtx[0].GetValueOut(), GetBlockValue(pindex->nHeight, nFees+grantAward)));
 			}
-	}
 	}
 
     if (!control.Wait())
