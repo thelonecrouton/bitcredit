@@ -428,14 +428,11 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn)
         LogPrintf("CreateNewBlock(): total size %u\n", nBlockSize);
         CAmount blockValue = GetBlockValue(pindexPrev->nHeight, nFees);
         CAmount masternodePayment = GetMasternodePayment(pindexPrev->nHeight+1, blockValue);
+        CAmount bank = GetBlockValue(pindexPrev->nHeight, nFees) *(0.1);
 
         // Compute final coinbase transaction.
-        
-                
         if (chainActive.Tip()->nHeight<30000) {
-        
        		txNew.vout[0].nValue = blockValue;
-       		        
 		}
 		else{
 		if (chainActive.Tip()->nHeight>85000)
@@ -457,26 +454,30 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn)
 			}
 		}
 		}
-
 		if(payments > 1){
 			
 			if( isGrantAwardBlock( chainActive.Tip()->nHeight + 1 ) ){
 					
 				txNew.vout[2 +grantAwards.size() + payments ].nValue = masternodePayment;
+				blockValue -= masternodePayment;
 				}
 				else{
                 txNew.vout[2+ payments].nValue = masternodePayment;
+                blockValue -= masternodePayment;
 			}
-			blockValue -= masternodePayment;           
+			           
         }
-        txNew.vout[0].nValue = blockValue* (0.8);
-		
-		txNew.vout[1].nValue = blockValue- (blockValue* (0.9));
-		
-		txNew.vout[2].nValue = blockValue- (blockValue* (0.9));
         
-        }
-        LogPrintf("CreateNewBlock(): blockValue %ld\n", blockValue);
+
+		txNew.vout[1].nValue = bank;
+		blockValue -= bank;
+		
+		txNew.vout[2].nValue = bank;
+        blockValue -= bank;
+        
+        txNew.vout[0].nValue = blockValue;
+		}
+        
         txNew.vin[0].scriptSig = CScript() << nHeight << OP_0;
         pblock->vtx[0] = txNew;
         pblocktemplate->vTxFees[0] = -nFees;
