@@ -444,12 +444,12 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn)
 		
 			txNew.vout[2].nValue = blockValue- (blockValue* (0.9));
 			
-			if (chainActive.Tip()->nHeight>85000)
-	{
-	LOCK( grantdb );
-		
-	if( isGrantAwardBlock( chainActive.Tip()->nHeight + 1 ) )
+		if (chainActive.Tip()->nHeight>85000)
 		{
+			LOCK( grantdb );
+		
+			if( isGrantAwardBlock( chainActive.Tip()->nHeight + 1 ) )
+			{
 			if( !getGrantAwards( chainActive.Tip()->nHeight + 1 ) ){
 				throw std::runtime_error( "ConnectBlock() : Connect Block grant awards error.\n" );
 			}
