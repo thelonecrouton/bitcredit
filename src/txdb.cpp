@@ -264,7 +264,6 @@ bool CBlockTreeDB::LoadBlockIndexGuts()
                 pindexNew->nNonce         = diskindex.nNonce;
                 pindexNew->nBirthdayA     = diskindex.nBirthdayA;
                 pindexNew->nBirthdayB     = diskindex.nBirthdayB;
-				pindexNew->nMoneySupply   = diskindex.nMoneySupply;
                 pindexNew->nStatus        = diskindex.nStatus;
                 pindexNew->nTx            = diskindex.nTx;
 
