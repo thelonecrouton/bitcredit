@@ -1947,8 +1947,8 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
 
     int64_t nTimeStart = GetTimeMicros();
     CAmount nFees = 0;
-    CAmount nValueIn = 0;
-    CAmount nValueOut = 0;
+    //CAmount nValueIn = 0;
+    //CAmount nValueOut = 0;
     int nInputs = 0;
     unsigned int nSigOps = 0;
     CExtDiskTxPos pos(CDiskTxPos(pindex->GetBlockPos(), GetSizeOfCompactSize(block.vtx.size())), pindex->nHeight);
@@ -1966,8 +1966,8 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
 
         nInputs += tx.vin.size();
         nSigOps += GetLegacySigOpCount(tx);
-        nValueOut += tx.GetValueOut();
-        nValueIn += nInputs;
+       // nValueOut += tx.GetValueOut();
+       // nValueIn += nInputs;
         if (nSigOps > MAX_BLOCK_SIGOPS)
             return state.DoS(100, error("ConnectBlock() : too many sigops"),
                              REJECT_INVALID, "bad-blk-sigops");
