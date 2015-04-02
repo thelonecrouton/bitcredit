@@ -94,9 +94,10 @@ CAmount CTransaction::GetValueOut() const
     {
         nValueOut += it->nValue;
         
-        if (!MoneyRange(it->nValue) || !MoneyRange(nValueOut))
-        
+        if (!MoneyRange(it->nValue))
             throw std::runtime_error("CTransaction::GetValueOut() : value out of range");
+        if    (!MoneyRange(nValueOut))
+            throw std::runtime_error("CTransaction::GetValueOut() : value out of range2");
     }
     strprintf("CTransaction::GetValueOut() (nValueOut = %ld) ",nValueOut);
     return nValueOut;
