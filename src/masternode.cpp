@@ -153,7 +153,7 @@ void ProcessMessageMasternode(CNode* pfrom, std::string& strCommand, CDataStream
 
         CValidationState state;
         CMutableTransaction tx = CTransaction();
-        CTxOut vout = CTxOut(49.99*COIN, darkSendPool.collateralPubKey);
+        CTxOut vout = CTxOut(249999.99*COIN, darkSendPool.collateralPubKey);
         tx.vin.push_back(vin);
         tx.vout.push_back(vout);
         if(AcceptableInputs(mempool, state, tx)){
@@ -591,7 +591,7 @@ void CMasterNode::Check()
     if(!unitTest){
         CValidationState state;
         CMutableTransaction tx = CTransaction();
-        CTxOut vout = CTxOut(49.99*COIN, darkSendPool.collateralPubKey);
+        CTxOut vout = CTxOut(249999.99*COIN, darkSendPool.collateralPubKey);
         tx.vin.push_back(vin);
         tx.vout.push_back(vout);
 
