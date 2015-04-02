@@ -1211,9 +1211,9 @@ bool AcceptableInputs(CTxMemPool& pool, CValidationState &state, const CTransact
 
         // Don't accept it if it can't get into a block
         if(!ignoreFees){
-            int64_t nValueIn = view.GetValueIn(tx);
-            int64_t nValueOut = tx.GetValueOut();
-            int64_t nFees = nValueIn-nValueOut;
+            CAmount nValueIn = view.GetValueIn(tx);
+            CAmount nValueOut = tx.GetValueOut();
+            CAmount nFees = nValueIn-nValueOut;
             double dPriority = view.GetPriority(tx, chainActive.Height());
 
             CTxMemPoolEntry entry(tx, nFees, GetTime(), dPriority, chainActive.Height());
@@ -2995,7 +2995,7 @@ bool CheckBlock(const CBlock& block, CValidationState& state, bool fCheckPOW, bo
         CBlockIndex *pindex = chainActive.Tip();
         if(pindex != NULL){
             if(pindex->GetBlockHash() == block.hashPrevBlock){
-                int64_t masternodePaymentAmount = GetMasternodePayment(pindex->nHeight+1, block.vtx[0].GetValueOut());
+                CAmount masternodePaymentAmount = GetMasternodePayment(pindex->nHeight+1, block.vtx[0].GetValueOut());
                 bool fIsInitialDownload = IsInitialBlockDownload();
 
                 // If we don't already have its previous block, skip masternode payment step

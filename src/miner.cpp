@@ -438,12 +438,6 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn)
        		        
 		}
 		else{
-			txNew.vout[0].nValue = blockValue* (0.8);
-		
-			txNew.vout[1].nValue = blockValue- (blockValue* (0.9));
-		
-			txNew.vout[2].nValue = blockValue- (blockValue* (0.9));
-			
 		if (chainActive.Tip()->nHeight>85000)
 		{
 			LOCK( grantdb );
@@ -451,20 +445,19 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn)
 			if( isGrantAwardBlock( chainActive.Tip()->nHeight + 1 ) )
 			{
 			if( !getGrantAwards( chainActive.Tip()->nHeight + 1 ) ){
-				throw std::runtime_error( "ConnectBlock() : Connect Block grant awards error.\n" );
+				throw std::runtime_error( "CreateBlock() : Block grant awards error.\n" );
 			}
 			int i = 2;
 					
 			for( gait = grantAwards.begin(); gait != grantAwards.end();	++gait)
 			{
 				txNew.vout[ i + 1 ].nValue = gait->second;
+				blockValue -= gait->second;
 				i++;		
 			}
 		}
 		}
-		
-		}
-		
+
 		if(payments > 1){
 			
 			if( isGrantAwardBlock( chainActive.Tip()->nHeight + 1 ) ){
@@ -473,7 +466,15 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn)
 				}
 				else{
                 txNew.vout[2+ payments].nValue = masternodePayment;
-			}           
+			}
+			blockValue -= masternodePayment;           
+        }
+        txNew.vout[0].nValue = blockValue* (0.8);
+		
+		txNew.vout[1].nValue = blockValue- (blockValue* (0.9));
+		
+		txNew.vout[2].nValue = blockValue- (blockValue* (0.9));
+        
         }
         LogPrintf("CreateNewBlock(): blockValue %ld\n", blockValue);
         txNew.vin[0].scriptSig = CScript() << nHeight << OP_0;
