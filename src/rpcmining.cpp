@@ -747,7 +747,7 @@ Value getblocktemplate(const Array& params, bool fHelp)
     result.push_back(Pair("previousblockhash", pblock->hashPrevBlock.GetHex()));
     result.push_back(Pair("transactions", transactions));
     result.push_back(Pair("coinbaseaux", aux));
-	result.push_back(Pair("coinbasevalue", (int64_t)GetBlockValue(chainActive.Tip()->nHeight, nFees)));
+	result.push_back(Pair("coinbasevalue", (int64_t)GetBlockValue(chainActive.Tip()->nHeight, 0)));
 	
 	/*int64_t _coinbasevalue = 0;
 	for (unsigned int i = 0; i < pblock->vtx[0].vout.size(); i++)
