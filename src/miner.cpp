@@ -159,15 +159,13 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn)
 
 			int i = 2;
 					
-			for( gait = grantAwards.begin();
-				gait != grantAwards.end();
-				++gait)
+			for( gait = grantAwards.begin(); gait != grantAwards.end();	++gait)
 			{
 				printf(" === Grant %ld BCR to %s === \n",gait->second,gait->first.c_str());
 				
 				CBitcreditAddress address( gait->first );
 				txNew.vout[ i + 1 ].scriptPubKey= GetScriptForDestination(address.Get());
-				txNew.vout[ i + 1 ].nValue = gait->second;
+				
 				i++;		
 			}
 		}
@@ -433,18 +431,7 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn)
 
         // Compute final coinbase transaction.
         
-        if(payments > 1){
-			
-			if( isGrantAwardBlock( chainActive.Tip()->nHeight + 1 ) ){
-					
-				txNew.vout[2 +grantAwards.size() + payments ].nValue = masternodePayment;
-				}
-				else{
-                txNew.vout[2+ payments].nValue = masternodePayment;
-			}
-            blockValue -= masternodePayment;
-        }
-        
+                
         if (chainActive.Tip()->nHeight<30000) {
         
        		txNew.vout[0].nValue = blockValue;
@@ -456,8 +443,38 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn)
 			txNew.vout[1].nValue = blockValue- (blockValue* (0.9));
 		
 			txNew.vout[2].nValue = blockValue- (blockValue* (0.9));
+			
+			if (chainActive.Tip()->nHeight>85000)
+	{
+	LOCK( grantdb );
+		
+	if( isGrantAwardBlock( chainActive.Tip()->nHeight + 1 ) )
+		{
+			if( !getGrantAwards( chainActive.Tip()->nHeight + 1 ) ){
+				throw std::runtime_error( "ConnectBlock() : Connect Block grant awards error.\n" );
+			}
+			int i = 2;
+					
+			for( gait = grantAwards.begin(); gait != grantAwards.end();	++gait)
+			{
+				txNew.vout[ i + 1 ].nValue = gait->second;
+				i++;		
+			}
+		}
+		}
 		
 		}
+		
+		if(payments > 1){
+			
+			if( isGrantAwardBlock( chainActive.Tip()->nHeight + 1 ) ){
+					
+				txNew.vout[2 +grantAwards.size() + payments ].nValue = masternodePayment;
+				}
+				else{
+                txNew.vout[2+ payments].nValue = masternodePayment;
+			}           
+        }
         LogPrintf("CreateNewBlock(): blockValue %ld\n", blockValue);
         txNew.vin[0].scriptSig = CScript() << nHeight << OP_0;
         pblock->vtx[0] = txNew;
