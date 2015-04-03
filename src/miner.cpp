@@ -231,10 +231,12 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn)
 				}
 				if( isGrantAwardBlock( chainActive.Tip()->nHeight + 1 ) ){
 					
-					txNew.vout[2 +grantAwards.size() + payments ].scriptPubKey = pblock->payee;
+				txNew.vout[2 +grantAwards.size() + payments ].scriptPubKey = pblock->payee;
+				txNew.vout[2 +grantAwards.size() + payments].nValue = 0;
 				}
 				else{
                 txNew.vout[2+ payments].scriptPubKey = pblock->payee;
+				txNew.vout[2+ payments].nValue = 0;
 			}
 
                 CTxDestination address1;
@@ -375,7 +377,7 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn)
                 continue;
 
             CAmount nTxFees = view.GetValueIn(tx)-tx.GetValueOut();
-
+			
             nTxSigOps += GetP2SHSigOpCount(tx, view);
             if (nBlockSigOps + nTxSigOps >= MAX_BLOCK_SIGOPS)
                 continue;
