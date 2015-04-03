@@ -87,7 +87,11 @@ void InvoicePage::setModel(MessageModel *model)
     // Set column widths
     ui->tableView->horizontalHeader()->resizeSection(InvoiceTableModel::Type,             100);
     ui->tableView->horizontalHeader()->resizeSection(InvoiceTableModel::Label,            100);
+#if QT_VERSION < 0x050000
     ui->tableView->horizontalHeader()->setResizeMode(InvoiceTableModel::Label,            QHeaderView::Stretch);
+#else
+    ui->tableView->horizontalHeader()->setSectionResizeMode(InvoiceTableModel::Label,     QHeaderView::Stretch);
+#endif
     ui->tableView->horizontalHeader()->resizeSection(InvoiceTableModel::FromAddress,      320);
     ui->tableView->horizontalHeader()->resizeSection(InvoiceTableModel::ToAddress,        320);
     ui->tableView->horizontalHeader()->resizeSection(InvoiceTableModel::SentDateTime,     170);

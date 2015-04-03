@@ -82,7 +82,11 @@ void ReceiptPage::setModel(MessageModel *model)
     // Set column widths
     ui->tableView->horizontalHeader()->resizeSection(ReceiptTableModel::Type,             100);
     ui->tableView->horizontalHeader()->resizeSection(ReceiptTableModel::Label,            100);
+#if QT_VERSION < 0x050000
     ui->tableView->horizontalHeader()->setResizeMode(ReceiptTableModel::Label,            QHeaderView::Stretch);
+#else
+    ui->tableView->horizontalHeader()->setSectionResizeMode(ReceiptTableModel::Label,     QHeaderView::Stretch);
+#endif
     ui->tableView->horizontalHeader()->resizeSection(ReceiptTableModel::FromAddress,      320);
     ui->tableView->horizontalHeader()->resizeSection(ReceiptTableModel::ToAddress,        320);
     ui->tableView->horizontalHeader()->resizeSection(ReceiptTableModel::SentDateTime,     170);
