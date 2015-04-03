@@ -117,7 +117,7 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn)
     // -blockversion=N to test forking scenarios
     if (Params().MineBlocksOnDemand())
         pblock->nVersion = GetArg("-blockversion", pblock->nVersion);
-	int payments = 1;
+	int payments = 0;
     // Create coinbase tx
     CMutableTransaction txNew;
     txNew.vin.resize(1);
@@ -225,19 +225,12 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn)
                 payments++;
                 if( isGrantAwardBlock( chainActive.Tip()->nHeight + 1 ) ){
 					txNew.vout.resize((3 +grantAwards.size()) + payments);
+					txNew.vout[2 +grantAwards.size() + payments ].scriptPubKey = pblock->payee;					
 				}
 				else{
                 txNew.vout.resize(3+ payments);
+                txNew.vout[2+ payments].scriptPubKey = pblock->payee;              
 				}
-				if( isGrantAwardBlock( chainActive.Tip()->nHeight + 1 ) ){
-					
-				txNew.vout[2 +grantAwards.size() + payments ].scriptPubKey = pblock->payee;
-				txNew.vout[2 +grantAwards.size() + payments].nValue = 0;
-				}
-				else{
-                txNew.vout[2+ payments].scriptPubKey = pblock->payee;
-				txNew.vout[2+ payments].nValue = 0;
-			}
 
                 CTxDestination address1;
                 ExtractDestination(pblock->payee, address1);
@@ -456,7 +449,7 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn)
 			}
 		}
 		}
-		if(payments > 1){
+		if(payments > 0){
 			
 			if( isGrantAwardBlock( chainActive.Tip()->nHeight + 1 ) ){
 					
