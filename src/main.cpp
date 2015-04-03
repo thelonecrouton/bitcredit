@@ -1450,19 +1450,19 @@ int64_t GetMasternodePayment(int nHeight, int64_t blockValue)
     int64_t ret = blockValue/5; //20%
 
   
-    if(nHeight > 85000)               ret += blockValue / 20; //  25.0% 
-    if(nHeight > 85000+((576*30)* 1)) ret += blockValue / 20; //  30.0% 
-    if(nHeight > 85000+((576*30)* 2)) ret += blockValue / 20; //  35.0% 
-    if(nHeight > 85000+((576*30)* 3)) ret += blockValue / 40; //  37.5% 
-    if(nHeight > 85000+((576*30)* 4)) ret += blockValue / 40; //  40.0% 
-    if(nHeight > 85000+((576*30)* 5)) ret += blockValue / 40; //  42.5% 
-    if(nHeight > 85000+((576*30)* 6)) ret += blockValue / 40; //  45.0% 
-    if(nHeight > 85000+((576*30)* 7)) ret += blockValue / 40; //  47.5% 
-    if(nHeight > 85000+((576*30)* 9)) ret += blockValue / 40; //  50.0% 
-    if(nHeight > 85000+((576*30)*11)) ret += blockValue / 40; //  52.5% 
-    if(nHeight > 85000+((576*30)*13)) ret += blockValue / 40; //  55.0% 
-    if(nHeight > 85000+((576*30)*15)) ret += blockValue / 40; //  57.5% 
-    if(nHeight > 85000+((576*30)*17)) ret += blockValue / 40; //  60.0% 
+    if(nHeight > 85000)                ret += blockValue / 20; //  25.0% - 2014-04-07
+    if(nHeight > 85000+((1440*30)* 1)) ret += blockValue / 20; //  30.0% - 2014-05-07
+    if(nHeight > 85000+((1440*30)* 2)) ret += blockValue / 20; //  35.0% - 2014-06-07
+    if(nHeight > 85000+((1440*30)* 3)) ret += blockValue / 40; //  37.5% - 2014-07-07
+    if(nHeight > 85000+((1440*30)* 4)) ret += blockValue / 40; //  40.0% - 2014-08-07
+    if(nHeight > 85000+((1440*30)* 5)) ret += blockValue / 40; //  42.5% - 2014-09-07
+    if(nHeight > 85000+((1440*30)* 6)) ret += blockValue / 40; //  45.0% - 2014-10-07
+    if(nHeight > 85000+((1440*30)* 7)) ret += blockValue / 40; //  47.5% - 2014-11-07
+    if(nHeight > 85000+((1440*30)* 9)) ret += blockValue / 40; //  50.0% - 2014-12-07
+    if(nHeight > 85000+((1440*30)*11)) ret += blockValue / 40; //  52.5% - 2015-02-07
+    if(nHeight > 85000+((1440*30)*13)) ret += blockValue / 40; //  55.0% - 2015-04-07
+    if(nHeight > 85000+((1440*30)*15)) ret += blockValue / 40; //  57.5% - 2015-06-07
+    if(nHeight > 85000+((1440*30)*17)) ret += blockValue / 40; //  60.0% - 2015-08-07
     
     
     return ret;
