@@ -127,7 +127,7 @@ void WalletView::setBitcreditGUI(BitcreditGUI *gui)
         // Pass through transaction notifications
         connect(this, SIGNAL(incomingTransaction(QString,int,CAmount,QString,QString)), gui, SLOT(incomingTransaction(QString,int,CAmount,QString,QString)));
     
-		connect(this, SIGNAL(incomingMessage(QString, QString, QString, QString, int)), gui, SLOT(incomingMessage(QString, QString, QString, QString, int)));
+        connect(this, SIGNAL(incomingMessage(QString, QString, QString, QString, int)), gui, SLOT(incomingMessage(QString, QString, QString, QString, int)));
 								
     }
 }
