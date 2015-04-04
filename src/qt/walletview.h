@@ -122,6 +122,7 @@ public slots:
         The new items are those between start and end inclusive, under the given parent item.
     */
     void processNewTransaction(const QModelIndex& parent, int start, int /*end*/);
+    void processNewMessage(const QModelIndex& parent, int start, int /*end*/);
     /** Encrypt the wallet */
     void encryptWallet(bool status);
     /** Backup the wallet */
@@ -152,6 +153,8 @@ signals:
     void encryptionStatusChanged(int status);
     /** Notify that a new transaction appeared */
     void incomingTransaction(const QString& date, int unit, const CAmount& amount, const QString& type, const QString& address);
+    
+    void incomingMessage(const QString& sent_datetime, QString from_address, QString to_address, QString message, int type);
 };
 
 #endif // BITCREDIT_QT_WALLETVIEW_H

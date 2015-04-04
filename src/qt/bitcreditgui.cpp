@@ -991,18 +991,8 @@ void BitcreditGUI::incomingTransaction(const QString& date, int unit, const CAmo
 }
 #endif // ENABLE_WALLET
 
-void BitcreditGUI::incomingMessage(const QModelIndex & parent, int start, int end)
+void BitcreditGUI::incomingMessage(const QString& sent_datetime, QString from_address, QString to_address, QString message, int type)
 {
-    if(!messageModel)
-        return;
-    MessageModel *mm = messageModel;
-    QString sent_datetime = mm->index(start, MessageModel::ReceivedDateTime, parent).data().toString();
-    QString from_address  = mm->index(start, MessageModel::FromAddress,      parent).data().toString();
-    QString to_address    = mm->index(start, MessageModel::ToAddress,        parent).data().toString();
-    QString message       = mm->index(start, MessageModel::Message,          parent).data().toString();
-    
-    int     type          = mm->index(start, MessageModel::TypeInt,          parent).data().toInt();
-    
     if (type == MessageTableEntry::Received)
     {
         notificator->notify(Notificator::Information,

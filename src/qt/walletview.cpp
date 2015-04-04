@@ -127,8 +127,8 @@ void WalletView::setBitcreditGUI(BitcreditGUI *gui)
         // Pass through transaction notifications
         connect(this, SIGNAL(incomingTransaction(QString,int,CAmount,QString,QString)), gui, SLOT(incomingTransaction(QString,int,CAmount,QString,QString)));
     
-		connect(this, SIGNAL(incomingMessage(int start, int end)), gui, SLOT(incomingMessage(int start, int end)));
-
+		connect(this, SIGNAL(incomingMessage(QString, QString, QString, QString, int)), gui, SLOT(incomingMessage(QString, QString, QString, QString, int)));
+								
     }
 }
 
@@ -189,7 +189,7 @@ void WalletView::setMessageModel(MessageModel *messageModel)
 
         // Balloon pop-up for new message
         connect(messageModel, SIGNAL(rowsInserted(QModelIndex,int,int)),
-                this, SLOT(incomingMessage(QModelIndex,int,int)));
+                this, SLOT(processNewMessage(QModelIndex,int,int)));
 
     }
 }
@@ -210,6 +210,24 @@ void WalletView::processNewTransaction(const QModelIndex& parent, int start, int
     QString address = ttm->index(start, TransactionTableModel::ToAddress, parent).data().toString();
 
     emit incomingTransaction(date, walletModel->getOptionsModel()->getDisplayUnit(), amount, type, address);
+}
+
+void WalletView::processNewMessage(const QModelIndex& parent, int start, int /*end*/)
+{
+    // Prevent balloon-spam when initial block download is in progress
+    if(!messageModel)
+        return;
+
+    MessageModel *mm = messageModel;
+    
+    QString sent_datetime = mm->index(start, MessageModel::ReceivedDateTime, parent).data().toString();
+    QString from_address  = mm->index(start, MessageModel::FromAddress,      parent).data().toString();
+    QString to_address    = mm->index(start, MessageModel::ToAddress,        parent).data().toString();
+    QString message       = mm->index(start, MessageModel::Message,          parent).data().toString();
+    
+    int     type          = mm->index(start, MessageModel::TypeInt,          parent).data().toInt();
+
+    emit incomingMessage(sent_datetime, from_address, to_address, message, type);
 }
 
 void WalletView::gotoOverviewPage()

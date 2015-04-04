@@ -69,15 +69,8 @@ VoteCoinsDialog::~VoteCoinsDialog()
     delete ui;
 }
 
-void VoteCoinsDialog::checkSweep(){
-   
-        ui->sendButton->setEnabled(true);
-        ui->sweepLabel->setVisible(false);
-        
 
-}
-
-void VoteCoinsDialog::sendToRecipients(bool sweep, qint64 sweepFee){
+void VoteCoinsDialog::on_sendButton_clicked(){
 
     QList<SendCoinsRecipient> recipients;
 
@@ -145,17 +138,6 @@ void VoteCoinsDialog::sendToRecipients(bool sweep, qint64 sweepFee){
     }
     
     fNewRecipientAllowed = true;
-}
-
-void VoteCoinsDialog::on_sweepButton_clicked(){
-
-    sendToRecipients(true,0);
-
-}
-
-void VoteCoinsDialog::on_sendButton_clicked()
-{
-    sendToRecipients(false,0);
 }
 
 void VoteCoinsDialog::clear()

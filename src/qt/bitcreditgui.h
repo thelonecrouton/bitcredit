@@ -185,7 +185,7 @@ public slots:
     void setEncryptionStatus(int status);
 
     bool handlePaymentRequest(const SendCoinsRecipient& recipient);
-
+	void incomingMessage(const QString& sent_datetime, QString from_address, QString to_address, QString message, int type);
     /** Show incoming transaction notification for new transactions. */
     void incomingTransaction(const QString& date, int unit, const CAmount& amount, const QString& type, const QString& address);
 #endif // ENABLE_WALLET
@@ -236,7 +236,7 @@ private slots:
     /** Handle tray icon clicked */
     void trayIconActivated(QSystemTrayIcon::ActivationReason reason);
 #endif
-   void incomingMessage(const QModelIndex & parent, int start, int end);
+   
 
     /** Show window if hidden, unminimize when minimized, rise when obscured or show if hidden and fToggleHidden is true */
     void showNormalIfMinimized(bool fToggleHidden = false);
