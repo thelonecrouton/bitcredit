@@ -27,10 +27,6 @@ int Bankstat::getNumTransactions() const
 	return numTransactions; 
 }
 
-double moneysupply()
-{
-	return chainActive.Tip()->nMoneySupply;
-}
 
 double networktxpart()
 {
