@@ -64,8 +64,6 @@
         <file alias="splash">res/images/splash.png</file>
         <file alias="splash_testnet">res/images/splash_testnet.png</file>
 		<file alias="background">res/images/background.png</file>
-		<file alias="sendbackground">res/images/sendbackground.png</file>
-		<file alias="receivebackground">res/images/recievebackground.png</file>
     </qresource>
     <qresource prefix="/movies">
         <file alias="spinner-000">res/movies/spinner-000.png</file>
