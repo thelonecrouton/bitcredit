@@ -56,7 +56,7 @@ Notes:
 #include "rpcprotocol.h"
 #include "txdb-leveldb.h"
 
-#include "lz4/lz4.C"
+#include "lz4/lz4.c"
 #include "xxhash/xxhash.h"
 #include "xxhash/xxhash.c"
 
