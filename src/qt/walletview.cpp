@@ -3,7 +3,7 @@
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include "walletview.h"
-#include "exchangebrowser.h"
+//#include "exchangebrowser.h"
 #include "chatwindow.h"
 #include "addressbookpage.h"
 #include "askpassphrasedialog.h"
@@ -47,7 +47,7 @@ WalletView::WalletView(QWidget *parent):
     // Create tabs
     overviewPage = new OverviewPage();
 	chatWindow = new ChatWindow(this);
-	exchangeBrowser = new ExchangeBrowser(this);
+//	exchangeBrowser = new ExchangeBrowser(this);
 	blockBrowser = new BlockBrowser(this);
 	bankstatisticsPage = new BankStatisticsPage(this);
 	
@@ -85,7 +85,7 @@ WalletView::WalletView(QWidget *parent):
     addWidget(bankstatisticsPage);
     addWidget(voteCoinsPage);
 	addWidget(chatWindow);
-	addWidget(exchangeBrowser);
+//	addWidget(exchangeBrowser);
 	addWidget(sendMessagesPage);
     addWidget(messagePage);
     addWidget(invoicePage);
@@ -240,10 +240,10 @@ void WalletView::gotoBlockBrowser()
     setCurrentWidget(blockBrowser);
 }
 
-void WalletView::gotoExchangeBrowserPage()
+/*void WalletView::gotoExchangeBrowserPage()
 {
     setCurrentWidget(exchangeBrowser);
-}
+}*/
 
 void WalletView::gotoChatPage()
 {

@@ -30,7 +30,7 @@ class SendMessagesDialog;
 class Notificator;
 class OptionsModel;
 class RPCConsole;
-class ExchangeBrowser;
+//class ExchangeBrowser;
 class ChatWindow;
 class SendCoinsRecipient;
 class UnitDisplayStatusBarControl;
@@ -100,7 +100,7 @@ private:
 
     QMenuBar *appMenuBar;
 	QAction *chatAction;
-	QAction *exchangeAction;
+	//QAction *exchangeAction;
     QAction *overviewAction;
     QAction *historyAction;
     QAction *quitAction;
@@ -199,7 +199,7 @@ private slots:
 	/** Switch to chat page */
     void gotoChatPage();
 	/** Switch to exchange browser page */
-    void gotoExchangeBrowserPage();
+   // void gotoExchangeBrowserPage();
     /** Switch to receive coins page */
     void gotoReceiveCoinsPage();
     /** Switch to send coins page */

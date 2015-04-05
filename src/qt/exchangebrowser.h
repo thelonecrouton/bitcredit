@@ -38,7 +38,6 @@ public:
     ~ExchangeBrowser();
 
     void openBittrex();
-    void openPoloniex();
 
     void pollAPIs();
 

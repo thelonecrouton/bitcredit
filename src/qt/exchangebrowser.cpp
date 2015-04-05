@@ -76,10 +76,6 @@ void ExchangeBrowser::openBittrex()
 {
     QDesktopServices::openUrl(QUrl("https://www.bittrex.com/Market/Index?MarketName=BTC-BCR"));
 }
-void ExchangeBrowser::openPoloniex()
-{
-    QDesktopServices::openUrl(QUrl("https://poloniex.com/exchange/btc_DGC"));
-}
 
 void ExchangeBrowser::pollAPIs()
 {

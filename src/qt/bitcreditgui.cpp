@@ -16,7 +16,7 @@
 #include "messagemodel.h"
 #include "rpcconsole.h"
 #include "utilitydialog.h"
-#include "exchangebrowser.h"
+//#include "exchangebrowser.h"
 #include "chatwindow.h"
 #ifdef ENABLE_WALLET
 #include "walletframe.h"
@@ -303,11 +303,11 @@ void BitcreditGUI::createActions(const NetworkStyle *networkStyle)
     voteCoinsAction->setShortcut(QKeySequence(Qt::ALT + Qt::Key_6));
     tabGroup->addAction(voteCoinsAction);
     
-	exchangeAction = new QAction(QIcon(":/icons/exchange"), tr("&Market Data"), this);
+	/*exchangeAction = new QAction(QIcon(":/icons/exchange"), tr("&Market Data"), this);
 	exchangeAction->setToolTip(tr("Market"));
 	exchangeAction->setShortcut(QKeySequence(Qt::ALT + Qt::Key_7));
 	exchangeAction->setCheckable(true);
-	tabGroup->addAction(exchangeAction);    
+	tabGroup->addAction(exchangeAction);    **/
 
     bankstatsAction = new QAction(QIcon(":/icons/bankstats"), tr("&Bank Statistics"), this);
     bankstatsAction->setToolTip(tr("Local and Global statistics"));
@@ -353,7 +353,7 @@ void BitcreditGUI::createActions(const NetworkStyle *networkStyle)
     connect(historyAction, SIGNAL(triggered()), this, SLOT(showNormalIfMinimized()));
     connect(historyAction, SIGNAL(triggered()), this, SLOT(gotoHistoryPage()));
 	connect(chatAction, SIGNAL(triggered()), this, SLOT(gotoChatPage()));
-	connect(exchangeAction, SIGNAL(triggered()), this, SLOT(gotoExchangeBrowserPage()));
+	//connect(exchangeAction, SIGNAL(triggered()), this, SLOT(gotoExchangeBrowserPage()));
 	connect(blockAction, SIGNAL(triggered()), this, SLOT(gotoBlockBrowser()));
 	connect(bankstatsAction, SIGNAL(triggered()), this, SLOT(gotoBankStatisticsPage()));
     connect(voteCoinsAction, SIGNAL(triggered()), this, SLOT(showNormalIfMinimized()));
@@ -459,7 +459,7 @@ void BitcreditGUI::createToolBars()
         toolbar->addAction(sendCoinsAction);
         toolbar->addAction(receiveCoinsAction);
         toolbar->addAction(historyAction);
-		toolbar->addAction(exchangeAction);
+		//toolbar->addAction(exchangeAction);
 		toolbar->addAction(blockAction);
 		toolbar->addAction(bankstatsAction);		        
 	    toolbar->addAction(sendMessagesAction);
@@ -564,7 +564,7 @@ void BitcreditGUI::setWalletActionsEnabled(bool enabled)
     paperWalletAction->setEnabled(enabled);
 	voteCoinsAction->setEnabled(enabled);
 	chatAction->setEnabled(enabled);
-	exchangeAction->setEnabled(enabled);
+	//exchangeAction->setEnabled(enabled);
 	sendMessagesAction->setEnabled(enabled);
     messageAction->setEnabled(enabled);
     invoiceAction->setEnabled(enabled);
@@ -704,11 +704,11 @@ void BitcreditGUI::gotoReceiptPage()
     if (walletFrame) walletFrame->gotoReceiptPage();
 }
 
-void BitcreditGUI::gotoExchangeBrowserPage()
+/*void BitcreditGUI::gotoExchangeBrowserPage()
 {
     exchangeAction->setChecked(true);
     if (walletFrame) walletFrame->gotoExchangeBrowserPage();
-}
+}*/
 
 void BitcreditGUI::gotoBankStatisticsPage()
 {
