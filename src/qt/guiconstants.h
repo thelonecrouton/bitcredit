@@ -19,7 +19,7 @@ static const int STATUSBAR_ICONSIZE = 18;
 #define STYLE_INVALID "background:transparent"
 
 /* Transaction list -- unconfirmed transaction */
-#define COLOR_UNCONFIRMED QColor(128, 128, 128)
+#define COLOR_UNCONFIRMED QColor(0, 255, 255)
 /* Transaction list -- negative amount */
 #define COLOR_NEGATIVE QColor(255, 0, 0)
 /* Transaction list -- bare address (without label) */
@@ -30,6 +30,8 @@ static const int STATUSBAR_ICONSIZE = 18;
 #define COLOR_TX_STATUS_OFFLINE QColor(192, 192, 192)
 /* Transaction list -- TX status decoration - default color */
 #define COLOR_BLACK QColor(0, 0, 0)
+#define COLOR_WHITE QColor(255,255,255)
+#define COLOR_DATE_OVERVIEW QColor(255,127,39)
 
 /* Tooltips longer than this (in characters) are converted into rich text,
    so that they can be word-wrapped.

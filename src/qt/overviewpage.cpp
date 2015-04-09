@@ -23,7 +23,7 @@
 #include <QMovie>
 #include <QFrame>
 
-#define DECORATION_SIZE 43
+#define DECORATION_SIZE 32
 #define NUM_ITEMS 5
 
 class TxViewDelegate : public QAbstractItemDelegate
@@ -46,8 +46,8 @@ public:
         int xspace = DECORATION_SIZE - 8;
         int ypad = 0;
         int halfheight = (mainRect.height() - 2 * ypad) / 2;
-        QRect amountRect(mainRect.left() + xspace + 10, mainRect.top(), mainRect.width() - xspace - 10, halfheight);
-        QRect addressRect(mainRect.left() + xspace + 130, mainRect.top(), mainRect.width() - xspace, halfheight);
+        QRect amountRect(mainRect.left() + xspace + 10, mainRect.top(), mainRect.width() - xspace - 130, halfheight);
+        QRect addressRect(mainRect.left() + xspace + 85, mainRect.top(), mainRect.width() - xspace, halfheight);
         icon.paint(painter, decorationRect);
 
         QDateTime date = index.data(TransactionTableModel::DateRole).toDateTime();
@@ -60,9 +60,11 @@ public:
         {
             QBrush brush = qvariant_cast<QBrush>(value);
             foreground = brush.color();
+			//foreground = COLOR_WHITE;
         }
 
-        painter->setPen(foreground);
+        //painter->setPen(foreground);
+		painter->setPen(COLOR_WHITE);
         QRect boundingRect;
         painter->drawText(addressRect, Qt::AlignLeft|Qt::AlignVCenter, address, &boundingRect);
 
@@ -83,7 +85,8 @@ public:
         }
         else
         {
-            foreground = option.palette.color(QPalette::Text);
+            //foreground = option.palette.color(QPalette::Text);
+			painter->setPen(COLOR_WHITE);
         }
         painter->setPen(foreground);
         QString amountText = BitcreditUnits::formatWithUnit(unit, amount, true, BitcreditUnits::separatorAlways);
@@ -93,7 +96,8 @@ public:
         }
         painter->drawText(amountRect, Qt::AlignRight|Qt::AlignVCenter, amountText);
 
-        painter->setPen(option.palette.color(QPalette::Text));
+        //painter->setPen(option.palette.color(QPalette::Text));
+		painter->setPen(COLOR_WHITE);
         painter->drawText(amountRect, Qt::AlignLeft|Qt::AlignVCenter, GUIUtil::dateTimeStr(date));
 
         painter->restore();
