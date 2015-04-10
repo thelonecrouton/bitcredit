@@ -15,9 +15,9 @@ static const struct {
     const char *titleAddText;
     const char *splashImage;
 } network_styles[] = {
-    {"main", QAPP_APP_NAME_DEFAULT, ":/icons/bitcredits", "", ":/images/splash"},
-    {"test", QAPP_APP_NAME_TESTNET, ":/icons/bitcredits_testnet", QT_TRANSLATE_NOOP("SplashScreen", "[testnet]"), ":/images/splash_testnet"},
-    {"regtest", QAPP_APP_NAME_TESTNET, ":/icons/bitcredits_testnet", "[regtest]", ":/images/splash_testnet"}
+    {"main", QAPP_APP_NAME_DEFAULT, ":/icons/bitcredit", "", ":/images/splash"},
+    {"test", QAPP_APP_NAME_TESTNET, ":/icons/bitcredit_testnet", QT_TRANSLATE_NOOP("SplashScreen", "[testnet]"), ":/images/splash_testnet"},
+    {"regtest", QAPP_APP_NAME_TESTNET, ":/icons/bitcredit_testnet", "[regtest]", ":/images/splash_testnet"}
 };
 static const unsigned network_styles_count = sizeof(network_styles)/sizeof(*network_styles);
 
@@ -28,6 +28,8 @@ NetworkStyle::NetworkStyle(const QString &appName, const QString &appIcon, const
     titleAddText(qApp->translate("SplashScreen", titleAddText)),
     splashImage(splashImage)
 {
+	QPixmap pixmap(appIcon.toUtf8().constData());
+    trayAndWindowIcon   = QIcon(pixmap.scaled(QSize(256,256)));
 }
 
 const NetworkStyle *NetworkStyle::instantiate(const QString &networkId)
