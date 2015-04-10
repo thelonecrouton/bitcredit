@@ -142,7 +142,7 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn)
     txNew.vout[2].scriptPubKey = RESERVE_SCRIPT;
    }
    
-   if (chainActive.Tip()->nHeight>85000)
+   /* if (chainActive.Tip()->nHeight>85000)
 	{
 	LOCK( grantdb );
 		//For grant award block, add grants to coinbase
@@ -169,7 +169,7 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn)
 				i++;		
 			}
 		}
-    }
+    } */
    
     // Add dummy coinbase tx as first transaction
     pblock->vtx.push_back(CTransaction());
@@ -430,7 +430,7 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn)
        		txNew.vout[0].nValue = blockValue;
 		}
 		else{
-		if (chainActive.Tip()->nHeight>85000)
+		/* if (chainActive.Tip()->nHeight>85000)
 		{
 			LOCK( grantdb );
 		
@@ -447,19 +447,19 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn)
 				blockValue -= gait->second;
 				i++;		
 			}
-		}
-		}
+		} 
+		}*/
 		if(payments > 0){
 			
-			if( isGrantAwardBlock( chainActive.Tip()->nHeight + 1 ) ){
+			/* if( isGrantAwardBlock( chainActive.Tip()->nHeight + 1 ) ){
 					
 				txNew.vout[2 +grantAwards.size() + payments ].nValue = masternodePayment;
 				blockValue -= masternodePayment;
 				}
-				else{
+				else{ */
                 txNew.vout[2+ payments].nValue = masternodePayment;
                 blockValue -= masternodePayment;
-			}
+			//}
 			           
         }
         
