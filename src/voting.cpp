@@ -59,6 +59,7 @@ std::map<std::string,std::map<int64_t,std::string> > votingPreferences[7]; //Vot
 
 //These do not need to persist. They are necessarily rebuilt when required
 CBlockIndex* gdBlockPointer = NULL;
+CBlockIndex* gdBlockStart = NULL;
 std::map<std::string,std::map<int64_t, std::string> >::iterator ballotit;
 std::map<std::string,std::map<int64_t, std::string> > ballots;
 //std::map<std::string,std::map<int64_t, std::string> > newBallotObject;
@@ -207,14 +208,14 @@ bool deSerializeGrantDB( string filename, int64_t maxWanted ){
 		//NOTE: This condition disables the deserialization of the Grant DB.
 		//NOTE: maxWanted is an int64_t passed to this function.
 		//NOTE: Only reads the first line before reading any more. Decreases load on non-grant blocks.
-        if( grantDatabaseBlockHeight > maxWanted ){
-            //NOTE: Don't load and reset grantDatabaseBlockHeight variable.
+    		if( grantDatabaseBlockHeight > maxWanted ){
+        		//NOTE: Don't load and reset grantDatabaseBlockHeight variable.
 			//NOTE: The block-chain was cleared out and not the grant database. Re-do Everything.
-            grantDatabaseBlockHeight=-1;
-            myfile.close();
+	        	grantDatabaseBlockHeight=-1;
+        		myfile.close();
 			
-            return false;
-        }
+        		return false;
+    		}
 		//SECTION: Load Balances from file.
 		//
 		//NOTE: This line completely clears out the balances array.
@@ -229,9 +230,7 @@ bool deSerializeGrantDB( string filename, int64_t maxWanted ){
 		int64_t balancesSize = atoi64( line.c_str() );
 		
 		//NOTE: This loop reads the third and fourth line.
-		for( int i = 0;
-			i < balancesSize;
-			i++)
+		for( int i = 0;	i < balancesSize; i++)
 		{
 			getline( myfile, line );
 			getline( myfile, line2 );
@@ -243,46 +242,40 @@ bool deSerializeGrantDB( string filename, int64_t maxWanted ){
 		//
 		//NOTE: Loop through all the offices that are currently active.
 		//TODO: If new officers are added, there could be an issue.
-        for( int i = 0;
-			i < numberOfOffices;
-			i++)
+	        for( int i = 0;	i < numberOfOffices; i++)
 		{
 			//NOTE: Working with a clear slate.
-            votingPreferences[ i ].clear();
+		        votingPreferences[ i ].clear();
 			//NOTE: Starts at the balancesSize*2 + 3 in the grantdb.dat file.
 			//NOTE: This is the size of the votingPreferences database. (who voted for who).
-            getline( myfile, line );
-            int64_t votingPreferencesSize = atoi64( line.c_str() );
+		        getline( myfile, line );
+		        int64_t votingPreferencesSize = atoi64( line.c_str() );
             
 			//NOTE: Good enough loop.
-			for( int k = 0;
-				k < votingPreferencesSize;
-				k++)
+			for( int k = 0; k < votingPreferencesSize; k++)
 			{
 				//NOTE: line is the wallet address that voted for a specific candidate.
-                getline( myfile, line );
-                std::string vpAddress = line;
+		                getline( myfile, line );
+                		std::string vpAddress = line;
 				//NOTE: line retrieves the size of the address' preference file.
-                getline( myfile, line );
-                int64_t vpAddressSize = atoi64( line.c_str() );
+                		getline( myfile, line );
+                		int64_t vpAddressSize = atoi64( line.c_str() );
 				
 				//NOTE: loop through data in address' preference 'array'.
-                for( int j = 0;
-					j < vpAddressSize;
-					j++)
+                		for( int j = 0; j < vpAddressSize; j++)
 				{
 					//NOTE: Retrieve vote preference.
-                    getline( myfile, line );
+ 			                getline( myfile, line );
 					
 					//NOTE: Retrieve voting address associated with preference.
-                    getline( myfile, line2 );
+                    			getline( myfile, line2 );
                     
 					//NOTE: Associate this data with the votingPreferences Array.
 					votingPreferences[ i ][ vpAddress ][ atoi64( line.c_str() ) ] = line2;
-                }
+                		}
 		
-            }
-        }
+            		}
+        	}
 		
 		myfile.close();
 		
@@ -290,7 +283,7 @@ bool deSerializeGrantDB( string filename, int64_t maxWanted ){
 		//NOTE: This loop sets the next block to process.
 		//NOTE: First sets the gdBlockPointer variable to the genesis (1) block.
 		//NOTE: If pindexGenesisBlock is not set after declaration, gdBlockPointer will be NULL.
-		gdBlockPointer = chainActive.Genesis();
+		//gdBlockPointer = chainActive.Genesis();
 		
 		//NOTE: This loop checks if the blocks are valid and the next one is available.
 		for( int i = 0;
@@ -298,7 +291,7 @@ bool deSerializeGrantDB( string filename, int64_t maxWanted ){
 			i++)
 		{
 			//NOTE: Check if gdBlockPointer is defined and not NULL.
-            if( gdBlockPointer->pskip == NULL ){
+            		if( gdBlockPointer == NULL ){
 				printf("Insufficent number of blocks loaded %s\n", filename.c_str() );
 				return false;
 			}
@@ -465,16 +458,20 @@ void processNextBlockIntoGrantDatabase(){
 	//NOTE: Process the latest block.
 	CBlock block;
 	CBlockUndo undo;
-	CDiskBlockPos pos = gdBlockPointer->GetUndoPos();
+	
 	//If it's the first block, we'll start with the Genesis Block
 	if( gdBlockPointer != NULL ){
 		gdBlockPointer = gdBlockPointer->pskip;
+		CDiskBlockPos pos = gdBlockPointer->GetUndoPos();	
+		undo.ReadFromDisk(pos, gdBlockPointer->pprev->GetBlockHash());
 	}else{
-		gdBlockPointer = chainActive.Genesis();
+		grantDatabaseBlockHeight = 85000;
+		gdBlockPointer = chainActive[grantDatabaseBlockHeight];
+		CDiskBlockPos pos = gdBlockPointer->GetBlockPos();	
+		//undo.ReadFromDisk(pos, gdBlockPointer->pprev->GetBlockHash());
 	}
 	
-	!undo.ReadFromDisk(pos, gdBlockPointer->pprev->GetBlockHash());
-	//ReadBlockFromDisk(block, gdBlockPointer);
+	ReadBlockFromDisk(block, gdBlockPointer);
         //block.ReadFromDisk(gdBlockPointer,true); //Litecoin codebase method
 	
 	
@@ -527,9 +524,7 @@ void processNextBlockIntoGrantDatabase(){
 		
 		//Deal with the inputs - reduce balances AND apply voting preferences noted in the outputs.
 		//
-		for ( unsigned int j = 0; 
-			j < block.vtx[ i ].vin.size();
-			j++ )
+		for ( unsigned int j = 0; j < block.vtx[ i ].vin.size(); j++ )
 		{
 			if( !(block.vtx[ i ].IsCoinBase() ) )
 			{
@@ -554,30 +549,24 @@ void processNextBlockIntoGrantDatabase(){
 				//If any of the outputs were votes
 				//NOTE: Run through the 'votes' table.
 				//NOTE: first= Key, second= Value
-				for( votesit = votes.begin();
-					votesit != votes.end(); 
-					++votesit)
+				for( votesit = votes.begin(); votesit != votes.end(); ++votesit)
 				{
 					//NOTE: (Why are we still debugging?)
-                    printf(" === Bitcredit Client === \nVote found: %s, %ld\n",votesit->first.c_str(),votesit->second);
+		                    	printf(" === Bitcredit Client === \nVote found: %s, %ld\n",votesit->first.c_str(),votesit->second);
 					string grantVoteAddress = ( votesit->first );	 
 					int electedOfficeNumber = getOfficeNumberFromAddress( grantVoteAddress, gdBlockPointer->nHeight );
 					
 					if( electedOfficeNumber > -1 ){
 						//NOTE: running the grant database is memory intensive and can cause an issue of taking up too much memory on the node.
 						//TODO: There may be a better way to set this database up.
-                        //printf("Vote added: %d %s, %llu\n",electedOfficeNumber,votesit->first.c_str(),votesit->second);
-                        votingPreferences[ electedOfficeNumber ][ spendAddress ][ votesit->second ] = grantVoteAddress;
+			                        //printf("Vote added: %d %s, %llu\n",electedOfficeNumber,votesit->first.c_str(),votesit->second);
+                        			votingPreferences[ electedOfficeNumber ][ spendAddress ][ votesit->second ] = grantVoteAddress;
 						
-                        //printf("Voting Preference Size: %d \n",votingPreferences[electedOfficeNumber].size());
-                    }
-					
-				}
-				
+                        			//printf("Voting Preference Size: %d \n",votingPreferences[electedOfficeNumber].size());
+                    			}
+				}	
 			}
-			
 		}
-		
 	}
 	//SECTION: processNextBlockIntoGrantDatabase function
 	//
