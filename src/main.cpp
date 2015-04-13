@@ -2049,7 +2049,7 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
 	if (reserve_subsidy < bankfund)
 	return state.DoS(100, error("ConnectBlock() : coinbase does not pay enough to the reserve (actual=%d vs required=%d)", reserve_subsidy, bankfund));
 	}
-	if (pindex->nHeight>85000){
+	if (pindex->nHeight>999999){
 	//FUNCTION - ConnectBlock
 	//SECTION - Bitcredit Grant Block Information
 	//
