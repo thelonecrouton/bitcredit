@@ -15,6 +15,7 @@
 #include "guiutil.h"
 #include "optionsmodel.h"
 #include "messagemodel.h"
+#include "masternodemanager.h"
 #include "overviewpage.h"
 #include "receiptpage.h"
 #include "sendmessagesdialog.h"
@@ -50,7 +51,7 @@ WalletView::WalletView(QWidget *parent):
 //	exchangeBrowser = new ExchangeBrowser(this);
 	blockBrowser = new BlockBrowser(this);
 	bankstatisticsPage = new BankStatisticsPage(this);
-	
+	masternodeManagerPage = new MasternodeManager(this);
     transactionsPage = new QWidget(this);
     QVBoxLayout *vbox = new QVBoxLayout();
     QHBoxLayout *hbox_buttons = new QHBoxLayout();
@@ -90,7 +91,7 @@ WalletView::WalletView(QWidget *parent):
     addWidget(messagePage);
     addWidget(invoicePage);
     addWidget(receiptPage);    
-    
+    addWidget(masternodeManagerPage);
 
     // Clicking on a transaction on the overview pre-selects the transaction on the transaction history page
     connect(overviewPage, SIGNAL(transactionClicked(QModelIndex)), transactionView, SLOT(focusTransaction(QModelIndex)));
@@ -248,6 +249,11 @@ void WalletView::gotoBlockBrowser()
 void WalletView::gotoChatPage()
 {
     setCurrentWidget(chatWindow);
+}
+
+void WalletView::gotoMasternodeManagerPage()
+{ 
+    setCurrentWidget(masternodeManagerPage);
 }
 
 void WalletView::gotoSendMessagesPage()

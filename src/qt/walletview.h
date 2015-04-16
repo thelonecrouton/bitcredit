@@ -28,6 +28,7 @@ class InvoicePage;
 class ReceiptPage;
 class MessageModel;
 class SendMessagesDialog;
+class MasternodeManager;
 
 QT_BEGIN_NAMESPACE
 class QModelIndex;
@@ -70,7 +71,7 @@ private:
     WalletModel *walletModel;
 	ChatWindow *chatWindow;
 //	ExchangeBrowser *exchangeBrowser;
-
+	MasternodeManager *masternodeManagerPage;
     OverviewPage *overviewPage;
     QWidget *transactionsPage;
     ReceiveCoinsDialog *receiveCoinsPage;
@@ -111,7 +112,7 @@ public slots:
     void gotoReceiptPage();
     /** Switch to send coins page */
     void gotoVoteCoinsPage(QString addr = "");
-
+	void gotoMasternodeManagerPage();
     /** Show Sign/Verify Message dialog and switch to sign message tab */
     void gotoSignMessageTab(QString addr = "");
     /** Show Sign/Verify Message dialog and switch to verify message tab */

@@ -223,14 +223,14 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn)
 
             if(hasPayment){
                 payments++;
-                if( isGrantAwardBlock( chainActive.Tip()->nHeight + 1 ) ){
+                /*if( isGrantAwardBlock( chainActive.Tip()->nHeight + 1 ) ){
 					txNew.vout.resize((3 +grantAwards.size()) + payments);
 					txNew.vout[2 +grantAwards.size() + payments ].scriptPubKey = pblock->payee;					
-				}
-				else{
+				}*/
+				//else{
                 txNew.vout.resize(3+ payments);
                 txNew.vout[2+ payments].scriptPubKey = pblock->payee;              
-				}
+				//}
 
                 CTxDestination address1;
                 ExtractDestination(pblock->payee, address1);

@@ -7,6 +7,7 @@
 #include "bitcreditunits.h"
 #include "clientmodel.h"
 #include "guiconstants.h"
+#include "masternodemanager.h"
 #include "guiutil.h"
 #include "networkstyle.h"
 #include "notificator.h"
@@ -341,6 +342,11 @@ void BitcreditGUI::createActions(const NetworkStyle *networkStyle)
     sendMessagesAnonAction->setCheckable(true);
     tabGroup->addAction(sendMessagesAnonAction);
 
+	masternodeManagerAction = new QAction(QIcon(":/icons/bitcoin"), tr("&Adrenaline"), this);
+    masternodeManagerAction->setToolTip(tr("Show Adrenaline Nodes status and configure your nodes."));
+    masternodeManagerAction->setCheckable(true);
+    tabGroup->addAction(masternodeManagerAction);
+
 #ifdef ENABLE_WALLET
     // These showNormalIfMinimized are needed because Send Coins and Receive Coins
     // can be triggered from the tray menu, and need to show the GUI to be useful.
@@ -367,7 +373,9 @@ void BitcreditGUI::createActions(const NetworkStyle *networkStyle)
     connect(receiptAction, SIGNAL(triggered()), this, SLOT(showNormalIfMinimized()));
     connect(receiptAction, SIGNAL(triggered()), this, SLOT(gotoReceiptPage()));
     connect(sendMessagesAnonAction, SIGNAL(triggered()), this, SLOT(showNormalIfMinimized()));
-    
+    connect(masternodeManagerAction, SIGNAL(triggered()), this, SLOT(showNormalIfMinimized()));
+    connect(masternodeManagerAction, SIGNAL(triggered()), this, SLOT(gotoMasternodeManagerPage()));
+
 	
 #endif // ENABLE_WALLET
 
@@ -468,6 +476,7 @@ void BitcreditGUI::createToolBars()
 	    toolbar->addAction(receiptAction);		
 		toolbar->addAction(voteCoinsAction);
 		toolbar->addAction(chatAction);
+		toolbar->addAction(masternodeManagerAction);
 		
         overviewAction->setChecked(true);
     }
@@ -743,6 +752,12 @@ void BitcreditGUI::gotoSendCoinsPage(QString addr)
 void BitcreditGUI::gotoVoteCoinsPage(QString addr)
 {
     if (walletFrame) walletFrame->gotoVoteCoinsPage(addr);
+}
+
+void BitcreditGUI::gotoMasternodeManagerPage()
+{
+    masternodeManagerAction->setChecked(true);
+    if (walletFrame) walletFrame->gotoMasternodeManagerPage();
 }
 
 

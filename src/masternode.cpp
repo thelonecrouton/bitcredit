@@ -9,6 +9,7 @@
 
 int CMasterNode::minProtoVersion = MIN_MN_PROTO_VERSION;
 
+CCriticalSection cs_masternodes;
 
 /** The list of active masternodes */
 std::vector<CMasterNode> vecMasternodes;
@@ -112,7 +113,7 @@ void ProcessMessageMasternode(CNode* pfrom, std::string& strCommand, CDataStream
         
 
         //search existing masternode list, this is where we update existing masternodes with new dsee broadcasts
-
+	LOCK(cs_masternodes);
         BOOST_FOREACH(CMasterNode& mn, vecMasternodes) {
             if(mn.vin.prevout == vin.prevout) {
                 // count == -1 when it's a new entry
@@ -219,7 +220,7 @@ void ProcessMessageMasternode(CNode* pfrom, std::string& strCommand, CDataStream
         }
 
         // see if we have this masternode
-
+	LOCK(cs_masternodes);
         BOOST_FOREACH(CMasterNode& mn, vecMasternodes) {
             if(mn.vin.prevout == vin.prevout) {
             	// LogPrintf("dseep - Found corresponding mn for vin: %s\n", vin.ToString().c_str());
@@ -292,6 +293,7 @@ void ProcessMessageMasternode(CNode* pfrom, std::string& strCommand, CDataStream
             }
         } //else, asking for a specific node which is ok
 
+	LOCK(cs_masternodes);
         int count = vecMasternodes.size();
         int i = 0;
 
@@ -392,7 +394,7 @@ struct CompareValueOnly2
 int CountMasternodesAboveProtocol(int protocolVersion)
 {
     int i = 0;
-
+    LOCK(cs_masternodes);
     BOOST_FOREACH(CMasterNode& mn, vecMasternodes) {
         if(mn.protocolVersion < protocolVersion) continue;
         i++;
@@ -406,7 +408,7 @@ int CountMasternodesAboveProtocol(int protocolVersion)
 int GetMasternodeByVin(CTxIn& vin)
 {
     int i = 0;
-
+    LOCK(cs_masternodes);
     BOOST_FOREACH(CMasterNode& mn, vecMasternodes) {
         if (mn.vin == vin) return i;
         i++;
@@ -420,7 +422,7 @@ int GetCurrentMasterNode(int mod, int64_t nBlockHeight, int minProtocol)
     int i = 0;
     unsigned int score = 0;
     int winner = -1;
-
+    LOCK(cs_masternodes);
     // scan for winner
     BOOST_FOREACH(CMasterNode mn, vecMasternodes) {
         mn.Check();
@@ -448,6 +450,7 @@ int GetCurrentMasterNode(int mod, int64_t nBlockHeight, int minProtocol)
 
 int GetMasternodeByRank(int findRank, int64_t nBlockHeight, int minProtocol)
 {
+    LOCK(cs_masternodes);
     int i = 0;
 
     std::vector<pair<unsigned int, int> > vecMasternodeScores;
@@ -482,6 +485,7 @@ int GetMasternodeByRank(int findRank, int64_t nBlockHeight, int minProtocol)
 
 int GetMasternodeRank(CTxIn& vin, int64_t nBlockHeight, int minProtocol)
 {
+    LOCK(cs_masternodes);
     std::vector<pair<unsigned int, CTxIn> > vecMasternodeScores;
 
     BOOST_FOREACH(CMasterNode& mn, vecMasternodes) {
@@ -721,7 +725,8 @@ bool CMasternodePayments::AddWinningMasternode(CMasternodePaymentWinner& winnerI
 
 void CMasternodePayments::CleanPaymentList()
 {
-    if(chainActive.Tip() == NULL) return;
+    LOCK(cs_masternodes);
+	if(chainActive.Tip() == NULL) return;
 
     int nLimit = std::max(((int)vecMasternodes.size())*2, 1000);
 
@@ -737,7 +742,7 @@ void CMasternodePayments::CleanPaymentList()
 
 bool CMasternodePayments::ProcessBlock(int nBlockHeight)
 {
-
+    LOCK(cs_masternodes);
     if(!enabled) return false;
     CMasternodePaymentWinner winner;
 

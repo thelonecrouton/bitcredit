@@ -1,6 +1,6 @@
-
+// Copyright (c) 2009-2012 The Darkcoin developers
 // Copyright (c) 2009-2010 Satoshi Nakamoto
-// Copyright (c) 2009-2012 The Bitcredit developers
+// Copyright (c) 2014-2015 The Bitcredit developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 #ifndef MASTERNODE_H
@@ -45,6 +45,7 @@ using namespace std;
 
 class CMasternodePaymentWinner;
 
+extern CCriticalSection cs_masternodes;
 extern std::vector<CMasterNode> vecMasternodes;
 extern CMasternodePayments masternodePayments;
 extern std::vector<CTxIn> vecMasternodeAskedFor;
