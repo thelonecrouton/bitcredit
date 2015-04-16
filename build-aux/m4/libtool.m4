@@ -1312,7 +1312,7 @@ ia64-*-hpux*)
   rm -rf conftest*
   ;;
 
-x86_64-*kfreebsd*-gnu|x86_64-*linux*|ppc*-*linux*|powerpc*-*linux*| \
+x86_64-*kfreebsd*-gnu|x86_64-*linux*|powerpc*-*linux*| \
 s390*-*linux*|s390*-*tpf*|sparc*-*linux*)
   # Find out which ABI we are using.
   echo 'int i;' > conftest.$ac_ext
@@ -1324,9 +1324,19 @@ s390*-*linux*|s390*-*tpf*|sparc*-*linux*)
 	    LD="${LD-ld} -m elf_i386_fbsd"
 	    ;;
 	  x86_64-*linux*)
-	    LD="${LD-ld} -m elf_i386"
+	    case `/usr/bin/file conftest.o` in
+	      *x86-64*)
+		LD="${LD-ld} -m elf32_x86_64"
+		;;
+	      *)
+		LD="${LD-ld} -m elf_i386"
+		;;
+	    esac
 	    ;;
-	  ppc64-*linux*|powerpc64-*linux*)
+	  powerpc64le-*)
+	    LD="${LD-ld} -m elf32lppclinux"
+	    ;;
+	  powerpc64-*)
 	    LD="${LD-ld} -m elf32ppclinux"
 	    ;;
 	  s390x-*linux*)
@@ -1345,7 +1355,10 @@ s390*-*linux*|s390*-*tpf*|sparc*-*linux*)
 	  x86_64-*linux*)
 	    LD="${LD-ld} -m elf_x86_64"
 	    ;;
-	  ppc*-*linux*|powerpc*-*linux*)
+	  powerpcle-*)
+	    LD="${LD-ld} -m elf64lppc"
+	    ;;
+	  powerpc-*)
 	    LD="${LD-ld} -m elf64ppc"
 	    ;;
 	  s390*-*linux*|s390*-*tpf*)
@@ -1616,7 +1629,7 @@ AC_CACHE_VAL([lt_cv_sys_max_cmd_len], [dnl
     lt_cv_sys_max_cmd_len=-1;
     ;;
 
-  cygwin* | msys* | mingw* | cegcc*)
+  cygwin* | mingw* | cegcc*)
     # On Win9x/ME, this test blows up -- it succeeds, but takes
     # about 5 minutes as the teststring grows exponentially.
     # Worse, since 9x/ME are not pre-emptively multitasking,
@@ -1688,7 +1701,8 @@ AC_CACHE_VAL([lt_cv_sys_max_cmd_len], [dnl
     ;;
   *)
     lt_cv_sys_max_cmd_len=`(getconf ARG_MAX) 2> /dev/null`
-    if test -n "$lt_cv_sys_max_cmd_len"; then
+    if test -n "$lt_cv_sys_max_cmd_len" && \
+	test undefined != "$lt_cv_sys_max_cmd_len"; then
       lt_cv_sys_max_cmd_len=`expr $lt_cv_sys_max_cmd_len \/ 4`
       lt_cv_sys_max_cmd_len=`expr $lt_cv_sys_max_cmd_len \* 3`
     else
@@ -1863,7 +1877,7 @@ else
     lt_cv_dlopen_libs=
     ;;
 
-  cygwin* | msys*)
+  cygwin*)
     lt_cv_dlopen="dlopen"
     lt_cv_dlopen_libs=
     ;;
@@ -2334,7 +2348,7 @@ bsdi[[45]]*)
   # libtool to hard-code these into programs
   ;;
 
-cygwin* | msys* | mingw* | pw32* | cegcc*)
+cygwin* | mingw* | pw32* | cegcc*)
   version_type=windows
   shrext_cmds=".dll"
   need_version=no
@@ -2366,12 +2380,6 @@ cygwin* | msys* | mingw* | pw32* | cegcc*)
 m4_if([$1], [],[
       sys_lib_search_path_spec="$sys_lib_search_path_spec /usr/lib/w32api"])
       ;;
-    msys*)
-      # MSYS DLLs use 'msys-' prefix rather than 'lib'
-      soname_spec='`echo ${libname} | sed -e 's/^lib/msys-/'``echo ${release} | $SED -e 's/[[.]]/-/g'`${versuffix}${shared_ext}'
-m4_if([$1], [],[
-      sys_lib_search_path_spec="$sys_lib_search_path_spec /usr/lib/w32api"])
-      ;;
     mingw* | cegcc*)
       # MinGW DLLs use traditional 'lib' prefix
       soname_spec='${libname}`echo ${release} | $SED -e 's/[[.]]/-/g'`${versuffix}${shared_ext}'
@@ -2391,7 +2399,7 @@ m4_if([$1], [],[
     library_names_spec='${libname}.dll.lib'
 
     case $build_os in
-    mingw* | msys*)
+    mingw*)
       sys_lib_search_path_spec=
       lt_save_ifs=$IFS
       IFS=';'
@@ -2518,17 +2526,6 @@ freebsd* | dragonfly*)
   esac
   ;;
 
-gnu*)
-  version_type=linux # correct to gnu/linux during the next big refactor
-  need_lib_prefix=no
-  need_version=no
-  library_names_spec='${libname}${release}${shared_ext}$versuffix ${libname}${release}${shared_ext}${major} ${libname}${shared_ext}'
-  soname_spec='${libname}${release}${shared_ext}$major'
-  shlibpath_var=LD_LIBRARY_PATH
-  shlibpath_overrides_runpath=no
-  hardcode_into_libs=yes
-  ;;
-
 haiku*)
   version_type=linux # correct to gnu/linux during the next big refactor
   need_lib_prefix=no
@@ -2645,7 +2642,7 @@ linux*oldld* | linux*aout* | linux*coff*)
   ;;
 
 # This must be glibc/ELF.
-linux* | k*bsd*-gnu | kopensolaris*-gnu)
+linux* | k*bsd*-gnu | kopensolaris*-gnu | gnu*)
   version_type=linux # correct to gnu/linux during the next big refactor
   need_lib_prefix=no
   need_version=no
@@ -2688,6 +2685,18 @@ linux* | k*bsd*-gnu | kopensolaris*-gnu)
   # people can always --disable-shared, the test was removed, and we
   # assume the GNU/Linux dynamic linker is in use.
   dynamic_linker='GNU/Linux ld.so'
+  ;;
+
+netbsdelf*-gnu)
+  version_type=linux
+  need_lib_prefix=no
+  need_version=no
+  library_names_spec='${libname}${release}${shared_ext}$versuffix ${libname}${release}${shared_ext}$major ${libname}${shared_ext}'
+  soname_spec='${libname}${release}${shared_ext}$major'
+  shlibpath_var=LD_LIBRARY_PATH
+  shlibpath_overrides_runpath=no
+  hardcode_into_libs=yes
+  dynamic_linker='NetBSD ld.elf_so'
   ;;
 
 netbsd*)
@@ -3146,7 +3155,7 @@ case $reload_flag in
 esac
 reload_cmds='$LD$reload_flag -o $output$reload_objs'
 case $host_os in
-  cygwin* | msys* | mingw* | pw32* | cegcc*)
+  cygwin* | mingw* | pw32* | cegcc*)
     if test "$GCC" != yes; then
       reload_cmds=false
     fi
@@ -3202,7 +3211,7 @@ bsdi[[45]]*)
   lt_cv_file_magic_test_file=/shlib/libc.so
   ;;
 
-cygwin* | msys* )
+cygwin*)
   # func_win32_libid is a shell function defined in ltmain.sh
   lt_cv_deplibs_check_method='file_magic ^x86 archive import|^x86 DLL'
   lt_cv_file_magic_cmd='func_win32_libid'
@@ -3249,10 +3258,6 @@ freebsd* | dragonfly*)
   fi
   ;;
 
-gnu*)
-  lt_cv_deplibs_check_method=pass_all
-  ;;
-
 haiku*)
   lt_cv_deplibs_check_method=pass_all
   ;;
@@ -3291,11 +3296,11 @@ irix5* | irix6* | nonstopux*)
   ;;
 
 # This must be glibc/ELF.
-linux* | k*bsd*-gnu | kopensolaris*-gnu)
+linux* | k*bsd*-gnu | kopensolaris*-gnu | gnu*)
   lt_cv_deplibs_check_method=pass_all
   ;;
 
-netbsd*)
+netbsd* | netbsdelf*-gnu)
   if echo __ELF__ | $CC -E - | $GREP __ELF__ > /dev/null; then
     lt_cv_deplibs_check_method='match_pattern /lib[[^/]]+(\.so\.[[0-9]]+\.[[0-9]]+|_pic\.a)$'
   else
@@ -3512,7 +3517,7 @@ lt_cv_sharedlib_from_linklib_cmd,
 [lt_cv_sharedlib_from_linklib_cmd='unknown'
 
 case $host_os in
-cygwin* | msys* | mingw* | pw32* | cegcc*)
+cygwin* | mingw* | pw32* | cegcc*)
   # two different shell functions defined in ltmain.sh
   # decide which to use based on capabilities of $DLLTOOL
   case `$DLLTOOL --help 2>&1` in
@@ -3567,7 +3572,7 @@ AC_DEFUN([LT_LIB_M],
 [AC_REQUIRE([AC_CANONICAL_HOST])dnl
 LIBM=
 case $host in
-*-*-beos* | *-*-cegcc* | *-*-cygwin* | *-*-msys* | *-*-haiku* | *-*-pw32* | *-*-darwin*)
+*-*-beos* | *-*-cegcc* | *-*-cygwin* | *-*-haiku* | *-*-pw32* | *-*-darwin*)
   # These system don't have libm, or don't need it
   ;;
 *-ncr-sysv4.3*)
@@ -3642,7 +3647,7 @@ case $host_os in
 aix*)
   symcode='[[BCDT]]'
   ;;
-cygwin* | msys* | mingw* | pw32* | cegcc*)
+cygwin* | mingw* | pw32* | cegcc*)
   symcode='[[ABCDGISTW]]'
   ;;
 hpux*)
@@ -3910,7 +3915,7 @@ m4_if([$1], [CXX], [
     beos* | irix5* | irix6* | nonstopux* | osf3* | osf4* | osf5*)
       # PIC is the default for these OSes.
       ;;
-    mingw* | cygwin* | msys* | os2* | pw32* | cegcc*)
+    mingw* | cygwin* | os2* | pw32* | cegcc*)
       # This hack is so that the source file can tell whether it is being
       # built for inclusion in a dll (and should export symbols for example).
       # Although the cygwin gcc ignores -fPIC, still need this for old-style
@@ -3981,7 +3986,7 @@ m4_if([$1], [CXX], [
 	  ;;
 	esac
 	;;
-      mingw* | cygwin* | msys* | os2* | pw32* | cegcc*)
+      mingw* | cygwin* | os2* | pw32* | cegcc*)
 	# This hack is so that the source file can tell whether it is being
 	# built for inclusion in a dll (and should export symbols for example).
 	m4_if([$1], [GCJ], [],
@@ -4043,7 +4048,7 @@ m4_if([$1], [CXX], [
 	    ;;
 	esac
 	;;
-      linux* | k*bsd*-gnu | kopensolaris*-gnu)
+      linux* | k*bsd*-gnu | kopensolaris*-gnu | gnu*)
 	case $cc_basename in
 	  KCC*)
 	    # KAI C++ Compiler
@@ -4107,7 +4112,7 @@ m4_if([$1], [CXX], [
 	    ;;
 	esac
 	;;
-      netbsd*)
+      netbsd* | netbsdelf*-gnu)
 	;;
       *qnx* | *nto*)
         # QNX uses GNU C++, but need to define -shared option too, otherwise
@@ -4228,7 +4233,7 @@ m4_if([$1], [CXX], [
       # PIC is the default for these OSes.
       ;;
 
-    mingw* | cygwin* | msys* | pw32* | os2* | cegcc*)
+    mingw* | cygwin* | pw32* | os2* | cegcc*)
       # This hack is so that the source file can tell whether it is being
       # built for inclusion in a dll (and should export symbols for example).
       # Although the cygwin gcc ignores -fPIC, still need this for old-style
@@ -4313,7 +4318,7 @@ m4_if([$1], [CXX], [
       fi
       ;;
 
-    mingw* | cygwin* | msys* | pw32* | os2* | cegcc*)
+    mingw* | cygwin* | pw32* | os2* | cegcc*)
       # This hack is so that the source file can tell whether it is being
       # built for inclusion in a dll (and should export symbols for example).
       m4_if([$1], [GCJ], [],
@@ -4342,7 +4347,7 @@ m4_if([$1], [CXX], [
       _LT_TAGVAR(lt_prog_compiler_static, $1)='-non_shared'
       ;;
 
-    linux* | k*bsd*-gnu | kopensolaris*-gnu)
+    linux* | k*bsd*-gnu | kopensolaris*-gnu | gnu*)
       case $cc_basename in
       # old Intel for x86_64 which still supported -KPIC.
       ecc*)
@@ -4573,7 +4578,7 @@ m4_if([$1], [CXX], [
   pw32*)
     _LT_TAGVAR(export_symbols_cmds, $1)="$ltdll_cmds"
     ;;
-  cygwin* | msys* | mingw* | cegcc*)
+  cygwin* | mingw* | cegcc*)
     case $cc_basename in
     cl*)
       _LT_TAGVAR(exclude_expsyms, $1)='_NULL_IMPORT_DESCRIPTOR|_IMPORT_DESCRIPTOR_.*'
@@ -4583,6 +4588,9 @@ m4_if([$1], [CXX], [
       _LT_TAGVAR(exclude_expsyms, $1)=['[_]+GLOBAL_OFFSET_TABLE_|[_]+GLOBAL__[FID]_.*|[_]+head_[A-Za-z0-9_]+_dll|[A-Za-z0-9_]+_dll_iname']
       ;;
     esac
+    ;;
+  linux* | k*bsd*-gnu | gnu*)
+    _LT_TAGVAR(link_all_deplibs, $1)=no
     ;;
   *)
     _LT_TAGVAR(export_symbols_cmds, $1)='$NM $libobjs $convenience | $global_symbol_pipe | $SED '\''s/.* //'\'' | sort | uniq > $export_symbols'
@@ -4631,7 +4639,7 @@ dnl Note also adjust exclude_expsyms for C++ above.
   extract_expsyms_cmds=
 
   case $host_os in
-  cygwin* | msys* | mingw* | pw32* | cegcc*)
+  cygwin* | mingw* | pw32* | cegcc*)
     # FIXME: the MSVC++ port hasn't been tested in a loooong time
     # When not using gcc, we currently assume that we are using
     # Microsoft Visual C++.
@@ -4645,6 +4653,9 @@ dnl Note also adjust exclude_expsyms for C++ above.
     ;;
   openbsd*)
     with_gnu_ld=no
+    ;;
+  linux* | k*bsd*-gnu | gnu*)
+    _LT_TAGVAR(link_all_deplibs, $1)=no
     ;;
   esac
 
@@ -4746,7 +4757,7 @@ _LT_EOF
       fi
       ;;
 
-    cygwin* | msys* | mingw* | pw32* | cegcc*)
+    cygwin* | mingw* | pw32* | cegcc*)
       # _LT_TAGVAR(hardcode_libdir_flag_spec, $1) is actually meaningless,
       # as there is no search path for DLLs.
       _LT_TAGVAR(hardcode_libdir_flag_spec, $1)='-L$libdir'
@@ -4867,7 +4878,7 @@ _LT_EOF
       fi
       ;;
 
-    netbsd*)
+    netbsd* | netbsdelf*-gnu)
       if echo __ELF__ | $CC -E - | $GREP __ELF__ >/dev/null; then
 	_LT_TAGVAR(archive_cmds, $1)='$LD -Bshareable $libobjs $deplibs $linker_flags -o $lib'
 	wlarc=
@@ -5044,6 +5055,7 @@ _LT_EOF
 	if test "$aix_use_runtimelinking" = yes; then
 	  shared_flag="$shared_flag "'${wl}-G'
 	fi
+	_LT_TAGVAR(link_all_deplibs, $1)=no
       else
 	# not using gcc
 	if test "$host_cpu" = ia64; then
@@ -5119,7 +5131,7 @@ _LT_EOF
       _LT_TAGVAR(export_dynamic_flag_spec, $1)=-rdynamic
       ;;
 
-    cygwin* | msys* | mingw* | pw32* | cegcc*)
+    cygwin* | mingw* | pw32* | cegcc*)
       # When not using gcc, we currently assume that we are using
       # Microsoft Visual C++.
       # hardcode_libdir_flag_spec is actually meaningless, as there is
@@ -5348,7 +5360,7 @@ _LT_EOF
       _LT_TAGVAR(link_all_deplibs, $1)=yes
       ;;
 
-    netbsd*)
+    netbsd* | netbsdelf*-gnu)
       if echo __ELF__ | $CC -E - | $GREP __ELF__ >/dev/null; then
 	_LT_TAGVAR(archive_cmds, $1)='$LD -Bshareable -o $lib $libobjs $deplibs $linker_flags'  # a.out
       else
@@ -6120,7 +6132,7 @@ if test "$_lt_caught_CXX_error" != yes; then
         esac
         ;;
 
-      cygwin* | msys* | mingw* | pw32* | cegcc*)
+      cygwin* | mingw* | pw32* | cegcc*)
 	case $GXX,$cc_basename in
 	,cl* | no,cl*)
 	  # Native MSVC
@@ -6226,9 +6238,6 @@ if test "$_lt_caught_CXX_error" != yes; then
         # FreeBSD 3 and later use GNU C++ and GNU ld with standard ELF
         # conventions
         _LT_TAGVAR(ld_shlibs, $1)=yes
-        ;;
-
-      gnu*)
         ;;
 
       haiku*)
@@ -6392,7 +6401,7 @@ if test "$_lt_caught_CXX_error" != yes; then
         _LT_TAGVAR(inherit_rpath, $1)=yes
         ;;
 
-      linux* | k*bsd*-gnu | kopensolaris*-gnu)
+      linux* | k*bsd*-gnu | kopensolaris*-gnu | gnu*)
         case $cc_basename in
           KCC*)
 	    # Kuck and Associates, Inc. (KAI) C++ Compiler
@@ -7939,9 +7948,6 @@ AC_CACHE_VAL(lt_cv_to_host_file_cmd,
       *-*-cygwin* )
         lt_cv_to_host_file_cmd=func_convert_file_cygwin_to_w32
         ;;
-      *-*-msys* ) # msys in msysdvlpr mode == unsupported!
-        lt_cv_to_host_file_cmd=func_convert_file_noop
-        ;;
       * ) # otherwise, assume *nix
         lt_cv_to_host_file_cmd=func_convert_file_nix_to_w32
         ;;
@@ -7955,27 +7961,8 @@ AC_CACHE_VAL(lt_cv_to_host_file_cmd,
       *-*-cygwin* )
         lt_cv_to_host_file_cmd=func_convert_file_noop
         ;;
-      *-*-msys* ) # msys in msysdvlpr mode == unsupported!
-        lt_cv_to_host_file_cmd=func_convert_file_noop
-        ;;
       * ) # otherwise, assume *nix
         lt_cv_to_host_file_cmd=func_convert_file_nix_to_cygwin
-        ;;
-    esac
-    ;;
-  *-*-msys* ) # that is, msys in msysdvlpr mode
-    case $build in
-      *-*-mingw* ) # actually msys in normal mode == unsupported
-        lt_cv_to_host_file_cmd=func_convert_file_noop
-        ;;
-      *-*-cygwin* ) # unsupported
-        lt_cv_to_host_file_cmd=func_convert_file_noop
-        ;;
-      *-*-msys* ) # msys in msysdvlpr mode
-        lt_cv_to_host_file_cmd=func_convert_file_noop
-        ;;
-      * ) # otherwise, assume *nix == unsupported
-        lt_cv_to_host_file_cmd=func_convert_file_noop
         ;;
     esac
     ;;
