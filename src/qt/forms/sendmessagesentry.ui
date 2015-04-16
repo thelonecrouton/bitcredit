@@ -39,7 +39,7 @@
        </property>
        <property name="styleSheet">
         <string notr="true">background:transparent;
-color: rgb(255, 255, 255);</string>
+color: black;</string>
        </property>
        <property name="maxLength">
         <number>34</number>
@@ -157,7 +157,7 @@ color: rgb(255, 255, 255);</string>
      </property>
      <property name="styleSheet">
       <string notr="true">background:transparent;
-color: rgb(255, 255, 255);</string>
+color: black;</string>
      </property>
     </widget>
    </item>
@@ -196,7 +196,7 @@ color: rgb(255, 255, 255);</string>
     <widget class="QValidatedLineEdit" name="publicKey">
      <property name="styleSheet">
       <string notr="true">background:transparent;
-color: rgb(255, 255, 255);</string>
+color: black;</string>
      </property>
     </widget>
    </item>
