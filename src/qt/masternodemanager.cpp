@@ -7,7 +7,7 @@
 #include "clientmodel.h"
 #include "walletmodel.h"
 #include "activemasternode.h"
-#include "masternodeconfig.h".
+#include "masternodeconfig.h"
 #include "addeditadrenalinenode.h"
 #include "masternode.h"
 #include "walletdb.h"
