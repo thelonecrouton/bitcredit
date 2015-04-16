@@ -19,7 +19,7 @@
 #include <QTimer>
 #include <QDebug>
 #include <QScrollArea>
-#include <QScroller>
+#include <QScrollBar>
 #include <QDateTime>
 #include <QApplication>
 #include <QClipboard>
@@ -39,8 +39,8 @@ MasternodeManager::MasternodeManager(QWidget *parent) :
     ui->stopButton->setEnabled(false);
     ui->copyAddressButton->setEnabled(false);
 
-    ui->tableWidget->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
-    ui->tableWidget_2->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
+    ui->tableWidget->horizontalHeader()->setResizeMode(QHeaderView::ResizeToContents);
+    ui->tableWidget_2->horizontalHeader()->setResizeMode(QHeaderView::ResizeToContents);
 
     subscribeToCoreSignals();
 
