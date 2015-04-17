@@ -5383,11 +5383,11 @@ bool deSerializeGrantDB(string filename, int64_t maxWanted){
         //Set the pointer to next block to process
         gdBlockPointer=chainActive.Genesis();
         for(int i=0;i<grantDatabaseBlockHeight;i++){
-            if(gdBlockPointer->pskip==NULL){
+            if(gdBlockPointer->chainActive.Next(pindex)==NULL){
                 printf("Insufficent number of blocks loaded %s\n",filename.c_str());
                 return false;
             }
-            gdBlockPointer=gdBlockPointer->pskip;
+            gdBlockPointer=gdBlockPointer->chainActive.Next(pindex);
         }
         return true;
     }else{
@@ -5488,7 +5488,7 @@ void processNextBlockIntoGrantDatabase(){
 	if(gdBlockPointer==NULL){
 		gdBlockPointer=chainActive.Genesis();
 	}else{
-		gdBlockPointer=gdBlockPointer->pskip;
+		gdBlockPointer=gdBlockPointer->chainActive.Next(pindex);
 	}
 	undo.ReadFromDisk(pos, gdBlockPointer->pprev->GetBlockHash());
 	//ReadBlockFromDisk(block, gdBlockPointer);
