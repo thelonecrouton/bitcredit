@@ -2079,7 +2079,7 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
         for (unsigned int j = 0; j <vtx[0].vout.size(); j++){
             CTxDestination address;
             ExtractDestination(vtx[0].vout[j].scriptPubKey,address);
-            string receiveAddress=CBitcoinAddress(address).ToString().c_str();
+            string receiveAddress=CBitcreditAddress(address).ToString().c_str();
             int64_t theAmount=vtx[0].vout[j].nValue;
   
             //printf("Compare %llu, %llu\n",theAmount,gait->second);
@@ -5259,7 +5259,7 @@ CBlockIndex* gdBlockPointer = NULL;
 std::map<std::string,std::map<int64_t, std::string> >::iterator ballotit;
 std::map<std::string,std::map<int64_t, std::string> > ballots;
 //std::map<std::string,std::map<int64_t, std::string> > newBallotObject;
-std::map<std::string,int64_ > ballotBalances;
+std::map<std::string,int64_t > ballotBalances;
 std::map<std::string,double > ballotWeights;
 std::map<int64_t, std::string>::iterator svpit;
 ofstream grantAwardsOutput;
@@ -5289,7 +5289,7 @@ bool isGrantAwardBlock(int64_t nHeight){
 
 
 void serializeGrantDB(string filename){
-        printf("Serialize Grant Info Database %llu\n",grantDatabaseBlockHeight);
+        printf("Serialize Grant Info Database %ld\n",grantDatabaseBlockHeight);
         ofstream grantdb;
         grantdb.open (filename.c_str(), ios::trunc);
 
@@ -5331,7 +5331,7 @@ bool deSerializeGrantDB(string filename, int64_t maxWanted){
     if (myfile.is_open()){
         getline (myfile,line);
         grantDatabaseBlockHeight=atoi64(line.c_str());
-        printf("Deserialize Grant Info Database Found Height %llu\n",grantDatabaseBlockHeight);
+        printf("Deserialize Grant Info Database Found Height %ld\n",grantDatabaseBlockHeight);
 
         if(grantDatabaseBlockHeight>maxWanted){
             //vote database later than required - don't load
@@ -5373,13 +5373,13 @@ bool deSerializeGrantDB(string filename, int64_t maxWanted){
         myfile.close();
 
         //Set the pointer to next block to process
-        gdBlockPointer=pindexGenesisBlock;
+        gdBlockPointer=chainActive.Genesis();
         for(int i=0;i<grantDatabaseBlockHeight;i++){
-            if(gdBlockPointer->pnext==NULL){
+            if(gdBlockPointer->pskip==NULL){
                 printf("Insufficent number of blocks loaded %s\n",filename.c_str());
                 return false;
             }
-            gdBlockPointer=gdBlockPointer->pnext;
+            gdBlockPointer=gdBlockPointer->pskip;
         }
         return true;
     }else{
@@ -5477,9 +5477,9 @@ void processNextBlockIntoGrantDatabase(){
 	
 	//If it's the first block, we'll start with the Genesis Block
 	if(gdBlockPointer==NULL){
-		gdBlockPointer=pindexGenesisBlock;
+		gdBlockPointer=chainActive.Genesis();
 	}else{
-		gdBlockPointer=gdBlockPointer->pnext;
+		gdBlockPointer=gdBlockPointer->pskip;
 	}
 	block.ReadFromDisk(gdBlockPointer);
 	//ReadBlockFromDisk(block, gdBlockPointer);
