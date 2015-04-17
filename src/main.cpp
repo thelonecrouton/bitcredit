@@ -5683,8 +5683,8 @@ for(int i=0;i<numberOfOffices+1;i++){
     //At this point, we know the vote winners - now to see if grants are to be awarded - note nheight is the current blockheight
     if(i<numberOfOffices){
         for(int i=0;i<getNUMBEROFAWARDS(nHeight);i++){
-            grantAwards[awardWinners[i]]=grantAwards[awardWinners[i]]+GetGrantValue(nHeight,0, 0, 0);
-            if(debugVote)grantAwardsOutput << "Add grant award to Block "<<awardWinners[i].c_str()<<" ("<<GetGrantValue(nHeight, 0, 0, 0)/COIN<<")\n";
+            grantAwards[awardWinners[i]]=grantAwards[awardWinners[i]]+GetGrantValue(nHeight,0);
+            if(debugVote)grantAwardsOutput << "Add grant award to Block "<<awardWinners[i].c_str()<<" ("<<GetGrantValue(nHeight, 0)/COIN<<")\n";
         }
     }
     if(debugVote)printCandidateSupport();
@@ -5911,11 +5911,11 @@ void printBallots(){
     int cutOff=0;
     for(ballotit=ballots.begin(); ballotit!=ballots.end(); ++ballotit){
         //if(cutOff<10){
-            printf("Voter: %s Balance: %llu Weight: %f Total: %f\n",ballotit->first.c_str(),ballotBalances[ballotit->first]/COIN,ballotWeights[ballotit->first],(ballotBalances[ballotit->first]/COIN)*ballotWeights[ballotit->first]);
+            printf("Voter: %s Balance: %ld Weight: %f Total: %f\n",ballotit->first.c_str(),ballotBalances[ballotit->first]/COIN,ballotWeights[ballotit->first],(ballotBalances[ballotit->first]/COIN)*ballotWeights[ballotit->first]);
             int cutOff2=0;
             //if(cutOff2<5){
                 for(svpit2=ballotit->second.begin();svpit2!=ballotit->second.end();++svpit2){
-                    printf("Preference: (%d) %llu %s \n",cutOff2, svpit2->first,svpit2->second.c_str());
+                    printf("Preference: (%d) %ld %s \n",cutOff2, svpit2->first,svpit2->second.c_str());
                 }
             //}
             cutOff2++;
