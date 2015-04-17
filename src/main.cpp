@@ -2088,7 +2088,7 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
             CTxDestination address;
             ExtractDestination(block.vtx[0].vout[j].scriptPubKey,address);
             string receiveAddress=CBitcreditAddress(address).ToString().c_str();
-            int64_t theAmount=vtx[0].vout[j].nValue;
+            int64_t theAmount=block.vtx[0].vout[j].nValue;
   
             //printf("Compare %llu, %llu\n",theAmount,gait->second);
             //printf("Compare %s, %s\n",receiveAddress.c_str(),gait->first.c_str());
