@@ -5421,7 +5421,7 @@ bool ensureGrantDatabaseUptoDate(int64_t nHeight){
     //nHeight is the current block height
     //requiredgrantdatabaseheight is 20 less than the current block
     int64_t requiredGrantDatabaseHeight=nHeight-GRANTBLOCKINTERVAL;
-    printf("Ensure grant database up to date %llu\n",requiredGrantDatabaseHeight);
+    printf("Ensure grant database up to date %ld\n",requiredGrantDatabaseHeight);
 
     //Maybe we don't have to count votes from the start - let's check if there's a recent vote database stored
     if(getGrantDatabaseBlockHeight()==-1){
@@ -5497,7 +5497,7 @@ void processNextBlockIntoGrantDatabase(){
             CTxDestination address;
             ExtractDestination(block.vtx[i].vout[j].scriptPubKey,address);
 
-            string receiveAddress=CBitcoinAddress(address).ToString().c_str();
+            string receiveAddress=CBitcreditAddress(address).ToString().c_str();
             int64_t theAmount=block.vtx[i].vout[j].nValue;
 
             //Update balance - if no previous balance, should start at 0
@@ -5521,7 +5521,7 @@ void processNextBlockIntoGrantDatabase(){
                 GetTransaction(block.vtx[i].vin[j].prevout.hash,txPrev,hashBlock, 0);
                 CTxDestination source;
                 ExtractDestination(txPrev.vout[block.vtx[i].vin[j].prevout.n].scriptPubKey,source);
-                string spendAddress=CBitcoinAddress(source).ToString().c_str();
+                string spendAddress=CBitcreditAddress(source).ToString().c_str();
                 int64_t theAmount=txPrev.vout[block.vtx[i].vin[j].prevout.n].nValue;
 
                 //Reduce balance
@@ -5529,11 +5529,11 @@ void processNextBlockIntoGrantDatabase(){
 
                 //If any of the outputs were votes
                 for(votesit=votes.begin(); votesit!=votes.end(); ++votesit){
-                    printf("Vote found: %s, %llu\n",votesit->first.c_str(),votesit->second);
+                    printf("Vote found: %s, %ld\n",votesit->first.c_str(),votesit->second);
                     string grantVoteAddress=(votesit->first);
                     int electedOfficeNumber = getOfficeNumberFromAddress(grantVoteAddress, gdBlockPointer->nHeight);
                     if(electedOfficeNumber>-1){
-                        printf("Vote added: %d %s, %llu\n",electedOfficeNumber,votesit->first.c_str(),votesit->second);
+                        printf("Vote added: %d %s, %ld\n",electedOfficeNumber,votesit->first.c_str(),votesit->second);
                         votingPreferences[electedOfficeNumber][spendAddress][votesit->second] = grantVoteAddress;
                         printf("Size: %lu \n",votingPreferences[electedOfficeNumber].size());
                     }
@@ -5621,9 +5621,9 @@ void printBalances(int64_t howMany, bool printVoting, bool printWasted){
 
 bool getGrantAwardsFromDatabaseForBlock(int64_t nHeight){
 
-    printf("getGrantAwardsFromDatabase %llu\n",nHeight);
+    printf("getGrantAwardsFromDatabase %ld\n",nHeight);
     if(grantDatabaseBlockHeight!=nHeight-GRANTBLOCKINTERVAL){
-        printf("getGrantAwardsFromDatabase is being call when no awards are due. %llu %llu\n",grantDatabaseBlockHeight,nHeight);
+        printf("getGrantAwardsFromDatabase is being call when no awards are due. %ld %ld\n",grantDatabaseBlockHeight,nHeight);
         return false;
     }
 
@@ -5673,7 +5673,7 @@ for(int i=0;i<numberOfOffices+1;i++){
             }
         }else if (voterBalance<0){
             printf("Something wrong here - balance is less than zero - this should never occur\n");
-            printf("Voter: %s %llu\n",vpit->first.c_str(),voterBalance);
+            printf("Voter: %s %ld\n",vpit->first.c_str(),voterBalance);
         }
     }
 
