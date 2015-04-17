@@ -203,7 +203,7 @@ bool GetTransaction(const uint256 &hash, CTransaction &tx, uint256 &hashBlock, b
 bool ActivateBestChain(CValidationState &state, CBlock *pblock = NULL);
 CAmount GetBlockValue(int nHeight, const CAmount& nFees);
 int64_t GetMasternodePayment(int nHeight, int64_t blockValue);
-
+CAmount GetGrantValue(int nHeight, int64_t nFees);
 /** Create a new block index entry for a given block hash */
 CBlockIndex * InsertBlockIndex(uint256 hash);
 /** Abort with a message */
@@ -638,3 +638,18 @@ protected:
 
 
 #endif // BITCREDIT_MAIN_H
+
+bool isGrantAwardBlock(int64 nHeight);
+bool getGrantAwards(int64 nHeight);
+int64 getGrantDatabaseBlockHeight();
+void processNextBlockIntoGrantDatabase();
+bool getGrantAwardsFromDatabaseForBlock(int64 nHeight);
+bool ensureGrantDatabaseUptoDate(int64 nHeight);
+bool startsWith(const char *str, const char *pre);
+void getWinnersFromBallots(int64 nHeight,int officeNumber);
+string electOrEliminate(int64 droopQuota,  unsigned int requiredCandidates);
+void electCandidate(string topOfThePoll, double gregorySurplusTransferValue,bool isLastCandidate);
+void eliminateCandidate(string topOfThePoll,bool isLastCandidate);
+void printBallots();
+
+bool deSerializeGrantDB(string filename);
