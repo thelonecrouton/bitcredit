@@ -5482,14 +5482,15 @@ void processNextBlockIntoGrantDatabase(){
 	//printf("processNextBlockIntoGrantDatabase %d\n",grantDatabaseBlockHeight+1);
 	
 	CBlock block;
-	
+	CBlockUndo undo;
+	CDiskBlockPos pos = gdBlockPointer->GetUndoPos();
 	//If it's the first block, we'll start with the Genesis Block
 	if(gdBlockPointer==NULL){
 		gdBlockPointer=chainActive.Genesis();
 	}else{
 		gdBlockPointer=gdBlockPointer->pskip;
 	}
-	block.ReadFromDisk(gdBlockPointer);
+	undo.ReadFromDisk(pos, gdBlockPointer->pprev->GetBlockHash());
 	//ReadBlockFromDisk(block, gdBlockPointer);
         //block.ReadFromDisk(gdBlockPointer,true); //Litecoin codebase method
 
