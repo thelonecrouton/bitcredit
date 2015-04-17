@@ -138,6 +138,9 @@ extern unsigned int nCoinCacheSize;
 extern CFeeRate minRelayTxFee;
 extern bool fLargeWorkInvalidChainFound;
 extern bool fLargeWorkForkFound;
+extern CCriticalSection grantdb;
+extern std::map<std::string,int64_t > grantAwards;
+extern std::map<std::string,int64_t>::iterator gait;
 
 /** Best header we've seen so far (used for getheaders queries' starting points). */
 extern CBlockIndex *pindexBestHeader;

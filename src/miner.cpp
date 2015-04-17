@@ -148,7 +148,7 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn)
     //For grant award block, add grants to coinbase
     if(isGrantAwardBlock(chainActive.Tip()->nHeight+1)){
 		//printf("isGrantAwardBlock pindexBest->nHeight+1 /n" );
-		if(!getGrantAwards(pindexBest->nHeight+1)){
+		if(!getGrantAwards(chainActive.Tip()->nHeight+1)){
 			//printf("!getGrantAwards pindexBest->nHeight+1 /n" );
 			 throw std::runtime_error("ConnectBlock() : ConnectBlock grant awards error");
 		}
