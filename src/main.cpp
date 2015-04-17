@@ -26,7 +26,7 @@
 #include "utilmoneystr.h"
 #include "voting.h"
 #include "spork.h"
-
+#include <fstream>
 #include <sstream>
 
 #include <boost/algorithm/string/replace.hpp>
@@ -2076,7 +2076,7 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
         grantAward=grantAward+gait->second;
     }
     for(gait=grantAwards.begin(); gait!=grantAwards.end(); ++gait){
-        for (unsigned int j = 0; j <vtx[0].vout.size(); j++){
+        for (unsigned int j = 0; j <block.vtx[0].vout.size(); j++){
             CTxDestination address;
             ExtractDestination(vtx[0].vout[j].scriptPubKey,address);
             string receiveAddress=CBitcreditAddress(address).ToString().c_str();
