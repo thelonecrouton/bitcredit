@@ -5230,7 +5230,7 @@ CAmount GetGrantValue(int nHeight, int64_t nFees)
 }
 
 //Grant every 5 Blocks
-static const int64_t GRANTBLOCKINTERVAL = (5*60)/nTargetSpacing;
+static const int64_t GRANTBLOCKINTERVAL = (5*60);
 static string GRANTPREFIX ="6BCR";
 
 
@@ -5406,7 +5406,7 @@ bool ensureGrantDatabaseUptoDate(int64_t nHeight){
     if(getGrantDatabaseBlockHeight()==-1){
         string newCV="xxx";
         //Only count custom vote if re-indexing
-        if(GetBoolArg("-reindex"),false){
+        if(GetBoolArg("-reindex",false)){
             newCV=GetArg("-customvoteprefix",newCV);
             printf("customvoteprefix:%s\n",newCV.c_str());
         }
