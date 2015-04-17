@@ -139,8 +139,8 @@ OverviewPage::OverviewPage(QWidget *parent) :
     
 
     // init "out of sync" warning labels
-    ui->labelWalletStatus->setText("(" + tr("out of sync") + ")");
-    ui->labelTransactionsStatus->setText("(" + tr("out of sync") + ")");
+    //ui->labelWalletStatus->setText("(" + tr("out of sync") + ")");
+    //ui->labelTransactionsStatus->setText("(" + tr("out of sync") + ")");
 
     showingDarkSendMessage = 0;
     darksendActionCheck = 0;
@@ -196,11 +196,11 @@ void OverviewPage::setBalance(const CAmount& balance, const CAmount& unconfirmed
     ui->labelUnconfirmed->setText(BitcreditUnits::formatWithUnit(unit, unconfirmedBalance, false, BitcreditUnits::separatorAlways));
     //ui->labelImmature->setText(BitcreditUnits::formatWithUnit(unit, immatureBalance, false, BitcreditUnits::separatorAlways));
     ui->labelAnonymized->setText(BitcreditUnits::formatWithUnit(unit, anonymizedBalance));
-    ui->labelTotal->setText(BitcreditUnits::formatWithUnit(unit, balance + unconfirmedBalance + immatureBalance, false, BitcreditUnits::separatorAlways));
-    ui->labelWatchAvailable->setText(BitcreditUnits::formatWithUnit(unit, watchOnlyBalance, false, BitcreditUnits::separatorAlways));
-    ui->labelWatchPending->setText(BitcreditUnits::formatWithUnit(unit, watchUnconfBalance, false, BitcreditUnits::separatorAlways));
-    ui->labelWatchImmature->setText(BitcreditUnits::formatWithUnit(unit, watchImmatureBalance, false, BitcreditUnits::separatorAlways));
-    ui->labelWatchTotal->setText(BitcreditUnits::formatWithUnit(unit, watchOnlyBalance + watchUnconfBalance + watchImmatureBalance, false, BitcreditUnits::separatorAlways));
+    //ui->labelTotal->setText(BitcreditUnits::formatWithUnit(unit, balance + unconfirmedBalance + immatureBalance, false, BitcreditUnits::separatorAlways));
+    //ui->labelWatchAvailable->setText(BitcreditUnits::formatWithUnit(unit, watchOnlyBalance, false, BitcreditUnits::separatorAlways));
+    //ui->labelWatchPending->setText(BitcreditUnits::formatWithUnit(unit, watchUnconfBalance, false, BitcreditUnits::separatorAlways));
+    //ui->labelWatchImmature->setText(BitcreditUnits::formatWithUnit(unit, watchImmatureBalance, false, BitcreditUnits::separatorAlways));
+    //ui->labelWatchTotal->setText(BitcreditUnits::formatWithUnit(unit, watchOnlyBalance + watchUnconfBalance + watchImmatureBalance, false, BitcreditUnits::separatorAlways));
 
     // only show immature (newly mined) balance if it's non-zero, so as not to complicate things
     // for the non-mining users
@@ -215,21 +215,21 @@ void OverviewPage::setBalance(const CAmount& balance, const CAmount& unconfirmed
     // for symmetry reasons also show immature label when the watch-only one is shown
     //ui->labelImmature->setVisible(showImmature || showWatchOnlyImmature);
     //ui->labelImmatureText->setVisible(showImmature || showWatchOnlyImmature);
-    ui->labelWatchImmature->setVisible(showWatchOnlyImmature); // show watch-only immature balance
+    //ui->labelWatchImmature->setVisible(showWatchOnlyImmature); // show watch-only immature balance
 }
 
 // show/hide watch-only labels
 void OverviewPage::updateWatchOnlyLabels(bool showWatchOnly)
 {
     //ui->labelSpendable->setVisible(showWatchOnly);      // show spendable label (only when watch-only is active)
-    ui->labelWatchonly->setVisible(showWatchOnly);      // show watch-only label
-    ui->lineWatchBalance->setVisible(showWatchOnly);    // show watch-only balance separator line
-    ui->labelWatchAvailable->setVisible(showWatchOnly); // show watch-only available balance
-    ui->labelWatchPending->setVisible(showWatchOnly);   // show watch-only pending balance
-    ui->labelWatchTotal->setVisible(showWatchOnly);     // show watch-only total balance
+    //ui->labelWatchonly->setVisible(showWatchOnly);      // show watch-only label
+    //ui->lineWatchBalance->setVisible(showWatchOnly);    // show watch-only balance separator line
+    //ui->labelWatchAvailable->setVisible(showWatchOnly); // show watch-only available balance
+    //ui->labelWatchPending->setVisible(showWatchOnly);   // show watch-only pending balance
+    //ui->labelWatchTotal->setVisible(showWatchOnly);     // show watch-only total balance
 
-    if (!showWatchOnly)
-        ui->labelWatchImmature->hide();
+    //if (!showWatchOnly)
+        //ui->labelWatchImmature->hide();
 }
 
 
@@ -271,8 +271,8 @@ void OverviewPage::setWalletModel(WalletModel *model)
 
         updateWatchOnlyLabels(model->haveWatchOnly());
         connect(model, SIGNAL(notifyWatchonlyChanged(bool)), this, SLOT(updateWatchOnlyLabels(bool)));
-        connect(ui->darksendAuto, SIGNAL(clicked()), this, SLOT(darksendAuto()));
-        connect(ui->darksendReset, SIGNAL(clicked()), this, SLOT(darksendReset()));
+        //connect(ui->darksendAuto, SIGNAL(clicked()), this, SLOT(darksendAuto()));
+        //connect(ui->darksendReset, SIGNAL(clicked()), this, SLOT(darksendReset()));
         connect(ui->toggleDarksend, SIGNAL(clicked()), this, SLOT(toggleDarksend()));
     }
 
@@ -305,8 +305,8 @@ void OverviewPage::updateAlerts(const QString &warnings)
 
 void OverviewPage::showOutOfSyncWarning(bool fShow)
 {
-    ui->labelWalletStatus->setVisible(fShow);
-    ui->labelTransactionsStatus->setVisible(fShow);
+    //ui->labelWalletStatus->setVisible(fShow);
+    //ui->labelTransactionsStatus->setVisible(fShow);
 }
 
 void OverviewPage::updateDarksendProgress()
