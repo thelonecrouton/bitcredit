@@ -40,6 +40,7 @@
 #include <vector>
 
 #include <boost/unordered_map.hpp>
+using namespace std;
 
 class CBlockIndex;
 class CBlockTreeDB;
