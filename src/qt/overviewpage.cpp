@@ -40,15 +40,16 @@ public:
     {
         painter->save();
 
-        QIcon icon = qvariant_cast<QIcon>(index.data(Qt::DecorationRole));
+        //QIcon icon = qvariant_cast<QIcon>(index.data(Qt::DecorationRole));
         QRect mainRect = option.rect;
-        QRect decorationRect(mainRect.left() - 8, mainRect.top() - 12, DECORATION_SIZE, DECORATION_SIZE);
-        int xspace = DECORATION_SIZE - 8;
+        //QRect decorationRect(mainRect.left() - 4, mainRect.top() - 8, DECORATION_SIZE, DECORATION_SIZE);
+        //int xspace = DECORATION_SIZE - 8;
+        int xspace = 5;
         int ypad = 0;
         int halfheight = (mainRect.height() - 2 * ypad) / 2;
-        QRect amountRect(mainRect.left() + xspace + 10, mainRect.top(), mainRect.width() - xspace - 130, halfheight);
-        QRect addressRect(mainRect.left() + xspace + 85, mainRect.top(), mainRect.width() - xspace, halfheight);
-        icon.paint(painter, decorationRect);
+        QRect amountRect(mainRect.left() + xspace + 10, mainRect.top(), mainRect.width() - xspace - 20, halfheight);
+        QRect addressRect(mainRect.left() + xspace + 120, mainRect.top(), mainRect.width() - xspace, halfheight);
+        //icon.paint(painter, decorationRect);
 
         QDateTime date = index.data(TransactionTableModel::DateRole).toDateTime();
         QString address = index.data(Qt::DisplayRole).toString();
@@ -64,7 +65,7 @@ public:
         }
 
         //painter->setPen(foreground);
-		painter->setPen(COLOR_WHITE);
+	painter->setPen(COLOR_WHITE);
         QRect boundingRect;
         painter->drawText(addressRect, Qt::AlignLeft|Qt::AlignVCenter, address, &boundingRect);
 
@@ -85,8 +86,7 @@ public:
         }
         else
         {
-            //foreground = option.palette.color(QPalette::Text);
-			painter->setPen(COLOR_WHITE);
+            foreground = COLOR_WHITE;
         }
         painter->setPen(foreground);
         QString amountText = BitcreditUnits::formatWithUnit(unit, amount, true, BitcreditUnits::separatorAlways);
@@ -194,7 +194,7 @@ void OverviewPage::setBalance(const CAmount& balance, const CAmount& unconfirmed
     currentWatchImmatureBalance = watchImmatureBalance;
     ui->labelBalance->setText(BitcreditUnits::formatWithUnit(unit, balance, false, BitcreditUnits::separatorAlways));
     ui->labelUnconfirmed->setText(BitcreditUnits::formatWithUnit(unit, unconfirmedBalance, false, BitcreditUnits::separatorAlways));
-    //ui->labelImmature->setText(BitcreditUnits::formatWithUnit(unit, immatureBalance, false, BitcreditUnits::separatorAlways));
+    ui->labelImmature->setText(BitcreditUnits::formatWithUnit(unit, immatureBalance, false, BitcreditUnits::separatorAlways));
     ui->labelAnonymized->setText(BitcreditUnits::formatWithUnit(unit, anonymizedBalance));
     //ui->labelTotal->setText(BitcreditUnits::formatWithUnit(unit, balance + unconfirmedBalance + immatureBalance, false, BitcreditUnits::separatorAlways));
     //ui->labelWatchAvailable->setText(BitcreditUnits::formatWithUnit(unit, watchOnlyBalance, false, BitcreditUnits::separatorAlways));
@@ -213,8 +213,8 @@ void OverviewPage::setBalance(const CAmount& balance, const CAmount& unconfirmed
     }
 
     // for symmetry reasons also show immature label when the watch-only one is shown
-    //ui->labelImmature->setVisible(showImmature || showWatchOnlyImmature);
-    //ui->labelImmatureText->setVisible(showImmature || showWatchOnlyImmature);
+    ui->labelImmature->setVisible(showImmature || showWatchOnlyImmature);
+    ui->labelImmatureText->setVisible(showImmature || showWatchOnlyImmature);
     //ui->labelWatchImmature->setVisible(showWatchOnlyImmature); // show watch-only immature balance
 }
 

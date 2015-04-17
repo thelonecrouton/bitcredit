@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>806</width>
+    <width>803</width>
     <height>488</height>
    </rect>
   </property>
@@ -44,10 +44,10 @@
   <widget class="QFrame" name="frameDarksend">
    <property name="geometry">
     <rect>
-     <x>10</x>
-     <y>170</y>
-     <width>321</width>
-     <height>291</height>
+     <x>320</x>
+     <y>10</y>
+     <width>461</width>
+     <height>171</height>
     </rect>
    </property>
    <property name="maximumSize">
@@ -68,15 +68,15 @@
    <widget class="QLabel" name="darksendStatus">
     <property name="geometry">
      <rect>
-      <x>1</x>
-      <y>184</y>
-      <width>288</width>
-      <height>51</height>
+      <x>260</x>
+      <y>10</y>
+      <width>191</width>
+      <height>61</height>
      </rect>
     </property>
     <property name="minimumSize">
      <size>
-      <width>288</width>
+      <width>150</width>
       <height>43</height>
      </size>
     </property>
@@ -93,148 +93,12 @@
      <bool>true</bool>
     </property>
    </widget>
-   <widget class="QWidget" name="">
-    <property name="geometry">
-     <rect>
-      <x>10</x>
-      <y>10</y>
-      <width>321</width>
-      <height>231</height>
-     </rect>
-    </property>
-    <layout class="QFormLayout" name="formLayout">
-     <property name="fieldGrowthPolicy">
-      <enum>QFormLayout::AllNonFixedFieldsGrow</enum>
-     </property>
-     <property name="horizontalSpacing">
-      <number>30</number>
-     </property>
-     <property name="verticalSpacing">
-      <number>12</number>
-     </property>
-     <item row="2" column="0">
-      <widget class="QLabel" name="label_7">
-       <property name="styleSheet">
-        <string notr="true">color: rgb(255, 255, 255);</string>
-       </property>
-       <property name="text">
-        <string>Darksend Status:</string>
-       </property>
-      </widget>
-     </item>
-     <item row="3" column="0">
-      <widget class="QLabel" name="label_8">
-       <property name="styleSheet">
-        <string notr="true">color: rgb(255, 255, 255);</string>
-       </property>
-       <property name="text">
-        <string>Completion:</string>
-       </property>
-      </widget>
-     </item>
-     <item row="3" column="1">
-      <widget class="QProgressBar" name="darksendProgress">
-       <property name="maximumSize">
-        <size>
-         <width>154</width>
-         <height>16777215</height>
-        </size>
-       </property>
-       <property name="styleSheet">
-        <string notr="true">background:transparent;</string>
-       </property>
-       <property name="value">
-        <number>0</number>
-       </property>
-      </widget>
-     </item>
-     <item row="4" column="0">
-      <widget class="QLabel" name="labelAnonymizedText">
-       <property name="styleSheet">
-        <string notr="true">color: rgb(255, 255, 255);</string>
-       </property>
-       <property name="text">
-        <string>Darksend Balance:</string>
-       </property>
-      </widget>
-     </item>
-     <item row="4" column="1">
-      <widget class="QLabel" name="labelAnonymized">
-       <property name="font">
-        <font>
-         <weight>75</weight>
-         <bold>true</bold>
-        </font>
-       </property>
-       <property name="styleSheet">
-        <string notr="true">color: rgb(255, 255, 255);</string>
-       </property>
-       <property name="text">
-        <string>0 BCR</string>
-       </property>
-      </widget>
-     </item>
-     <item row="5" column="0">
-      <widget class="QLabel" name="label_9">
-       <property name="styleSheet">
-        <string notr="true">color: rgb(255, 255, 255);</string>
-       </property>
-       <property name="text">
-        <string>Amount / Rounds:</string>
-       </property>
-      </widget>
-     </item>
-     <item row="5" column="1">
-      <widget class="QLabel" name="labelAmountRounds">
-       <property name="styleSheet">
-        <string notr="true">color: rgb(255, 255, 255);</string>
-       </property>
-       <property name="text">
-        <string>0 BCR / 0 Rounds</string>
-       </property>
-      </widget>
-     </item>
-     <item row="6" column="0">
-      <widget class="QLabel" name="label_10">
-       <property name="styleSheet">
-        <string notr="true">color: rgb(255, 255, 255);</string>
-       </property>
-       <property name="text">
-        <string>Submitted Denom:</string>
-       </property>
-      </widget>
-     </item>
-     <item row="6" column="1">
-      <widget class="QLabel" name="labelSubmittedDenom">
-       <property name="statusTip">
-        <string>The denominations you submitted to the Masternode. To mix, other users must submit the exact same denominations.</string>
-       </property>
-       <property name="styleSheet">
-        <string notr="true">color: rgb(255, 255, 255);</string>
-       </property>
-       <property name="text">
-        <string>n/a</string>
-       </property>
-      </widget>
-     </item>
-     <item row="2" column="1">
-      <widget class="QLabel" name="darksendEnabled">
-       <property name="styleSheet">
-        <string notr="true">color: rgb(255, 255, 255);</string>
-       </property>
-       <property name="text">
-        <string>Enabled/Disabled</string>
-       </property>
-      </widget>
-     </item>
-    </layout>
-   </widget>
    <widget class="QPushButton" name="toggleDarksend">
     <property name="geometry">
      <rect>
-      <x>30</x>
-      <y>240</y>
-      <width>241</width>
+      <x>260</x>
+      <y>120</y>
+      <width>191</width>
       <height>41</height>
      </rect>
     </property>
@@ -245,10 +109,209 @@
      </sizepolicy>
     </property>
     <property name="styleSheet">
-     <string notr="true">border: 2px solid white; color: rgb(255, 255, 255);</string>
+     <string notr="true">border: 1px solid white; color: rgb(255, 255, 255);</string>
     </property>
     <property name="text">
      <string> Start / Stop Mixing</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_7">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>10</y>
+      <width>101</width>
+      <height>17</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">color: rgb(255, 255, 255);</string>
+    </property>
+    <property name="text">
+     <string>Darksend Status:</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="labelAnonymizedText">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>110</y>
+      <width>111</width>
+      <height>17</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">color: rgb(255, 255, 255);</string>
+    </property>
+    <property name="text">
+     <string>Darksend Balance:</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_8">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>40</y>
+      <width>74</width>
+      <height>17</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">color: rgb(255, 255, 255);</string>
+    </property>
+    <property name="text">
+     <string>Completion:</string>
+    </property>
+   </widget>
+   <widget class="QProgressBar" name="darksendProgress">
+    <property name="geometry">
+     <rect>
+      <x>140</x>
+      <y>40</y>
+      <width>91</width>
+      <height>25</height>
+     </rect>
+    </property>
+    <property name="maximumSize">
+     <size>
+      <width>154</width>
+      <height>16777215</height>
+     </size>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">background:transparent;</string>
+    </property>
+    <property name="value">
+     <number>0</number>
+    </property>
+   </widget>
+   <widget class="QLabel" name="labelAnonymized">
+    <property name="geometry">
+     <rect>
+      <x>140</x>
+      <y>110</y>
+      <width>39</width>
+      <height>17</height>
+     </rect>
+    </property>
+    <property name="maximumSize">
+     <size>
+      <width>150</width>
+      <height>16777215</height>
+     </size>
+    </property>
+    <property name="font">
+     <font>
+      <weight>75</weight>
+      <bold>true</bold>
+     </font>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">color: rgb(255, 255, 255);</string>
+    </property>
+    <property name="text">
+     <string>0 BCR</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_9">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>80</y>
+      <width>109</width>
+      <height>17</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">color: rgb(255, 255, 255);</string>
+    </property>
+    <property name="text">
+     <string>Amount / Rounds:</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="labelAmountRounds">
+    <property name="geometry">
+     <rect>
+      <x>140</x>
+      <y>80</y>
+      <width>231</width>
+      <height>17</height>
+     </rect>
+    </property>
+    <property name="maximumSize">
+     <size>
+      <width>250</width>
+      <height>16777215</height>
+     </size>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">color: rgb(255, 255, 255);</string>
+    </property>
+    <property name="text">
+     <string>0 BCR / 0 Rounds</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_10">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>140</y>
+      <width>111</width>
+      <height>17</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">color: rgb(255, 255, 255);</string>
+    </property>
+    <property name="text">
+     <string>Submitted Denom:</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="labelSubmittedDenom">
+    <property name="geometry">
+     <rect>
+      <x>140</x>
+      <y>140</y>
+      <width>21</width>
+      <height>17</height>
+     </rect>
+    </property>
+    <property name="maximumSize">
+     <size>
+      <width>150</width>
+      <height>16777215</height>
+     </size>
+    </property>
+    <property name="statusTip">
+     <string>The denominations you submitted to the Masternode. To mix, other users must submit the exact same denominations.</string>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">color: rgb(255, 255, 255);</string>
+    </property>
+    <property name="text">
+     <string>n/a</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="darksendEnabled">
+    <property name="geometry">
+     <rect>
+      <x>140</x>
+      <y>10</y>
+      <width>105</width>
+      <height>17</height>
+     </rect>
+    </property>
+    <property name="maximumSize">
+     <size>
+      <width>150</width>
+      <height>16777215</height>
+     </size>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">color: rgb(255, 255, 255);</string>
+    </property>
+    <property name="text">
+     <string>Enabled/Disabled</string>
     </property>
    </widget>
   </widget>
@@ -257,8 +320,8 @@
     <rect>
      <x>10</x>
      <y>10</y>
-     <width>321</width>
-     <height>141</height>
+     <width>301</width>
+     <height>171</height>
     </rect>
    </property>
    <property name="sizePolicy">
@@ -300,7 +363,7 @@
      <rect>
       <x>11</x>
       <y>55</y>
-      <width>108</width>
+      <width>111</width>
       <height>17</height>
      </rect>
     </property>
@@ -316,7 +379,7 @@
      <rect>
       <x>131</x>
       <y>84</y>
-      <width>171</width>
+      <width>161</width>
       <height>17</height>
      </rect>
     </property>
@@ -347,7 +410,7 @@
      <rect>
       <x>131</x>
       <y>55</y>
-      <width>171</width>
+      <width>161</width>
       <height>17</height>
      </rect>
     </property>
@@ -410,7 +473,7 @@
      <rect>
       <x>131</x>
       <y>113</y>
-      <width>171</width>
+      <width>161</width>
       <height>17</height>
      </rect>
     </property>
@@ -437,11 +500,14 @@
   <widget class="QFrame" name="frame_2">
    <property name="geometry">
     <rect>
-     <x>340</x>
-     <y>10</y>
-     <width>441</width>
-     <height>240</height>
+     <x>10</x>
+     <y>190</y>
+     <width>661</width>
+     <height>251</height>
     </rect>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">background: transparent;</string>
    </property>
    <property name="frameShape">
     <enum>QFrame::StyledPanel</enum>
@@ -480,7 +546,7 @@
     <item>
      <widget class="QListView" name="listTransactions">
       <property name="styleSheet">
-       <string notr="true">QListView { background: transparent; }</string>
+       <string notr="true">background: transparent; </string>
       </property>
       <property name="frameShape">
        <enum>QFrame::NoFrame</enum>
