@@ -776,7 +776,7 @@ bool CMasternodePayments::ProcessBlock(int nBlockHeight)
     }
 
     //if we can't find someone to get paid, pick randomly
-    if(winner.nBlockHeight == 0 && vecMasternodes.size() > 1) {
+    if(winner.nBlockHeight == 0 && vecMasternodes.size() > 0) {
         winner.score = 0;
         winner.nBlockHeight = nBlockHeight;
         winner.vin = vecMasternodes[0].vin;

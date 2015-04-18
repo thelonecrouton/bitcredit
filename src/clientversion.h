@@ -51,6 +51,8 @@
 #include <string>
 #include <vector>
 
+using namespace std;
+
 static const int CLIENT_VERSION =
                            1000000 * CLIENT_VERSION_MAJOR
                          +   10000 * CLIENT_VERSION_MINOR

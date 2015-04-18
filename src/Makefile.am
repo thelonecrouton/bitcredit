@@ -119,7 +119,6 @@ BITCREDIT_CORE_H = \
   pubkey.h \
   random.h \
   rpcclient.h \
-  rpcsmessage.h \
   rpcprotocol.h \
   rpcserver.h \
   script/interpreter.h \
@@ -147,7 +146,6 @@ BITCREDIT_CORE_H = \
   utilmoneystr.h \
   utiltime.h \
   version.h \
-  voting.h \
   wallet.h \
   wallet_ismine.h \
   walletdb.h \
@@ -285,7 +283,6 @@ libbitcredit_common_a_SOURCES = \
   script/sign.cpp \
   script/standard.cpp \
   script/script_error.cpp \
-  voting.cpp \
   $(BITCREDIT_CORE_H)
 
 # util: shared between all executables.

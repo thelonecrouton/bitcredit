@@ -38,10 +38,13 @@ MasternodeManager::MasternodeManager(QWidget *parent) :
     ui->startButton->setEnabled(false);
     ui->stopButton->setEnabled(false);
     ui->copyAddressButton->setEnabled(false);
-
+#if QT_VERSION < 0x050000
     ui->tableWidget->horizontalHeader()->setResizeMode(QHeaderView::ResizeToContents);
     ui->tableWidget_2->horizontalHeader()->setResizeMode(QHeaderView::ResizeToContents);
-
+#else
+    ui->tableWidget->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
+    ui->tableWidget_2->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
+#endif
     subscribeToCoreSignals();
 
     timer = new QTimer(this);
