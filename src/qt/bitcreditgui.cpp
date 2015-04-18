@@ -140,6 +140,11 @@ BitcreditGUI::BitcreditGUI(const NetworkStyle *networkStyle, QWidget *parent) :
     }
     windowTitle += " " + networkStyle->getTitleAddText();
     qApp->setStyleSheet("QMainWindow { background:rgb(237, 241, 247); font-family:'Proxima Nova Rg'; } #toolbar2 { border:none;width:30px; background:rgb(107, 88, 88); }");
+  
+    // set rest of global stylesheet stuff here, eg:  
+    //qApp->setStyleSheet("QLineEdit { border: 1px solid orange; } #QPushButton { border: 1px solid blue; }");
+    //qApp->setStyleSheet("QPushButton { border: 1px solid blue; }");
+
 	
 #ifndef Q_OS_MAC
     QApplication::setWindowIcon(networkStyle->getTrayAndWindowIcon());
