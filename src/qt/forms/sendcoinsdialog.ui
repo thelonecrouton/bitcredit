@@ -120,7 +120,7 @@
           <item>
            <widget class="QLabel" name="labelCoinControlAutomaticallySelected">
             <property name="styleSheet">
-             <string notr="true">color: rgb(255, 255, 255);</string>
+             <string notr="true">background: transparent; color: rgb(255, 255, 255);</string>
             </property>
             <property name="text">
              <string>automatically selected</string>
@@ -592,7 +592,7 @@
              <string>If this is activated, but the change address is empty or invalid, change will be sent to a newly generated address.</string>
             </property>
             <property name="styleSheet">
-             <string notr="true">color: rgb(255, 255, 255);</string>
+             <string notr="true">background: transparent; color: rgb(255, 255, 255);</string>
             </property>
             <property name="text">
              <string>Custom change address</string>
@@ -668,7 +668,7 @@
         <x>0</x>
         <y>0</y>
         <width>832</width>
-        <height>80</height>
+        <height>91</height>
        </rect>
       </property>
       <layout class="QVBoxLayout" name="verticalLayout_2" stretch="0,1">
@@ -807,7 +807,7 @@ color: rgb(255, 255, 255);</string>
               <item>
                <widget class="QPushButton" name="buttonChooseFee">
                 <property name="styleSheet">
-                 <string notr="true">color: rgb(255, 255, 255);</string>
+                 <string notr="true">border: 1px solid white; color: rgb(255, 255, 255);</string>
                 </property>
                 <property name="text">
                  <string>Choose...</string>
@@ -820,7 +820,7 @@ color: rgb(255, 255, 255);</string>
                  <string>collapse fee-settings</string>
                 </property>
                 <property name="styleSheet">
-                 <string notr="true">color: rgb(255, 255, 255);</string>
+                 <string notr="true">border: 1px solid white; color: rgb(255, 255, 255);</string>
                 </property>
                 <property name="text">
                  <string>Minimize</string>
@@ -1325,7 +1325,7 @@ color: rgb(255, 255, 255);</string>
         <string>Confirm the send action</string>
        </property>
        <property name="styleSheet">
-        <string notr="true">color: rgb(255, 255, 255);background:transparent;</string>
+        <string notr="true">border: 1px solid white; color: rgb(255, 255, 255);background:transparent;</string>
        </property>
        <property name="text">
         <string>S&amp;end</string>
@@ -1354,7 +1354,7 @@ color: rgb(255, 255, 255);</string>
         <string>Clear all fields of the form.</string>
        </property>
        <property name="styleSheet">
-        <string notr="true">color: rgb(255, 255, 255);background:transparent;</string>
+        <string notr="true">border: 1px solid white; color: rgb(255, 255, 255);background:transparent;</string>
        </property>
        <property name="text">
         <string>Clear &amp;All</string>
@@ -1374,7 +1374,7 @@ color: rgb(255, 255, 255);</string>
         <string>Send to multiple recipients at once</string>
        </property>
        <property name="styleSheet">
-        <string notr="true">color: rgb(255, 255, 255);background:transparent;</string>
+        <string notr="true">border: 1px solid white; color: rgb(255, 255, 255);background:transparent;</string>
        </property>
        <property name="text">
         <string>Add &amp;Recipient</string>
@@ -1416,7 +1416,7 @@ color: rgb(255, 255, 255);</string>
         <string>Darksend</string>
        </property>
        <property name="checked">
-        <bool>true</bool>
+        <bool>false</bool>
        </property>
       </widget>
      </item>

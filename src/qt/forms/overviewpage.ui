@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>803</width>
-    <height>488</height>
+    <height>544</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -44,10 +44,10 @@
   <widget class="QFrame" name="frameDarksend">
    <property name="geometry">
     <rect>
-     <x>320</x>
-     <y>10</y>
-     <width>461</width>
-     <height>171</height>
+     <x>10</x>
+     <y>130</y>
+     <width>771</width>
+     <height>111</height>
     </rect>
    </property>
    <property name="maximumSize">
@@ -68,16 +68,16 @@
    <widget class="QLabel" name="darksendStatus">
     <property name="geometry">
      <rect>
-      <x>260</x>
-      <y>10</y>
-      <width>191</width>
-      <height>61</height>
+      <x>310</x>
+      <y>59</y>
+      <width>211</width>
+      <height>41</height>
      </rect>
     </property>
     <property name="minimumSize">
      <size>
       <width>150</width>
-      <height>43</height>
+      <height>30</height>
      </size>
     </property>
     <property name="styleSheet">
@@ -96,9 +96,9 @@
    <widget class="QPushButton" name="toggleDarksend">
     <property name="geometry">
      <rect>
-      <x>260</x>
-      <y>120</y>
-      <width>191</width>
+      <x>530</x>
+      <y>60</y>
+      <width>231</width>
       <height>41</height>
      </rect>
     </property>
@@ -135,7 +135,7 @@
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>110</y>
+      <y>70</y>
       <width>111</width>
       <height>17</height>
      </rect>
@@ -150,8 +150,8 @@
    <widget class="QLabel" name="label_8">
     <property name="geometry">
      <rect>
-      <x>10</x>
-      <y>40</y>
+      <x>170</x>
+      <y>10</y>
       <width>74</width>
       <height>17</height>
      </rect>
@@ -166,9 +166,9 @@
    <widget class="QProgressBar" name="darksendProgress">
     <property name="geometry">
      <rect>
-      <x>140</x>
-      <y>40</y>
-      <width>91</width>
+      <x>170</x>
+      <y>30</y>
+      <width>111</width>
       <height>25</height>
      </rect>
     </property>
@@ -188,9 +188,9 @@
    <widget class="QLabel" name="labelAnonymized">
     <property name="geometry">
      <rect>
-      <x>140</x>
-      <y>110</y>
-      <width>39</width>
+      <x>170</x>
+      <y>70</y>
+      <width>150</width>
       <height>17</height>
      </rect>
     </property>
@@ -216,8 +216,8 @@
    <widget class="QLabel" name="label_9">
     <property name="geometry">
      <rect>
-      <x>10</x>
-      <y>80</y>
+      <x>300</x>
+      <y>10</y>
       <width>109</width>
       <height>17</height>
      </rect>
@@ -232,8 +232,8 @@
    <widget class="QLabel" name="labelAmountRounds">
     <property name="geometry">
      <rect>
-      <x>140</x>
-      <y>80</y>
+      <x>300</x>
+      <y>30</y>
       <width>231</width>
       <height>17</height>
      </rect>
@@ -254,8 +254,8 @@
    <widget class="QLabel" name="label_10">
     <property name="geometry">
      <rect>
-      <x>10</x>
-      <y>140</y>
+      <x>530</x>
+      <y>10</y>
       <width>111</width>
       <height>17</height>
      </rect>
@@ -270,9 +270,9 @@
    <widget class="QLabel" name="labelSubmittedDenom">
     <property name="geometry">
      <rect>
-      <x>140</x>
-      <y>140</y>
-      <width>21</width>
+      <x>530</x>
+      <y>30</y>
+      <width>150</width>
       <height>17</height>
      </rect>
     </property>
@@ -295,8 +295,8 @@
    <widget class="QLabel" name="darksendEnabled">
     <property name="geometry">
      <rect>
-      <x>140</x>
-      <y>10</y>
+      <x>10</x>
+      <y>30</y>
       <width>105</width>
       <height>17</height>
      </rect>
@@ -320,8 +320,8 @@
     <rect>
      <x>10</x>
      <y>10</y>
-     <width>301</width>
-     <height>171</height>
+     <width>771</width>
+     <height>111</height>
     </rect>
    </property>
    <property name="sizePolicy">
@@ -336,36 +336,19 @@
    <property name="frameShadow">
     <enum>QFrame::Raised</enum>
    </property>
-   <widget class="QLabel" name="label_2">
+   <widget class="QLabel" name="label">
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>10</y>
-      <width>43</width>
-      <height>17</height>
+      <y>11</y>
+      <width>181</width>
+      <height>21</height>
      </rect>
     </property>
     <property name="font">
      <font>
-      <weight>75</weight>
-      <bold>true</bold>
+      <pointsize>16</pointsize>
      </font>
-    </property>
-    <property name="styleSheet">
-     <string notr="true">color: white;</string>
-    </property>
-    <property name="text">
-     <string>Wallet</string>
-    </property>
-   </widget>
-   <widget class="QLabel" name="label">
-    <property name="geometry">
-     <rect>
-      <x>11</x>
-      <y>55</y>
-      <width>111</width>
-      <height>17</height>
-     </rect>
     </property>
     <property name="styleSheet">
      <string notr="true">background: transparent; color: white;</string>
@@ -377,9 +360,9 @@
    <widget class="QLabel" name="labelUnconfirmed">
     <property name="geometry">
      <rect>
-      <x>131</x>
-      <y>84</y>
-      <width>161</width>
+      <x>210</x>
+      <y>50</y>
+      <width>291</width>
       <height>17</height>
      </rect>
     </property>
@@ -408,14 +391,15 @@
    <widget class="QLabel" name="labelBalance">
     <property name="geometry">
      <rect>
-      <x>131</x>
-      <y>55</y>
-      <width>161</width>
-      <height>17</height>
+      <x>210</x>
+      <y>9</y>
+      <width>371</width>
+      <height>21</height>
      </rect>
     </property>
     <property name="font">
      <font>
+      <pointsize>16</pointsize>
       <weight>75</weight>
       <bold>true</bold>
      </font>
@@ -439,8 +423,8 @@
    <widget class="QLabel" name="label_3">
     <property name="geometry">
      <rect>
-      <x>11</x>
-      <y>84</y>
+      <x>10</x>
+      <y>50</y>
       <width>83</width>
       <height>17</height>
      </rect>
@@ -455,8 +439,8 @@
    <widget class="QLabel" name="labelImmatureText">
     <property name="geometry">
      <rect>
-      <x>11</x>
-      <y>113</y>
+      <x>10</x>
+      <y>70</y>
       <width>64</width>
       <height>17</height>
      </rect>
@@ -471,9 +455,9 @@
    <widget class="QLabel" name="labelImmature">
     <property name="geometry">
      <rect>
-      <x>131</x>
-      <y>113</y>
-      <width>161</width>
+      <x>210</x>
+      <y>70</y>
+      <width>311</width>
       <height>17</height>
      </rect>
     </property>
@@ -501,8 +485,8 @@
    <property name="geometry">
     <rect>
      <x>10</x>
-     <y>190</y>
-     <width>661</width>
+     <y>250</y>
+     <width>771</width>
      <height>251</height>
     </rect>
    </property>
