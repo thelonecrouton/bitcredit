@@ -144,7 +144,7 @@ PaperWalletDialog::PaperWalletDialog(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    ui->buttonBox->addButton(tr("Close"), QDialogButtonBox::RejectRole);
+    //ui->buttonBox->addButton(tr("Close"), QDialogButtonBox::RejectRole);
 
     // Begin with a small bold monospace font for the textual version of the key and address.
     QFont font("Monospace");
