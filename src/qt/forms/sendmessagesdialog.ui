@@ -118,7 +118,7 @@ color: black;</string>
         <x>0</x>
         <y>0</y>
         <width>830</width>
-        <height>278</height>
+        <height>285</height>
        </rect>
       </property>
       <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -157,7 +157,7 @@ color: black;</string>
         <string>Send to multiple recipients at once</string>
        </property>
        <property name="styleSheet">
-        <string notr="true">background:transparent;
+        <string notr="true">border: 1px solid white; background:transparent;
 color: rgb(255, 255, 255);</string>
        </property>
        <property name="text">
@@ -184,7 +184,7 @@ color: rgb(255, 255, 255);</string>
         <string>Remove all transaction fields</string>
        </property>
        <property name="styleSheet">
-        <string notr="true">background:transparent;
+        <string notr="true">border: 1px solid white; background:transparent;
 color: rgb(255, 255, 255);</string>
        </property>
        <property name="text">
@@ -227,7 +227,7 @@ color: rgb(255, 255, 255);</string>
         <string>Confirm the send action</string>
        </property>
        <property name="styleSheet">
-        <string notr="true">background:transparent;
+        <string notr="true">border: 1px solid white; background:transparent;
 color: rgb(255, 255, 255);</string>
        </property>
        <property name="text">
