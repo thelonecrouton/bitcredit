@@ -1,0 +1,170 @@
+#include "rawdata.h"
+
+#include <iostream>
+#include <math.h>
+
+#include "util.h"
+#include "init.h"
+#include "wallet.h"
+#include "main.h"
+#include "coins.h"
+#include "rpcserver.h"
+
+int incomingtxcount;
+int outgoingtxcount;
+int onehour = 3600;
+int oneday = 86400;
+int oneweek = 604800;
+int onemonth = 604800 *4;
+int oneyear = 31556926;
+int firsttxtime, lasttxtime;
+
+
+int Rawdata::totalnumtx()  //total number of chain transactions
+{
+	int ttnmtx = chainActive.Tip()->nChainTx;
+
+	return ttnmtx;
+} 
+
+int Rawdata::getNumTransactions() const //number of wallet transactions
+{
+	//total number of transactions for the account
+	int numTransactions = pwalletMain->mapWallet.size();
+		return numTransactions; 
+}
+
+CAmount Rawdata::moneysupply()
+{
+		CCoinsStats ss;
+		FlushStateToDisk();
+		
+		if (pcoinsTip->GetStats(ss)) 
+		{
+		CAmount x =ss.nTotalAmount/100000000;
+		return x;
+		}
+		return 0;
+}
+
+CAmount Rawdata::blockreward (int nHeight, CAmount& nFees )
+{
+	CAmount x = GetBlockValue(nHeight, nFees);	
+		return x;
+}
+
+CAmount Rawdata::banksubsidy (int nHeight, CAmount& nFees )
+{
+	CAmount x = GetMasternodePayment(nHeight, nFees);	
+		return x;
+}
+
+CAmount Rawdata::votesubsidy (int nHeight, CAmount& nFees )
+{
+	CAmount x = GetGrantValue(nHeight, nFees);	
+		return x;
+}
+
+double Rawdata::networktxpart() //wallet's network participation
+{
+	double netpart = pwalletMain->mapWallet.size()/chainActive.Tip()->nChainTx;
+
+	return netpart;
+}
+
+int Rawdata::lifetime() //wallet's lifetime
+{
+	int creationdate  = pwalletMain->GetOldestKeyPoolTime();
+	int lifespan = (GetTime() - creationdate)/3600;
+    
+	return lifespan;
+}
+
+int Rawdata::gbllifetime() //blockchain lifetime
+{
+	int a  = GetTime() - 1418504572;
+             
+	return a/3600;
+}
+
+int64_t Rawdata::balance() 
+{
+	int64_t bal = pwalletMain->GetBalance();
+
+	return bal;
+}
+	
+CAmount Rawdata::Getbankreserve() 
+{
+	string reserveaddr ="6133GZGV2XRnS53DkLSWrK661TsQMqnewL";
+	CAmount reserve;
+	CBitcreditAddress address(reserveaddr);
+    CTxDestination dest = address.Get();
+    
+    std::set<CExtDiskTxPos> setpos;
+    if (!FindTransactionsByDestination(dest, setpos))
+        return error( "FindTransactionsByDestination failed");
+
+    int nSkip = 0;
+    int nCount = 9999999;
+
+    std::set<CExtDiskTxPos>::const_iterator it = setpos.begin();
+    while (it != setpos.end() && nSkip--) it++;
+
+    while (it != setpos.end() && nCount--) {
+        CTransaction tx;
+        uint256 hashBlock;
+        if (!ReadTransaction(tx, *it, hashBlock))
+            return error(" ReadTransaction failed" );
+
+		BOOST_FOREACH(const CTxIn& txin, tx.vin) {
+			CAmount vout =     (int64_t)txin.prevout.n;
+		}
+		
+		for (unsigned int i = 0; i < tx.vout.size(); i++) {
+			const CTxOut& txout = tx.vout[i];
+			reserve += txout.nValue;
+			}
+			it++;
+		}
+		
+	return reserve;
+}
+
+int64_t Rawdata::Getbankbalance() 
+{
+	string bankaddr ="5qoFUCqPUE4pyjus6U6jD6ba4oHR6NZ7c7";
+	
+	CBitcreditAddress address(bankaddr);
+    CTxDestination dest = address.Get();
+		
+	return Getbankreserve();
+}
+
+int64_t Rawdata::Getgrantbalance() 
+{
+	string grantaddr ="69RAHjiTbn1n6BEo8kPMq6czjZJGg77GbW";
+	
+	CBitcreditAddress address(grantaddr);
+    CTxDestination dest = address.Get();
+	
+	return Getbankreserve();
+}
+
+int64_t Rawdata::Getescrowbalance() 
+{
+	string escrowaddr ="5qH4yHaaaRuX1qKCZdUHXNJdesssNQcUct";
+	
+	CBitcreditAddress address(escrowaddr);
+    CTxDestination dest = address.Get();
+	
+	return Getbankreserve();
+}
+
+
+
+double Rawdata::Getgblmoneysupply()
+{
+	
+	return moneysupply(); //overall money supply 
+}

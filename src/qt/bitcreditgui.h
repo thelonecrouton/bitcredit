@@ -98,10 +98,12 @@ private:
     QLabel *progressBarLabel;
     QProgressBar *progressBar;
     QProgressDialog *progressDialog;
+    QWidget *wId2;
+    
 
     QMenuBar *appMenuBar;
 	QAction *chatAction;
-	//QAction *exchangeAction;
+	QAction *exchangeAction;
     QAction *overviewAction;
     QAction *historyAction;
     QAction *quitAction;
@@ -125,12 +127,13 @@ private:
 	QAction *blockAction;
 	QAction *bankstatsAction;
 	QAction *paperWalletAction;
-	QAction * voteCoinsAction;
+	QAction *voteCoinsAction;
     QAction *sendMessagesAction;
     QAction *sendMessagesAnonAction;
     QAction *messageAction;
     QAction *invoiceAction;
-    QAction *receiptAction;	
+    QAction *receiptAction;
+    QAction *actionSendReceive;	
 
     QSystemTrayIcon *trayIcon;
     QMenu *trayIconMenu;

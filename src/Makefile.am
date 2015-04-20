@@ -152,7 +152,8 @@ BITCREDIT_CORE_H = \
   irc.h \
   strlcpy.h \
   compat/sanity.h \
-  xxhash/xxhash.h 
+  xxhash/xxhash.h \
+  rawdata.h 
 
 JSON_H = \
   json/json_spirit.h \
@@ -205,6 +206,7 @@ libbitcredit_server_a_SOURCES = \
   txdb.cpp \
   txmempool.cpp \
   xxhash/xxhash.c \
+  rawdata.cpp \
   json/json_spirit_value.cpp \
   json/json_spirit_reader.cpp \
   json/json_spirit_writer.cpp \

@@ -20,7 +20,6 @@
 #include "wallet.h"
 #endif
 #include "masternode.h"
-#include "voting.h"
 #include <boost/thread.hpp>
 #include <boost/tuple/tuple.hpp>
 

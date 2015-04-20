@@ -24,7 +24,6 @@
 #include "ui_interface.h"
 #include "util.h"
 #include "utilmoneystr.h"
-#include "voting.h"
 #include "spork.h"
 
 #include <fstream>
@@ -2041,7 +2040,7 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
                          error("ConnectBlock() : coinbase pays too much (actual=%d vs limit=%d)",
                                block.vtx[0].GetValueOut(), GetBlockValue(pindex->nHeight, nFees)),
                                REJECT_INVALID, "bad-cb-amount");
-	if (pindex->nHeight>40000){
+	if (pindex->nHeight>40001){
 			int64_t bankfund = (GetBlockValue(pindex->nHeight, nFees))* (0.1);
 	int64_t bank_subsidy=0, reserve_subsidy=0;
 
@@ -2062,7 +2061,7 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
 	if (reserve_subsidy < bankfund)
 	return state.DoS(100, error("ConnectBlock() : coinbase does not pay enough to the reserve (actual=%d vs required=%d)", reserve_subsidy, bankfund));
 	}
-	if (pindex->nHeight>999999){
+	if (pindex->nHeight>99999){
 	//FUNCTION - ConnectBlock
 	//SECTION - Bitcredit Grant Block Information
 	//
@@ -5379,15 +5378,14 @@ bool deSerializeGrantDB(string filename, int64_t maxWanted){
         }
 
         myfile.close();
-		CBlockIndex *pindex = chainActive.Tip();
         //Set the pointer to next block to process
         gdBlockPointer=chainActive.Genesis();
         for(int i=0;i<grantDatabaseBlockHeight;i++){
-            if(gdBlockPointer->pindex==NULL){
+            if(gdBlockPointer==NULL){
                 printf("Insufficent number of blocks loaded %s\n",filename.c_str());
                 return false;
             }
-            gdBlockPointer=gdBlockPointer->pindex;
+            gdBlockPointer=chainActive.Tip();
         }
         return true;
     }else{
@@ -5489,7 +5487,7 @@ void processNextBlockIntoGrantDatabase(){
 	if(gdBlockPointer==NULL){
 		gdBlockPointer=chainActive.Genesis();
 	}else{
-		gdBlockPointer=gdBlockPointer->chainActive.Tip();
+		gdBlockPointer=chainActive.Tip();
 	}
 	undo.ReadFromDisk(pos, gdBlockPointer->pprev->GetBlockHash());
 	//ReadBlockFromDisk(block, gdBlockPointer);

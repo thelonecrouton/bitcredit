@@ -328,7 +328,11 @@ RES_ICONS = \
   qt/res/icons/mini.png \
   qt/res/icons/vote.png \
   qt/res/icons/chat.png \
-  qt/res/icons/em.png
+  qt/res/icons/em.png \
+  qt/res/icons/receiveg.png \
+  qt/res/icons/receiver.png \
+  qt/res/icons/sendg.png \
+  qt/res/icons/sendr.png 
 
 BITCREDIT_QT_CPP = \
   qt/bitcreditaddressvalidator.cpp \

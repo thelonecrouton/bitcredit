@@ -19,7 +19,7 @@ class SendCoinsDialog;
 class SendCoinsRecipient;
 class TransactionView;
 class WalletModel;
-//class ExchangeBrowser;
+class ExchangeBrowser;
 class ChatWindow;
 class BlockBrowser;
 class BankStatisticsPage;
@@ -70,7 +70,7 @@ private:
     MessageModel *messageModel;
     WalletModel *walletModel;
 	ChatWindow *chatWindow;
-//	ExchangeBrowser *exchangeBrowser;
+	ExchangeBrowser *exchangeBrowser;
 	MasternodeManager *masternodeManagerPage;
     OverviewPage *overviewPage;
     QWidget *transactionsPage;
@@ -95,7 +95,7 @@ public slots:
     /** Switch to chat page */
     void gotoChatPage();
     /** Switch to exchange browser page */
- //   void gotoExchangeBrowserPage();	
+    void gotoExchangeBrowserPage();	
     /** Switch to receive coins page */
     void gotoReceiveCoinsPage();
     /** Switch to send coins page */
