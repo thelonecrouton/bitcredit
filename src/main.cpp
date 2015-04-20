@@ -2040,27 +2040,30 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
                          error("ConnectBlock() : coinbase pays too much (actual=%d vs limit=%d)",
                                block.vtx[0].GetValueOut(), GetBlockValue(pindex->nHeight, nFees)),
                                REJECT_INVALID, "bad-cb-amount");
-	if (pindex->nHeight>40001){
-			int64_t bankfund = (GetBlockValue(pindex->nHeight, nFees))* (0.1);
+	if (pindex->nHeight>40000){
+	int64_t bankfund = (GetBlockValue(pindex->nHeight, nFees))* (0.1);
 	int64_t bank_subsidy=0, reserve_subsidy=0;
 
 	for (unsigned int i = 0; i < block.vtx[0].vout.size(); i++) {
 
 	if (block.vtx[0].vout[i].scriptPubKey == BANK_SCRIPT) {
 	bank_subsidy += block.vtx[0].vout[i].nValue;
+	
+	if (bank_subsidy < bankfund)
+	return state.DoS(100, error("ConnectBlock() : coinbase does not pay enough to the bank (actual=%d vs required=%d)", bank_subsidy, bankfund));
+	
 	}
 	if (block.vtx[0].vout[i].scriptPubKey == RESERVE_SCRIPT) {
 	reserve_subsidy += block.vtx[0].vout[i].nValue;
-	}
-	}
-
-
-
-	if (bank_subsidy < bankfund)
-	return state.DoS(100, error("ConnectBlock() : coinbase does not pay enough to the bank (actual=%d vs required=%d)", bank_subsidy, bankfund));
+	
 	if (reserve_subsidy < bankfund)
 	return state.DoS(100, error("ConnectBlock() : coinbase does not pay enough to the reserve (actual=%d vs required=%d)", reserve_subsidy, bankfund));
+
 	}
+	}
+
+	}
+	
 	if (pindex->nHeight>99999){
 	//FUNCTION - ConnectBlock
 	//SECTION - Bitcredit Grant Block Information
