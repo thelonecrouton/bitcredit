@@ -1403,8 +1403,14 @@ bool AppInit2(boost::thread_group& threadGroup)
     darkSendPool.InitCollateralAddress();
 
     threadGroup.create_thread(boost::bind(&ThreadCheckDarkSendPool));
-
-    SecureMsgStart(fNoSmsg, GetBoolArg("-smsgscanchain", false));
+    
+	nStart = GetTimeMillis();
+        
+    SecureMsgStart(fNoSmsg, GetBoolArg("-smsgscanchain", true));
+    
+		uiInterface.InitMessage(_("Scanning for Message Keys..."));
+		
+		LogPrintf(" smsgscanchain      %15dms\n", GetTimeMillis() - nStart);
 
     if (!CheckDiskSpace())
         return false;

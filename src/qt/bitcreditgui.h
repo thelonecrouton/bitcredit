@@ -100,7 +100,8 @@ private:
     QProgressDialog *progressDialog;
     QWidget *wId2;
     QWidget *wId;
-    QWidget *wId3;   
+    QWidget *wId3;
+    QWidget *wId4;   
 
     QMenuBar *appMenuBar;
 	QAction *chatAction;
@@ -136,7 +137,8 @@ private:
     QAction *receiptAction;
     QAction *actionSendReceive;
     QAction *actionSendReceiveMess;
-    QAction *actionSendReceiveinv;	
+    QAction *actionSendReceiveinv;
+    QAction *actionSendReceivestats;	
 
     QSystemTrayIcon *trayIcon;
     QMenu *trayIconMenu;
