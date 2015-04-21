@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>807</width>
-    <height>537</height>
+    <width>850</width>
+    <height>526</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -191,8 +191,7 @@
          </sizepolicy>
         </property>
         <property name="styleSheet">
-         <string notr="true">background-color: rgb(255, 255, 255);
-color: rgb(0, 0, 0);</string>
+         <string notr="true">color: rgb(255, 255, 255); background: transparent;</string>
         </property>
         <property name="inputMask">
          <string comment="Transaction id" extracomment="Transaction id"/>
@@ -267,8 +266,7 @@ color: rgb(0, 0, 0);</string>
          </sizepolicy>
         </property>
         <property name="styleSheet">
-         <string notr="true">background-color: rgb(255, 255, 255);
-color: rgb(0, 0, 0);</string>
+         <string notr="true">color: rgb(255, 255, 255); background: transparent;</string>
         </property>
         <property name="inputMask">
          <string comment="Transaction id" extracomment="Transaction id"/>
@@ -350,7 +348,7 @@ color: rgb(0, 0, 0);</string>
          </font>
         </property>
         <property name="styleSheet">
-         <string notr="true">color: rgb(255, 255, 255);</string>
+         <string notr="true">color: rgb(255, 255, 255); background: transparent;</string>
         </property>
         <property name="text">
          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;&lt;img src=&quot;:/images/blockhead&quot;/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>

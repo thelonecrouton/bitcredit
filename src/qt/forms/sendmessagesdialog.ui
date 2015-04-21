@@ -16,10 +16,30 @@
   <property name="styleSheet">
    <string notr="true">background:transparent;</string>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout" stretch="0,1,0">
+  <layout class="QVBoxLayout" name="verticalLayout" stretch="0,1,0,0">
    <property name="bottomMargin">
     <number>8</number>
    </property>
+   <item>
+    <widget class="QFrame" name="verticalFrame">
+     <property name="minimumSize">
+      <size>
+       <width>800</width>
+       <height>44</height>
+      </size>
+     </property>
+     <property name="maximumSize">
+      <size>
+       <width>800</width>
+       <height>44</height>
+      </size>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">background:transparent;sss</string>
+     </property>
+     <layout class="QVBoxLayout" name="verticalLayout_9"/>
+    </widget>
+   </item>
    <item>
     <widget class="QFrame" name="frameAddressFrom">
      <property name="sizePolicy">
@@ -118,11 +138,20 @@ color: rgb(255, 255, 255);</string>
         <x>0</x>
         <y>0</y>
         <width>830</width>
-        <height>296</height>
+        <height>69</height>
        </rect>
       </property>
       <layout class="QVBoxLayout" name="verticalLayout_2">
-       <property name="margin">
+       <property name="leftMargin">
+        <number>0</number>
+       </property>
+       <property name="topMargin">
+        <number>0</number>
+       </property>
+       <property name="rightMargin">
+        <number>0</number>
+       </property>
+       <property name="bottomMargin">
         <number>0</number>
        </property>
        <item>

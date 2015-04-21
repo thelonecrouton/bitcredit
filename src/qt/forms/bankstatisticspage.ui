@@ -89,7 +89,7 @@
          <string>The displayed information may be out of date. Your wallet automatically synchronizes with the Bitcredits network after a connection is established, but this process has not completed yet.</string>
         </property>
         <property name="styleSheet">
-         <string notr="true">QLabel { color: red; }background:transparent;</string>
+         <string notr="true">color: rgb(255, 0, 0); background:transparent;</string>
         </property>
         <property name="text">
          <string notr="true">&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; color:#ff8e2b;&quot;&gt;(Inactive)&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
@@ -131,7 +131,7 @@
          <string>The displayed information may be out of date. Your wallet automatically synchronizes with the Bitcredits network after a connection is established, but this process has not completed yet.</string>
         </property>
         <property name="styleSheet">
-         <string notr="true">QLabel { color: red; }background:transparent;</string>
+         <string notr="true">color: rgb(255, 0, 0); background:transparent;</string>
         </property>
         <property name="text">
          <string notr="true">&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; color:#ff8e2b;&quot;&gt;(Inactive)&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
@@ -527,7 +527,7 @@
       <item row="1" column="4">
        <widget class="QLabel" name="marketcap">
         <property name="styleSheet">
-         <string notr="true">color: rgb(255, 255, 255);background:transparent;</string>
+         <string notr="true">color: rgb(255, 255, 255);background: rgb(0, 0, 0);</string>
         </property>
         <property name="text">
          <string>0$</string>
@@ -549,7 +549,7 @@
          <string/>
         </property>
         <property name="styleSheet">
-         <string notr="true">color: rgb(255, 255, 255);background:transparent;</string>
+         <string notr="true">color: rgb(255, 255, 255);background: rgb(0, 0, 0);</string>
         </property>
         <property name="text">
          <string notr="true">0 BCR</string>
@@ -574,7 +574,7 @@
          <string/>
         </property>
         <property name="styleSheet">
-         <string notr="true">color: rgb(255, 255, 255);background:transparent;</string>
+         <string notr="true">color: rgb(255, 255, 255);background: rgb(0, 0, 0);</string>
         </property>
         <property name="text">
          <string notr="true">0 BCR</string>
@@ -599,7 +599,7 @@
          <string/>
         </property>
         <property name="styleSheet">
-         <string notr="true">color: rgb(255, 255, 255);background:transparent;</string>
+         <string notr="true">color: rgb(255, 255, 255);background: rgb(0, 0, 0);</string>
         </property>
         <property name="text">
          <string notr="true">0 BCR</string>
@@ -624,7 +624,7 @@
          <string/>
         </property>
         <property name="styleSheet">
-         <string notr="true">color: rgb(255, 255, 255);background:transparent;</string>
+         <string notr="true">color: rgb(255, 255, 255);background: rgb(0, 0, 0);</string>
         </property>
         <property name="text">
          <string notr="true">0.0</string>

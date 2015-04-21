@@ -20,7 +20,7 @@
    <enum>QFrame::NoFrame</enum>
   </property>
   <property name="currentIndex">
-   <number>2</number>
+   <number>0</number>
   </property>
   <widget class="QFrame" name="SendCoins">
    <property name="toolTip">
@@ -39,7 +39,7 @@
     <item row="0" column="0">
      <widget class="QLabel" name="payToLabel">
       <property name="styleSheet">
-       <string notr="true">color: rgb(255, 255, 255);</string>
+       <string notr="true">color: rgb(255, 255, 255);background: transparent;</string>
       </property>
       <property name="text">
        <string>Pay &amp;To:</string>
@@ -63,7 +63,7 @@
          <string>The Bitcredits address to send the payment to</string>
         </property>
         <property name="styleSheet">
-         <string notr="true">color: rgb(255, 255, 255);</string>
+         <string notr="true">color: rgb(255,255,255); background: transparent;</string>
         </property>
        </widget>
       </item>
@@ -138,7 +138,7 @@
     <item row="1" column="0">
      <widget class="QLabel" name="labellLabel">
       <property name="styleSheet">
-       <string notr="true">color: rgb(255, 255, 255);</string>
+       <string notr="true">color: rgb(255, 255, 255);background: transparent;</string>
       </property>
       <property name="text">
        <string>&amp;Label:</string>
@@ -157,14 +157,14 @@
        <string>Enter a label for this address to add it to the list of used addresses</string>
       </property>
       <property name="styleSheet">
-       <string notr="true">color: rgb(255, 255, 255);</string>
+       <string notr="true">color: rgb(255,255,255); background: transparent;</string>
       </property>
      </widget>
     </item>
     <item row="2" column="0">
      <widget class="QLabel" name="amountLabel">
       <property name="styleSheet">
-       <string notr="true">color: rgb(255, 255, 255);</string>
+       <string notr="true">color: rgb(255, 255, 255);background: transparent;</string>
       </property>
       <property name="text">
        <string>A&amp;mount:</string>
@@ -187,7 +187,7 @@
     <item row="3" column="0">
      <widget class="QLabel" name="messageLabel">
       <property name="styleSheet">
-       <string notr="true">color: rgb(255, 255, 255);</string>
+       <string notr="true">color: rgb(255, 255, 255);background: transparent;</string>
       </property>
       <property name="text">
        <string>Message:</string>
@@ -201,6 +201,9 @@
      <widget class="QLabel" name="messageTextLabel">
       <property name="toolTip">
        <string>A message that was attached to the bitcredit: URI which will be stored with the transaction for your reference. Note: This message will not be sent over the Bitcredit network.</string>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">color: rgb(255, 255, 255);background: transparent;</string>
       </property>
       <property name="textFormat">
        <enum>Qt::PlainText</enum>

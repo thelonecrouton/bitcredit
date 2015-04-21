@@ -31,7 +31,7 @@ class SendMessagesDialog;
 class Notificator;
 class OptionsModel;
 class RPCConsole;
-//class ExchangeBrowser;
+class ExchangeBrowser;
 class ChatWindow;
 class SendCoinsRecipient;
 class UnitDisplayStatusBarControl;
@@ -99,7 +99,8 @@ private:
     QProgressBar *progressBar;
     QProgressDialog *progressDialog;
     QWidget *wId2;
-    
+    QWidget *wId;
+    QWidget *wId3;   
 
     QMenuBar *appMenuBar;
 	QAction *chatAction;
@@ -133,7 +134,9 @@ private:
     QAction *messageAction;
     QAction *invoiceAction;
     QAction *receiptAction;
-    QAction *actionSendReceive;	
+    QAction *actionSendReceive;
+    QAction *actionSendReceiveMess;
+    QAction *actionSendReceiveinv;	
 
     QSystemTrayIcon *trayIcon;
     QMenu *trayIconMenu;
@@ -204,7 +207,7 @@ private slots:
 	/** Switch to chat page */
     void gotoChatPage();
 	/** Switch to exchange browser page */
-   // void gotoExchangeBrowserPage();
+    void gotoExchangeBrowserPage();
     /** Switch to receive coins page */
     void gotoReceiveCoinsPage();
     /** Switch to send coins page */

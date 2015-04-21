@@ -93,6 +93,10 @@ WalletView::WalletView(QWidget *parent):
     addWidget(receiptPage);    
     addWidget(masternodeManagerPage);
 
+
+
+
+
     // Clicking on a transaction on the overview pre-selects the transaction on the transaction history page
     connect(overviewPage, SIGNAL(transactionClicked(QModelIndex)), transactionView, SLOT(focusTransaction(QModelIndex)));
 
