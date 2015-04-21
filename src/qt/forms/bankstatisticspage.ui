@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>795</width>
-    <height>547</height>
+    <height>548</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -27,11 +27,31 @@
     <rect>
      <x>-1</x>
      <y>-1</y>
-     <width>791</width>
+     <width>802</width>
      <height>541</height>
     </rect>
    </property>
    <layout class="QVBoxLayout" name="verticalLayout">
+    <item>
+     <widget class="QFrame" name="verticalFrame">
+      <property name="minimumSize">
+       <size>
+        <width>800</width>
+        <height>44</height>
+       </size>
+      </property>
+      <property name="maximumSize">
+       <size>
+        <width>800</width>
+        <height>44</height>
+       </size>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">background:transparent;sss</string>
+      </property>
+      <layout class="QVBoxLayout" name="verticalLayout_9"/>
+     </widget>
+    </item>
     <item>
      <layout class="QHBoxLayout" name="horizontalLayout_2">
       <item>

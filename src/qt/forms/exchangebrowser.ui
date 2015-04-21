@@ -10,7 +10,7 @@
     <x>0</x>
     <y>0</y>
     <width>766</width>
-    <height>509</height>
+    <height>530</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -138,7 +138,7 @@ QTabBar::tab:last {margin-right:0px;}</string>
           <rect>
            <x>30</x>
            <y>-50</y>
-           <width>701</width>
+           <width>721</width>
            <height>441</height>
           </rect>
          </property>
@@ -774,28 +774,6 @@ QTabBar::tab:last {margin-right:0px;}</string>
            </property>
           </column>
          </widget>
-         <widget class="QLabel" name="lblBittrexHeader">
-          <property name="geometry">
-           <rect>
-            <x>260</x>
-            <y>50</y>
-            <width>161</width>
-            <height>41</height>
-           </rect>
-          </property>
-          <property name="font">
-           <font>
-            <family>Mohave</family>
-            <pointsize>-1</pointsize>
-           </font>
-          </property>
-          <property name="styleSheet">
-           <string notr="true">font-family:Mohave;</string>
-          </property>
-          <property name="text">
-           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;&lt;span style=&quot; font-size:14pt;&quot;&gt;BITTREX&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-          </property>
-         </widget>
          <widget class="QLabel" name="lblBittrexChange">
           <property name="geometry">
            <rect>
@@ -835,6 +813,32 @@ QTabBar::tab:last {margin-right:0px;}</string>
            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Close&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
           </property>
          </widget>
+         <widget class="QFrame" name="verticalFrame">
+          <property name="geometry">
+           <rect>
+            <x>30</x>
+            <y>50</y>
+            <width>800</width>
+            <height>44</height>
+           </rect>
+          </property>
+          <property name="minimumSize">
+           <size>
+            <width>800</width>
+            <height>44</height>
+           </size>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>800</width>
+            <height>44</height>
+           </size>
+          </property>
+          <property name="styleSheet">
+           <string notr="true">background:transparent;sss</string>
+          </property>
+          <layout class="QVBoxLayout" name="verticalLayout_11"/>
+         </widget>
          <zorder>qWidgetBittrexAsk</zorder>
          <zorder>qWidgetBittrexBid</zorder>
          <zorder>qWidgetBittrexLast</zorder>
@@ -853,12 +857,12 @@ QTabBar::tab:last {margin-right:0px;}</string>
          <zorder>lblBittrexLowBtc</zorder>
          <zorder>lblBittrexBuyHeader</zorder>
          <zorder>qTreeWidgetBittrexBuy</zorder>
-         <zorder>lblBittrexHeader</zorder>
          <zorder>lblBittrexChange</zorder>
          <zorder>imgBittrexSell</zorder>
          <zorder>imgBittrexBuy</zorder>
          <zorder>lblBittrexCloseBtc</zorder>
          <zorder>lblBittrexClose</zorder>
+         <zorder>verticalFrame</zorder>
         </widget>
        </widget>
        <widget class="QWidget" name="qWidgetBittrexGraphs">
@@ -1048,6 +1052,8 @@ QTabBar::tab:last {margin-right:0px;}</string>
         </widget>
        </widget>
       </widget>
+      <zorder>tabWidgetBittrex</zorder>
+      <zorder>verticalFrame</zorder>
      </widget>
     </widget>
    </item>
