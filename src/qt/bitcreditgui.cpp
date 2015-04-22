@@ -140,11 +140,11 @@ BitcreditGUI::BitcreditGUI(const NetworkStyle *networkStyle, QWidget *parent) :
         windowTitle += tr("Node");
     }
     windowTitle += " " + networkStyle->getTitleAddText();
-    qApp->setStyleSheet("QMainWindow { background:rgb(237, 241, 247); font-family:'Proxima Nova Rg'; } #toolbar2 { border:none;width:30px; background:rgb(107, 88, 88); }");
-  
-    // set rest of global stylesheet stuff here, eg:  
-    //qApp->setStyleSheet("QLineEdit { border: 1px solid orange; } #QPushButton { border: 1px solid blue; }");
-    //qApp->setStyleSheet("QPushButton { border: 1px solid blue; }");
+
+    QFile qss(":/css/stylesheet");
+    qss.open(QFile::ReadOnly);
+    qApp->setStyleSheet(qss.readAll());
+    qss.close();
 
 	
 #ifndef Q_OS_MAC
@@ -225,7 +225,7 @@ BitcreditGUI::BitcreditGUI(const NetworkStyle *networkStyle, QWidget *parent) :
     toolbar2->addAction(aboutAction);
 	toolbar2->addAction(toggleHideAction);
     toolbar2->addAction(quitAction);
-    toolbar2->setStyleSheet("#toolbar2 QToolButton { border:none;padding:0px;margin:0px;height:20px;width:28px;margin-top:20px; }");
+    
 
 
     connect(openRPCConsoleAction, SIGNAL(triggered()), rpcConsole, SLOT(show()));
@@ -278,11 +278,11 @@ void BitcreditGUI::createActions(const NetworkStyle *networkStyle)
     QToolBar *toolbarsend2 = addToolBar(tr("Receive"));
 
     toolbarsend->setIconSize(QSize(396, 46));
+    toolbarsend->setObjectName("toolbar3");
     toolbarsend2->setIconSize(QSize(400, 46));
-    toolbarsend->setStyleSheet("QToolBar {border:none;} QToolBar QToolButton { background-image:url(:/icons/receiveg.png);border:none; } QToolBar QToolButton:checked { background-image:url(:/icons/receiver.png);border:none; } QToolBar QToolButton:hover { background-image:url(:/icons/receiver.png);border:none; }");
-    toolbarsend2->setStyleSheet("QToolBar {border:none;} QToolBar QToolButton { background-image:url(:/icons/sendg.png);border:none; } QToolBar QToolButton:checked { background-image:url(:/icons/sendr.png);border:none; } QToolBar QToolButton:hover { background-image:url(:/icons/sendr.png);border:none; }");
-    toolbarsend->setFixedSize(396, 46);
-    toolbarsend2->setFixedSize(400, 46);
+    toolbarsend2->setObjectName("toolbar4");
+    toolbarsend->setFixedSize(350, 46);
+    toolbarsend2->setFixedSize(350, 46);
     QHBoxLayout *vbox4 = new QHBoxLayout();
     vbox4->setContentsMargins(0, 0, 0, 0);
     vbox4->setSpacing(0);
@@ -290,8 +290,8 @@ void BitcreditGUI::createActions(const NetworkStyle *networkStyle)
     vbox4->addWidget(toolbarsend);
     wId2 = new QWidget(this);
     wId2->setContentsMargins(0, 0, 0, 0);
-    wId2->setFixedSize(794, 46);
-    wId2->move(207, -1);
+    wId2->setFixedSize(700, 46);
+    wId2->move(215, -1);
     wId2->setLayout(vbox4);
     wId2->setFocus();
     wId2->hide();
@@ -301,10 +301,10 @@ void BitcreditGUI::createActions(const NetworkStyle *networkStyle)
     
     toolbarmess->setIconSize(QSize(396, 46));
     toolbarmess2->setIconSize(QSize(400, 46));
-    toolbarmess->setStyleSheet("QToolBar {border:none;} QToolBar QToolButton { background-image:url(:/icons/receiveg.png);border:none; } QToolBar QToolButton:checked { background-image:url(:/icons/receiver.png);border:none; } QToolBar QToolButton:hover { background-image:url(:/icons/receiver.png);border:none; }");
-    toolbarmess2->setStyleSheet("QToolBar {border:none;} QToolBar QToolButton { background-image:url(:/icons/sendg.png);border:none; } QToolBar QToolButton:checked { background-image:url(:/icons/sendr.png);border:none; } QToolBar QToolButton:hover { background-image:url(:/icons/sendr.png);border:none; }");
-    toolbarmess->setFixedSize(396, 46);
-    toolbarmess2->setFixedSize(400, 46);
+    toolbarmess->setObjectName("toolbar5");
+    toolbarmess2->setObjectName("toolbar6");
+    toolbarmess->setFixedSize(350, 46);
+    toolbarmess2->setFixedSize(350, 46);
     QHBoxLayout *vbox3 = new QHBoxLayout();
     vbox3->setContentsMargins(0, 0, 0, 0);
     vbox3->setSpacing(0);
@@ -312,8 +312,8 @@ void BitcreditGUI::createActions(const NetworkStyle *networkStyle)
     vbox3->addWidget(toolbarmess);
     wId = new QWidget(this);
     wId->setContentsMargins(0, 0, 0, 0);
-    wId->setFixedSize(794, 46);
-    wId->move(207, -1);
+    wId->setFixedSize(700, 46);
+    wId->move(215, -1);
     wId->setLayout(vbox3);
     wId->setFocus();
     wId->hide();
@@ -323,8 +323,8 @@ void BitcreditGUI::createActions(const NetworkStyle *networkStyle)
     
     toolbarrecinv->setIconSize(QSize(396, 46));
     toolbarrecinv2->setIconSize(QSize(400, 46));
-    toolbarrecinv->setStyleSheet("QToolBar {border:none;} QToolBar QToolButton { background-image:url(:/icons/receiveg.png);border:none; } QToolBar QToolButton:checked { background-image:url(:/icons/receiver.png);border:none; } QToolBar QToolButton:hover { background-image:url(:/icons/receiver.png);border:none; }");
-    toolbarrecinv2->setStyleSheet("QToolBar {border:none;} QToolBar QToolButton { background-image:url(:/icons/sendg.png);border:none; } QToolBar QToolButton:checked { background-image:url(:/icons/sendr.png);border:none; } QToolBar QToolButton:hover { background-image:url(:/icons/sendr.png);border:none; }");
+    toolbarrecinv->setObjectName("toolbar7");
+    toolbarrecinv2->setObjectName("toolbar8");
     toolbarrecinv->setFixedSize(396, 46);
     toolbarrecinv2->setFixedSize(400, 46);
     QHBoxLayout *vbox2 = new QHBoxLayout();
@@ -347,9 +347,9 @@ void BitcreditGUI::createActions(const NetworkStyle *networkStyle)
     toolbarstats->setIconSize(QSize(266, 46));
     toolbarstats2->setIconSize(QSize(266, 46));
     toolbarstats3->setIconSize(QSize(266, 46));
-    toolbarstats->setStyleSheet("QToolBar {border:none;} QToolBar QToolButton { background-image:url(:/icons/receiveg.png);border:none; } QToolBar QToolButton:checked { background-image:url(:/icons/receiver.png);border:none; } QToolBar QToolButton:hover { background-image:url(:/icons/receiver.png);border:none; }");
-    toolbarstats2->setStyleSheet("QToolBar {border:none;} QToolBar QToolButton { background-image:url(:/icons/sendg.png);border:none; } QToolBar QToolButton:checked { background-image:url(:/icons/sendr.png);border:none; } QToolBar QToolButton:hover { background-image:url(:/icons/sendr.png);border:none; }");
-    toolbarstats3->setStyleSheet("QToolBar {border:none;} QToolBar QToolButton { background-image:url(:/icons/sendg.png);border:none; } QToolBar QToolButton:checked { background-image:url(:/icons/sendr.png);border:none; } QToolBar QToolButton:hover { background-image:url(:/icons/sendr.png);border:none; }");
+    toolbarstats->setObjectName("toolbar9");
+    toolbarstats2->setObjectName("toolbar10");
+    toolbarstats3->setObjectName("toolbar11");
     toolbarstats->setFixedSize(266, 46);
     toolbarstats2->setFixedSize(266, 46);
     toolbarstats3->setFixedSize(266, 46);
@@ -443,7 +443,7 @@ void BitcreditGUI::createActions(const NetworkStyle *networkStyle)
     sendMessagesAnonAction->setCheckable(true);
     tabGroup->addAction(sendMessagesAnonAction);
 
-	masternodeManagerAction = new QAction(QIcon(":/icons/bitcoin"), tr("&Bank Nodes"), this);
+	masternodeManagerAction = new QAction(QIcon(":/icons/exchange-w"), tr("&Bank Nodes"), this);
     masternodeManagerAction->setCheckable(true);
     tabGroup->addAction(masternodeManagerAction);
 
@@ -590,7 +590,6 @@ void BitcreditGUI::createToolBars()
     toolbar->addWidget(spacer);
     toolbar->addAction(optionsAction);
     spacer->setObjectName("spacer");
-    toolbar->setStyleSheet("#toolbar { font-weight:600;border:none;height:100%;padding-top:20px; background: rgb(0, 0, 0); text-align: left; color: white;min-width:180px;max-width:180px;} QToolBar QToolButton:hover {background:rgb(28, 29, 33);} QToolBar QToolButton:checked {background:rgba(28, 29, 33, 100);}  QToolBar QToolButton { font-weight:600;font-size:10px;font-family:'Century Gothic';padding-left:20px;padding-right:181px;padding-top:4px;padding-bottom:4px; width:100%; color: white; text-align: left; background:transparent;text-transform:uppercase; }");
         	
 }
 

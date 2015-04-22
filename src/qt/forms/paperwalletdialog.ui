@@ -7,20 +7,26 @@
     <x>0</x>
     <y>0</y>
     <width>716</width>
-    <height>450</height>
+    <height>665</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Print Your Paper Wallets</string>
   </property>
+  <property name="styleSheet">
+   <string notr="true">background: rgb(108, 88,88);</string>
+  </property>
   <widget class="QLabel" name="privateKeyQRCode">
    <property name="geometry">
     <rect>
-     <x>524</x>
-     <y>159</y>
+     <x>30</x>
+     <y>328</y>
      <width>149</width>
      <height>149</height>
     </rect>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">background: white;</string>
    </property>
    <property name="text">
     <string/>
@@ -32,11 +38,14 @@
   <widget class="QLabel" name="addressQRCode">
    <property name="geometry">
     <rect>
-     <x>47</x>
-     <y>86</y>
-     <width>120</width>
-     <height>120</height>
+     <x>30</x>
+     <y>22</y>
+     <width>149</width>
+     <height>149</height>
     </rect>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">background: white;</string>
    </property>
    <property name="text">
     <string/>
@@ -49,42 +58,48 @@
    <property name="geometry">
     <rect>
      <x>20</x>
-     <y>415</y>
-     <width>151</width>
+     <y>628</y>
+     <width>141</width>
      <height>26</height>
     </rect>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">background: transparent; border: 1px solid white; color: white;</string>
    </property>
    <property name="text">
     <string>New Address</string>
    </property>
    <property name="icon">
-    <iconset resource="../bitcredit.qrc">
+    <iconset resource="../../../../../bicreditsnew/src/qt/bitcredit.qrc">
      <normaloff>:/icons/add</normaloff>:/icons/add</iconset>
    </property>
   </widget>
   <widget class="QLabel" name="paperTemplate">
    <property name="geometry">
     <rect>
-     <x>20</x>
+     <x>14</x>
      <y>10</y>
-     <width>675</width>
-     <height>362</height>
+     <width>681</width>
+     <height>555</height>
     </rect>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">background: white; border: 1px solid white;</string>
    </property>
    <property name="text">
     <string notr="true"/>
    </property>
    <property name="pixmap">
-    <pixmap resource="../bitcredit.qrc">:/images/paper_wallet</pixmap>
+    <pixmap>:/images/paper_wallet</pixmap>
    </property>
   </widget>
-  <widget class="VerticalLabel" name="addressText">
+  <widget class="QLabel" name="addressText">
    <property name="geometry">
     <rect>
-     <x>212</x>
-     <y>20</y>
-     <width>31</width>
-     <height>341</height>
+     <x>30</x>
+     <y>216</y>
+     <width>651</width>
+     <height>33</height>
     </rect>
    </property>
    <property name="font">
@@ -96,33 +111,36 @@
      <bold>true</bold>
     </font>
    </property>
+   <property name="styleSheet">
+    <string notr="true">background: white; </string>
+   </property>
    <property name="text">
     <string/>
-   </property>
-   <property name="alignment">
-    <set>Qt::AlignCenter</set>
    </property>
    <property name="textInteractionFlags">
     <set>Qt::TextSelectableByKeyboard|Qt::TextSelectableByMouse</set>
    </property>
   </widget>
-  <widget class="VerticalLabel" name="privateKeyText">
+  <widget class="QLabel" name="privateKeyText">
    <property name="geometry">
     <rect>
-     <x>500</x>
-     <y>10</y>
-     <width>31</width>
-     <height>361</height>
+     <x>30</x>
+     <y>522</y>
+     <width>651</width>
+     <height>29</height>
     </rect>
    </property>
    <property name="font">
     <font>
      <family>Monospace</family>
-     <pointsize>8</pointsize>
+     <pointsize>7</pointsize>
      <weight>50</weight>
      <italic>false</italic>
      <bold>false</bold>
     </font>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">background: white;</string>
    </property>
    <property name="text">
     <string/>
@@ -131,7 +149,7 @@
     <bool>true</bool>
    </property>
    <property name="alignment">
-    <set>Qt::AlignCenter</set>
+    <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
    </property>
    <property name="textInteractionFlags">
     <set>Qt::TextSelectableByKeyboard|Qt::TextSelectableByMouse</set>
@@ -140,44 +158,34 @@
   <widget class="QPushButton" name="printButton">
    <property name="geometry">
     <rect>
-     <x>420</x>
-     <y>415</y>
-     <width>111</width>
+     <x>590</x>
+     <y>628</y>
+     <width>101</width>
      <height>26</height>
     </rect>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">background: transparent; border: 1px solid white; color: white;</string>
    </property>
    <property name="text">
-    <string>Print</string>
+    <string>  Print</string>
    </property>
    <property name="icon">
-    <iconset resource="../bitcredit.qrc">
-     <normaloff>:/icons/receiving_addresses</normaloff>:/icons/receiving_addresses</iconset>
-   </property>
-  </widget>
-  <widget class="QDialogButtonBox" name="buttonBox">
-   <property name="geometry">
-    <rect>
-     <x>610</x>
-     <y>415</y>
-     <width>81</width>
-     <height>26</height>
-    </rect>
-   </property>
-   <property name="standardButtons">
-    <set>QDialogButtonBox::NoButton</set>
-   </property>
-   <property name="centerButtons">
-    <bool>true</bool>
+    <iconset resource="../../../../../bicreditsnew/src/qt/bitcredit.qrc">
+     <normaloff>:/icons/print</normaloff>:/icons/print</iconset>
    </property>
   </widget>
   <widget class="QLabel" name="label">
    <property name="geometry">
     <rect>
-     <x>190</x>
-     <y>415</y>
-     <width>91</width>
+     <x>420</x>
+     <y>629</y>
+     <width>71</width>
      <height>26</height>
     </rect>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">background: transparent; color: white;</string>
    </property>
    <property name="text">
     <string>How Many?</string>
@@ -186,11 +194,14 @@
   <widget class="QComboBox" name="walletCount">
    <property name="geometry">
     <rect>
-     <x>290</x>
-     <y>415</y>
+     <x>500</x>
+     <y>629</y>
      <width>74</width>
      <height>26</height>
     </rect>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">background: transparent; border: 1px solid white; color: white;</string>
    </property>
    <property name="editable">
     <bool>false</bool>
@@ -260,10 +271,13 @@
    <property name="geometry">
     <rect>
      <x>100</x>
-     <y>378</y>
-     <width>600</width>
+     <y>576</y>
+     <width>591</width>
      <height>30</height>
     </rect>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">background: transparent; border: 1px solid white; color: white;</string>
    </property>
    <property name="undoRedoEnabled">
     <bool>false</bool>
@@ -275,8 +289,8 @@
     <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Sans Serif'; font-size:9pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;br /&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Droid Sans'; font-size:10pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-family:'Sans Serif'; font-size:9pt;&quot;&gt;&lt;br /&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
    </property>
    <property name="acceptRichText">
     <bool>false</bool>
@@ -286,13 +300,48 @@ p, li { white-space: pre-wrap; }
    <property name="geometry">
     <rect>
      <x>20</x>
-     <y>380</y>
-     <width>91</width>
+     <y>578</y>
+     <width>71</width>
      <height>26</height>
     </rect>
    </property>
+   <property name="styleSheet">
+    <string notr="true">background: transparent;color: white;</string>
+   </property>
    <property name="text">
     <string>Public Key:</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="addresLabel">
+   <property name="geometry">
+    <rect>
+     <x>30</x>
+     <y>184</y>
+     <width>111</width>
+     <height>28</height>
+    </rect>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">background: white;</string>
+   </property>
+   <property name="text">
+    <string>Bitcredit Address:</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_3">
+   <property name="geometry">
+    <rect>
+     <x>30</x>
+     <y>491</y>
+     <width>81</width>
+     <height>26</height>
+    </rect>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">background: white;</string>
+   </property>
+   <property name="text">
+    <string>Private Key:</string>
    </property>
   </widget>
   <zorder>getNewAddress</zorder>
@@ -302,38 +351,15 @@ p, li { white-space: pre-wrap; }
   <zorder>addressText</zorder>
   <zorder>privateKeyText</zorder>
   <zorder>printButton</zorder>
-  <zorder>buttonBox</zorder>
   <zorder>label</zorder>
   <zorder>walletCount</zorder>
   <zorder>publicKey</zorder>
   <zorder>label_2</zorder>
+  <zorder>addresLabel</zorder>
+  <zorder>label_3</zorder>
  </widget>
- <customwidgets>
-  <customwidget>
-   <class>VerticalLabel</class>
-   <extends>QLabel</extends>
-   <header>verticallabel.h</header>
-  </customwidget>
- </customwidgets>
  <resources>
-  <include location="../bitcredit.qrc"/>
+  <include location="../../../../../bicreditsnew/src/qt/bitcredit.qrc"/>
  </resources>
- <connections>
-  <connection>
-   <sender>buttonBox</sender>
-   <signal>rejected()</signal>
-   <receiver>PaperWalletDialog</receiver>
-   <slot>close()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>650</x>
-     <y>408</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>357</x>
-     <y>214</y>
-    </hint>
-   </hints>
-  </connection>
- </connections>
+ <connections/>
 </ui>

@@ -71,6 +71,9 @@ TransactionView::TransactionView(QWidget *parent) :
     dateWidget->addItem(tr("Last month"), LastMonth);
     dateWidget->addItem(tr("This year"), ThisYear);
     dateWidget->addItem(tr("Range..."), Range);
+    dateWidget->addItem(tr("Range..."), Range);
+    dateWidget->setCurrentIndex(dateWidget->findText("All"));
+    
     hlayout->addWidget(dateWidget);
 
     typeWidget = new QComboBox(this);

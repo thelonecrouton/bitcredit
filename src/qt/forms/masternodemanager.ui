@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>723</width>
+    <width>802</width>
     <height>457</height>
    </rect>
   </property>
@@ -31,30 +31,30 @@
      <property name="bottomMargin">
       <number>0</number>
      </property>
-   <item>
-    <widget class="QFrame" name="verticalFrame">
-     <property name="minimumSize">
-      <size>
-       <width>800</width>
-       <height>44</height>
-      </size>
-     </property>
-     <property name="maximumSize">
-      <size>
-       <width>800</width>
-       <height>44</height>
-      </size>
-     </property>
-     <property name="styleSheet">
-      <string notr="true">background:transparent;sss</string>
-     </property>
-     <layout class="QVBoxLayout" name="verticalLayout_9"/>
-    </widget>
-   </item>
+     <item>
+      <widget class="QFrame" name="verticalFrame">
+       <property name="minimumSize">
+        <size>
+         <width>800</width>
+         <height>44</height>
+        </size>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>800</width>
+         <height>44</height>
+        </size>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">background:transparent;sss</string>
+       </property>
+       <layout class="QVBoxLayout" name="verticalLayout_9"/>
+      </widget>
+     </item>
      <item>
       <widget class="QTabWidget" name="tabWidget">
        <property name="currentIndex">
-        <number>1</number>
+        <number>0</number>
        </property>
        <widget class="QWidget" name="tab">
         <attribute name="title">

@@ -8,7 +8,7 @@
 #include "walletmodel.h"
 #include "activemasternode.h"
 #include "masternodeconfig.h"
-#include "addeditadrenalinenode.h"
+//#include "addeditadrenalinenode.h"
 #include "masternode.h"
 #include "walletdb.h"
 #include "wallet.h"

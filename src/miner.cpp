@@ -141,7 +141,7 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn)
     txNew.vout[2].scriptPubKey = RESERVE_SCRIPT;
    }
    
-    if (chainActive.Tip()->nHeight>95000)
+    if (chainActive.Tip()->nHeight>99999)
 	{
     LOCK(grantdb);
     //For grant award block, add grants to coinbase
@@ -425,7 +425,7 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn)
        		txNew.vout[0].nValue = blockValue;
 		}
 		else{
-		 if (chainActive.Tip()->nHeight>95000)
+		 if (chainActive.Tip()->nHeight>99999)
 		{
 			LOCK( grantdb );
 		
