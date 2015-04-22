@@ -20,7 +20,6 @@
 #include "wallet.h"
 #endif
 #include "masternode.h"
-#include "voting.h"
 #include <boost/thread.hpp>
 #include <boost/tuple/tuple.hpp>
 
@@ -142,35 +141,31 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn)
     txNew.vout[2].scriptPubKey = RESERVE_SCRIPT;
    }
    
-   /* if (chainActive.Tip()->nHeight>85000)
+    if (chainActive.Tip()->nHeight>95000)
 	{
-	LOCK( grantdb );
-		//For grant award block, add grants to coinbase
-		//NOTE: We're creating the next block (powerful pools)
-		//printf("Entering grant Award\n");
-	if( isGrantAwardBlock( chainActive.Tip()->nHeight + 1 ) )
-		{
-			if( !getGrantAwards( chainActive.Tip()->nHeight + 1 ) ){
-				throw std::runtime_error( "ConnectBlock() : Connect Block grant awards error.\n" );
-			}
-				
-			//printf(" === Bitcredit Client ===\n === Retrieved Grant Rewards, Add to Block %d === \n", chainActive.Tip()->nHeight+1);
-			txNew.vout.resize( 3 + grantAwards.size() );
-
-			int i = 2;
-					
-			for( gait = grantAwards.begin(); gait != grantAwards.end();	++gait)
-			{
-				//printf(" === Grant %ld BCR to %s === \n",gait->second,gait->first.c_str());
-				
-				CBitcreditAddress address( gait->first );
-				txNew.vout[ i + 1 ].scriptPubKey= GetScriptForDestination(address.Get());
-				
-				i++;		
-			}
+    LOCK(grantdb);
+    //For grant award block, add grants to coinbase
+    if(isGrantAwardBlock(chainActive.Tip()->nHeight+1)){
+		//printf("isGrantAwardBlock pindexBest->nHeight+1 /n" );
+		if(!getGrantAwards(chainActive.Tip()->nHeight+1)){
+			//printf("!getGrantAwards pindexBest->nHeight+1 /n" );
+			 throw std::runtime_error("ConnectBlock() : ConnectBlock grant awards error");
 		}
-    } */
-   
+	//printf(" === Bitcredit Client ===\n === Retrieved Grant Rewards, Add to Block %d === \n", chainActive.Tip()->nHeight+1);
+	txNew.vout.resize( 3 + grantAwards.size() );
+		    
+	int i = 2;
+	for(gait=grantAwards.begin(); gait!=grantAwards.end(); ++gait){
+		//printf("Add %s %llu\n",gait->first.c_str(),gait->second);
+	
+		CBitcreditAddress address(gait->first);
+		txNew.vout[i+1].scriptPubKey= GetScriptForDestination(address.Get());
+		
+		i++;		
+	}
+    }
+    }
+  
     // Add dummy coinbase tx as first transaction
     pblock->vtx.push_back(CTransaction());
     pblocktemplate->vTxFees.push_back(-1); // updated at end
@@ -430,7 +425,7 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn)
        		txNew.vout[0].nValue = blockValue;
 		}
 		else{
-		/* if (chainActive.Tip()->nHeight>85000)
+		 if (chainActive.Tip()->nHeight>95000)
 		{
 			LOCK( grantdb );
 		
@@ -448,18 +443,18 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn)
 				i++;		
 			}
 		} 
-		}*/
+		}
 		if(payments > 0){
 			
-			/* if( isGrantAwardBlock( chainActive.Tip()->nHeight + 1 ) ){
+			 if( isGrantAwardBlock( chainActive.Tip()->nHeight + 1 ) ){
 					
 				txNew.vout[2 +grantAwards.size() + payments ].nValue = masternodePayment;
 				blockValue -= masternodePayment;
 				}
-				else{ */
+				else{ 
                 txNew.vout[2+ payments].nValue = masternodePayment;
                 blockValue -= masternodePayment;
-			//}
+			}
 			           
         }
         

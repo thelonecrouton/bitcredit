@@ -734,7 +734,7 @@ Value smsgbuckets(const Array& params, bool fHelp)
                 Object objM;
                 objM.push_back(Pair("bucket", (uint64_t) it->first));
                 objM.push_back(Pair("time", GetTimeString(it->first)));
-                objM.push_back(Pair("no. messages", tokenSet.size()));
+                objM.push_back(Pair("no. messages", (uint64_t)tokenSet.size()));
                 objM.push_back(Pair("hash", (uint64_t) it->second.hash));
                 objM.push_back(Pair("last changed", GetTimeString(it->second.timeChanged)));
                 

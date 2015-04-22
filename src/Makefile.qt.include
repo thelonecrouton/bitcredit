@@ -105,7 +105,10 @@ QT_FORMS_UI = \
   qt/forms/receiptpage.ui \
   qt/forms/messagepage.ui \
   qt/forms/invoicepage.ui \
-  qt/forms/invoiceviewpage.ui 
+  qt/forms/invoiceviewpage.ui \
+  qt/forms/addeditadrenalinenode.ui \
+  qt/forms/adrenalinenodeconfigdialog.ui \
+  qt/forms/masternodemanager.ui 
 
 QT_MOC_CPP = \
   qt/moc_addressbookpage.cpp \
@@ -169,7 +172,10 @@ QT_MOC_CPP = \
   qt/moc_messagepage.cpp \
   qt/moc_invoicepage.cpp \
   qt/moc_invoiceviewpage.cpp \
-  qt/moc_messagemodel.cpp 
+  qt/moc_messagemodel.cpp \
+  qt/moc_masternodemanager.cpp \
+  qt/moc_adrenalinenodeconfigdialog.cpp \
+  qt/moc_addeditadrenalinenode.cpp
 
 BITCREDIT_MM = \
   qt/macdockiconhandler.mm \
@@ -260,7 +266,11 @@ BITCREDIT_QT_H = \
   qt/messagepage.h \
   qt/invoicepage.h \
   qt/invoiceviewpage.h \
-  qt/messagemodel.h 
+  qt/messagemodel.h \
+  qt/masternodemanager.h \
+  qt/adrenalinenodeconfigdialog.h \
+  qt/addeditadrenalinenode.h
+  
 
 RES_ICONS = \
   qt/res/icons/add.png \
@@ -318,7 +328,11 @@ RES_ICONS = \
   qt/res/icons/mini.png \
   qt/res/icons/vote.png \
   qt/res/icons/chat.png \
-  qt/res/icons/em.png
+  qt/res/icons/em.png \
+  qt/res/icons/receiveg.png \
+  qt/res/icons/receiver.png \
+  qt/res/icons/sendg.png \
+  qt/res/icons/sendr.png 
 
 BITCREDIT_QT_CPP = \
   qt/bitcreditaddressvalidator.cpp \
@@ -388,7 +402,10 @@ BITCREDIT_QT_CPP += \
   qt/receiptpage.cpp \
   qt/messagepage.cpp \
   qt/invoicepage.cpp \
-  qt/invoiceviewpage.cpp 
+  qt/invoiceviewpage.cpp \
+  qt/masternodemanager.cpp \
+  qt/adrenalinenodeconfigdialog.cpp \
+  qt/addeditadrenalinenode.cpp
 endif
 
 RES_IMAGES = \

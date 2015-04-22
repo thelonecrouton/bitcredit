@@ -96,9 +96,9 @@
    <widget class="QPushButton" name="toggleDarksend">
     <property name="geometry">
      <rect>
-      <x>530</x>
+      <x>590</x>
       <y>60</y>
-      <width>231</width>
+      <width>171</width>
       <height>41</height>
      </rect>
     </property>
@@ -109,7 +109,7 @@
      </sizepolicy>
     </property>
     <property name="styleSheet">
-     <string notr="true">border: 1px solid white; color: rgb(255, 255, 255);</string>
+     <string notr="true">border: 1px solid white; background: transparent; color: white;</string>
     </property>
     <property name="text">
      <string> Start / Stop Mixing</string>
@@ -329,6 +329,9 @@
      <horstretch>0</horstretch>
      <verstretch>0</verstretch>
     </sizepolicy>
+   </property>
+   <property name="styleSheet">
+    <string notr="true"/>
    </property>
    <property name="frameShape">
     <enum>QFrame::StyledPanel</enum>
@@ -554,7 +557,7 @@
   <zorder>frameDarksend</zorder>
  </widget>
  <resources>
-  <include location="../../../../../Downloads/spreadcoin-master/src/qt/bitcoin.qrc"/>
+  <include location="../bitcredit.qrc"/>
  </resources>
  <connections/>
 </ui>

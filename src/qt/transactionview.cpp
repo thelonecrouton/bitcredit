@@ -71,6 +71,9 @@ TransactionView::TransactionView(QWidget *parent) :
     dateWidget->addItem(tr("Last month"), LastMonth);
     dateWidget->addItem(tr("This year"), ThisYear);
     dateWidget->addItem(tr("Range..."), Range);
+    dateWidget->addItem(tr("Range..."), Range);
+    dateWidget->setCurrentIndex(dateWidget->findText("All"));
+    
     hlayout->addWidget(dateWidget);
 
     typeWidget = new QComboBox(this);
@@ -92,8 +95,8 @@ TransactionView::TransactionView(QWidget *parent) :
     typeWidget->addItem(tr("Darksend Collateral Payment"), TransactionFilterProxy::TYPE(TransactionRecord::DarksendCollateralPayment));
     typeWidget->addItem(tr("To yourself"), TransactionFilterProxy::TYPE(TransactionRecord::SendToSelf));
     typeWidget->addItem(tr("Mined"), TransactionFilterProxy::TYPE(TransactionRecord::Generated));
-    typeWidget->addItem(tr("Other"), TransactionFilterProxy::TYPE(TransactionRecord::Other));
-
+    
+    typeWidget->setCurrentIndex(typeWidget->findText("All"));
     hlayout->addWidget(typeWidget);
 
     addressWidget = new QLineEdit(this);

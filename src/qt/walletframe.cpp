@@ -154,12 +154,19 @@ void WalletFrame::gotoChatPage()
         i.value()->gotoChatPage();
 }
 
-/*void WalletFrame::gotoExchangeBrowserPage()
+void WalletFrame::gotoMasternodeManagerPage()
+{
+    QMap<QString, WalletView*>::const_iterator i;
+    for (i = mapWalletViews.constBegin(); i != mapWalletViews.constEnd(); ++i)
+        i.value()->gotoMasternodeManagerPage();
+}
+
+void WalletFrame::gotoExchangeBrowserPage()
 {
     QMap<QString, WalletView*>::const_iterator i;
     for (i = mapWalletViews.constBegin(); i != mapWalletViews.constEnd(); ++i)
         i.value()->gotoExchangeBrowserPage();
-}*/
+}
 
 void WalletFrame::gotoReceiveCoinsPage()
 {

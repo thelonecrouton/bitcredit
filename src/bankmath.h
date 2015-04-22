@@ -19,6 +19,23 @@ public:
   double GetStandardDeviation(bool retY=true);
   double GetCovariance();
   double GetCorrelation();
+  
+  	bool savefactor();
+
+	double spendfactor();
+
+	int rmtxincount();
+
+	double txfactor ();
+
+	double spendratio();
+
+	double saveratio();
+
+	int nettxratio ();
+  
+  
+  
 private:
 	int nEntry;
   double X;
@@ -28,32 +45,5 @@ private:
   double XY;
 };
 
-class Bankstat
-{
-public:
 
-
-int totalnumtx() ;
-
-int getNumTransactions() const;
-
-int lifetime();
-
-int gbllifetime();
-
-double freq ();
-
-double gblfreq ();
-
-double savefactor();
-
-double txfactor ();
-
-double spendratio ();
-
-double saveratio ();
-
-int nettxratio ();
-
-};
 #endif

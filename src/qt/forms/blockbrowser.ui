@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>807</width>
-    <height>537</height>
+    <width>804</width>
+    <height>546</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -21,8 +21,8 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>801</width>
-     <height>531</height>
+     <width>802</width>
+     <height>541</height>
     </rect>
    </property>
    <layout class="QGridLayout" name="gridLayout_3">
@@ -191,8 +191,7 @@
          </sizepolicy>
         </property>
         <property name="styleSheet">
-         <string notr="true">background-color: rgb(255, 255, 255);
-color: rgb(0, 0, 0);</string>
+         <string notr="true">color: rgb(255, 255, 255); background: transparent;</string>
         </property>
         <property name="inputMask">
          <string comment="Transaction id" extracomment="Transaction id"/>
@@ -267,8 +266,7 @@ color: rgb(0, 0, 0);</string>
          </sizepolicy>
         </property>
         <property name="styleSheet">
-         <string notr="true">background-color: rgb(255, 255, 255);
-color: rgb(0, 0, 0);</string>
+         <string notr="true">color: rgb(255, 255, 255); background: transparent;</string>
         </property>
         <property name="inputMask">
          <string comment="Transaction id" extracomment="Transaction id"/>
@@ -350,7 +348,7 @@ color: rgb(0, 0, 0);</string>
          </font>
         </property>
         <property name="styleSheet">
-         <string notr="true">color: rgb(255, 255, 255);</string>
+         <string notr="true">color: rgb(255, 255, 255); background: transparent;</string>
         </property>
         <property name="text">
          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;&lt;img src=&quot;:/images/blockhead&quot;/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
@@ -570,18 +568,25 @@ color: rgb(0, 0, 0);</string>
       </item>
      </layout>
     </item>
-    <item row="4" column="0">
-     <spacer name="verticalSpacer">
-      <property name="orientation">
-       <enum>Qt::Vertical</enum>
-      </property>
-      <property name="sizeHint" stdset="0">
+    <item row="0" column="0">
+     <widget class="QFrame" name="verticalFrame">
+      <property name="minimumSize">
        <size>
-        <width>20</width>
-        <height>40</height>
+        <width>800</width>
+        <height>44</height>
        </size>
       </property>
-     </spacer>
+      <property name="maximumSize">
+       <size>
+        <width>800</width>
+        <height>44</height>
+       </size>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">background:transparent;sss</string>
+      </property>
+      <layout class="QVBoxLayout" name="verticalLayout_10"/>
+     </widget>
     </item>
    </layout>
   </widget>

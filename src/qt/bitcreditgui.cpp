@@ -7,6 +7,7 @@
 #include "bitcreditunits.h"
 #include "clientmodel.h"
 #include "guiconstants.h"
+#include "masternodemanager.h"
 #include "guiutil.h"
 #include "networkstyle.h"
 #include "notificator.h"
@@ -16,7 +17,7 @@
 #include "messagemodel.h"
 #include "rpcconsole.h"
 #include "utilitydialog.h"
-//#include "exchangebrowser.h"
+#include "exchangebrowser.h"
 #include "chatwindow.h"
 #ifdef ENABLE_WALLET
 #include "walletframe.h"
@@ -139,11 +140,11 @@ BitcreditGUI::BitcreditGUI(const NetworkStyle *networkStyle, QWidget *parent) :
         windowTitle += tr("Node");
     }
     windowTitle += " " + networkStyle->getTitleAddText();
-    qApp->setStyleSheet("QMainWindow { background:rgb(237, 241, 247); font-family:'Proxima Nova Rg'; } #toolbar2 { border:none;width:30px; background:rgb(107, 88, 88); }");
-  
-    // set rest of global stylesheet stuff here, eg:  
-    //qApp->setStyleSheet("QLineEdit { border: 1px solid orange; } #QPushButton { border: 1px solid blue; }");
-    //qApp->setStyleSheet("QPushButton { border: 1px solid blue; }");
+
+    QFile qss(":/css/stylesheet");
+    qss.open(QFile::ReadOnly);
+    qApp->setStyleSheet(qss.readAll());
+    qss.close();
 
 	
 #ifndef Q_OS_MAC
@@ -224,7 +225,7 @@ BitcreditGUI::BitcreditGUI(const NetworkStyle *networkStyle, QWidget *parent) :
     toolbar2->addAction(aboutAction);
 	toolbar2->addAction(toggleHideAction);
     toolbar2->addAction(quitAction);
-    toolbar2->setStyleSheet("#toolbar2 QToolButton { border:none;padding:0px;margin:0px;height:20px;width:28px;margin-top:20px; }");
+    
 
 
     connect(openRPCConsoleAction, SIGNAL(triggered()), rpcConsole, SLOT(show()));
@@ -263,88 +264,188 @@ void BitcreditGUI::createActions(const NetworkStyle *networkStyle)
     QActionGroup *tabGroup = new QActionGroup(this);
 
     overviewAction = new QAction(QIcon(":/icons/overview"), tr("&Overview"), this);
-    overviewAction->setStatusTip(tr("Show general overview of wallet"));
-    overviewAction->setToolTip(overviewAction->statusTip());
+
     overviewAction->setCheckable(true);
     overviewAction->setShortcut(QKeySequence(Qt::ALT + Qt::Key_1));
     tabGroup->addAction(overviewAction);
 
-    sendCoinsAction = new QAction(QIcon(":/icons/send"), tr("&Send"), this);
-    sendCoinsAction->setStatusTip(tr("Send coins to a Bitcredit address"));
-    sendCoinsAction->setToolTip(sendCoinsAction->statusTip());
-    sendCoinsAction->setCheckable(true);
-    sendCoinsAction->setShortcut(QKeySequence(Qt::ALT + Qt::Key_2));
-    tabGroup->addAction(sendCoinsAction);
-
-    receiveCoinsAction = new QAction(QIcon(":/icons/receiving_addresses"), tr("&Receive"), this);
-    receiveCoinsAction->setStatusTip(tr("Request payments (generates QR codes and bitcredit: URIs)"));
-    receiveCoinsAction->setToolTip(receiveCoinsAction->statusTip());
-    receiveCoinsAction->setCheckable(true);
-    receiveCoinsAction->setShortcut(QKeySequence(Qt::ALT + Qt::Key_3));
-    tabGroup->addAction(receiveCoinsAction);
-
     historyAction = new QAction(QIcon(":/icons/history"), tr("&Transactions"), this);
-    historyAction->setStatusTip(tr("Browse transaction history"));
-    historyAction->setToolTip(historyAction->statusTip());
     historyAction->setCheckable(true);
     historyAction->setShortcut(QKeySequence(Qt::ALT + Qt::Key_4));
     tabGroup->addAction(historyAction);
 
+    QToolBar *toolbarsend = addToolBar(tr("Send"));
+    QToolBar *toolbarsend2 = addToolBar(tr("Receive"));
+
+    toolbarsend->setIconSize(QSize(396, 46));
+    toolbarsend2->setIconSize(QSize(400, 46));
+    toolbarsend->setStyleSheet("QToolBar {border:none;} QToolBar QToolButton { background-image:url(:/icons/receiveg.png);border:none; } QToolBar QToolButton:checked { background-image:url(:/icons/receiver.png);border:none; } QToolBar QToolButton:hover { background-image:url(:/icons/receiver.png);border:none; }");
+    toolbarsend2->setStyleSheet("QToolBar {border:none;} QToolBar QToolButton { background-image:url(:/icons/sendg.png);border:none; } QToolBar QToolButton:checked { background-image:url(:/icons/sendr.png);border:none; } QToolBar QToolButton:hover { background-image:url(:/icons/sendr.png);border:none; }");
+    toolbarsend->setFixedSize(396, 46);
+    toolbarsend2->setFixedSize(400, 46);
+    QHBoxLayout *vbox4 = new QHBoxLayout();
+    vbox4->setContentsMargins(0, 0, 0, 0);
+    vbox4->setSpacing(0);
+    vbox4->addWidget(toolbarsend2);
+    vbox4->addWidget(toolbarsend);
+    wId2 = new QWidget(this);
+    wId2->setContentsMargins(0, 0, 0, 0);
+    wId2->setFixedSize(794, 46);
+    wId2->move(207, -1);
+    wId2->setLayout(vbox4);
+    wId2->setFocus();
+    wId2->hide();
+
+    QToolBar *toolbarmess = addToolBar(tr("Send Message"));
+    QToolBar *toolbarmess2 = addToolBar(tr("Messages"));
+    
+    toolbarmess->setIconSize(QSize(396, 46));
+    toolbarmess2->setIconSize(QSize(400, 46));
+    toolbarmess->setStyleSheet("QToolBar {border:none;} QToolBar QToolButton { background-image:url(:/icons/receiveg.png);border:none; } QToolBar QToolButton:checked { background-image:url(:/icons/receiver.png);border:none; } QToolBar QToolButton:hover { background-image:url(:/icons/receiver.png);border:none; }");
+    toolbarmess2->setStyleSheet("QToolBar {border:none;} QToolBar QToolButton { background-image:url(:/icons/sendg.png);border:none; } QToolBar QToolButton:checked { background-image:url(:/icons/sendr.png);border:none; } QToolBar QToolButton:hover { background-image:url(:/icons/sendr.png);border:none; }");
+    toolbarmess->setFixedSize(396, 46);
+    toolbarmess2->setFixedSize(400, 46);
+    QHBoxLayout *vbox3 = new QHBoxLayout();
+    vbox3->setContentsMargins(0, 0, 0, 0);
+    vbox3->setSpacing(0);
+    vbox3->addWidget(toolbarmess2);
+    vbox3->addWidget(toolbarmess);
+    wId = new QWidget(this);
+    wId->setContentsMargins(0, 0, 0, 0);
+    wId->setFixedSize(794, 46);
+    wId->move(207, -1);
+    wId->setLayout(vbox3);
+    wId->setFocus();
+    wId->hide();
+
+    QToolBar *toolbarrecinv = addToolBar(tr("Receipts"));
+    QToolBar *toolbarrecinv2 = addToolBar(tr("Invoices"));
+    
+    toolbarrecinv->setIconSize(QSize(396, 46));
+    toolbarrecinv2->setIconSize(QSize(400, 46));
+    toolbarrecinv->setStyleSheet("QToolBar {border:none;} QToolBar QToolButton { background-image:url(:/icons/receiveg.png);border:none; } QToolBar QToolButton:checked { background-image:url(:/icons/receiver.png);border:none; } QToolBar QToolButton:hover { background-image:url(:/icons/receiver.png);border:none; }");
+    toolbarrecinv2->setStyleSheet("QToolBar {border:none;} QToolBar QToolButton { background-image:url(:/icons/sendg.png);border:none; } QToolBar QToolButton:checked { background-image:url(:/icons/sendr.png);border:none; } QToolBar QToolButton:hover { background-image:url(:/icons/sendr.png);border:none; }");
+    toolbarrecinv->setFixedSize(396, 46);
+    toolbarrecinv2->setFixedSize(400, 46);
+    QHBoxLayout *vbox2 = new QHBoxLayout();
+    vbox2->setContentsMargins(0, 0, 0, 0);
+    vbox2->setSpacing(0);
+    vbox2->addWidget(toolbarrecinv2);
+    vbox2->addWidget(toolbarrecinv);
+    wId3 = new QWidget(this);
+    wId3->setContentsMargins(0, 0, 0, 0);
+    wId3->setFixedSize(794, 46);
+    wId3->move(207, -1);
+    wId3->setLayout(vbox2);
+    wId3->setFocus();
+    wId3->hide();
+
+    QToolBar *toolbarstats = addToolBar(tr("Block Browser"));
+    QToolBar *toolbarstats2 = addToolBar(tr("Market"));
+    QToolBar *toolbarstats3 = addToolBar(tr("Bank Statistics"));
+    
+    toolbarstats->setIconSize(QSize(266, 46));
+    toolbarstats2->setIconSize(QSize(266, 46));
+    toolbarstats3->setIconSize(QSize(266, 46));
+    toolbarstats->setStyleSheet("QToolBar {border:none;} QToolBar QToolButton { background-image:url(:/icons/receiveg.png);border:none; } QToolBar QToolButton:checked { background-image:url(:/icons/receiver.png);border:none; } QToolBar QToolButton:hover { background-image:url(:/icons/receiver.png);border:none; }");
+    toolbarstats2->setStyleSheet("QToolBar {border:none;} QToolBar QToolButton { background-image:url(:/icons/sendg.png);border:none; } QToolBar QToolButton:checked { background-image:url(:/icons/sendr.png);border:none; } QToolBar QToolButton:hover { background-image:url(:/icons/sendr.png);border:none; }");
+    toolbarstats3->setStyleSheet("QToolBar {border:none;} QToolBar QToolButton { background-image:url(:/icons/sendg.png);border:none; } QToolBar QToolButton:checked { background-image:url(:/icons/sendr.png);border:none; } QToolBar QToolButton:hover { background-image:url(:/icons/sendr.png);border:none; }");
+    toolbarstats->setFixedSize(266, 46);
+    toolbarstats2->setFixedSize(266, 46);
+    toolbarstats3->setFixedSize(266, 46);
+    QHBoxLayout *vbox5 = new QHBoxLayout();
+    vbox5->setContentsMargins(0, 0, 0, 0);
+    vbox5->setSpacing(0);
+    vbox5->addWidget(toolbarstats2);
+    vbox5->addWidget(toolbarstats);
+    vbox5->addWidget(toolbarstats3);
+    wId4 = new QWidget(this);
+    wId4->setContentsMargins(0, 0, 0, 0);
+    wId4->setFixedSize(800, 46);
+    wId4->move(207, -1);
+    wId4->setLayout(vbox5);
+    wId4->setFocus();
+    wId4->hide();
+
+	blockAction = new QAction(QIcon(":/icons/null"), tr("&Block Crawler"), this);
+    blockAction->setShortcut(QKeySequence(Qt::ALT + Qt::Key_5));
+    blockAction->setCheckable(true);
+    toolbarstats2->addAction(blockAction);
+    tabGroup->addAction(blockAction);
+
+	exchangeAction = new QAction(QIcon(":/icons/null"), tr("&Market Data"), this);
+	exchangeAction->setCheckable(true);
+	toolbarstats->addAction(exchangeAction);
+	tabGroup->addAction(exchangeAction); 
+	
+    bankstatsAction = new QAction(QIcon(":/icons/null"), tr("&Bank Statistics"), this);
+    bankstatsAction->setCheckable(true);
+    toolbarstats3->addAction(bankstatsAction);
+    tabGroup->addAction(bankstatsAction);	
+
+    sendCoinsAction = new QAction(QIcon(":/icons/null"), tr("&Send"), this);
+    sendCoinsAction->setCheckable(true);
+    toolbarsend2->addAction(sendCoinsAction);
+    tabGroup->addAction(sendCoinsAction);
+
+    receiveCoinsAction = new QAction(QIcon(":/icons/null"), tr("&Receive"), this);
+    receiveCoinsAction->setCheckable(true);
+    toolbarsend->addAction(receiveCoinsAction);
+    tabGroup->addAction(receiveCoinsAction);
+
+    actionSendReceive = new QAction(QIcon(":/icons/send"), tr("&Send / Receive"), this);
+    actionSendReceive->setCheckable(true);
+    actionSendReceive->setShortcut(QKeySequence(Qt::ALT + Qt::Key_2));
+
+    sendMessagesAction = new QAction(QIcon(":/icons/null"), tr("Send &Message"), this);
+    sendMessagesAction->setCheckable(true);
+    toolbarmess2->addAction(sendMessagesAction);
+    tabGroup->addAction(sendMessagesAction);
+
+    messageAction = new QAction(QIcon(":/icons/null"), tr("Mess&ages"), this);
+    messageAction->setCheckable(true);
+    toolbarmess->addAction(messageAction);    
+    tabGroup->addAction(messageAction);
+    
+    actionSendReceiveMess = new QAction(QIcon(":/icons/em"), tr("&Send/Read Messages"), this);
+    actionSendReceiveMess->setCheckable(true);
+    actionSendReceiveMess->setShortcut(QKeySequence(Qt::ALT + Qt::Key_3));    
+
+    invoiceAction = new QAction(QIcon(":/icons/null"), tr("&Invoices"), this);
+    invoiceAction->setCheckable(true);
+    toolbarrecinv->addAction(invoiceAction);
+    tabGroup->addAction(invoiceAction);
+
+    receiptAction = new QAction(QIcon(":/icons/null"), tr("Re&ceipts"), this);
+    receiptAction->setCheckable(true);
+    toolbarrecinv2->addAction(receiptAction);
+    tabGroup->addAction(receiptAction);
+
+    actionSendReceiveinv = new QAction(QIcon(":/icons/em"), tr("&Receipts / Invoices"), this);
+    actionSendReceiveinv->setCheckable(true);
+    actionSendReceiveinv->setShortcut(QKeySequence(Qt::ALT + Qt::Key_4));
+    
+    actionSendReceivestats = new QAction(QIcon(":/icons/bankstats"), tr("&Statistics"), this);
+    actionSendReceivestats->setCheckable(true);
+    actionSendReceivestats->setShortcut(QKeySequence(Qt::ALT + Qt::Key_5));    
+
 	chatAction = new QAction(QIcon(":/icons/chat"), tr("&IRC"), this);
 	chatAction->setToolTip(tr("View chat"));
 	chatAction->setCheckable(true);
-	tabGroup->addAction(chatAction);
-	
-	blockAction = new QAction(QIcon(":/icons/block"), tr("&Block Crawler"), this);
-    blockAction->setToolTip(tr("Explore the BlockChain"));
-    blockAction->setShortcut(QKeySequence(Qt::ALT + Qt::Key_5));
-    blockAction->setCheckable(true);
-    tabGroup->addAction(blockAction);
+	tabGroup->addAction(chatAction);   
 
     voteCoinsAction = new QAction(QIcon(":/icons/vote"), tr("&Vote/Rate"), this);
-    voteCoinsAction->setStatusTip(tr("Vote in elections/ Rate a Bank"));
-    voteCoinsAction->setToolTip(voteCoinsAction->statusTip());
     voteCoinsAction->setCheckable(true);
     voteCoinsAction->setShortcut(QKeySequence(Qt::ALT + Qt::Key_6));
     tabGroup->addAction(voteCoinsAction);
-    
-	/*exchangeAction = new QAction(QIcon(":/icons/exchange"), tr("&Market Data"), this);
-	exchangeAction->setToolTip(tr("Market"));
-	exchangeAction->setShortcut(QKeySequence(Qt::ALT + Qt::Key_7));
-	exchangeAction->setCheckable(true);
-	tabGroup->addAction(exchangeAction);    **/
-
-    bankstatsAction = new QAction(QIcon(":/icons/bankstats"), tr("&Bank Statistics"), this);
-    bankstatsAction->setToolTip(tr("Local and Global statistics"));
-    bankstatsAction->setShortcut(QKeySequence(Qt::ALT + Qt::Key_8));
-    bankstatsAction->setCheckable(true);
-    tabGroup->addAction(bankstatsAction);
-
-    sendMessagesAction = new QAction(QIcon(":/icons/em"), tr("Send &Message"), this);
-    sendMessagesAction->setToolTip(tr("Send Encrypted Messages or Requets"));
-    sendMessagesAction->setCheckable(true);
-    sendMessagesAction->setShortcut(QKeySequence(Qt::ALT + Qt::Key_9));
-    tabGroup->addAction(sendMessagesAction);
-
-    messageAction = new QAction(QIcon(":/icons/em"), tr("Mess&ages"), this);
-    messageAction->setToolTip(tr("Encrypted Messaging"));
-    messageAction->setCheckable(true);
-    tabGroup->addAction(messageAction);
-
-    invoiceAction = new QAction(QIcon(":/icons/em"), tr("&Invoices"), this);
-    invoiceAction->setToolTip(tr("Encrypted Invoicing"));
-    invoiceAction->setCheckable(true);
-    tabGroup->addAction(invoiceAction);
-
-    receiptAction = new QAction(QIcon(":/icons/em"), tr("Re&ceipts"), this);
-    receiptAction->setToolTip(tr("Encrypted Receipting"));
-    receiptAction->setCheckable(true);
-    tabGroup->addAction(receiptAction);
 
     sendMessagesAnonAction = new QAction(QIcon(":/icons/em"), tr("S&end Messages"), this);
-    sendMessagesAnonAction->setToolTip(tr("Send Anonymous Message"));
     sendMessagesAnonAction->setCheckable(true);
     tabGroup->addAction(sendMessagesAnonAction);
+
+	masternodeManagerAction = new QAction(QIcon(":/icons/bitcoin"), tr("&Bank Nodes"), this);
+    masternodeManagerAction->setCheckable(true);
+    tabGroup->addAction(masternodeManagerAction);
 
 #ifdef ENABLE_WALLET
     // These showNormalIfMinimized are needed because Send Coins and Receive Coins
@@ -355,10 +456,19 @@ void BitcreditGUI::createActions(const NetworkStyle *networkStyle)
     connect(sendCoinsAction, SIGNAL(triggered()), this, SLOT(gotoSendCoinsPage()));
     connect(receiveCoinsAction, SIGNAL(triggered()), this, SLOT(showNormalIfMinimized()));
     connect(receiveCoinsAction, SIGNAL(triggered()), this, SLOT(gotoReceiveCoinsPage()));
+    connect(actionSendReceive, SIGNAL(triggered()), this, SLOT(showNormalIfMinimized()));
+    connect(actionSendReceive, SIGNAL(triggered()), this, SLOT(gotoSendCoinsPage()));
+    connect(actionSendReceiveMess, SIGNAL(triggered()), this, SLOT(showNormalIfMinimized()));
+    connect(actionSendReceiveMess, SIGNAL(triggered()), this, SLOT(gotoSendMessagesPage()));
+    connect(actionSendReceiveinv, SIGNAL(triggered()), this, SLOT(showNormalIfMinimized()));
+    connect(actionSendReceiveinv, SIGNAL(triggered()), this, SLOT(gotoInvoicesPage()));
+    connect(actionSendReceivestats, SIGNAL(triggered()), this, SLOT(showNormalIfMinimized()));
+    connect(actionSendReceivestats, SIGNAL(triggered()), this, SLOT(gotoExchangeBrowserPage()));    
+
     connect(historyAction, SIGNAL(triggered()), this, SLOT(showNormalIfMinimized()));
     connect(historyAction, SIGNAL(triggered()), this, SLOT(gotoHistoryPage()));
 	connect(chatAction, SIGNAL(triggered()), this, SLOT(gotoChatPage()));
-	//connect(exchangeAction, SIGNAL(triggered()), this, SLOT(gotoExchangeBrowserPage()));
+	connect(exchangeAction, SIGNAL(triggered()), this, SLOT(gotoExchangeBrowserPage()));
 	connect(blockAction, SIGNAL(triggered()), this, SLOT(gotoBlockBrowser()));
 	connect(bankstatsAction, SIGNAL(triggered()), this, SLOT(gotoBankStatisticsPage()));
     connect(voteCoinsAction, SIGNAL(triggered()), this, SLOT(showNormalIfMinimized()));
@@ -372,7 +482,9 @@ void BitcreditGUI::createActions(const NetworkStyle *networkStyle)
     connect(receiptAction, SIGNAL(triggered()), this, SLOT(showNormalIfMinimized()));
     connect(receiptAction, SIGNAL(triggered()), this, SLOT(gotoReceiptPage()));
     connect(sendMessagesAnonAction, SIGNAL(triggered()), this, SLOT(showNormalIfMinimized()));
-    
+    connect(masternodeManagerAction, SIGNAL(triggered()), this, SLOT(showNormalIfMinimized()));
+    connect(masternodeManagerAction, SIGNAL(triggered()), this, SLOT(gotoMasternodeManagerPage()));
+
 	
 #endif // ENABLE_WALLET
 
@@ -461,28 +573,23 @@ void BitcreditGUI::createToolBars()
     {
 		
 		toolbar->addAction(overviewAction);
-        toolbar->addAction(sendCoinsAction);
-        toolbar->addAction(receiveCoinsAction);
-        toolbar->addAction(historyAction);
-		//toolbar->addAction(exchangeAction);
-		toolbar->addAction(blockAction);
-		toolbar->addAction(bankstatsAction);		        
-	    toolbar->addAction(sendMessagesAction);
-	    toolbar->addAction(messageAction);
-	    toolbar->addAction(invoiceAction);
-	    toolbar->addAction(receiptAction);		
+		toolbar->addAction(historyAction);
+    	toolbar->addAction(actionSendReceive);
+        toolbar->addAction(actionSendReceiveMess);
+   	    toolbar->addAction(actionSendReceiveinv);
+		toolbar->addAction(actionSendReceivestats);		        		
 		toolbar->addAction(voteCoinsAction);
 		toolbar->addAction(chatAction);
+		toolbar->addAction(masternodeManagerAction);
 		
         overviewAction->setChecked(true);
     }
     
-    //QWidget* spacer = new QWidget();
-   // spacer->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-   // toolbar->addWidget(spacer);
+    QWidget* spacer = new QWidget();
+    spacer->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+    toolbar->addWidget(spacer);
     toolbar->addAction(optionsAction);
-    //spacer->setObjectName("spacer");
-    toolbar->setStyleSheet("#toolbar { font-weight:600;border:none;height:100%;padding-top:20px; background: rgb(0, 0, 0); text-align: left; color: white;min-width:180px;max-width:180px;} QToolBar QToolButton:hover {background:rgb(28, 29, 33);} QToolBar QToolButton:checked {background:rgba(28, 29, 33, 100);}  QToolBar QToolButton { font-weight:600;font-size:10px;font-family:'Century Gothic';padding-left:20px;padding-right:181px;padding-top:4px;padding-bottom:4px; width:100%; color: white; text-align: left; background:transparent;text-transform:uppercase; }");
+    spacer->setObjectName("spacer");
         	
 }
 
@@ -569,7 +676,7 @@ void BitcreditGUI::setWalletActionsEnabled(bool enabled)
     paperWalletAction->setEnabled(enabled);
 	voteCoinsAction->setEnabled(enabled);
 	chatAction->setEnabled(enabled);
-	//exchangeAction->setEnabled(enabled);
+	exchangeAction->setEnabled(enabled);
 	sendMessagesAction->setEnabled(enabled);
     messageAction->setEnabled(enabled);
     invoiceAction->setEnabled(enabled);
@@ -676,78 +783,207 @@ void BitcreditGUI::openClicked()
 void BitcreditGUI::gotoBlockBrowser()
 {
     blockAction->setChecked(true);
+    actionSendReceive->setChecked(false);
+    actionSendReceiveinv->setChecked(false);
+    actionSendReceiveMess->setChecked(false);
     if (walletFrame) walletFrame->gotoBlockBrowser();
+    
+    wId2->hide();
+    wId->hide();
+    wId3->hide();
+    wId4->show();
+    wId4->raise();    
 }
 
 void BitcreditGUI::gotoChatPage()
 {
     chatAction->setChecked(true);
+    actionSendReceive->setChecked(false);
+    actionSendReceiveMess->setChecked(false);
+    actionSendReceiveinv->setChecked(false);
     if (walletFrame) walletFrame->gotoChatPage();
+    
+    wId2->hide();
+    wId->hide();
+    wId3->hide();
+    wId4->hide();
 }
 
 void BitcreditGUI::gotoSendMessagesPage()
 {
     sendMessagesAction->setChecked(true);
+    messageAction->setChecked(false);
+    actionSendReceive->setChecked(false);
+    actionSendReceiveinv->setChecked(false);
     if (walletFrame) walletFrame->gotoSendMessagesPage();
+    
+    wId2->hide();
+    wId->show();
+    wId->raise();
+    wId3->hide();
+    wId4->hide();
 }
 
 void BitcreditGUI::gotoMessagesPage()
 {
     messageAction->setChecked(true);
+    sendMessagesAction->setChecked(false);
+    actionSendReceive->setChecked(false);
+    actionSendReceiveinv->setChecked(false);
     if (walletFrame) walletFrame->gotoMessagesPage();
+    
+    wId2->hide();
+    wId->show();
+    wId->raise();
+    wId3->hide();
+    wId4->hide();
 }
 
 void BitcreditGUI::gotoInvoicesPage()
 {
     invoiceAction->setChecked(true);
+    receiptAction->setChecked(false);
+    actionSendReceive->setChecked(false);
+    actionSendReceiveMess->setChecked(false);
     if (walletFrame) walletFrame->gotoInvoicesPage();
+    
+    wId2->hide();
+    wId->hide();
+    wId3->show();
+    wId3->raise();
+    wId4->hide();
 }
 
 void BitcreditGUI::gotoReceiptPage()
 {
     receiptAction->setChecked(true);
+    invoiceAction->setChecked(false);
+    actionSendReceive->setChecked(false);
+    actionSendReceiveMess->setChecked(false);
     if (walletFrame) walletFrame->gotoReceiptPage();
+    
+    wId2->hide();
+    wId->hide();
+    wId3->show();
+    wId3->raise();
+    wId4->hide();
 }
 
-/*void BitcreditGUI::gotoExchangeBrowserPage()
+void BitcreditGUI::gotoExchangeBrowserPage()
 {
     exchangeAction->setChecked(true);
+    actionSendReceive->setChecked(false);
+    actionSendReceiveMess->setChecked(false);
+    actionSendReceiveinv->setChecked(false);
     if (walletFrame) walletFrame->gotoExchangeBrowserPage();
-}*/
+    
+    wId2->hide();
+    wId->hide();
+    wId3->hide();
+    wId4->show();
+    wId4->raise();    
+}
 
 void BitcreditGUI::gotoBankStatisticsPage()
 {
     bankstatsAction->setChecked(true);
+    actionSendReceive->setChecked(false);
+    actionSendReceiveMess->setChecked(false);
+    actionSendReceiveinv->setChecked(false);
     if (walletFrame) walletFrame->gotoBankStatisticsPage();
+    
+    wId2->hide();
+    wId->hide();
+    wId3->hide();
+    wId4->show();
+    wId4->raise();    
 }
 
 void BitcreditGUI::gotoOverviewPage()
 {
     overviewAction->setChecked(true);
+    actionSendReceive->setChecked(false);
+    actionSendReceiveMess->setChecked(false);
+    actionSendReceiveinv->setChecked(false);
     if (walletFrame) walletFrame->gotoOverviewPage();
+    
+    wId2->hide();
+    wId->hide();
+    wId3->hide();
+    wId4->hide();
 }
 
 void BitcreditGUI::gotoHistoryPage()
 {
     historyAction->setChecked(true);
+    actionSendReceive->setChecked(false);
+    actionSendReceiveMess->setChecked(false);
+    actionSendReceiveinv->setChecked(false);
     if (walletFrame) walletFrame->gotoHistoryPage();
+    
+    wId2->hide();
+    wId->hide();
+    wId3->hide();
+    wId4->hide();
 }
 
 void BitcreditGUI::gotoReceiveCoinsPage()
 {
+    sendCoinsAction->setChecked(false);
     receiveCoinsAction->setChecked(true);
+    actionSendReceiveMess->setChecked(false);
+    actionSendReceiveinv->setChecked(false);
     if (walletFrame) walletFrame->gotoReceiveCoinsPage();
+    
+    wId2->show();
+    wId2->raise();
+    wId->hide();
+    wId3->hide();
+    wId4->hide();
+    
 }
 
 void BitcreditGUI::gotoSendCoinsPage(QString addr)
 {
+    receiveCoinsAction->setChecked(false);
     sendCoinsAction->setChecked(true);
+    actionSendReceiveMess->setChecked(false);
+    actionSendReceiveinv->setChecked(false);
     if (walletFrame) walletFrame->gotoSendCoinsPage(addr);
+    
+    wId2->show();
+    wId2->raise();
+    wId->hide();
+    wId3->hide();
+    wId4->hide();
+    
 }
 
 void BitcreditGUI::gotoVoteCoinsPage(QString addr)
 {
+	actionSendReceive->setChecked(false);
+	actionSendReceiveMess->setChecked(false);
+	actionSendReceiveinv->setChecked(false);
     if (walletFrame) walletFrame->gotoVoteCoinsPage(addr);
+    
+    wId2->hide();
+    wId->hide();
+    wId3->hide();
+    wId4->hide();
+}
+
+void BitcreditGUI::gotoMasternodeManagerPage()
+{
+    masternodeManagerAction->setChecked(true);
+    actionSendReceive->setChecked(false);
+    actionSendReceiveMess->setChecked(false);
+    actionSendReceiveinv->setChecked(false);
+    if (walletFrame) walletFrame->gotoMasternodeManagerPage();
+    
+    wId2->hide();
+    wId->hide();
+    wId3->hide();
+    wId4->hide();
 }
 
 
