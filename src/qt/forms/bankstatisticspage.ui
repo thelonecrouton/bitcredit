@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>795</width>
-    <height>548</height>
+    <height>547</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -27,31 +27,11 @@
     <rect>
      <x>-1</x>
      <y>-1</y>
-     <width>802</width>
+     <width>791</width>
      <height>541</height>
     </rect>
    </property>
    <layout class="QVBoxLayout" name="verticalLayout">
-    <item>
-     <widget class="QFrame" name="verticalFrame">
-      <property name="minimumSize">
-       <size>
-        <width>800</width>
-        <height>44</height>
-       </size>
-      </property>
-      <property name="maximumSize">
-       <size>
-        <width>800</width>
-        <height>44</height>
-       </size>
-      </property>
-      <property name="styleSheet">
-       <string notr="true">background:transparent;sss</string>
-      </property>
-      <layout class="QVBoxLayout" name="verticalLayout_9"/>
-     </widget>
-    </item>
     <item>
      <layout class="QHBoxLayout" name="horizontalLayout_2">
       <item>
@@ -109,7 +89,7 @@
          <string>The displayed information may be out of date. Your wallet automatically synchronizes with the Bitcredits network after a connection is established, but this process has not completed yet.</string>
         </property>
         <property name="styleSheet">
-         <string notr="true">color: rgb(255, 0, 0); background:transparent;</string>
+         <string notr="true">QLabel { color: red; }background:transparent;</string>
         </property>
         <property name="text">
          <string notr="true">&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; color:#ff8e2b;&quot;&gt;(Inactive)&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
@@ -151,7 +131,7 @@
          <string>The displayed information may be out of date. Your wallet automatically synchronizes with the Bitcredits network after a connection is established, but this process has not completed yet.</string>
         </property>
         <property name="styleSheet">
-         <string notr="true">color: rgb(255, 0, 0); background:transparent;</string>
+         <string notr="true">QLabel { color: red; }background:transparent;</string>
         </property>
         <property name="text">
          <string notr="true">&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; color:#ff8e2b;&quot;&gt;(Inactive)&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
@@ -547,7 +527,7 @@
       <item row="1" column="4">
        <widget class="QLabel" name="marketcap">
         <property name="styleSheet">
-         <string notr="true">color: rgb(255, 255, 255);background: rgb(0, 0, 0);</string>
+         <string notr="true">color: rgb(255, 255, 255);background:transparent;</string>
         </property>
         <property name="text">
          <string>0$</string>
@@ -569,7 +549,7 @@
          <string/>
         </property>
         <property name="styleSheet">
-         <string notr="true">color: rgb(255, 255, 255);background: rgb(0, 0, 0);</string>
+         <string notr="true">color: rgb(255, 255, 255);background:transparent;</string>
         </property>
         <property name="text">
          <string notr="true">0 BCR</string>
@@ -594,7 +574,7 @@
          <string/>
         </property>
         <property name="styleSheet">
-         <string notr="true">color: rgb(255, 255, 255);background: rgb(0, 0, 0);</string>
+         <string notr="true">color: rgb(255, 255, 255);background:transparent;</string>
         </property>
         <property name="text">
          <string notr="true">0 BCR</string>
@@ -619,7 +599,7 @@
          <string/>
         </property>
         <property name="styleSheet">
-         <string notr="true">color: rgb(255, 255, 255);background: rgb(0, 0, 0);</string>
+         <string notr="true">color: rgb(255, 255, 255);background:transparent;</string>
         </property>
         <property name="text">
          <string notr="true">0 BCR</string>
@@ -644,7 +624,7 @@
          <string/>
         </property>
         <property name="styleSheet">
-         <string notr="true">color: rgb(255, 255, 255);background: rgb(0, 0, 0);</string>
+         <string notr="true">color: rgb(255, 255, 255);background:transparent;</string>
         </property>
         <property name="text">
          <string notr="true">0.0</string>

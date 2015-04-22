@@ -5,10 +5,6 @@
         <file alias="quit">res/icons/quit.png</file>
         <file alias="mini">res/icons/mini.png</file>
         <file alias="send">res/icons/send.png</file>
-        <file alias="receiveg">res/icons/receiveg.png</file>
-        <file alias="receiver">res/icons/receiver.png</file>
-        <file alias="sendg">res/icons/sendg.png</file>
-        <file alias="sendr">res/icons/sendr.png</file>
         <file alias="connect_0">res/icons/connect0_white.png</file>
         <file alias="connect_1">res/icons/connect1_white.png</file>
         <file alias="connect_2">res/icons/connect2_white.png</file>
@@ -106,15 +102,5 @@
         <file alias="spinner-033">res/movies/spinner-033.png</file>
         <file alias="spinner-034">res/movies/spinner-034.png</file>
         <file alias="spinner-035">res/movies/spinner-035.png</file>
-    </qresource>
-    <qresource prefix="/css">
-        <file alias="stylesheet">res/css/stylesheet.qss</file>
-        <file alias="darkstylesheet">res/css/qdarkstyle.qss</file>        
-        <file alias="main.css">res/css/main.css</file>
-        <file alias="contextMenu.css">res/css/contextMenu.css</file>
-        <file alias="footable.core.css">res/css/footable.core.css</file>
-        <file alias="footable.metro.css">res/css/footable.metro.css</file>
-        <file alias="normalize.css">res/css/normalize.css</file>
-        <file alias="font-awesome.min.css">res/css/font-awesome.min.css</file>
     </qresource>
 </RCC>

@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>850</width>
-    <height>565</height>
+    <height>578</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -16,30 +16,10 @@
   <property name="styleSheet">
    <string notr="true">background:transparent;</string>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout" stretch="0,1,0,0,0">
+  <layout class="QVBoxLayout" name="verticalLayout" stretch="0,1,0,0">
    <property name="bottomMargin">
     <number>8</number>
    </property>
-   <item>
-    <widget class="QFrame" name="verticalFrame">
-     <property name="minimumSize">
-      <size>
-       <width>800</width>
-       <height>44</height>
-      </size>
-     </property>
-     <property name="maximumSize">
-      <size>
-       <width>800</width>
-       <height>44</height>
-      </size>
-     </property>
-     <property name="styleSheet">
-      <string notr="true">background:transparent;sss</string>
-     </property>
-     <layout class="QVBoxLayout" name="verticalLayout_9"/>
-    </widget>
-   </item>
    <item>
     <widget class="QFrame" name="frameCoinControl">
      <property name="sizePolicy">
@@ -107,7 +87,7 @@
              </font>
             </property>
             <property name="styleSheet">
-             <string notr="true">color: rgb(255, 255, 255); background:transparent;</string>
+             <string notr="true">font-weight:bold;color: rgb(255, 255, 255);</string>
             </property>
             <property name="text">
              <string>Coin Control Features</string>
@@ -140,7 +120,7 @@
           <item>
            <widget class="QLabel" name="labelCoinControlAutomaticallySelected">
             <property name="styleSheet">
-             <string notr="true">color: rgb(255, 255, 255);background:transparent;</string>
+             <string notr="true">background: transparent; color: rgb(255, 255, 255);</string>
             </property>
             <property name="text">
              <string>automatically selected</string>
@@ -159,7 +139,7 @@
              </font>
             </property>
             <property name="styleSheet">
-             <string notr="true">color:red;font-weight:bold;background:transparent;</string>
+             <string notr="true">color:red;font-weight:bold;</string>
             </property>
             <property name="text">
              <string>Insufficient funds!</string>
@@ -202,16 +182,7 @@
            <string notr="true"/>
           </property>
           <layout class="QHBoxLayout" name="horizontalLayoutCoinControl5">
-           <property name="leftMargin">
-            <number>0</number>
-           </property>
-           <property name="topMargin">
-            <number>0</number>
-           </property>
-           <property name="rightMargin">
-            <number>0</number>
-           </property>
-           <property name="bottomMargin">
+           <property name="margin">
             <number>0</number>
            </property>
            <item>
@@ -621,7 +592,7 @@
              <string>If this is activated, but the change address is empty or invalid, change will be sent to a newly generated address.</string>
             </property>
             <property name="styleSheet">
-             <string notr="true">color: rgb(255, 255, 255); background:transparent;</string>
+             <string notr="true">background: transparent; color: rgb(255, 255, 255);</string>
             </property>
             <property name="text">
              <string>Custom change address</string>
@@ -638,9 +609,6 @@
               <horstretch>0</horstretch>
               <verstretch>0</verstretch>
              </sizepolicy>
-            </property>
-            <property name="styleSheet">
-             <string notr="true">color: rgb(255, 255, 255);background:transparent;</string>
             </property>
            </widget>
           </item>
@@ -700,20 +668,11 @@
         <x>0</x>
         <y>0</y>
         <width>832</width>
-        <height>69</height>
+        <height>91</height>
        </rect>
       </property>
       <layout class="QVBoxLayout" name="verticalLayout_2" stretch="0,1">
-       <property name="leftMargin">
-        <number>0</number>
-       </property>
-       <property name="topMargin">
-        <number>0</number>
-       </property>
-       <property name="rightMargin">
-        <number>0</number>
-       </property>
-       <property name="bottomMargin">
+       <property name="margin">
         <number>0</number>
        </property>
        <item>
@@ -767,16 +726,7 @@
       <property name="spacing">
        <number>0</number>
       </property>
-      <property name="leftMargin">
-       <number>0</number>
-      </property>
-      <property name="topMargin">
-       <number>0</number>
-      </property>
-      <property name="rightMargin">
-       <number>0</number>
-      </property>
-      <property name="bottomMargin">
+      <property name="margin">
        <number>0</number>
       </property>
       <item>
@@ -846,6 +796,9 @@ color: rgb(255, 255, 255);</string>
               </item>
               <item>
                <widget class="QLabel" name="labelFeeMinimized">
+                <property name="styleSheet">
+                 <string notr="true">color: white;</string>
+                </property>
                 <property name="text">
                  <string/>
                 </property>
@@ -854,7 +807,7 @@ color: rgb(255, 255, 255);</string>
               <item>
                <widget class="QPushButton" name="buttonChooseFee">
                 <property name="styleSheet">
-                 <string notr="true">color: rgb(255, 255, 255);</string>
+                 <string notr="true">border: 1px solid white; color: rgb(255, 255, 255);</string>
                 </property>
                 <property name="text">
                  <string>Choose...</string>
@@ -867,7 +820,7 @@ color: rgb(255, 255, 255);</string>
                  <string>collapse fee-settings</string>
                 </property>
                 <property name="styleSheet">
-                 <string notr="true">color: rgb(255, 255, 255);</string>
+                 <string notr="true">border: 1px solid white; color: rgb(255, 255, 255);</string>
                 </property>
                 <property name="text">
                  <string>Minimize</string>
@@ -912,16 +865,7 @@ color: rgb(255, 255, 255);</string>
            <property name="spacing">
             <number>0</number>
            </property>
-           <property name="leftMargin">
-            <number>0</number>
-           </property>
-           <property name="topMargin">
-            <number>0</number>
-           </property>
-           <property name="rightMargin">
-            <number>0</number>
-           </property>
-           <property name="bottomMargin">
+           <property name="margin">
             <number>0</number>
            </property>
            <item>
@@ -1373,7 +1317,7 @@ color: rgb(255, 255, 255);</string>
       <widget class="QPushButton" name="sendButton">
        <property name="minimumSize">
         <size>
-         <width>0</width>
+         <width>150</width>
          <height>0</height>
         </size>
        </property>
@@ -1381,7 +1325,7 @@ color: rgb(255, 255, 255);</string>
         <string>Confirm the send action</string>
        </property>
        <property name="styleSheet">
-        <string notr="true">color: rgb(255, 255, 255);background:transparent;</string>
+        <string notr="true">border: 1px solid white; color: rgb(255, 255, 255);background:transparent;</string>
        </property>
        <property name="text">
         <string>S&amp;end</string>
@@ -1410,14 +1354,14 @@ color: rgb(255, 255, 255);</string>
         <string>Clear all fields of the form.</string>
        </property>
        <property name="styleSheet">
-        <string notr="true">color: rgb(255, 255, 255);background:transparent;</string>
+        <string notr="true">border: 1px solid white; color: rgb(255, 255, 255);background:transparent;</string>
        </property>
        <property name="text">
         <string>Clear &amp;All</string>
        </property>
        <property name="icon">
         <iconset resource="../bitcredit.qrc">
-         <normaloff>:/icons/receiving_addresses</normaloff>:/icons/receiving_addresses</iconset>
+         <normaloff>:/icons/remove</normaloff>:/icons/remove</iconset>
        </property>
        <property name="autoDefault">
         <bool>false</bool>
@@ -1426,17 +1370,11 @@ color: rgb(255, 255, 255);</string>
      </item>
      <item>
       <widget class="QPushButton" name="addButton">
-       <property name="minimumSize">
-        <size>
-         <width>0</width>
-         <height>0</height>
-        </size>
-       </property>
        <property name="toolTip">
         <string>Send to multiple recipients at once</string>
        </property>
        <property name="styleSheet">
-        <string notr="true">color: rgb(255, 255, 255);background:transparent;</string>
+        <string notr="true">border: 1px solid white; color: rgb(255, 255, 255);background:transparent;</string>
        </property>
        <property name="text">
         <string>Add &amp;Recipient</string>
@@ -1478,7 +1416,7 @@ color: rgb(255, 255, 255);</string>
         <string>Darksend</string>
        </property>
        <property name="checked">
-        <bool>true</bool>
+        <bool>false</bool>
        </property>
       </widget>
      </item>
@@ -1552,15 +1490,15 @@ color: rgb(255, 255, 255);</string>
  </widget>
  <customwidgets>
   <customwidget>
+   <class>QValidatedLineEdit</class>
+   <extends>QLineEdit</extends>
+   <header>qvalidatedlineedit.h</header>
+  </customwidget>
+  <customwidget>
    <class>BitcreditAmountField</class>
    <extends>QLineEdit</extends>
    <header>bitcreditamountfield.h</header>
    <container>1</container>
-  </customwidget>
-  <customwidget>
-   <class>QValidatedLineEdit</class>
-   <extends>QLineEdit</extends>
-   <header>qvalidatedlineedit.h</header>
   </customwidget>
  </customwidgets>
  <resources>

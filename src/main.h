@@ -40,7 +40,6 @@
 #include <vector>
 
 #include <boost/unordered_map.hpp>
-using namespace std;
 
 class CBlockIndex;
 class CBlockTreeDB;
@@ -138,9 +137,6 @@ extern unsigned int nCoinCacheSize;
 extern CFeeRate minRelayTxFee;
 extern bool fLargeWorkInvalidChainFound;
 extern bool fLargeWorkForkFound;
-extern CCriticalSection grantdb;
-extern std::map<std::string,int64_t > grantAwards;
-extern std::map<std::string,int64_t>::iterator gait;
 
 /** Best header we've seen so far (used for getheaders queries' starting points). */
 extern CBlockIndex *pindexBestHeader;
@@ -207,7 +203,7 @@ bool GetTransaction(const uint256 &hash, CTransaction &tx, uint256 &hashBlock, b
 bool ActivateBestChain(CValidationState &state, CBlock *pblock = NULL);
 CAmount GetBlockValue(int nHeight, const CAmount& nFees);
 int64_t GetMasternodePayment(int nHeight, int64_t blockValue);
-CAmount GetGrantValue(int nHeight, int64_t nFees);
+
 /** Create a new block index entry for a given block hash */
 CBlockIndex * InsertBlockIndex(uint256 hash);
 /** Abort with a message */
@@ -642,18 +638,3 @@ protected:
 
 
 #endif // BITCREDIT_MAIN_H
-
-bool isGrantAwardBlock(int64_t nHeight);
-bool getGrantAwards(int64_t nHeight);
-int64_t getGrantDatabaseBlockHeight();
-void processNextBlockIntoGrantDatabase();
-bool getGrantAwardsFromDatabaseForBlock(int64_t nHeight);
-bool ensureGrantDatabaseUptoDate(int64_t nHeight);
-bool startsWith(const char *str, const char *pre);
-void getWinnersFromBallots(int64_t nHeight,int officeNumber);
-string electOrEliminate(int64_t droopQuota,  unsigned int requiredCandidates);
-void electCandidate(string topOfThePoll, double gregorySurplusTransferValue,bool isLastCandidate);
-void eliminateCandidate(string topOfThePoll,bool isLastCandidate);
-void printBallots();
-
-bool deSerializeGrantDB(string filename);

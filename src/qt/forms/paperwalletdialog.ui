@@ -70,7 +70,7 @@
     <string>New Address</string>
    </property>
    <property name="icon">
-    <iconset resource="../../../../../bicreditsnew/src/qt/bitcredit.qrc">
+    <iconset resource="../bitcredit.qrc">
      <normaloff>:/icons/add</normaloff>:/icons/add</iconset>
    </property>
   </widget>
@@ -171,7 +171,7 @@
     <string>  Print</string>
    </property>
    <property name="icon">
-    <iconset resource="../../../../../bicreditsnew/src/qt/bitcredit.qrc">
+    <iconset resource="../bitcredit.qrc">
      <normaloff>:/icons/print</normaloff>:/icons/print</iconset>
    </property>
   </widget>
@@ -359,7 +359,7 @@ p, li { white-space: pre-wrap; }
   <zorder>label_3</zorder>
  </widget>
  <resources>
-  <include location="../../../../../bicreditsnew/src/qt/bitcredit.qrc"/>
+  <include location="../bitcredit.qrc"/>
  </resources>
  <connections/>
 </ui>

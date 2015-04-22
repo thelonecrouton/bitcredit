@@ -62,9 +62,9 @@ QString BitcreditUnits::description(int unit)
 {
     switch(unit)
     {
-    case BCR: return QString("Bitcredits");
-    case mBCR: return QString("Milli-Bitcredits (1 / 1" THIN_SP_UTF8 "000)");
-    case uBCR: return QString("Micro-Bitcredits (1 / 1" THIN_SP_UTF8 "000" THIN_SP_UTF8 "000)");
+    case BCR: return QString("Bitcreditss");
+    case mBCR: return QString("Milli-Bitcreditss (1 / 1" THIN_SP_UTF8 "000)");
+    case uBCR: return QString("Micro-Bitcreditss (1 / 1" THIN_SP_UTF8 "000" THIN_SP_UTF8 "000)");
     default: return QString("???");
     }
 }

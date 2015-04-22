@@ -9,7 +9,6 @@
 #include "checkpoints.h"
 #include "coincontrol.h"
 #include "net.h"
-#include "masternode.h"
 #include "darksend.h"
 #include "keepass.h"
 #include "instantx.h"
@@ -3216,11 +3215,3 @@ bool CMerkleTx::AcceptToMemoryPool(bool fLimitFree, bool fRejectInsaneFee)
     return ::AcceptToMemoryPool(mempool, state, *this, fLimitFree, NULL, fRejectInsaneFee);
 }
 
-bool CWallet::AddAdrenalineNodeConfig(CAdrenalineNodeConfig nodeConfig)
-{
-    bool rv = CWalletDB(strWalletFile).WriteAdrenalineNodeConfig(nodeConfig.sAlias, nodeConfig);
-    if(rv)
-	uiInterface.NotifyAdrenalineNodeChanged(nodeConfig);
-
-    return rv;
-}
