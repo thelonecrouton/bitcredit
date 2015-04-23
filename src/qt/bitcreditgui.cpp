@@ -117,8 +117,8 @@ BitcreditGUI::BitcreditGUI(const NetworkStyle *networkStyle, QWidget *parent) :
     trayIconMenu(0),
     notificator(0),
     rpcConsole(0),
+    sendMessagesAction(0),    
     prevBlocks(0),
-    sendMessagesAction(0),
     spinnerFrame(0)
 {
     setFixedSize(1000, 565);

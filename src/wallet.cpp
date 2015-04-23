@@ -1599,9 +1599,9 @@ bool CWallet::SelectCoinsMinConf(const CAmount& nTargetValue, int nConfMine, int
         LogPrint("selectcoins", "total %s\n", FormatMoney(nBest));
     }
 
-    return true;
-}
-
+    
+	}
+	return true;
 }
 
 bool CWallet::SelectCoins(const CAmount nTargetValue, set<pair<const CWalletTx*,unsigned int> >& setCoinsRet, CAmount& nValueRet, const CCoinControl* coinControl, AvailableCoinsType coin_type, bool useIX) const
