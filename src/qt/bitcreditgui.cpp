@@ -116,8 +116,8 @@ BitcreditGUI::BitcreditGUI(const NetworkStyle *networkStyle, QWidget *parent) :
     trayIcon(0),
     trayIconMenu(0),
     notificator(0),
-    rpcConsole(0),
-    sendMessagesAction(0),    
+    sendMessagesAction(0),
+    rpcConsole(0),    
     prevBlocks(0),
     spinnerFrame(0)
 {
