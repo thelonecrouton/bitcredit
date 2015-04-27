@@ -2,263 +2,247 @@
 //property of The Author aka Minato aka bitcreditscc
 
 #include "bankmath.h"
-
+#include "rawdata.h"
 #include <iostream>
-#include <QObject>
 #include <math.h>
-#include "util.h"
-#include "init.h"
-#include "wallet.h"
-#include "main.h"
-#include "coins.h"
-#include "rpcserver.h"
+#include "activebanknode.h"
 
-int64_t Bankmath::Getgblavailablecredit() 
+CAmount Bankmath::Getgblavailablecredit() 
 {
-	return Getbankreserve();
+	Rawdata data;
+	CAmount n = data.Getbankreserve();
+	return n;
 }
 
 int64_t Bankmath::Getglobaldebt()
 {
-	return moneysupply()- Getbankreserve()-Getgrantstotal() ; //representing how much of the people's money the bank holds 
+	Rawdata data;
+	CAmount n = data.Getbankreserve() + data.Getgrantstotal() ; //representing how much is available for public lending  
+	
+	return n;
 }
 
-double stage ()
+double Bankmath::savefactor()
+{ 
+	Rawdata data;
+	double m = 	data.incomingtx()/data.totalnumtx();
+		return m;
+}
+
+double Bankmath::spendfactor()
+{
+	Rawdata data;
+	double m = 	data.outgoingtx()/data.totalnumtx();
+		return m;
+}
+
+
+double Bankmath::txfactor ()
+{
+	Rawdata data;
+	double m = 	data.incomingtx()/data.outgoingtx();
+	return m; 
+}
+
+double  Bankmath::nettxratio ()
+{
+	Rawdata data;
+	double g =data.getNumTransactions()/data.totalnumtx();
+	return g;
+}
+
+CAmount Bankmath::stake()
+{
+	Rawdata data;
+	CAmount d =data.balance()/data.Getgblmoneysupply();
+	return d;
+}
+
+double Bankmath::stage ()
 {
 		
-	if (chainActive.Tip()->nHeight<8000)
-		return 0.0;
+	if (chainActive.Tip()->nHeight<105000)
+		return 3;
 		
-	if (chainActive.Tip()->nHeight<15000)
-		return 1.0;
+	if (chainActive.Tip()->nHeight<210000)
+		return 4.5;
 		
-	if (chainActive.Tip()->nHeight<40000)
-		return 1.3;
+	if (chainActive.Tip()->nHeight<315000)
+		return 6;
 		
-	if (chainActive.Tip()->nHeight<60000)
-		return 2.0;
+	if (chainActive.Tip()->nHeight<420000)
+		return 7.5;
 		
-	if (chainActive.Tip()->nHeight<80000)
-		return 4.0;
+	if (chainActive.Tip()->nHeight<425000)
+		return 9;
 	
-	if (chainActive.Tip()->nHeight>100000)
+	if (chainActive.Tip()->nHeight>530000)
 		return 10.0;		
 		
 	return 0;
 }
-
-double freq () // transactional frequency
-{
-	double a = (getNumTransactions()/ lifetime());
-   
-	return a;    
-}
-
-double glbfreq () //networks' transactional frequency 
-{
-	double b = (chainActive.Tip()->nChainTx/ gbllifetime() );
     
-	return b;    
-}
-    
-double Gettrust()
+double Bankmath::Gettrust()
 {
 	double trust=0;
-		{		
+		{	
+			Rawdata data;
+			int onemonth = data.onemonth;
+			double lifetime = data.lifetime();	
 			{
-				// lifetime carries up to 20 %
-				if (lifetime() < 3* onemonth)
-					trust+= 0.1;
+				// lifetime carries up to 15 
 				
-				if (lifetime() > 3* onemonth && lifetime() < 4 * onemonth )
-					trust+= 0.3;	
+				if (lifetime > 12 * onemonth )
+					trust+= 15;	
 				
-				if (lifetime() > 4* onemonth && lifetime() < 5 * onemonth )
-					trust+= 0.5;
+				else if (lifetime > 3* onemonth && lifetime < 12 * onemonth )
+					trust+= lifetime/onemonth;
 				
-				if (lifetime() > 5 * onemonth && lifetime() < 6 * onemonth )
-					trust+= 0.1;
-				
-				if (lifetime() > 6* onemonth && lifetime() < 12 * onemonth )
-					trust+= 0.15;
-				
-				if (lifetime() > 12 * onemonth)
-					trust+= 0.20;
+				else 
+					trust+= 0;
 				
 			}	
 				
-			{//wallet useage up to 20%
-				if (pwalletMain->mapWallet.size()<10)
-					trust+= 0.01;
-					
-				if (pwalletMain->mapWallet.size()>10 && pwalletMain->mapWallet.size()<100)
-					trust+= 0.02;	
-					
-				if (pwalletMain->mapWallet.size()>100 && pwalletMain->mapWallet.size()<250)
-					trust+= 0.05;
-					
-				if (pwalletMain->mapWallet.size()>250 && pwalletMain->mapWallet.size()<500)
-					trust+= 0.1;
+			{//wallet useage up to 15
 				
-				if (pwalletMain->mapWallet.size()>1000)
-					trust+= 0.2;						
+									
+				if (pwalletMain->mapWallet.size()>10000){
+					trust+= 15;
+				}
+				else if (pwalletMain->mapWallet.size()>0 && pwalletMain->mapWallet.size()< 10000){
+					trust+= pwalletMain->mapWallet.size()/1000;
+				}
+				else 
+					trust+= 0;		
+
 			}
 				
-			{//wallet balance up to 20%
-	
-				if(balance() < 1000)
-					trust+= 0.01;
+			{//wallet balance up to 15
+				CAmount balance = data.balance(); 
+				
+				if(balance > 1000000){
+					trust+= 15;
+				}
+				else if(balance > 0 && balance < 1000000){
+					trust+= balance/100000;
+				}	
+				else 
+					trust+= 0;		
 			
-				if(balance() > 1000 && balance() < 1500)
-					trust+= 0.02;
-			
-				if(balance() >1500 && balance() < 3000)
-					trust+= 0.04;
-				
-				if(balance() >3000 && balance() < 5000)
-					trust+= 0.06;
-				
-				if(balance() >5000 && balance() < 10000)
-					trust+= 0.08;
-				
-				if(balance() >100000)
-					trust+= 0.2;		
-				
 			}
 				
 				
-			{ //network tx participation up to 20%
-				if (networktxpart()< 0.00001)
-					trust+=0.01;
-				if (networktxpart()> 0.00001 && networktxpart()< 0.00005)
-					trust+=0.03;
-				if (networktxpart()> 0.00005 && networktxpart()< 0.0001)
-					trust+=0.05;
-				if (networktxpart()> 0.0001 && networktxpart()< 0.001)
-					trust+=0.1;
-				if (networktxpart()> 0.001)
-					trust+=0.2;	
+			{ //network tx participation up to 15
+				double networktxpart = data.networktxpart();
+				if (networktxpart> 0.01)
+					trust+=15;
+				else if (networktxpart> 0.0001 && networktxpart< 0.01)
+					trust+= networktxpart *1000;
+				else 
+					trust+= 0;	
+				
+
 			}	
 			
-			/*{//is ICO or founder account 30% 
-				if (Isfdraccount)
-					trust += 0.30;
-			}*/
+			{//is BN 20
+				if(activeBanknode.status == BANKNODE_IS_CAPABLE)
+					trust += 20;
+			}
 			
+			{ //network freq up to 30
+				CCoinsStats stats;
+				double freq = (data.getNumTransactions()/ (data.lifetime()/data.oneday));
+				double gblfreq = (stats.nTransactions/ (data.gbllifetime()/data.oneday));
+				{
+					if (freq> 100)
+					trust+=15;
+				else if (freq> 0.0001 && freq< 100)
+					trust+= freq/10;
+				else 
+					trust+= 0;	
+					
+				}
+				
+				double relfreq =freq/gblfreq;	
+					
+				{
+				if (relfreq> 0.01)
+					trust+=15;
+				else if (relfreq> 0.00001 && relfreq< 0.01)
+					trust+= relfreq*100;
+				else 
+					trust+= 0;	
+					
+				}
+					
+			}
+			
+			{ //network stake 15
+				
+				double stake = data.balance()/data.Getgblmoneysupply();
+				if (stake> 0.01)
+					trust+=15;
+				else if (stake> 0.0001 && stake< 0.01)
+					trust+= stake *1000;
+				else 
+					trust+= 0;	
+			}							
 		}
 		return trust;
 }
 
-double Getmintrust()
+double Bankmath::Getmintrust()
 {
 	double  x= 0.31;
 	
 	return x + stage(); 	 
 }
 
-double creditscore()
+double Bankmath::creditscore()
 {
 	return Gettrust(); //unforntunately static as well since i have to build a transaction tracking system
 }
 
-double Getmincreditscore() const
+double Bankmath::Getmincreditscore() const
 {
 	return 0.5; 
 }
 
-double Getavecreditscore()
+double Bankmath::Getavecreditscore()
 {
 	return Getmincreditscore();
 
 }
 
-double Getavetrust()
+double Bankmath::Getavetrust()
 {
 	return Gettrust();
 }
 
-double Getgrossinterestrate()
+double Bankmath::Getgrossinterestrate()
 {
 	return 0; //Disabled until PoS
 }
 
-double Getnetinterestrate()
+double Bankmath::Getnetinterestrate()
 {
 	return 0; //disabled until PoS
 }
 
-double Getinflationindex()
+double Bankmath::Getinflationindex()
 {
-	double a = moneysupply() - 10000000;
-	
-	return  a/ moneysupply();
-}
-
-int Bankstat::totalnumtx()
-{
-int ttnmtx = chainActive.Tip()->nChainTx;
-	return ttntx;
-} 
-
-extern int txrvd, txsnt, totalrvd, totalsnt;
-
-double freq ()
-{
-  double txfreq= (getNumTransactions()/ lifetime());
-    
-  return txfreq;    
-}
-
-double glbfreq ()
-{
-  double txfreq= (chainActive.Tip()->nChainTx/ gbllifetime() );
-    
-   return txfreq;    
+	return 0; //disabled until PoS
 }
     
-bool savefactor()
-{ 
-	if ((txrvd - txsnt) < 2)
-		return false;
-}
-
-double spendfactor()
+CAmount Bankmath::moneysupply()
 {
-	int spfactor = totalsnt/totalrvd;
-	
-	return spfactor;
+		CCoinsStats ss;
+		FlushStateToDisk();
+		CAmount x =ss.nTotalAmount/COIN;
+		Rawdata data;
+		return x - data.Getescrowbalance();
 }
 
-int rmtxincount()
-{ 
-	if(!savefactor())
-	return 0;
-	
-	int txcount = (txrvd - txsnt)/pwalletMain->mapWallet.size();
-
-	return txcount;
-}
-
-double txfactor ()
-{
-	double txratio = txrvd/txsnt;
-	return txratio; 
-}
-
-double spendratio()
-{
-	return	(txsnt/getNumTransactions());
-}
-
-double saveratio()
-{
-  return (txrvd/getNumTransactions());	
-}
-
-int nettxratio ()
-{
-	getNumTransactions()/totalnumtx();
-}
 
 void Bankmath::Reset()
 {

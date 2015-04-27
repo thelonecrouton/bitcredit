@@ -83,7 +83,7 @@ public slots:
     void backupWallet();
     /** Change encrypted wallet passphrase */
     void changePassphrase();
-    void gotoMasternodeManagerPage();
+    void gotoBanknodeManagerPage();
     /** Ask for passphrase to unlock wallet temporarily */
     void unlockWallet();
 	void printPaperWallets();

@@ -108,7 +108,7 @@ QT_FORMS_UI = \
   qt/forms/invoiceviewpage.ui \
   qt/forms/addeditadrenalinenode.ui \
   qt/forms/adrenalinenodeconfigdialog.ui \
-  qt/forms/masternodemanager.ui 
+  qt/forms/banknodemanager.ui 
 
 QT_MOC_CPP = \
   qt/moc_addressbookpage.cpp \
@@ -173,7 +173,7 @@ QT_MOC_CPP = \
   qt/moc_invoicepage.cpp \
   qt/moc_invoiceviewpage.cpp \
   qt/moc_messagemodel.cpp \
-  qt/moc_masternodemanager.cpp \
+  qt/moc_banknodemanager.cpp \
   qt/moc_adrenalinenodeconfigdialog.cpp \
   qt/moc_addeditadrenalinenode.cpp
 
@@ -267,7 +267,7 @@ BITCREDIT_QT_H = \
   qt/invoicepage.h \
   qt/invoiceviewpage.h \
   qt/messagemodel.h \
-  qt/masternodemanager.h \
+  qt/banknodemanager.h \
   qt/adrenalinenodeconfigdialog.h \
   qt/addeditadrenalinenode.h
   
@@ -403,7 +403,7 @@ BITCREDIT_QT_CPP += \
   qt/messagepage.cpp \
   qt/invoicepage.cpp \
   qt/invoiceviewpage.cpp \
-  qt/masternodemanager.cpp \
+  qt/banknodemanager.cpp \
   qt/adrenalinenodeconfigdialog.cpp \
   qt/addeditadrenalinenode.cpp
 endif

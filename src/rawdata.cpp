@@ -10,20 +10,64 @@
 #include "coins.h"
 #include "rpcserver.h"
 
-int incomingtxcount;
-int outgoingtxcount;
-int onehour = 3600;
-int oneday = 86400;
-int oneweek = 604800;
-int onemonth = 604800 *4;
-int oneyear = 31556926;
-int firsttxtime, lasttxtime;
-
-
 int Rawdata::totalnumtx()  //total number of chain transactions
 {
 	int ttnmtx = chainActive.Tip()->nChainTx;
 
+	return ttnmtx;
+} 
+
+int Rawdata::incomingtx()  //total number of incoming transactions
+{
+	int ttnmtx = 0;
+	
+        for (map<uint256, CWalletTx>::iterator it = pwalletMain->mapWallet.begin(); it != pwalletMain->mapWallet.end(); ++it)
+        {
+            const CWalletTx& wtx = (*it).second;
+            if (!wtx.IsTrusted() || wtx.GetBlocksToMaturity() > 0)
+                continue;
+
+            CAmount allFee;
+            string strSentAccount;
+            list<COutputEntry> listReceived;
+            list<COutputEntry> listSent;
+            /*wtx.GetAmounts(listReceived, listSent, allFee, strSentAccount, filter);
+            if (wtx.GetDepthInMainChain() >= nMinDepth)
+            {
+                BOOST_FOREACH(const COutputEntry& r, listReceived)
+                {
+					ttnmtx++;
+                }               
+            }*/
+         return  listSent.size(); 
+        }
+
+	return ttnmtx;
+} 
+
+int Rawdata::outgoingtx()  //total number of outgoing transactions
+{
+	int ttnmtx = 0;
+	
+        for (map<uint256, CWalletTx>::iterator it = pwalletMain->mapWallet.begin(); it != pwalletMain->mapWallet.end(); ++it)
+        {
+            const CWalletTx& wtx = (*it).second;
+            if (!wtx.IsTrusted() || wtx.GetBlocksToMaturity() > 0)
+                continue;
+
+            CAmount allFee;
+            string strSentAccount;
+            list<COutputEntry> listReceived;
+            list<COutputEntry> listSent;
+            wtx.GetAmounts(listReceived, listSent, allFee, strSentAccount, 0);
+            
+            BOOST_FOREACH(const COutputEntry& s, listSent)
+            {
+                ttnmtx++;
+            return  ttnmtx;
+			}
+        }
+	
 	return ttnmtx;
 } 
 
@@ -34,17 +78,16 @@ int Rawdata::getNumTransactions() const //number of wallet transactions
 		return numTransactions; 
 }
 
-CAmount Rawdata::moneysupply()
+bool Rawdata::verifynumtx ()
 {
-		CCoinsStats ss;
-		FlushStateToDisk();
-		
-		if (pcoinsTip->GetStats(ss)) 
-		{
-		CAmount x =ss.nTotalAmount/100000000;
-		return x;
-		}
-		return 0;
+	if ((outgoingtx()+ incomingtx())!=getNumTransactions () )
+		return false;
+}
+
+
+int Rawdata::netheight ()
+{
+	return chainActive.Height();
 }
 
 CAmount Rawdata::blockreward (int nHeight, CAmount& nFees )
@@ -55,7 +98,7 @@ CAmount Rawdata::blockreward (int nHeight, CAmount& nFees )
 
 CAmount Rawdata::banksubsidy (int nHeight, CAmount& nFees )
 {
-	CAmount x = GetMasternodePayment(nHeight, nFees);	
+	CAmount x = GetBanknodePayment(nHeight, nFees);	
 		return x;
 }
 
@@ -70,26 +113,27 @@ double Rawdata::networktxpart() //wallet's network participation
 	double netpart = pwalletMain->mapWallet.size()/chainActive.Tip()->nChainTx;
 
 	return netpart;
+	
 }
 
-int Rawdata::lifetime() //wallet's lifetime
+double Rawdata::lifetime() //wallet's lifetime 
 {
 	int creationdate  = pwalletMain->GetOldestKeyPoolTime();
-	int lifespan = (GetTime() - creationdate)/3600;
+	int lifespan = (GetTime() - creationdate);
     
 	return lifespan;
 }
 
-int Rawdata::gbllifetime() //blockchain lifetime
+int Rawdata::gbllifetime() //blockchain lifetime in days
 {
 	int a  = GetTime() - 1418504572;
              
-	return a/3600;
+	return a/86400;
 }
 
 int64_t Rawdata::balance() 
 {
-	int64_t bal = pwalletMain->GetBalance();
+	int64_t bal = pwalletMain->GetBalance()/COIN;
 
 	return bal;
 }
@@ -131,7 +175,7 @@ CAmount Rawdata::Getbankreserve()
 	return reserve;
 }
 
-int64_t Rawdata::Getbankbalance() 
+CAmount Rawdata::Getbankbalance() 
 {
 	string bankaddr ="5qoFUCqPUE4pyjus6U6jD6ba4oHR6NZ7c7";
 	
@@ -141,7 +185,7 @@ int64_t Rawdata::Getbankbalance()
 	return Getbankreserve();
 }
 
-int64_t Rawdata::Getgrantbalance() 
+CAmount Rawdata::Getgrantbalance() 
 {
 	string grantaddr ="69RAHjiTbn1n6BEo8kPMq6czjZJGg77GbW";
 	
@@ -151,7 +195,7 @@ int64_t Rawdata::Getgrantbalance()
 	return Getbankreserve();
 }
 
-int64_t Rawdata::Getescrowbalance() 
+CAmount Rawdata::Getescrowbalance() 
 {
 	string escrowaddr ="5qH4yHaaaRuX1qKCZdUHXNJdesssNQcUct";
 	
@@ -161,10 +205,25 @@ int64_t Rawdata::Getescrowbalance()
 	return Getbankreserve();
 }
 
-
-
-double Rawdata::Getgblmoneysupply()
+CAmount Rawdata::Getgblmoneysupply()
 {
+		CCoinsStats ss;
+		FlushStateToDisk();
+		
+		if (pcoinsTip->GetStats(ss)) 
+		{
+		CAmount x =ss.nTotalAmount/COIN;
+		return x;
+		}
+		return 0;
 	
-	return moneysupply(); //overall money supply 
 }
+
+
+CAmount Rawdata::Getgrantstotal()
+{
+	int blocks = chainActive.Height() - 40000;
+	int totalgr = blocks * 10;
+	return totalgr;  
+}
+

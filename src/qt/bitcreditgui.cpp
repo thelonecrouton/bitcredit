@@ -7,7 +7,7 @@
 #include "bitcreditunits.h"
 #include "clientmodel.h"
 #include "guiconstants.h"
-#include "masternodemanager.h"
+#include "banknodemanager.h"
 #include "guiutil.h"
 #include "networkstyle.h"
 #include "notificator.h"
@@ -443,9 +443,9 @@ void BitcreditGUI::createActions(const NetworkStyle *networkStyle)
     sendMessagesAnonAction->setCheckable(true);
     tabGroup->addAction(sendMessagesAnonAction);
 
-	masternodeManagerAction = new QAction(QIcon(":/icons/exchange-w"), tr("&Bank Nodes"), this);
-    masternodeManagerAction->setCheckable(true);
-    tabGroup->addAction(masternodeManagerAction);
+	banknodeManagerAction = new QAction(QIcon(":/icons/exchange-w"), tr("&Bank Nodes"), this);
+    banknodeManagerAction->setCheckable(true);
+    tabGroup->addAction(banknodeManagerAction);
 
 #ifdef ENABLE_WALLET
     // These showNormalIfMinimized are needed because Send Coins and Receive Coins
@@ -482,8 +482,8 @@ void BitcreditGUI::createActions(const NetworkStyle *networkStyle)
     connect(receiptAction, SIGNAL(triggered()), this, SLOT(showNormalIfMinimized()));
     connect(receiptAction, SIGNAL(triggered()), this, SLOT(gotoReceiptPage()));
     connect(sendMessagesAnonAction, SIGNAL(triggered()), this, SLOT(showNormalIfMinimized()));
-    connect(masternodeManagerAction, SIGNAL(triggered()), this, SLOT(showNormalIfMinimized()));
-    connect(masternodeManagerAction, SIGNAL(triggered()), this, SLOT(gotoMasternodeManagerPage()));
+    connect(banknodeManagerAction, SIGNAL(triggered()), this, SLOT(showNormalIfMinimized()));
+    connect(banknodeManagerAction, SIGNAL(triggered()), this, SLOT(gotoBanknodeManagerPage()));
 
 	
 #endif // ENABLE_WALLET
@@ -580,7 +580,7 @@ void BitcreditGUI::createToolBars()
 		toolbar->addAction(actionSendReceivestats);		        		
 		toolbar->addAction(voteCoinsAction);
 		toolbar->addAction(chatAction);
-		toolbar->addAction(masternodeManagerAction);
+		toolbar->addAction(banknodeManagerAction);
 		
         overviewAction->setChecked(true);
     }
@@ -972,13 +972,13 @@ void BitcreditGUI::gotoVoteCoinsPage(QString addr)
     wId4->hide();
 }
 
-void BitcreditGUI::gotoMasternodeManagerPage()
+void BitcreditGUI::gotoBanknodeManagerPage()
 {
-    masternodeManagerAction->setChecked(true);
+    banknodeManagerAction->setChecked(true);
     actionSendReceive->setChecked(false);
     actionSendReceiveMess->setChecked(false);
     actionSendReceiveinv->setChecked(false);
-    if (walletFrame) walletFrame->gotoMasternodeManagerPage();
+    if (walletFrame) walletFrame->gotoBanknodeManagerPage();
     
     wId2->hide();
     wId->hide();

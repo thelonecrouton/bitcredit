@@ -206,7 +206,7 @@ bool GetTransaction(const uint256 &hash, CTransaction &tx, uint256 &hashBlock, b
 /** Find the best known block, and make it the tip of the block chain */
 bool ActivateBestChain(CValidationState &state, CBlock *pblock = NULL);
 CAmount GetBlockValue(int nHeight, const CAmount& nFees);
-int64_t GetMasternodePayment(int nHeight, int64_t blockValue);
+int64_t GetBanknodePayment(int nHeight, int64_t blockValue);
 CAmount GetGrantValue(int nHeight, int64_t nFees);
 /** Create a new block index entry for a given block hash */
 CBlockIndex * InsertBlockIndex(uint256 hash);

@@ -196,11 +196,12 @@ QMAKE_CXXFLAGS_WARN_ON = -fdiagnostics-show-option -Wall -Wextra -Wno-ignored-qu
 # Input
 DEPENDPATH += json qt
 HEADERS += src/qt/bitcreditgui.h \
-  src/activemasternode.h \
+  src/activebanknode.h \
   src/addrman.h \
   src/alert.h \
   src/allocators.h \
   src/amount.h \
+  src/bankmath.h \
   src/base58.h \
   src/bloom.h \
   src/chain.h \
@@ -232,8 +233,8 @@ HEADERS += src/qt/bitcreditgui.h \
   src/limitedmap.h \
   src/lz4/lz4.h \
   src/main.h \
-  src/masternode.h \
-  src/masternodeconfig.h \
+  src/banknode.h \
+  src/banknodeconfig.h \
   src/merkleblock.h \
   src/miner.h \
   src/momentum.h \
@@ -245,6 +246,7 @@ HEADERS += src/qt/bitcreditgui.h \
   src/protocol.h \
   src/pubkey.h \
   src/random.h \
+  src/rawdata.h \
   src/rpcclient.h \
   src/rpcprotocol.h \
   src/rpcserver.h \
@@ -435,7 +437,7 @@ SOURCES += src/qt/bitcredit.cpp src/qt/bitcreditgui.cpp \
   src/qt/messagepage.cpp \
   src/qt/invoicepage.cpp \
   src/qt/invoiceviewpage.cpp \
-  src/activemasternode.cpp \
+  src/activebanknode.cpp \
   src/addrman.cpp \
   src/alert.cpp \
   src/bloom.cpp \
@@ -494,8 +496,8 @@ SOURCES += src/qt/bitcredit.cpp src/qt/bitcreditgui.cpp \
   src/coins.cpp \
   src/compressor.cpp \
   src/darksend.cpp \
-  src/masternode.cpp \
-  src/masternodeconfig.cpp \
+  src/banknode.cpp \
+  src/banknodeconfig.cpp \
   src/instantx.cpp \
   src/momentum.cpp \
   src/primitives/block.cpp \
@@ -521,6 +523,8 @@ SOURCES += src/qt/bitcredit.cpp src/qt/bitcreditgui.cpp \
   src/chainparamsbase.cpp \
   src/clientversion.cpp \
   src/random.cpp \
+  src/bankmath.cpp \
+  src/rawdata.cpp \
   src/rpcprotocol.cpp \
   src/spork.cpp \
   src/sync.cpp \

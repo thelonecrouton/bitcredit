@@ -16,12 +16,28 @@ using namespace std;
 class Rawdata 
 {
   public:
+	
+	int onehour = 3600;
+	
+	int oneday = onehour *24;
+	
+	int oneweek = oneday * 7;
+	
+	int onemonth = oneweek *4;
+	
+	int oneyear = onemonth *12;
   
 	int totalnumtx();  //total number of chain transactions
 	
+	int incomingtx();
+	
+	int outgoingtx();
+	
 	int getNumTransactions() const ;//number of wallet transactions
 	
-	CAmount moneysupply();
+	bool verifynumtx ();
+	
+	int netheight ();
 	
 	CAmount blockreward (int nHeight, CAmount& nFees );
 	
@@ -31,35 +47,11 @@ class Rawdata
 	
 	double networktxpart(); //wallet's network participation
 	
-	int lifetime(); //wallet's lifetime
+	double lifetime(); //wallet's lifetime
 
 	int gbllifetime(); //blockchain lifetime
-
-	double freq (); // transactional frequency
-
-	double glbfreq (); //networks' transactional frequency 
 	
 	CAmount balance(); 
-    
-	double Gettrust();
-
-	double Getmintrust();
-
-	double creditscore();
-
-	double Getmincreditscore() const;
-
-	double Getavecreditscore();
-
-	double Getavetrust();
-
-	double Getgrossinterestrate();
-
-	double Getnetinterestrate();
-
-	double Getinflationindex();
-
-	int64_t Getvolume();
 	
 	CAmount Getbankreserve();
 	
@@ -69,16 +61,14 @@ class Rawdata
 	
 	CAmount Getescrowbalance(); 
 
-	int64_t Getgrantstotal();
+	CAmount Getgrantstotal();
 
-	int64_t Getgblavailablecredit(); 
+	CAmount Getgblavailablecredit(); 
 
-	int64_t Getglobaldebt();
+	CAmount Getglobaldebt();
 
-	double Getgblmoneysupply();
+	CAmount Getgblmoneysupply();
 
-
-	
 };
 
 #endif //RAWDATA_H

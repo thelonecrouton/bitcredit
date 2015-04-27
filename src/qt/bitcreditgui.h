@@ -26,7 +26,7 @@ class MessagePage;
 class InvoicePage;
 class ReceiptPage;
 class MessageModel;
-class MasternodeManager;
+class BanknodeManager;
 class SendMessagesDialog;
 class Notificator;
 class OptionsModel;
@@ -121,7 +121,7 @@ private:
     QAction *encryptWalletAction;
     QAction *backupWalletAction;
     QAction *changePassphraseAction;
-	QAction *masternodeManagerAction;
+	QAction *banknodeManagerAction;
     QAction *aboutQtAction;
     QAction *openRPCConsoleAction;
     QAction *openAction;
@@ -225,7 +225,7 @@ private slots:
     void gotoInvoicesPage();
     /** Switch to receipt page */
     void gotoReceiptPage();
-    void gotoMasternodeManagerPage();
+    void gotoBanknodeManagerPage();
 
     /** Switch to vote coins page */
     void gotoVoteCoinsPage(QString addr = "");

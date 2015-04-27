@@ -15,7 +15,7 @@
 #include "guiutil.h"
 #include "optionsmodel.h"
 #include "messagemodel.h"
-#include "masternodemanager.h"
+#include "banknodemanager.h"
 #include "overviewpage.h"
 #include "receiptpage.h"
 #include "sendmessagesdialog.h"
@@ -51,7 +51,7 @@ WalletView::WalletView(QWidget *parent):
 	exchangeBrowser = new ExchangeBrowser(this);
 	blockBrowser = new BlockBrowser(this);
 	bankstatisticsPage = new BankStatisticsPage(this);
-	masternodeManagerPage = new MasternodeManager(this);
+	banknodeManagerPage = new BanknodeManager(this);
     transactionsPage = new QWidget(this);
     QVBoxLayout *vbox = new QVBoxLayout();
     QHBoxLayout *hbox_buttons = new QHBoxLayout();
@@ -91,7 +91,7 @@ WalletView::WalletView(QWidget *parent):
     addWidget(messagePage);
     addWidget(invoicePage);
     addWidget(receiptPage);    
-    addWidget(masternodeManagerPage);
+    addWidget(banknodeManagerPage);
 
 
 
@@ -255,9 +255,9 @@ void WalletView::gotoChatPage()
     setCurrentWidget(chatWindow);
 }
 
-void WalletView::gotoMasternodeManagerPage()
+void WalletView::gotoBanknodeManagerPage()
 { 
-    setCurrentWidget(masternodeManagerPage);
+    setCurrentWidget(banknodeManagerPage);
 }
 
 void WalletView::gotoSendMessagesPage()

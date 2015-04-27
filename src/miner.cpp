@@ -19,7 +19,7 @@
 #ifdef ENABLE_WALLET
 #include "wallet.h"
 #endif
-#include "masternode.h"
+#include "banknode.h"
 #include <boost/thread.hpp>
 #include <boost/tuple/tuple.hpp>
 
@@ -186,11 +186,11 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn)
     unsigned int nBlockMinSize = GetArg("-blockminsize", DEFAULT_BLOCK_MIN_SIZE);
     nBlockMinSize = std::min(nBlockMaxSize, nBlockMinSize);
 
-    // start masternode payments
-       bool bMasterNodePayment = false;
+    // start banknode payments
+       bool bBankNodePayment = false;
 
-    if (GetTimeMicros() > START_MASTERNODE_PAYMENTS)
-         bMasterNodePayment = true;
+    if (GetTimeMicros() > START_BANKNODE_PAYMENTS)
+         bBankNodePayment = true;
         
 
     // Collect memory pool transactions into the block
@@ -202,16 +202,16 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn)
         const int nHeight = pindexPrev->nHeight + 1;
         CCoinsViewCache view(pcoinsTip);
 
-        if(bMasterNodePayment) {
+        if(bBankNodePayment) {
             bool hasPayment = true;
             //spork
-            if(!masternodePayments.GetBlockPayee(pindexPrev->nHeight+1, pblock->payee)){
-                //no masternode detected
-                int winningNode = GetCurrentMasterNode(1);
+            if(!banknodePayments.GetBlockPayee(pindexPrev->nHeight+1, pblock->payee)){
+                //no banknode detected
+                int winningNode = GetCurrentBankNode(1);
                 if(winningNode >= 0){
-                    pblock->payee =GetScriptForDestination(vecMasternodes[winningNode].pubkey.GetID());
+                    pblock->payee =GetScriptForDestination(vecBanknodes[winningNode].pubkey.GetID());
                 } else {
-                    LogPrintf("CreateNewBlock: Failed to detect masternode to pay\n");
+                    LogPrintf("CreateNewBlock: Failed to detect banknode to pay\n");
                     hasPayment = false;
                 }
             }
@@ -231,7 +231,7 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn)
                 ExtractDestination(pblock->payee, address1);
                 CBitcreditAddress address2(address1);
 
-                LogPrintf("Masternode payment to %s\n", address2.ToString().c_str());
+                LogPrintf("Banknode payment to %s\n", address2.ToString().c_str());
             }
         }
 
@@ -417,7 +417,7 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn)
         nLastBlockSize = nBlockSize;
         LogPrintf("CreateNewBlock(): total size %u\n", nBlockSize);
         CAmount blockValue = GetBlockValue(pindexPrev->nHeight, nFees);
-        CAmount masternodePayment = GetMasternodePayment(pindexPrev->nHeight+1, blockValue);
+        CAmount banknodePayment = GetBanknodePayment(pindexPrev->nHeight+1, blockValue);
         CAmount bank = GetBlockValue(pindexPrev->nHeight, nFees) *(0.1);
 
         // Compute final coinbase transaction.
@@ -448,12 +448,12 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn)
 			
 			 if( isGrantAwardBlock( chainActive.Tip()->nHeight + 1 ) ){
 					
-				txNew.vout[2 +grantAwards.size() + payments ].nValue = masternodePayment;
-				blockValue -= masternodePayment;
+				txNew.vout[2 +grantAwards.size() + payments ].nValue = banknodePayment;
+				blockValue -= banknodePayment;
 				}
 				else{ 
-                txNew.vout[2+ payments].nValue = masternodePayment;
-                blockValue -= masternodePayment;
+                txNew.vout[2+ payments].nValue = banknodePayment;
+                blockValue -= banknodePayment;
 			}
 			           
         }
