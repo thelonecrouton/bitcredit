@@ -2063,7 +2063,7 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
 	}
 
 	}
-	if (pindex->nHeight>99999){
+	if (pindex->nHeight>107000 || GetTime() > 1430784000){
 	int64_t mnsubsidy = GetBanknodePayment(pindex->nHeight, block.vtx[0].GetValueOut());
 	bool foundPaymentAmount = false;
 	for (unsigned int i = 0; i < block.vtx[0].vout.size(); i++) {
@@ -2076,7 +2076,7 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
 	
 	}
 	
-	if (pindex->nHeight>99999){
+	if (pindex->nHeight>199999){
 	//FUNCTION - ConnectBlock
 	//SECTION - Bitcredit Grant Block Information
 	//
@@ -3992,7 +3992,7 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
         CAddress addrFrom;
         uint64_t nNonce = 1;
         vRecv >> pfrom->nVersion >> pfrom->nServices >> nTime >> addrMe;
-        if (pfrom->nVersion < MIN_PEER_PROTO_VERSION)
+        if (pfrom->nVersion < MIN_PEER_PROTO_VERSION && GetTime()> 1430784000)
         {
             // disconnect from peers older than this proto version
             LogPrintf("peer=%d using obsolete version %i; disconnecting\n", pfrom->id, pfrom->nVersion);

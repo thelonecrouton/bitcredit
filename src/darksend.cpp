@@ -1163,7 +1163,7 @@ void CDarkSendPool::SendDarksendDenominate(std::vector<CTxIn>& vin, std::vector<
     e.Add(vin, amount, txCollateral, vout);
     myEntries.push_back(e);
 
-    // relay our entry to the master node
+    // relay our entry to the bank node
     RelayDarkSendIn(vin, amount, txCollateral, vout);
     Check();
 }

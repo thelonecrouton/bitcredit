@@ -2,7 +2,7 @@
 //property of The Author aka Minato aka bitcreditscc
 
 #include "bankmath.h"
-#include "rawdata.h"
+
 #include <iostream>
 #include <math.h>
 #include "activebanknode.h"
@@ -229,7 +229,7 @@ double Bankmath::Getnetinterestrate()
 	return 0; //disabled until PoS
 }
 
-double Bankmath::Getinflationindex()
+double Bankmath::Getinflationrate()
 {
 	return 0; //disabled until PoS
 }

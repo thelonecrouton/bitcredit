@@ -1311,7 +1311,7 @@ bool AppInit2(boost::thread_group& threadGroup)
 
 	fBankNode = GetBoolArg("-banknode", false);
     if(fBankNode) {
-        LogPrintf("IS DARKSEND MASTER NODE\n");
+        LogPrintf("IS DARKSEND BANK NODE\n");
         strBankNodeAddr = GetArg("-banknodeaddr", "");
 
         LogPrintf(" addr %s\n", strBankNodeAddr.c_str());

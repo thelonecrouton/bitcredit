@@ -3,7 +3,7 @@
 
 #include <iostream>
 #include "coins.h"
-
+#include "rawdata.h"
 using namespace std;
 
 class Bankmath
@@ -46,7 +46,7 @@ public:
 
 	double Getnetinterestrate();
 
-	double Getinflationindex();
+	double Getinflationrate();
 	
 	double Gettrust();
 

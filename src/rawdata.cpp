@@ -31,14 +31,6 @@ int Rawdata::incomingtx()  //total number of incoming transactions
             string strSentAccount;
             list<COutputEntry> listReceived;
             list<COutputEntry> listSent;
-            /*wtx.GetAmounts(listReceived, listSent, allFee, strSentAccount, filter);
-            if (wtx.GetDepthInMainChain() >= nMinDepth)
-            {
-                BOOST_FOREACH(const COutputEntry& r, listReceived)
-                {
-					ttnmtx++;
-                }               
-            }*/
          return  listSent.size(); 
         }
 

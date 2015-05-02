@@ -37,16 +37,17 @@ public:
     double mincreditscore;
     double avecreditscore;
     double bestcreditscore, mintrust, avetrust, gbltrust, besttrust, netinterestrate, 
-     grantindex, inflationindex, consensusindex;
+     trust, inflationindex, consensusindex;
     int64_t  grantsaverage, gblmoneysupply, grantstotal, bankreserve, gblavailablecredit,
     globaldebt;
+    int totalnumtxPrevious;
     QString bankstatus;
     int64_t marketcap;
     
 public slots:
 
     void updateStatistics();
-    void updatePrevious(double,double,double,double,double,double,double,int,int64_t,double,int64_t,int64_t,int64_t,int64_t,QString );
+    void updatePrevious(double,double,double,double,double,double,double,double,int,int64_t,int64_t,int64_t,int64_t,int64_t,int64_t,int64_t,QString );
 
 private slots:
 
