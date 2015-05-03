@@ -779,7 +779,7 @@ Value getblocktemplate(const Array& params, bool fHelp)
 
 	bool BanknodePayments = false;
 	
-    if(pblock->nTime > START_BANKNODE_PAYMENTS) BanknodePayments = true;
+    if(pblock->nTime > 1427803200) BanknodePayments = true;
    
     result.push_back(Pair("banknode_payments", BanknodePayments));
     result.push_back(Pair("enforce_banknode_payments", true));

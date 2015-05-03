@@ -189,7 +189,7 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn)
     // start banknode payments
        bool bBankNodePayment = false;
 
-    if (GetTimeMicros() > START_BANKNODE_PAYMENTS)
+    if (GetTimeMicros() > 1427803200)
          bBankNodePayment = true;
         
 
