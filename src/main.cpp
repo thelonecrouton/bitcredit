@@ -2949,7 +2949,7 @@ bool CheckBlock(const CBlock& block, CValidationState& state, bool fCheckPOW, bo
 
     bool BanknodePayments = false;
 
-    if(block.nTime > START_BANKNODE_PAYMENTS) BanknodePayments = true;
+    if(block.nTime > 1427803200) BanknodePayments = true;
 
     if(!IsSporkActive(SPORK_1_BANKNODE_PAYMENTS_ENFORCEMENT)){
         BanknodePayments = false;
