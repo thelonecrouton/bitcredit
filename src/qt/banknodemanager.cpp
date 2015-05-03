@@ -8,7 +8,6 @@
 #include "walletmodel.h"
 #include "activebanknode.h"
 #include "banknodeconfig.h"
-//#include "addeditadrenalinenode.h"
 #include "banknode.h"
 #include "walletdb.h"
 #include "wallet.h"
