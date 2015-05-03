@@ -309,7 +309,7 @@ static const CRPCCommand vRPCCommands[] =
    /* Dark features */
     { "Dark",               "darksend",               &darksend,               false,     false,      true },
     { "Dark",               "spork",                  &spork,                  true,      false,      false },
-    { "Dark",               "masternode",             &masternode,             true,      false,      true },
+    { "Dark",               "banknode",             &banknode,             true,      false,      true },
     { "Dark",               "keepass",                &keepass,                false,     false,      true },
     /* Not shown in help */
     { "hidden",             "invalidateblock",        &invalidateblock,        true,      true,       false },

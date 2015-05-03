@@ -26,11 +26,12 @@ class MessagePage;
 class InvoicePage;
 class ReceiptPage;
 class MessageModel;
+class BanknodeManager;
 class SendMessagesDialog;
 class Notificator;
 class OptionsModel;
 class RPCConsole;
-//class ExchangeBrowser;
+class ExchangeBrowser;
 class ChatWindow;
 class SendCoinsRecipient;
 class UnitDisplayStatusBarControl;
@@ -97,10 +98,14 @@ private:
     QLabel *progressBarLabel;
     QProgressBar *progressBar;
     QProgressDialog *progressDialog;
+    QWidget *wId2;
+    QWidget *wId;
+    QWidget *wId3;
+    QWidget *wId4;   
 
     QMenuBar *appMenuBar;
 	QAction *chatAction;
-	//QAction *exchangeAction;
+	QAction *exchangeAction;
     QAction *overviewAction;
     QAction *historyAction;
     QAction *quitAction;
@@ -116,6 +121,7 @@ private:
     QAction *encryptWalletAction;
     QAction *backupWalletAction;
     QAction *changePassphraseAction;
+	QAction *banknodeManagerAction;
     QAction *aboutQtAction;
     QAction *openRPCConsoleAction;
     QAction *openAction;
@@ -123,12 +129,16 @@ private:
 	QAction *blockAction;
 	QAction *bankstatsAction;
 	QAction *paperWalletAction;
-	QAction * voteCoinsAction;
+	QAction *voteCoinsAction;
     QAction *sendMessagesAction;
     QAction *sendMessagesAnonAction;
     QAction *messageAction;
     QAction *invoiceAction;
-    QAction *receiptAction;	
+    QAction *receiptAction;
+    QAction *actionSendReceive;
+    QAction *actionSendReceiveMess;
+    QAction *actionSendReceiveinv;
+    QAction *actionSendReceivestats;	
 
     QSystemTrayIcon *trayIcon;
     QMenu *trayIconMenu;
@@ -199,7 +209,7 @@ private slots:
 	/** Switch to chat page */
     void gotoChatPage();
 	/** Switch to exchange browser page */
-   // void gotoExchangeBrowserPage();
+    void gotoExchangeBrowserPage();
     /** Switch to receive coins page */
     void gotoReceiveCoinsPage();
     /** Switch to send coins page */
@@ -215,6 +225,7 @@ private slots:
     void gotoInvoicesPage();
     /** Switch to receipt page */
     void gotoReceiptPage();
+    void gotoBanknodeManagerPage();
 
     /** Switch to vote coins page */
     void gotoVoteCoinsPage(QString addr = "");

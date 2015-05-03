@@ -19,8 +19,7 @@
 #ifdef ENABLE_WALLET
 #include "wallet.h"
 #endif
-#include "masternode.h"
-#include "voting.h"
+#include "banknode.h"
 #include <boost/thread.hpp>
 #include <boost/tuple/tuple.hpp>
 
@@ -142,35 +141,31 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn)
     txNew.vout[2].scriptPubKey = RESERVE_SCRIPT;
    }
    
-   /* if (chainActive.Tip()->nHeight>85000)
+    if (chainActive.Tip()->nHeight>199999)
 	{
-	LOCK( grantdb );
-		//For grant award block, add grants to coinbase
-		//NOTE: We're creating the next block (powerful pools)
-		//printf("Entering grant Award\n");
-	if( isGrantAwardBlock( chainActive.Tip()->nHeight + 1 ) )
-		{
-			if( !getGrantAwards( chainActive.Tip()->nHeight + 1 ) ){
-				throw std::runtime_error( "ConnectBlock() : Connect Block grant awards error.\n" );
-			}
-				
-			//printf(" === Bitcredit Client ===\n === Retrieved Grant Rewards, Add to Block %d === \n", chainActive.Tip()->nHeight+1);
-			txNew.vout.resize( 3 + grantAwards.size() );
-
-			int i = 2;
-					
-			for( gait = grantAwards.begin(); gait != grantAwards.end();	++gait)
-			{
-				//printf(" === Grant %ld BCR to %s === \n",gait->second,gait->first.c_str());
-				
-				CBitcreditAddress address( gait->first );
-				txNew.vout[ i + 1 ].scriptPubKey= GetScriptForDestination(address.Get());
-				
-				i++;		
-			}
+    LOCK(grantdb);
+    //For grant award block, add grants to coinbase
+    if(isGrantAwardBlock(chainActive.Tip()->nHeight+1)){
+		//printf("isGrantAwardBlock pindexBest->nHeight+1 /n" );
+		if(!getGrantAwards(chainActive.Tip()->nHeight+1)){
+			//printf("!getGrantAwards pindexBest->nHeight+1 /n" );
+			 throw std::runtime_error("ConnectBlock() : ConnectBlock grant awards error");
 		}
-    } */
-   
+	//printf(" === Bitcredit Client ===\n === Retrieved Grant Rewards, Add to Block %d === \n", chainActive.Tip()->nHeight+1);
+	txNew.vout.resize( 3 + grantAwards.size() );
+		    
+	int i = 2;
+	for(gait=grantAwards.begin(); gait!=grantAwards.end(); ++gait){
+		//printf("Add %s %llu\n",gait->first.c_str(),gait->second);
+	
+		CBitcreditAddress address(gait->first);
+		txNew.vout[i+1].scriptPubKey= GetScriptForDestination(address.Get());
+		
+		i++;		
+	}
+    }
+    }
+  
     // Add dummy coinbase tx as first transaction
     pblock->vtx.push_back(CTransaction());
     pblocktemplate->vTxFees.push_back(-1); // updated at end
@@ -191,11 +186,11 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn)
     unsigned int nBlockMinSize = GetArg("-blockminsize", DEFAULT_BLOCK_MIN_SIZE);
     nBlockMinSize = std::min(nBlockMaxSize, nBlockMinSize);
 
-    // start masternode payments
-       bool bMasterNodePayment = false;
+    // start banknode payments
+       bool bBankNodePayment = false;
 
-    if (GetTimeMicros() > START_MASTERNODE_PAYMENTS)
-         bMasterNodePayment = true;
+    if (GetTimeMicros() > START_BANKNODE_PAYMENTS)
+         bBankNodePayment = true;
         
 
     // Collect memory pool transactions into the block
@@ -207,16 +202,16 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn)
         const int nHeight = pindexPrev->nHeight + 1;
         CCoinsViewCache view(pcoinsTip);
 
-        if(bMasterNodePayment) {
+        if(bBankNodePayment) {
             bool hasPayment = true;
             //spork
-            if(!masternodePayments.GetBlockPayee(pindexPrev->nHeight+1, pblock->payee)){
-                //no masternode detected
-                int winningNode = GetCurrentMasterNode(1);
+            if(!banknodePayments.GetBlockPayee(pindexPrev->nHeight+1, pblock->payee)){
+                //no banknode detected
+                int winningNode = GetCurrentBankNode(1);
                 if(winningNode >= 0){
-                    pblock->payee =GetScriptForDestination(vecMasternodes[winningNode].pubkey.GetID());
+                    pblock->payee =GetScriptForDestination(vecBanknodes[winningNode].pubkey.GetID());
                 } else {
-                    LogPrintf("CreateNewBlock: Failed to detect masternode to pay\n");
+                    LogPrintf("CreateNewBlock: Failed to detect banknode to pay\n");
                     hasPayment = false;
                 }
             }
@@ -236,7 +231,7 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn)
                 ExtractDestination(pblock->payee, address1);
                 CBitcreditAddress address2(address1);
 
-                LogPrintf("Masternode payment to %s\n", address2.ToString().c_str());
+                LogPrintf("Banknode payment to %s\n", address2.ToString().c_str());
             }
         }
 
@@ -422,7 +417,7 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn)
         nLastBlockSize = nBlockSize;
         LogPrintf("CreateNewBlock(): total size %u\n", nBlockSize);
         CAmount blockValue = GetBlockValue(pindexPrev->nHeight, nFees);
-        CAmount masternodePayment = GetMasternodePayment(pindexPrev->nHeight+1, blockValue);
+        CAmount banknodePayment = GetBanknodePayment(pindexPrev->nHeight+1, blockValue);
         CAmount bank = GetBlockValue(pindexPrev->nHeight, nFees) *(0.1);
 
         // Compute final coinbase transaction.
@@ -430,7 +425,7 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn)
        		txNew.vout[0].nValue = blockValue;
 		}
 		else{
-		/* if (chainActive.Tip()->nHeight>85000)
+		 if (chainActive.Tip()->nHeight>199999)
 		{
 			LOCK( grantdb );
 		
@@ -448,18 +443,18 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn)
 				i++;		
 			}
 		} 
-		}*/
+		}
 		if(payments > 0){
 			
-			/* if( isGrantAwardBlock( chainActive.Tip()->nHeight + 1 ) ){
+			 if( isGrantAwardBlock( chainActive.Tip()->nHeight + 1 ) && chainActive.Tip()->nHeight>199999 ){
 					
-				txNew.vout[2 +grantAwards.size() + payments ].nValue = masternodePayment;
-				blockValue -= masternodePayment;
+				txNew.vout[2 +grantAwards.size() + payments ].nValue = banknodePayment;
+				blockValue -= banknodePayment;
 				}
-				else{ */
-                txNew.vout[2+ payments].nValue = masternodePayment;
-                blockValue -= masternodePayment;
-			//}
+				else{ 
+                txNew.vout[2+ payments].nValue = banknodePayment;
+                blockValue -= banknodePayment;
+			}
 			           
         }
         

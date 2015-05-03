@@ -7,33 +7,33 @@
 
 #include "primitives/transaction.h"
 #include "main.h"
-#include "masternode.h"
-#include "activemasternode.h"
+#include "banknode.h"
+#include "activebanknode.h"
 
 class CTxIn;
 class CDarkSendPool;
 class CDarkSendSigner;
-class CMasterNodeVote;
+class CBankNodeVote;
 class CBitcreditAddress;
 class CDarksendQueue;
 class CDarksendBroadcastTx;
-class CActiveMasternode;
+class CActiveBanknode;
 
 #define POOL_MAX_TRANSACTIONS                  3 // wait for X transactions to merge and publish
 #define POOL_STATUS_UNKNOWN                    0 // waiting for update
 #define POOL_STATUS_IDLE                       1 // waiting for update
 #define POOL_STATUS_QUEUE                      2 // waiting in a queue
 #define POOL_STATUS_ACCEPTING_ENTRIES          3 // accepting entries
-#define POOL_STATUS_FINALIZE_TRANSACTION       4 // master node will broadcast what it accepted
+#define POOL_STATUS_FINALIZE_TRANSACTION       4 // bank node will broadcast what it accepted
 #define POOL_STATUS_SIGNING                    5 // check inputs/outputs, sign final tx
 #define POOL_STATUS_TRANSMISSION               6 // transmit transaction
 #define POOL_STATUS_ERROR                      7 // error
 #define POOL_STATUS_SUCCESS                    8 // success
 
 // status update message constants
-#define MASTERNODE_ACCEPTED                    1
-#define MASTERNODE_REJECTED                    0
-#define MASTERNODE_RESET                       -1
+#define BANKNODE_ACCEPTED                    1
+#define BANKNODE_REJECTED                    0
+#define BANKNODE_RESET                       -1
 
 #define DARKSEND_QUEUE_TIMEOUT                 120
 #define DARKSEND_SIGNING_TIMEOUT               30
@@ -41,9 +41,9 @@ class CActiveMasternode;
 extern CDarkSendPool darkSendPool;
 extern CDarkSendSigner darkSendSigner;
 extern std::vector<CDarksendQueue> vecDarksendQueue;
-extern std::string strMasterNodePrivKey;
+extern std::string strBankNodePrivKey;
 extern map<uint256, CDarksendBroadcastTx> mapDarksendBroadcastTxes;
-extern CActiveMasternode activeMasternode;
+extern CActiveBanknode activeBanknode;
 
 //specific messages for the Darksend protocol
 void ProcessMessageDarksend(CNode* pfrom, std::string& strCommand, CDataStream& vRecv);
@@ -159,7 +159,7 @@ public:
 
     bool GetAddress(CService &addr)
     {
-        BOOST_FOREACH(CMasterNode mn, vecMasternodes) {
+        BOOST_FOREACH(CBankNode mn, vecBanknodes) {
             if(mn.vin == vin){
                 addr = mn.addr;
                 return true;
@@ -170,7 +170,7 @@ public:
 
     bool GetProtocolVersion(int &protocolVersion)
     {
-        BOOST_FOREACH(CMasterNode mn, vecMasternodes) {
+        BOOST_FOREACH(CBankNode mn, vecBanknodes) {
             if(mn.vin == vin){
                 protocolVersion = mn.protocolVersion;
                 return true;
@@ -224,11 +224,11 @@ class CDarksendSession
 class CDarkSendPool
 {
 public:
-    static const int MIN_PEER_PROTO_VERSION = 70066;
+    static const int MIN_PEER_PROTO_VERSION = 70008;
 
     // clients entries
     std::vector<CDarkSendEntry> myEntries;
-    // masternode entries
+    // banknode entries
     std::vector<CDarkSendEntry> entries;
     // the finalized transaction ready for signing
     CMutableTransaction finalTransaction;
@@ -246,17 +246,17 @@ public:
 
     std::vector<CTxIn> lockedCoins;
 
-    uint256 masterNodeBlockHash;
+    uint256 bankNodeBlockHash;
 
     std::string lastMessage;
     bool completedTransaction;
     bool unitTest;
-    CService submittedToMasternode;
+    CService submittedToBanknode;
 
     int sessionID;
     int sessionDenom; //Users must submit an denom matching this
     int sessionUsers; //N Users have said they'll join
-    bool sessionFoundMasternode; //If we've found a compatible masternode
+    bool sessionFoundBanknode; //If we've found a compatible banknode
     int64_t sessionTotalValue; //used for autoDenom
     std::vector<CTransaction> vecSessionCollateral;
 
@@ -317,7 +317,7 @@ public:
 
     int GetEntriesCount() const
     {
-        if(fMasterNode){
+        if(fBankNode){
             return entries.size();
         } else {
             return entriesCount;
@@ -341,16 +341,16 @@ public:
 
     void UpdateState(unsigned int newState)
     {
-        if (fMasterNode && (newState == POOL_STATUS_ERROR || newState == POOL_STATUS_SUCCESS)){
-            LogPrintf("CDarkSendPool::UpdateState() - Can't set state to ERROR or SUCCESS as a masternode. \n");
+        if (fBankNode && (newState == POOL_STATUS_ERROR || newState == POOL_STATUS_SUCCESS)){
+            LogPrintf("CDarkSendPool::UpdateState() - Can't set state to ERROR or SUCCESS as a banknode. \n");
             return;
         }
 
         LogPrintf("CDarkSendPool::UpdateState() == %d | %d \n", state, newState);
         if(state != newState){
             lastTimeChanged = GetTimeMillis();
-            if(fMasterNode) {
-                RelayDarkSendStatus(darkSendPool.sessionID, darkSendPool.GetState(), darkSendPool.GetEntriesCount(), MASTERNODE_RESET);
+            if(fBankNode) {
+                RelayDarkSendStatus(darkSendPool.sessionID, darkSendPool.GetState(), darkSendPool.GetEntriesCount(), BANKNODE_RESET);
             }
         }
         state = newState;
@@ -395,9 +395,9 @@ public:
     bool AddScriptSig(const CTxIn newVin);
     // are all inputs signed?
     bool SignaturesComplete();
-    // as a client, send a transaction to a masternode to start the denomination process
+    // as a client, send a transaction to a banknode to start the denomination process
     void SendDarksendDenominate(std::vector<CTxIn>& vin, std::vector<CTxOut>& vout, int64_t amount);
-    // get masternode updates about the progress of darksend
+    // get banknode updates about the progress of darksend
     bool StatusUpdate(int newState, int newEntriesCount, int newAccepted, std::string& error, int newSessionID=0);
 
     // as a client, check and sign the final transaction
@@ -424,7 +424,7 @@ public:
 };
 
 
-void ConnectToDarkSendMasterNodeWinner();
+void ConnectToDarkSendBankNodeWinner();
 
 void ThreadCheckDarkSendPool();
 

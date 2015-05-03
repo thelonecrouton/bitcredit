@@ -37,10 +37,10 @@ public:
     double mincreditscore;
     double avecreditscore;
     double bestcreditscore, mintrust, avetrust, gbltrust, besttrust, netinterestrate, 
-     grantindex, inflationindex, consensusindex;
+     trust, inflationindex, consensusindex;
     int64_t  grantsaverage, gblmoneysupply, grantstotal, bankreserve, gblavailablecredit,
     globaldebt;
-    int volumePrevious;
+    int totalnumtxPrevious;
     QString bankstatus;
     int64_t marketcap;
     
