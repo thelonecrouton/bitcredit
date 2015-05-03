@@ -8,6 +8,7 @@
 #include "guiconstants.h"
 #include "recentrequeststablemodel.h"
 #include "transactiontablemodel.h"
+#include "optionsmodel.h"
 
 #include "base58.h"
 #include "db.h"
