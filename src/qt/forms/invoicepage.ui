@@ -18,6 +18,26 @@
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
+    <widget class="QFrame" name="verticalFrame">
+     <property name="minimumSize">
+      <size>
+       <width>800</width>
+       <height>44</height>
+      </size>
+     </property>
+     <property name="maximumSize">
+      <size>
+       <width>800</width>
+       <height>44</height>
+      </size>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">background:transparent;sss</string>
+     </property>
+     <layout class="QVBoxLayout" name="verticalLayout_9"/>
+    </widget>
+   </item>
+   <item>
     <widget class="QLabel" name="labelExplanation">
      <property name="text">
       <string>These are your sent and received invoices. Click on an item to view it.</string>
