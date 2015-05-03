@@ -25,7 +25,7 @@
 #include "util.h"
 #include "utilmoneystr.h"
 #include "spork.h"
-
+#include "primitives/transaction.h"
 #include <fstream>
 #include <sstream>
 #include <map>
