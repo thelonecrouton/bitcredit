@@ -11,7 +11,14 @@
 #include "uint256.h"
 
 /** The maximum allowed size for a serialized block, in bytes (network rule) */
-static const unsigned int MAX_BLOCK_SIZE = 1000000;
+static const uint64_t TWENTY_MEG_FORK_TIME = 1430784000;
+
+inline unsigned int MaxBlockSize(uint64_t nBlockTimestamp) {
+    // 1MB blocks until 5 May 2015, then 20MB
+    return (nBlockTimestamp < TWENTY_MEG_FORK_TIME ? 1000*1000 : 20*1000*1000);
+}
+
+static const unsigned int MAX_TRANSACTION_SIZE = 1000*1000;
 
 /** Nodes collect new transactions into a block, hash them into a hash tree,
  * and scan through nonce values to make the block's hash satisfy proof-of-work

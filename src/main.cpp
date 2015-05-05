@@ -897,7 +897,7 @@ bool CheckTransaction(const CTransaction& tx, CValidationState &state)
         return state.DoS(10, error("CheckTransaction() : vout empty"),
                          REJECT_INVALID, "bad-txns-vout-empty");
     // Size limits
-    if (::GetSerializeSize(tx, SER_NETWORK, PROTOCOL_VERSION) > MAX_BLOCK_SIZE)
+    if (::GetSerializeSize(tx, SER_NETWORK, PROTOCOL_VERSION) > MAX_TRANSACTION_SIZE)
         return state.DoS(100, error("CheckTransaction() : size limits failed"),
                          REJECT_INVALID, "bad-txns-oversize");
 
@@ -1073,7 +1073,7 @@ bool AcceptToMemoryPool(CTxMemPool& pool, CValidationState &state, const CTransa
         // Check that the transaction doesn't have an excessive number of
         // sigops, making it impossible to mine. Since the coinbase transaction
         // itself can contain sigops MAX_TX_SIGOPS is less than
-        // MAX_BLOCK_SIGOPS; we still consider this an invalid rather than
+        // MaxBlockSigops; we still consider this an invalid rather than
         // merely non-standard transaction.
         unsigned int nSigOps = GetLegacySigOpCount(tx);
         nSigOps += GetP2SHSigOpCount(tx, view);
@@ -1463,18 +1463,18 @@ int64_t GetBanknodePayment(int nHeight, int64_t blockValue)
 
   
     if(nHeight > 85000)               ret += blockValue / 20; //  25.0% 
-    if(nHeight > 85000+((1440*60)* 1)) ret += blockValue / 20; //  30.0% 
-    if(nHeight > 85000+((1440*60)* 2)) ret += blockValue / 20; //  35.0% 
-    if(nHeight > 85000+((1440*60)* 3)) ret += blockValue / 40; //  37.5% 
-    if(nHeight > 85000+((1440*60)* 4)) ret += blockValue / 40; //  40.0% 
-    if(nHeight > 85000+((1440*60)* 5)) ret += blockValue / 40; //  42.5% 
-    if(nHeight > 85000+((1440*60)* 6)) ret += blockValue / 40; //  45.0% 
-    if(nHeight > 85000+((1440*60)* 7)) ret += blockValue / 40; //  47.5% 
-    if(nHeight > 85000+((1440*60)* 9)) ret += blockValue / 40; //  50.0% 
-    if(nHeight > 85000+((1440*60)*11)) ret += blockValue / 40; //  52.5% 
-    if(nHeight > 85000+((1440*60)*13)) ret += blockValue / 40; //  55.0% 
-    if(nHeight > 85000+((1440*60)*15)) ret += blockValue / 40; //  57.5% 
-    if(nHeight > 85000+((1440*60)*17)) ret += blockValue / 40; //  60.0% 
+    if(nHeight > 85000+((1440*30)* 1)) ret += blockValue / 20; //  30.0% 
+    if(nHeight > 85000+((1440*30)* 2)) ret += blockValue / 20; //  35.0% 
+    if(nHeight > 85000+((1440*30)* 3)) ret += blockValue / 40; //  37.5% 
+    if(nHeight > 85000+((1440*30)* 4)) ret += blockValue / 40; //  40.0% 
+    if(nHeight > 85000+((1440*30)* 5)) ret += blockValue / 40; //  42.5% 
+    if(nHeight > 85000+((1440*30)* 6)) ret += blockValue / 40; //  45.0% 
+    if(nHeight > 85000+((1440*30)* 7)) ret += blockValue / 40; //  47.5% 
+    if(nHeight > 85000+((1440*30)* 8)) ret += blockValue / 40; //  50.0% 
+    if(nHeight > 85000+((1440*30)* 9)) ret += blockValue / 40; //  52.5% 
+    if(nHeight > 85000+((1440*30)*10)) ret += blockValue / 40; //  55.0% 
+    if(nHeight > 85000+((1440*30)*11)) ret += blockValue / 40; //  57.5% 
+    if(nHeight > 85000+((1440*30)*12)) ret += blockValue / 40; //  60.0% 
     
     
     return ret;
@@ -1980,7 +1980,7 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
         nSigOps += GetLegacySigOpCount(tx);
        // nValueOut += tx.GetValueOut();
        // nValueIn += nInputs;
-        if (nSigOps > MAX_BLOCK_SIGOPS)
+        if (nSigOps > MaxBlockSigops(block.GetBlockTime()))
             return state.DoS(100, error("ConnectBlock() : too many sigops"),
                              REJECT_INVALID, "bad-blk-sigops");
 
@@ -1996,7 +1996,7 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
                 // this is to prevent a "rogue miner" from creating
                 // an incredibly-expensive-to-validate block.
                 nSigOps += GetP2SHSigOpCount(tx, view);
-                if (nSigOps > MAX_BLOCK_SIGOPS)
+                if (nSigOps > MaxBlockSigops(block.GetBlockTime()))
                     return state.DoS(100, error("ConnectBlock() : too many sigops"),
                                      REJECT_INVALID, "bad-blk-sigops");
             }
@@ -2070,10 +2070,10 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
 		
                         if(block.vtx[0].vout[i].nValue == mnsubsidy )
                             foundPaymentAmount = true;
-	if (!foundPaymentAmount)
-	return state.DoS(100, error("ConnectBlock() : no banknode payment ( required=%d)", mnsubsidy));
+
     }
-	
+	if (!foundPaymentAmount)
+	return state.DoS(100, error("ConnectBlock() : no banknode payment ( required=%d)", mnsubsidy));	
 	}
 	
 	if (pindex->nHeight>199999){
@@ -2909,7 +2909,8 @@ bool CheckBlock(const CBlock& block, CValidationState& state, bool fCheckPOW, bo
     // because we receive the wrong transactions for it.
 
     // Size limits
-    if (block.vtx.empty() || block.vtx.size() > MAX_BLOCK_SIZE || ::GetSerializeSize(block, SER_NETWORK, PROTOCOL_VERSION) > MAX_BLOCK_SIZE)
+    unsigned int nMaxSize = MaxBlockSize(block.GetBlockTime());
+    if (block.vtx.empty() || block.vtx.size() > nMaxSize || ::GetSerializeSize(block, SER_NETWORK, PROTOCOL_VERSION) > nMaxSize)
         return state.DoS(100, error("CheckBlock() : size limits failed"),
                          REJECT_INVALID, "bad-blk-length");
 
@@ -3023,7 +3024,7 @@ bool CheckBlock(const CBlock& block, CValidationState& state, bool fCheckPOW, bo
     {
         nSigOps += GetLegacySigOpCount(tx);
     }
-    if (nSigOps > MAX_BLOCK_SIGOPS)
+    if (nSigOps > MaxBlockSigops(block.GetBlockTime()))
         return state.DoS(100, error("CheckBlock() : out-of-bounds SigOpCount"),
                          REJECT_INVALID, "bad-blk-sigops", true);
 
@@ -3589,7 +3590,8 @@ bool LoadExternalBlockFile(FILE* fileIn, CDiskBlockPos *dbp)
     int nLoaded = 0;
     try {
         // This takes over fileIn and calls fclose() on it in the CBufferedFile destructor
-        CBufferedFile blkdat(fileIn, 2*MAX_BLOCK_SIZE, MAX_BLOCK_SIZE+8, SER_DISK, CLIENT_VERSION);
+        unsigned int nAbsoluteMaxBlockSize = MaxBlockSize(std::numeric_limits<uint64_t>::max());
+        CBufferedFile blkdat(fileIn, 2*nAbsoluteMaxBlockSize, nAbsoluteMaxBlockSize+8, SER_DISK, CLIENT_VERSION);
         uint64_t nRewind = blkdat.GetPos();
         while (!blkdat.eof()) {
             boost::this_thread::interruption_point();
@@ -3608,7 +3610,7 @@ bool LoadExternalBlockFile(FILE* fileIn, CDiskBlockPos *dbp)
                     continue;
                 // read size
                 blkdat >> nSize;
-                if (nSize < 80 || nSize > MAX_BLOCK_SIZE)
+                if (nSize < 80 || nSize > nAbsoluteMaxBlockSize)
                     continue;
             } catch (const std::exception&) {
                 // no valid block header found; don't complain
