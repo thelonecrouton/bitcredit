@@ -27,8 +27,7 @@
 BanknodeManager::BanknodeManager(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::BanknodeManager),
-    clientModel(0),
-    walletModel(0)
+    clientModel(0)
 {
     ui->setupUi(this);
 

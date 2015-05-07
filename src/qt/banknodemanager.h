@@ -26,8 +26,6 @@ public:
     explicit BanknodeManager(QWidget *parent = 0);
     ~BanknodeManager();
 
-    void setClientModel(ClientModel *clientModel);
-    void setWalletModel(WalletModel *walletModel);
 
 
 public slots:

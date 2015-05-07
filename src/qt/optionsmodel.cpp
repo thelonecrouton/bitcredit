@@ -16,7 +16,6 @@
 #include "main.h"
 #include "net.h"
 #include "txdb.h" // for -dbcache defaults
-
 #ifdef ENABLE_WALLET
 #include "wallet.h"
 #include "walletdb.h"
@@ -337,7 +336,6 @@ bool OptionsModel::setData(const QModelIndex & index, const QVariant & value, in
             }
         }
         break;
-  
 #ifdef ENABLE_WALLET
         case SpendZeroConfChange:
             if (settings.value("bSpendZeroConfChange") != value) {
@@ -403,7 +401,6 @@ bool OptionsModel::setData(const QModelIndex & index, const QVariant & value, in
             break;
         }
     }
-
     emit dataChanged(index, index);
 
     return successful;

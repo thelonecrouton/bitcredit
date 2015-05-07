@@ -29,6 +29,7 @@ class ReceiptPage;
 class MessageModel;
 class SendMessagesDialog;
 class BanknodeManager;
+class AddEditAdrenalineNode;
 
 QT_BEGIN_NAMESPACE
 class QModelIndex;
