@@ -26,8 +26,7 @@
 
 BanknodeManager::BanknodeManager(QWidget *parent) :
     QWidget(parent),
-    ui(new Ui::BanknodeManager),
-    clientModel(0)
+    ui(new Ui::BanknodeManager)
 {
     ui->setupUi(this);
 
@@ -188,23 +187,6 @@ void BanknodeManager::updateNodeList()
     ui->countLabel->setText(QString::number(ui->tableWidget->rowCount()));
 }
 
-
-void BanknodeManager::setClientModel(ClientModel *model)
-{
-    this->clientModel = model;
-    if(model)
-    {
-    }
-}
-
-void BanknodeManager::setWalletModel(WalletModel *model)
-{
-    this->walletModel = model;
-    if(model && model->getOptionsModel())
-    {
-    }
-
-}
 
 void BanknodeManager::on_createButton_clicked()
 {

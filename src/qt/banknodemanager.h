@@ -37,8 +37,7 @@ signals:
 private:
     QTimer *timer;
     Ui::BanknodeManager *ui;
-    ClientModel *clientModel;
-    WalletModel *walletModel;
+
     CCriticalSection cs_adrenaline;
     void subscribeToCoreSignals();
     void unsubscribeFromCoreSignals();
