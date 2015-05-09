@@ -26,7 +26,7 @@ class MessagePage;
 class InvoicePage;
 class ReceiptPage;
 class MessageModel;
-class BanknodeManager;
+//class BanknodeManager;
 class SendMessagesDialog;
 class Notificator;
 class OptionsModel;
@@ -225,7 +225,7 @@ private slots:
     void gotoInvoicesPage();
     /** Switch to receipt page */
     void gotoReceiptPage();
-    void gotoBanknodeManagerPage();
+//    void gotoBanknodeManagerPage();
 
     /** Switch to vote coins page */
     void gotoVoteCoinsPage(QString addr = "");

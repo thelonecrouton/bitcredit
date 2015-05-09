@@ -47,7 +47,7 @@ public:
     bool Register(CTxIn vin, CService service, CKey key, CPubKey pubKey, CKey keyBanknode, CPubKey pubKeyBanknode, std::string &retErrorMessage); // register any banknode
     bool RegisterByPubKey(std::string strService, std::string strKeyBanknode, std::string collateralAddress, std::string& errorMessage); // register for a specific collateral address
 
-    // get 1000DRK input that can be used for the banknode
+    // get 250k BCR input that can be used for the banknode
     bool GetBankNodeVin(CTxIn& vin, CPubKey& pubkey, CKey& secretKey);
     bool GetBankNodeVin(CTxIn& vin, CPubKey& pubkey, CKey& secretKey, std::string strTxHash, std::string strOutputIndex);
     bool GetBankNodeVinForPubKey(std::string collateralAddress, CTxIn& vin, CPubKey& pubkey, CKey& secretKey);

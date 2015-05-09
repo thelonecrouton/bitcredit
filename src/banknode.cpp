@@ -73,8 +73,7 @@ void ProcessMessageBanknode(CNode* pfrom, std::string& strCommand, CDataStream& 
         }
 
         bool isLocal = addr.IsRFC1918() || addr.IsLocal();
-        if(Params().MineBlocksOnDemand()) isLocal = false;
-
+        
         std::string vchPubKey(pubkey.begin(), pubkey.end());
         std::string vchPubKey2(pubkey2.begin(), pubkey2.end());
 
@@ -275,22 +274,19 @@ void ProcessMessageBanknode(CNode* pfrom, std::string& strCommand, CDataStream& 
 
         if(vin == CTxIn()) { //only should ask for this once
             //local network
-            if(!pfrom->addr.IsRFC1918()&& !Params().MineBlocksOnDemand())
-            {
+
                 std::map<CNetAddr, int64_t>::iterator i = askedForBanknodeList.find(pfrom->addr);
                 if (i != askedForBanknodeList.end())
                 {
                     int64_t t = (*i).second;
                     if (GetTime() < t) {
-                        Misbehaving(pfrom->GetId(), 34);
-                        LogPrintf("dseg - peer already asked me for the list\n");
-                        return;
+
                     }
                 }
 
                 int64_t askAgain = GetTime()+(60*60*3);
                 askedForBanknodeList[pfrom->addr] = askAgain;
-            }
+         
         } //else, asking for a specific node which is ok
 
 	LOCK(cs_banknodes);
@@ -322,11 +318,7 @@ void ProcessMessageBanknode(CNode* pfrom, std::string& strCommand, CDataStream& 
     else if (strCommand == "mnget") { //Banknode Payments Request Sync
         if(fLiteMode) return; //disable all darksend/banknode related functionality
 
-        if(pfrom->HasFulfilledRequest("mnget")) {
-            LogPrintf("mnget - peer already asked me for the list\n");
-            Misbehaving(pfrom->GetId(), 20);
-            return;
-        }
+
 
         pfrom->FulfilledRequest("mnget");
         banknodePayments.Sync(pfrom);
@@ -726,7 +718,7 @@ bool CBanknodePayments::AddWinningBanknode(CBanknodePaymentWinner& winnerIn)
 void CBanknodePayments::CleanPaymentList()
 {
     LOCK(cs_banknodes);
-	if(chainActive.Tip() == NULL) return;
+    if(chainActive.Tip() == NULL) return;
 
     int nLimit = std::max(((int)vecBanknodes.size())*2, 1000);
 

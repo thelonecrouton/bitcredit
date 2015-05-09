@@ -1451,7 +1451,7 @@ CAmount GetBlockValue(int nHeight, const CAmount& nFees)
     if (halvings >= 64)
         return nFees;
 
-    // Subsidy is cut in half every 210,000 blocks which will occur approximately every 4 years.
+    // Subsidy is cut in half every 210,000 blocks which will occur every 1 year.
     nSubsidy >>= halvings;
 
     return nSubsidy + nFees;
@@ -1463,19 +1463,8 @@ int64_t GetBanknodePayment(int nHeight, int64_t blockValue)
 
   
     if(nHeight > 85000)               ret += blockValue / 20;  
-    if(nHeight > 85000+((1440*30)* 1)) ret += blockValue / 20; 
-    if(nHeight > 85000+((1440*30)* 2)) ret += blockValue / 20;  
-    if(nHeight > 85000+((1440*30)* 3)) ret += blockValue / 40;  
-    if(nHeight > 85000+((1440*30)* 4)) ret += blockValue / 40;  
-    if(nHeight > 85000+((1440*30)* 5)) ret += blockValue / 40; 
-    if(nHeight > 85000+((1440*30)* 6)) ret += blockValue / 40;  
-    if(nHeight > 85000+((1440*30)* 7)) ret += blockValue / 40; 
-    if(nHeight > 85000+((1440*30)* 8)) ret += blockValue / 40;  
-    if(nHeight > 85000+((1440*30)* 9)) ret += blockValue / 40;  
-    if(nHeight > 85000+((1440*30)*10)) ret += blockValue / 40;  
-    if(nHeight > 85000+((1440*30)*11)) ret += blockValue / 40;  
-    if(nHeight > 85000+((1440*30)*12)) ret += blockValue / 40;  
-    
+    if(nHeight > 85000+((1440*30)* 1)) ret += blockValue / 8; //32.5%
+   
     
     return ret;
 }

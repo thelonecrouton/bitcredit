@@ -245,48 +245,6 @@ public:
     bool GetBlockPayee(int nBlockHeight, CScript& payee);
 };
 
-/*//
-// Banknode Scanning Error
-// Enforces proof-of-service by scanning the banknode network
-//
-
-class CBanknodePayments
-{
-private:
-    std::vector<CBanknodePaymentWinner> vWinning;
-    int nSyncedFromPeer;
-    std::string strMasterPrivKey;
-    std::string strTestPubKey;
-    std::string strMainPubKey;
-
-public:
-
-    CBanknodePayments() {
-        strMainPubKey = "04549ac134f694c0243f503e8c8a9a986f5de6610049c40b07816809b0d1d06a21b07be27b9bb555931773f62ba6cf35a25fd52f694d4e1106ccd237a7bb899fdd";
-        strTestPubKey = "046f78dcf911fbd61910136f7f0f8d90578f68d0b3ac973b5040fb7afb501b5939f39b108b0569dca71488f5bbf498d92e4d1194f6f941307ffd95f75e76869f0e";
-    }
-
-    bool SetPrivKey(std::string strPrivKey);
-    bool CheckSignature(CBanknodePaymentWinner& winner);
-    bool Sign(CBanknodePaymentWinner& winner);
-
-    // Deterministically calculate a given "score" for a banknode depending on how close it's hash is
-    // to the blockHeight. The further away they are the better, the furthest will win the election
-    // and get paid this block
-    //
-
-    uint64_t CalculateScore(uint256 blockHash, CTxIn& vin);
-    bool GetWinningBanknode(int nBlockHeight, CTxIn& vinOut);
-    bool AddWinningBanknode(CBanknodePaymentWinner& winner);
-    bool ProcessBlock(int nBlockHeight);
-    void Relay(CBanknodePaymentWinner& winner);
-    void Sync(CNode* node);
-    void CleanPaymentList();
-    int LastPayment(CBankNode& mn);
-
-    //slow
-    bool GetBlockPayee(int nBlockHeight, CScript& payee);
-};*/
 
 
 #endif

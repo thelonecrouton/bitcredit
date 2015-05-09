@@ -326,7 +326,8 @@ public:
 
     bool CreateTransaction(const std::vector<std::pair<CScript, CAmount> >& vecSend,
                            CWalletTx& wtxNew, CReserveKey& reservekey, CAmount& nFeeRet, std::string& strFailReason, const CCoinControl *coinControl = NULL, AvailableCoinsType coin_type=ALL_COINS, bool useIX=false);
-    bool CreateTransaction(CScript scriptPubKey, const CAmount& nValue,
+    
+	bool CreateTransaction(CScript scriptPubKey, const CAmount& nValue,
                            CWalletTx& wtxNew, CReserveKey& reservekey, CAmount& nFeeRet, std::string& strFailReason, const CCoinControl *coinControl = NULL);
     
 	bool CommitTransaction(CWalletTx& wtxNew, CReserveKey& reservekey, std::string strCommand="tx");

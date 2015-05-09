@@ -224,7 +224,7 @@ class CDarksendSession
 class CDarkSendPool
 {
 public:
-    static const int MIN_PEER_PROTO_VERSION = 70008;
+    static const int MIN_PEER_PROTO_VERSION = 70088;
 
     // clients entries
     std::vector<CDarkSendEntry> myEntries;

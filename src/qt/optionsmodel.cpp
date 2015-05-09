@@ -76,7 +76,7 @@ void OptionsModel::Init()
         settings.setValue("nDarksendRounds", 2);
 
     if (!settings.contains("nAnonymizeBitcreditAmount"))
-        settings.setValue("nAnonymizeBitcreditAmount", 10000);
+        settings.setValue("nAnonymizeBitcreditAmount", 2000);
 
     nDarksendRounds = settings.value("nDarksendRounds").toLongLong();
     nAnonymizeBitcreditAmount = settings.value("nAnonymizeBitcreditAmount").toLongLong();

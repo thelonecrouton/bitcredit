@@ -68,7 +68,6 @@ private:
     Ui::OverviewPage *ui;
     ClientModel *clientModel;
     WalletModel *walletModel;
-	
     CAmount currentBalance;
     CAmount currentUnconfirmedBalance;
     CAmount currentImmatureBalance;

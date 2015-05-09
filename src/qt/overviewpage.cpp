@@ -15,10 +15,11 @@
 #include "transactionfilterproxy.h"
 #include "transactiontablemodel.h"
 #include "walletmodel.h"
-
+#include "init.h"
 
 #include <QAbstractItemDelegate>
 #include <QPainter>
+#include <QTimer>
 #include <QPicture>
 #include <QMovie>
 #include <QFrame>
@@ -175,8 +176,6 @@ void OverviewPage::handleTransactionClicked(const QModelIndex &index)
         emit transactionClicked(filter->mapToSource(index));
 }
 
-
-
 OverviewPage::~OverviewPage()
 {
     delete ui;
@@ -232,8 +231,6 @@ void OverviewPage::updateWatchOnlyLabels(bool showWatchOnly)
         //ui->labelWatchImmature->hide();
 }
 
-
-
 void OverviewPage::setClientModel(ClientModel *model)
 {
     this->clientModel = model;
@@ -279,8 +276,6 @@ void OverviewPage::setWalletModel(WalletModel *model)
     // update the display unit, to not use the default ("BCR")
     updateDisplayUnit();
 }
-
-
 
 void OverviewPage::updateDisplayUnit()
 {
@@ -384,10 +379,7 @@ void OverviewPage::darkSendStatus()
 
         QString strSettings(" " + tr("Rounds"));
         strSettings.prepend(QString::number(nDarksendRounds)).prepend(" / ");
-        strSettings.prepend(BitcreditUnits::formatWithUnit(
-            walletModel->getOptionsModel()->getDisplayUnit(),
-            nAnonymizeBitcreditAmount * COIN)
-        );
+        strSettings.prepend(BitcreditUnits::formatWithUnit(walletModel->getOptionsModel()->getDisplayUnit(),nAnonymizeBitcreditAmount * COIN));
 
         ui->labelAmountRounds->setText(strSettings);
     }
