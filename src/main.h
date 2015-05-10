@@ -40,6 +40,7 @@
 #include <vector>
 
 #include <boost/unordered_map.hpp>
+using namespace std;
 
 class CBlockIndex;
 class CBlockTreeDB;
@@ -60,11 +61,13 @@ static const unsigned int DEFAULT_BLOCK_PRIORITY_SIZE = 50000;
 /** The maximum size for transactions we're willing to relay/mine */
 static const unsigned int MAX_STANDARD_TX_SIZE = 100000;
 /** The maximum allowed number of signature check operations in a block (network rule) */
-static const unsigned int MAX_BLOCK_SIGOPS = MAX_BLOCK_SIZE/50;
+inline unsigned int MaxBlockSigops(uint64_t nBlockTimestamp) {
+    return MaxBlockSize(nBlockTimestamp)/50;
+}
 /** Maximum number of signature check operations in an IsStandard() P2SH script */
 static const unsigned int MAX_P2SH_SIGOPS = 15;
 /** The maximum number of sigops we're willing to relay/mine in a single tx */
-static const unsigned int MAX_TX_SIGOPS = MAX_BLOCK_SIGOPS/5;
+static const unsigned int MAX_TX_SIGOPS = 4000;
 /** Default for -maxorphantx, maximum number of orphan transactions kept in memory */
 static const unsigned int DEFAULT_MAX_ORPHAN_TRANSACTIONS = 100;
 /** The maximum size of a blk?????.dat file (since 0.8) */
@@ -137,6 +140,9 @@ extern unsigned int nCoinCacheSize;
 extern CFeeRate minRelayTxFee;
 extern bool fLargeWorkInvalidChainFound;
 extern bool fLargeWorkForkFound;
+extern CCriticalSection grantdb;
+extern std::map<std::string,int64_t > grantAwards;
+extern std::map<std::string,int64_t>::iterator gait;
 
 /** Best header we've seen so far (used for getheaders queries' starting points). */
 extern CBlockIndex *pindexBestHeader;
@@ -202,8 +208,8 @@ bool GetTransaction(const uint256 &hash, CTransaction &tx, uint256 &hashBlock, b
 /** Find the best known block, and make it the tip of the block chain */
 bool ActivateBestChain(CValidationState &state, CBlock *pblock = NULL);
 CAmount GetBlockValue(int nHeight, const CAmount& nFees);
-int64_t GetMasternodePayment(int nHeight, int64_t blockValue);
-
+int64_t GetBanknodePayment(int nHeight, int64_t blockValue);
+CAmount GetGrantValue(int nHeight, int64_t nFees);
 /** Create a new block index entry for a given block hash */
 CBlockIndex * InsertBlockIndex(uint256 hash);
 /** Abort with a message */
@@ -638,3 +644,18 @@ protected:
 
 
 #endif // BITCREDIT_MAIN_H
+
+bool isGrantAwardBlock(int64_t nHeight);
+bool getGrantAwards(int64_t nHeight);
+int64_t getGrantDatabaseBlockHeight();
+void processNextBlockIntoGrantDatabase();
+bool getGrantAwardsFromDatabaseForBlock(int64_t nHeight);
+bool ensureGrantDatabaseUptoDate(int64_t nHeight);
+bool startsWith(const char *str, const char *pre);
+void getWinnersFromBallots(int64_t nHeight,int officeNumber);
+string electOrEliminate(int64_t droopQuota,  unsigned int requiredCandidates);
+void electCandidate(string topOfThePoll, double gregorySurplusTransferValue,bool isLastCandidate);
+void eliminateCandidate(string topOfThePoll,bool isLastCandidate);
+void printBallots();
+
+bool deSerializeGrantDB(string filename);

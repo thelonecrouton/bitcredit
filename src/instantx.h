@@ -53,10 +53,10 @@ int64_t GetAverageVoteTime();
 class CConsensusVote
 {
 public:
-    CTxIn vinMasternode;
+    CTxIn vinBanknode;
     uint256 txHash;
     int nBlockHeight;
-    std::vector<unsigned char> vchMasterNodeSignature;
+    std::vector<unsigned char> vchBankNodeSignature;
 
     uint256 GetHash() const;
 
@@ -68,8 +68,8 @@ public:
     template <typename Stream, typename Operation>
     inline void SerializationOp(Stream& s, Operation ser_action, int nType, int nVersion) {
         READWRITE(txHash);
-        READWRITE(vinMasternode);
-        READWRITE(vchMasterNodeSignature);
+        READWRITE(vinBanknode);
+        READWRITE(vchBankNodeSignature);
         READWRITE(nBlockHeight);
     }
 };

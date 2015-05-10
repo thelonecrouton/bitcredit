@@ -14,7 +14,7 @@
 #include "rpcserver.h"
 #include "rpcclient.h"
 #include "util.h"
-#include "masternode.h"
+#include "banknode.h"
 
 
 #include "json/json_spirit_value.h"
@@ -410,10 +410,10 @@ void RPCConsole::setNumBlocks(int count)
     if(clientModel)
         ui->lastBlockTime->setText(clientModel->getLastBlockDate().toString());
 
-    // set masternode count
+    // set banknode count
 
-    QString masternodes = QString::number((int)vecMasternodes.size());
-    ui->masternodeCount->setText(masternodes);
+    QString banknodes = QString::number((int)vecBanknodes.size());
+    ui->banknodeCount->setText(banknodes);
 }
 
 void RPCConsole::on_lineEdit_returnPressed()

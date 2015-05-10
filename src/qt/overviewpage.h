@@ -22,7 +22,6 @@ class TransactionFilterProxy;
 class TxViewDelegate;
 class WalletModel;
 
-
 namespace Ui {
     class OverviewPage;
 }
@@ -52,7 +51,6 @@ public:
 
     void setClientModel(ClientModel *clientModel);
     void setWalletModel(WalletModel *walletModel);
-
     void showOutOfSyncWarning(bool fShow);
     void updateDarksendProgress();
 
@@ -70,7 +68,6 @@ private:
     Ui::OverviewPage *ui;
     ClientModel *clientModel;
     WalletModel *walletModel;
-	
     CAmount currentBalance;
     CAmount currentUnconfirmedBalance;
     CAmount currentImmatureBalance;
@@ -84,6 +81,7 @@ private:
     int showingDarkSendMessage;
     int darksendActionCheck;
     int cachedNumBlocks;
+
     TxViewDelegate *txdelegate;
     TransactionFilterProxy *filter;
 

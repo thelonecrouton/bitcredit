@@ -48,6 +48,8 @@ static const int TIMEOUT_INTERVAL = 20 * 60;
 static const unsigned int MAX_INV_SZ = 50000;
 /** The maximum number of new addresses to accumulate before announcing. */
 static const unsigned int MAX_ADDR_TO_SEND = 1000;
+/** Maximum length of incoming protocol messages (no message over 20 MiB is currently acceptable). */
+static const unsigned int MAX_PROTOCOL_MESSAGE_LENGTH = 20 * 1024 * 1024;
 /** -listen default */
 static const bool DEFAULT_LISTEN = true;
 /** -upnp default */
@@ -682,7 +684,7 @@ void SendDarkSendElectionEntry(const CTxIn vin, const CService addr, const std::
 void RelayDarkSendElectionEntryPing(const CTxIn vin, const std::vector<unsigned char> vchSig, const int64_t nNow, const bool stop);
 void SendDarkSendElectionEntryPing(const CTxIn vin, const std::vector<unsigned char> vchSig, const int64_t nNow, const bool stop);
 void RelayDarkSendCompletedTransaction(const int sessionID, const bool error, const std::string errorMessage);
-void RelayDarkSendMasterNodeContestant();
+void RelayDarkSendBankNodeContestant();
 
 
 /** Access to the (IP) address database (peers.dat) */

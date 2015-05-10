@@ -22,7 +22,7 @@
 #include "txdb.h"
 #include "ui_interface.h"
 #include "util.h"
-#include "activemasternode.h"
+#include "activebanknode.h"
 #include "spork.h"
 #include "utilmoneystr.h"
 #ifdef ENABLE_WALLET
@@ -348,22 +348,22 @@ std::string HelpMessage(HelpMessageMode mode)
     }
     strUsage += "  -shrinkdebugfile       " + _("Shrink debug.log file on client startup (default: 1 when no -debug)") + "\n";
     strUsage += "  -testnet               " + _("Use the test network") + "\n";
-    strUsage += "  -litemode=<n>          " + _("Disable all Masternode and Darksend related functionality (0-1, default: 0)") + "\n";
+    strUsage += "  -litemode=<n>          " + _("Disable all Banknode and Darksend related functionality (0-1, default: 0)") + "\n";
 
     strUsage += "\n" + _("Node relay options:") + "\n";
     strUsage += "  -datacarrier           " + strprintf(_("Relay and mine data carrier transactions (default: %u)"), 1) + "\n";
     strUsage += "  -datacarriersize       " + strprintf(_("Maximum size of data in data carrier transactions we relay and mine (default: %u)"), MAX_OP_RETURN_RELAY) + "\n";
 
-    strUsage += "\n" + _("Masternode options:") + "\n";
-    strUsage += "  -masternode=<n>            " + _("Enable the client to act as a masternode (0-1, default: 0)") + "\n";
-    strUsage += "  -mnconf=<file>             " + _("Specify masternode configuration file (default: masternode.conf)") + "\n";
-    strUsage += "  -masternodeprivkey=<n>     " + _("Set the masternode private key") + "\n";
-    strUsage += "  -masternodeaddr=<n>        " + _("Set external address:port to get to this masternode (example: address:port)") + "\n";
-    strUsage += "  -masternodeminprotocol=<n> " + _("Ignore masternodes less than version (example: 70007; default : 0)") + "\n";
+    strUsage += "\n" + _("Banknode options:") + "\n";
+    strUsage += "  -banknode=<n>            " + _("Enable the client to act as a banknode (0-1, default: 0)") + "\n";
+    strUsage += "  -mnconf=<file>             " + _("Specify banknode configuration file (default: banknode.conf)") + "\n";
+    strUsage += "  -banknodeprivkey=<n>     " + _("Set the banknode private key") + "\n";
+    strUsage += "  -banknodeaddr=<n>        " + _("Set external address:port to get to this banknode (example: address:port)") + "\n";
+    strUsage += "  -banknodeminprotocol=<n> " + _("Ignore banknodes less than version (example: 70007; default : 0)") + "\n";
 
     strUsage += "\n" + _("Darksend options:") + "\n";
     strUsage += "  -enabledarksend=<n>          " + _("Enable use of automated darksend for funds stored in this wallet (0-1, default: 0)") + "\n";
-    strUsage += "  -darksendrounds=<n>          " + _("Use N separate masternodes to anonymize funds  (2-8, default: 2)") + "\n";
+    strUsage += "  -darksendrounds=<n>          " + _("Use N separate banknodes to anonymize funds  (2-8, default: 2)") + "\n";
     strUsage += "  -anonymizebitcreditamount=<n> " + _("Keep N bitcredit anonymized (default: 0)") + "\n";
     strUsage += "  -liquidityprovider=<n>       " + _("Provide liquidity to Darksend by infrequently mixing coins on a continual basis (0-100, default: 0, 1=very frequent, high fees, 100=very infrequent, low fees)") + "\n";
 
@@ -845,16 +845,16 @@ bool AppInit2(boost::thread_group& threadGroup)
         StartRPCThreads();
     }
 
-    if (mapArgs.count("-masternodepaymentskey")) // masternode payments priv key
+    if (mapArgs.count("-banknodepaymentskey")) // banknode payments priv key
     {
-        if (!masternodePayments.SetPrivKey(GetArg("-masternodepaymentskey", "")))
-            return InitError(_("Unable to sign masternode payment winner, wrong key?"));
-        if (!sporkManager.SetPrivKey(GetArg("-masternodepaymentskey", "")))
+        if (!banknodePayments.SetPrivKey(GetArg("-banknodepaymentskey", "")))
+            return InitError(_("Unable to sign banknode payment winner, wrong key?"));
+        if (!sporkManager.SetPrivKey(GetArg("-banknodepaymentskey", "")))
             return InitError(_("Unable to sign spork message, wrong key?"));
     }
 
-    //ignore masternodes below protocol version
-    CMasterNode::minProtoVersion = GetArg("-masternodeminprotocol", MIN_MN_PROTO_VERSION);
+    //ignore banknodes below protocol version
+    CBankNode::minProtoVersion = GetArg("-banknodeminprotocol", MIN_MN_PROTO_VERSION);
 
     if (fNoSmsg)
         nLocalServices &= ~(SMSG_RELAY);
@@ -1309,36 +1309,36 @@ bool AppInit2(boost::thread_group& threadGroup)
 
     // ********************************************************* Step 10: start node
 
-	fMasterNode = GetBoolArg("-masternode", false);
-    if(fMasterNode) {
-        LogPrintf("IS DARKSEND MASTER NODE\n");
-        strMasterNodeAddr = GetArg("-masternodeaddr", "");
+	fBankNode = GetBoolArg("-banknode", false);
+    if(fBankNode) {
+        LogPrintf("IS DARKSEND BANK NODE\n");
+        strBankNodeAddr = GetArg("-banknodeaddr", "");
 
-        LogPrintf(" addr %s\n", strMasterNodeAddr.c_str());
+        LogPrintf(" addr %s\n", strBankNodeAddr.c_str());
 
-        if(!strMasterNodeAddr.empty()){
-            CService addrTest = CService(strMasterNodeAddr);
+        if(!strBankNodeAddr.empty()){
+            CService addrTest = CService(strBankNodeAddr);
             if (!addrTest.IsValid()) {
-                return InitError("Invalid -masternodeaddr address: " + strMasterNodeAddr);
+                return InitError("Invalid -banknodeaddr address: " + strBankNodeAddr);
             }
         }
 
-        strMasterNodePrivKey = GetArg("-masternodeprivkey", "");
-        if(!strMasterNodePrivKey.empty()){
+        strBankNodePrivKey = GetArg("-banknodeprivkey", "");
+        if(!strBankNodePrivKey.empty()){
             std::string errorMessage;
 
             CKey key;
             CPubKey pubkey;
 
-            if(!darkSendSigner.SetKey(strMasterNodePrivKey, errorMessage, key, pubkey))
+            if(!darkSendSigner.SetKey(strBankNodePrivKey, errorMessage, key, pubkey))
             {
-                return InitError(_("Invalid masternodeprivkey. Please see documenation."));
+                return InitError(_("Invalid banknodeprivkey. Please see documenation."));
             }
 
-            activeMasternode.pubKeyMasternode = pubkey;
+            activeBanknode.pubKeyBanknode = pubkey;
 
         } else {
-            return InitError(_("You must specify a masternodeprivkey in the configuration. Please see documentation for help."));
+            return InitError(_("You must specify a banknodeprivkey in the configuration. Please see documentation for help."));
         }
     }
 
@@ -1368,10 +1368,10 @@ bool AppInit2(boost::thread_group& threadGroup)
         nInstantXDepth = 0;
     }
 
-    //lite mode disables all Masternode and Darksend related functionality
+    //lite mode disables all Banknode and Darksend related functionality
     fLiteMode = GetBoolArg("-litemode", false);
-    if(fMasterNode && fLiteMode){
-        return InitError("You can not start a masternode in litemode");
+    if(fBankNode && fLiteMode){
+        return InitError("You can not start a banknode in litemode");
     }
 
     LogPrintf("fLiteMode %d\n", fLiteMode);
@@ -1404,7 +1404,7 @@ bool AppInit2(boost::thread_group& threadGroup)
 
     threadGroup.create_thread(boost::bind(&ThreadCheckDarkSendPool));
 
-    SecureMsgStart(fNoSmsg, GetBoolArg("-smsgscanchain", false));
+  //  SecureMsgStart(fNoSmsg, GetBoolArg("-smsgscanchain", false));
 
     if (!CheckDiskSpace())
         return false;
@@ -1438,6 +1438,11 @@ bool AppInit2(boost::thread_group& threadGroup)
 
 #ifdef ENABLE_WALLET
     if (pwalletMain) {
+	BOOST_FOREACH(PAIRTYPE(std::string, CAdrenalineNodeConfig) adrenaline, pwalletMain->mapMyAdrenalineNodes)
+	{
+	    uiInterface.NotifyAdrenalineNodeChanged(adrenaline.second);
+	}
+
         // Add wallet transactions that aren't already in a block to mapTransactions
         pwalletMain->ReacceptWalletTransactions();
 

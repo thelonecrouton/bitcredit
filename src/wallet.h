@@ -151,7 +151,7 @@ public:
     bool SelectCoinsDark(int64_t nValueMin, int64_t nValueMax, std::vector<CTxIn>& setCoinsRet, int64_t& nValueRet, int nDarksendRoundsMin, int nDarksendRoundsMax) const;
     bool SelectCoinsByDenominations(int nDenom, int64_t nValueMin, int64_t nValueMax, std::vector<CTxIn>& setCoinsRet, vector<COutput>& vCoins, int64_t& nValueRet, int nDarksendRoundsMin, int nDarksendRoundsMax);
     bool SelectCoinsDarkDenominated(int64_t nTargetValue, std::vector<CTxIn>& setCoinsRet, int64_t& nValueRet) const;
-    bool SelectCoinsMasternode(CTxIn& vin, int64_t& nValueRet, CScript& pubScript) const;
+    bool SelectCoinsBanknode(CTxIn& vin, int64_t& nValueRet, CScript& pubScript) const;
     bool HasCollateralInputs() const;
     bool IsCollateralAmount(int64_t nInputAmount) const;
     int  CountInputsWithAmount(int64_t nInputAmount);
@@ -180,6 +180,9 @@ public:
     typedef std::map<unsigned int, CMasterKey> MasterKeyMap;
     MasterKeyMap mapMasterKeys;
     unsigned int nMasterKeyMaxID;
+
+    std::map<std::string, CAdrenalineNodeConfig> mapMyAdrenalineNodes;
+    bool AddAdrenalineNodeConfig(CAdrenalineNodeConfig nodeConfig);
 
     CWallet()
     {
@@ -323,9 +326,11 @@ public:
 
     bool CreateTransaction(const std::vector<std::pair<CScript, CAmount> >& vecSend,
                            CWalletTx& wtxNew, CReserveKey& reservekey, CAmount& nFeeRet, std::string& strFailReason, const CCoinControl *coinControl = NULL, AvailableCoinsType coin_type=ALL_COINS, bool useIX=false);
-    bool CreateTransaction(CScript scriptPubKey, const CAmount& nValue,
+    
+	bool CreateTransaction(CScript scriptPubKey, const CAmount& nValue,
                            CWalletTx& wtxNew, CReserveKey& reservekey, CAmount& nFeeRet, std::string& strFailReason, const CCoinControl *coinControl = NULL);
-    bool CommitTransaction(CWalletTx& wtxNew, CReserveKey& reservekey);
+    
+	bool CommitTransaction(CWalletTx& wtxNew, CReserveKey& reservekey, std::string strCommand="tx");
 
     static CFeeRate minTxFee;
     static CAmount GetMinimumFee(unsigned int nTxBytes, unsigned int nConfirmTarget, const CTxMemPool& pool);
@@ -975,7 +980,7 @@ public:
     int64_t GetTxTime() const;
     int GetRequestCount() const;
 
-    void RelayWalletTransaction();
+    void RelayWalletTransaction(std::string strCommand="tx");
 
     std::set<uint256> GetConflicts() const;
 };

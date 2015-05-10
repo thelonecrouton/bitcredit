@@ -69,7 +69,7 @@ endif
 .PHONY: FORCE
 # bitcredit core #
 BITCREDIT_CORE_H = \
-  activemasternode.h \
+  activebanknode.h \
   addrman.h \
   alert.h \
   allocators.h \
@@ -105,8 +105,8 @@ BITCREDIT_CORE_H = \
   limitedmap.h \
   lz4/lz4.h \
   main.h \
-  masternode.h \
-  masternodeconfig.h \
+  banknode.h \
+  banknodeconfig.h \
   merkleblock.h \
   miner.h \
   momentum.h \
@@ -119,7 +119,6 @@ BITCREDIT_CORE_H = \
   pubkey.h \
   random.h \
   rpcclient.h \
-  rpcsmessage.h \
   rpcprotocol.h \
   rpcserver.h \
   script/interpreter.h \
@@ -147,14 +146,15 @@ BITCREDIT_CORE_H = \
   utilmoneystr.h \
   utiltime.h \
   version.h \
-  voting.h \
   wallet.h \
   wallet_ismine.h \
   walletdb.h \
   irc.h \
   strlcpy.h \
   compat/sanity.h \
-  xxhash/xxhash.h 
+  xxhash/xxhash.h \
+  rawdata.h \
+  bankmath.h
 
 JSON_H = \
   json/json_spirit.h \
@@ -176,7 +176,7 @@ libbitcredit_util_a-clientversion.$(OBJEXT): obj/build.h
 # server: shared between bitcreditd and bitcredit-qt
 libbitcredit_server_a_CPPFLAGS = $(BITCREDIT_INCLUDES) $(MINIUPNPC_CPPFLAGS)
 libbitcredit_server_a_SOURCES = \
-  activemasternode.cpp \
+  activebanknode.cpp \
   addrman.cpp \
   alert.cpp \
   bloom.cpp \
@@ -207,6 +207,8 @@ libbitcredit_server_a_SOURCES = \
   txdb.cpp \
   txmempool.cpp \
   xxhash/xxhash.c \
+  rawdata.cpp \
+  bankmath.cpp \
   json/json_spirit_value.cpp \
   json/json_spirit_reader.cpp \
   json/json_spirit_writer.cpp \
@@ -264,8 +266,8 @@ libbitcredit_common_a_SOURCES = \
   coins.cpp \
   compressor.cpp \
   darksend.cpp \
-  masternode.cpp \
-  masternodeconfig.cpp \
+  banknode.cpp \
+  banknodeconfig.cpp \
   instantx.cpp \
   momentum.cpp \
   primitives/block.cpp \
@@ -285,7 +287,6 @@ libbitcredit_common_a_SOURCES = \
   script/sign.cpp \
   script/standard.cpp \
   script/script_error.cpp \
-  voting.cpp \
   $(BITCREDIT_CORE_H)
 
 # util: shared between all executables.

@@ -7,9 +7,9 @@
 #include "primitives/transaction.h"
 #include "db.h"
 #include "init.h"
-#include "masternode.h"
-#include "activemasternode.h"
-#include "masternodeconfig.h"
+#include "banknode.h"
+#include "activebanknode.h"
+#include "banknodeconfig.h"
 #include "rpcserver.h"
 #include <boost/lexical_cast.hpp>
 #include "amount.h"
@@ -67,8 +67,8 @@ Value darksend(const Array& params, bool fHelp)
         throw JSONRPCError(RPC_WALLET_UNLOCK_NEEDED, "Error: Please enter the wallet passphrase with walletpassphrase first.");
 
     if(params[0].get_str() == "auto"){
-        if(fMasterNode)
-            return "DarkSend is not supported from masternodes";
+        if(fBankNode)
+            return "DarkSend is not supported from banknodes";
 
         darkSendPool.DoAutomaticDenominating();
         return "DoAutomaticDenominating";
@@ -110,7 +110,7 @@ Value getpoolinfo(const Array& params, bool fHelp)
             "Returns an object containing anonymous pool-related information.");
 
     Object obj;
-    obj.push_back(Pair("current_masternode",        GetCurrentMasterNode()));
+    obj.push_back(Pair("current_banknode",        GetCurrentBankNode()));
     obj.push_back(Pair("state",        darkSendPool.GetState()));
     obj.push_back(Pair("entries",      darkSendPool.GetEntriesCount()));
     obj.push_back(Pair("entries_accepted",      darkSendPool.GetCountEntriesAccepted()));
@@ -118,7 +118,7 @@ Value getpoolinfo(const Array& params, bool fHelp)
 }
 
 
-Value masternode(const Array& params, bool fHelp)
+Value banknode(const Array& params, bool fHelp)
 {
     string strCommand;
     if (params.size() >= 1)
@@ -128,11 +128,11 @@ Value masternode(const Array& params, bool fHelp)
         (strCommand != "start" && strCommand != "start-alias" && strCommand != "start-many" && strCommand != "stop" && strCommand != "stop-alias" && strCommand != "stop-many" && strCommand != "list" && strCommand != "list-conf" && strCommand != "count"  && strCommand != "enforce"
             && strCommand != "debug" && strCommand != "current" && strCommand != "winners" && strCommand != "genkey" && strCommand != "connect" && strCommand != "outputs"))
         throw runtime_error(
-            "masternode <start|start-alias|start-many|stop|stop-alias|stop-many|list|list-conf|count|debug|current|winners|genkey|enforce|outputs> [passphrase]\n");
+            "banknode <start|start-alias|start-many|stop|stop-alias|stop-many|list|list-conf|count|debug|current|winners|genkey|enforce|outputs> [passphrase]\n");
 
     if (strCommand == "stop")
     {
-        if(!fMasterNode) return "you must set masternode=1 in the configuration";
+        if(!fBankNode) return "you must set banknode=1 in the configuration";
 
         if(pwalletMain->IsLocked()) {
             SecureString strWalletPass;
@@ -151,13 +151,13 @@ Value masternode(const Array& params, bool fHelp)
         }
 
         std::string errorMessage;
-        if(!activeMasternode.StopMasterNode(errorMessage)) {
+        if(!activeBanknode.StopBankNode(errorMessage)) {
         	return "stop failed: " + errorMessage;
         }
         pwalletMain->Lock();
 
-        if(activeMasternode.status == MASTERNODE_STOPPED) return "successfully stopped masternode";
-        if(activeMasternode.status == MASTERNODE_NOT_CAPABLE) return "not capable masternode";
+        if(activeBanknode.status == BANKNODE_STOPPED) return "successfully stopped banknode";
+        if(activeBanknode.status == BANKNODE_NOT_CAPABLE) return "not capable banknode";
 
         return "unknown";
     }
@@ -192,11 +192,11 @@ Value masternode(const Array& params, bool fHelp)
 		Object statusObj;
 		statusObj.push_back(Pair("alias", alias));
 
-    	BOOST_FOREACH(CMasternodeConfig::CMasternodeEntry mne, masternodeConfig.getEntries()) {
+    	BOOST_FOREACH(CBanknodeConfig::CBanknodeEntry mne, banknodeConfig.getEntries()) {
     		if(mne.getAlias() == alias) {
     			found = true;
     			std::string errorMessage;
-    			bool result = activeMasternode.StopMasterNode(mne.getIp(), mne.getPrivKey(), errorMessage);
+    			bool result = activeBanknode.StopBankNode(mne.getIp(), mne.getPrivKey(), errorMessage);
 
 				statusObj.push_back(Pair("result", result ? "successful" : "failed"));
     			if(!result) {
@@ -240,11 +240,11 @@ Value masternode(const Array& params, bool fHelp)
 
 		Object resultsObj;
 
-		BOOST_FOREACH(CMasternodeConfig::CMasternodeEntry mne, masternodeConfig.getEntries()) {
+		BOOST_FOREACH(CBanknodeConfig::CBanknodeEntry mne, banknodeConfig.getEntries()) {
 			total++;
 
 			std::string errorMessage;
-			bool result = activeMasternode.StopMasterNode(mne.getIp(), mne.getPrivKey(), errorMessage);
+			bool result = activeBanknode.StopBankNode(mne.getIp(), mne.getPrivKey(), errorMessage);
 
 			Object statusObj;
 			statusObj.push_back(Pair("alias", mne.getAlias()));
@@ -262,7 +262,7 @@ Value masternode(const Array& params, bool fHelp)
 		pwalletMain->Lock();
 
 		Object returnObj;
-		returnObj.push_back(Pair("overall", "Successfully stopped " + boost::lexical_cast<std::string>(successful) + " masternodes, failed to stop " +
+		returnObj.push_back(Pair("overall", "Successfully stopped " + boost::lexical_cast<std::string>(successful) + " banknodes, failed to stop " +
 				boost::lexical_cast<std::string>(fail) + ", total " + boost::lexical_cast<std::string>(total)));
 		returnObj.push_back(Pair("detail", resultsObj));
 
@@ -284,7 +284,7 @@ Value masternode(const Array& params, bool fHelp)
         }
 
         Object obj;
-        BOOST_FOREACH(CMasterNode mn, vecMasternodes) {
+        BOOST_FOREACH(CBankNode mn, vecBanknodes) {
             mn.Check();
 
             if(strCommand == "active"){
@@ -306,16 +306,16 @@ Value masternode(const Array& params, bool fHelp)
             } else if (strCommand == "activeseconds") {
                 obj.push_back(Pair(mn.addr.ToString().c_str(),       (int64_t)(mn.lastTimeSeen - mn.now)));
             } else if (strCommand == "rank") {
-                obj.push_back(Pair(mn.addr.ToString().c_str(),       (int)(GetMasternodeRank(mn.vin, chainActive.Tip()->nHeight))));
+                obj.push_back(Pair(mn.addr.ToString().c_str(),       (int)(GetBanknodeRank(mn.vin, chainActive.Tip()->nHeight))));
             }
         }
         return obj;
     }
-    if (strCommand == "count") return (int)vecMasternodes.size();
+    if (strCommand == "count") return (int)vecBanknodes.size();
 
     if (strCommand == "start")
     {
-        if(!fMasterNode) return "you must set masternode=1 in the configuration";
+        if(!fBankNode) return "you must set banknode=1 in the configuration";
 
         if(pwalletMain->IsLocked()) {
             SecureString strWalletPass;
@@ -333,19 +333,19 @@ Value masternode(const Array& params, bool fHelp)
             }
         }
 
-        if(activeMasternode.status != MASTERNODE_REMOTELY_ENABLED && activeMasternode.status != MASTERNODE_IS_CAPABLE){
-            activeMasternode.status = MASTERNODE_NOT_PROCESSED; // TODO: consider better way
+        if(activeBanknode.status != BANKNODE_REMOTELY_ENABLED && activeBanknode.status != BANKNODE_IS_CAPABLE){
+            activeBanknode.status = BANKNODE_NOT_PROCESSED; // TODO: consider better way
             std::string errorMessage;
-            activeMasternode.ManageStatus();
+            activeBanknode.ManageStatus();
             pwalletMain->Lock();
         }
 
-        if(activeMasternode.status == MASTERNODE_REMOTELY_ENABLED) return "masternode started remotely";
-        if(activeMasternode.status == MASTERNODE_INPUT_TOO_NEW) return "masternode input must have at least 15 confirmations";
-        if(activeMasternode.status == MASTERNODE_STOPPED) return "masternode is stopped";
-        if(activeMasternode.status == MASTERNODE_IS_CAPABLE) return "successfully started masternode";
-        if(activeMasternode.status == MASTERNODE_NOT_CAPABLE) return "not capable masternode: " + activeMasternode.notCapableReason;
-        if(activeMasternode.status == MASTERNODE_SYNC_IN_PROCESS) return "sync in process. Must wait until client is synced to start.";
+        if(activeBanknode.status == BANKNODE_REMOTELY_ENABLED) return "banknode started remotely";
+        if(activeBanknode.status == BANKNODE_INPUT_TOO_NEW) return "banknode input must have at least 15 confirmations";
+        if(activeBanknode.status == BANKNODE_STOPPED) return "banknode is stopped";
+        if(activeBanknode.status == BANKNODE_IS_CAPABLE) return "successfully started banknode";
+        if(activeBanknode.status == BANKNODE_NOT_CAPABLE) return "not capable banknode: " + activeBanknode.notCapableReason;
+        if(activeBanknode.status == BANKNODE_SYNC_IN_PROCESS) return "sync in process. Must wait until client is synced to start.";
 
         return "unknown";
     }
@@ -380,11 +380,11 @@ Value masternode(const Array& params, bool fHelp)
 		Object statusObj;
 		statusObj.push_back(Pair("alias", alias));
 
-    	BOOST_FOREACH(CMasternodeConfig::CMasternodeEntry mne, masternodeConfig.getEntries()) {
+    	BOOST_FOREACH(CBanknodeConfig::CBanknodeEntry mne, banknodeConfig.getEntries()) {
     		if(mne.getAlias() == alias) {
     			found = true;
     			std::string errorMessage;
-    			bool result = activeMasternode.Register(mne.getIp(), mne.getPrivKey(), mne.getTxHash(), mne.getOutputIndex(), errorMessage);
+    			bool result = activeBanknode.Register(mne.getIp(), mne.getPrivKey(), mne.getTxHash(), mne.getOutputIndex(), errorMessage);
 
     			statusObj.push_back(Pair("result", result ? "successful" : "failed"));
     			if(!result) {
@@ -422,8 +422,8 @@ Value masternode(const Array& params, bool fHelp)
 			}
 		}
 
-		std::vector<CMasternodeConfig::CMasternodeEntry> mnEntries;
-		mnEntries = masternodeConfig.getEntries();
+		std::vector<CBanknodeConfig::CBanknodeEntry> mnEntries;
+		mnEntries = banknodeConfig.getEntries();
 
 		int total = 0;
 		int successful = 0;
@@ -431,11 +431,11 @@ Value masternode(const Array& params, bool fHelp)
 
 		Object resultsObj;
 
-		BOOST_FOREACH(CMasternodeConfig::CMasternodeEntry mne, masternodeConfig.getEntries()) {
+		BOOST_FOREACH(CBanknodeConfig::CBanknodeEntry mne, banknodeConfig.getEntries()) {
 			total++;
 
 			std::string errorMessage;
-			bool result = activeMasternode.Register(mne.getIp(), mne.getPrivKey(), mne.getTxHash(), mne.getOutputIndex(), errorMessage);
+			bool result = activeBanknode.Register(mne.getIp(), mne.getPrivKey(), mne.getTxHash(), mne.getOutputIndex(), errorMessage);
 
 			Object statusObj;
 			statusObj.push_back(Pair("alias", mne.getAlias()));
@@ -453,7 +453,7 @@ Value masternode(const Array& params, bool fHelp)
 		pwalletMain->Lock();
 
 		Object returnObj;
-		returnObj.push_back(Pair("overall", "Successfully started " + boost::lexical_cast<std::string>(successful) + " masternodes, failed to start " +
+		returnObj.push_back(Pair("overall", "Successfully started " + boost::lexical_cast<std::string>(successful) + " banknodes, failed to start " +
 				boost::lexical_cast<std::string>(fail) + ", total " + boost::lexical_cast<std::string>(total)));
 		returnObj.push_back(Pair("detail", resultsObj));
 
@@ -462,19 +462,19 @@ Value masternode(const Array& params, bool fHelp)
 
     if (strCommand == "debug")
     {
-        if(activeMasternode.status == MASTERNODE_REMOTELY_ENABLED) return "masternode started remotely";
-        if(activeMasternode.status == MASTERNODE_INPUT_TOO_NEW) return "masternode input must have at least 15 confirmations";
-        if(activeMasternode.status == MASTERNODE_IS_CAPABLE) return "successfully started masternode";
-        if(activeMasternode.status == MASTERNODE_STOPPED) return "masternode is stopped";
-        if(activeMasternode.status == MASTERNODE_NOT_CAPABLE) return "not capable masternode: " + activeMasternode.notCapableReason;
-        if(activeMasternode.status == MASTERNODE_SYNC_IN_PROCESS) return "sync in process. Must wait until client is synced to start.";
+        if(activeBanknode.status == BANKNODE_REMOTELY_ENABLED) return "banknode started remotely";
+        if(activeBanknode.status == BANKNODE_INPUT_TOO_NEW) return "banknode input must have at least 15 confirmations";
+        if(activeBanknode.status == BANKNODE_IS_CAPABLE) return "successfully started banknode";
+        if(activeBanknode.status == BANKNODE_STOPPED) return "banknode is stopped";
+        if(activeBanknode.status == BANKNODE_NOT_CAPABLE) return "not capable banknode: " + activeBanknode.notCapableReason;
+        if(activeBanknode.status == BANKNODE_SYNC_IN_PROCESS) return "sync in process. Must wait until client is synced to start.";
 
         CTxIn vin = CTxIn();
         CPubKey pubkey = CScript();
         CKey key;
-        bool found = activeMasternode.GetMasterNodeVin(vin, pubkey, key);
+        bool found = activeBanknode.GetBankNodeVin(vin, pubkey, key);
         if(!found){
-            return "Missing masternode input, please look at the documentation for instructions on masternode creation";
+            return "Missing banknode input, please look at the documentation for instructions on banknode creation";
         } else {
             return "No problems were found";
         }
@@ -483,14 +483,14 @@ Value masternode(const Array& params, bool fHelp)
     if (strCommand == "create")
     {
 
-        return "Not implemented yet, please look at the documentation for instructions on masternode creation";
+        return "Not implemented yet, please look at the documentation for instructions on banknode creation";
     }
 
     if (strCommand == "current")
     {
-        int winner = GetCurrentMasterNode(1);
+        int winner = GetCurrentBankNode(1);
         if(winner >= 0) {
-            return vecMasternodes[winner].addr.ToString().c_str();
+            return vecBanknodes[winner].addr.ToString().c_str();
         }
 
         return "unknown";
@@ -511,7 +511,7 @@ Value masternode(const Array& params, bool fHelp)
         for(int nHeight = chainActive.Tip()->nHeight-10; nHeight < chainActive.Tip()->nHeight+20; nHeight++)
         {
             CScript payee;
-            if(masternodePayments.GetBlockPayee(nHeight, payee)){
+            if(banknodePayments.GetBlockPayee(nHeight, payee)){
                 CTxDestination address1;
                 ExtractDestination(payee, address1);
                 CBitcreditAddress address2(address1);
@@ -526,7 +526,7 @@ Value masternode(const Array& params, bool fHelp)
 
     if(strCommand == "enforce")
     {
-        return (uint64_t)enforceMasternodePaymentsTime;
+        return (uint64_t)enforceBanknodePaymentsTime;
     }
 
     if(strCommand == "connect")
@@ -536,7 +536,7 @@ Value masternode(const Array& params, bool fHelp)
             strAddress = params[1].get_str().c_str();
         } else {
             throw runtime_error(
-                "Masternode address required\n");
+                "Banknode address required\n");
         }
 
         CService addr = CService(strAddress);
@@ -550,19 +550,19 @@ Value masternode(const Array& params, bool fHelp)
 
     if(strCommand == "list-conf")
     {
-    	std::vector<CMasternodeConfig::CMasternodeEntry> mnEntries;
-    	mnEntries = masternodeConfig.getEntries();
+    	std::vector<CBanknodeConfig::CBanknodeEntry> mnEntries;
+    	mnEntries = banknodeConfig.getEntries();
 
         Object resultObj;
 
-        BOOST_FOREACH(CMasternodeConfig::CMasternodeEntry mne, masternodeConfig.getEntries()) {
+        BOOST_FOREACH(CBanknodeConfig::CBanknodeEntry mne, banknodeConfig.getEntries()) {
     		Object mnObj;
     		mnObj.push_back(Pair("alias", mne.getAlias()));
     		mnObj.push_back(Pair("address", mne.getIp()));
     		mnObj.push_back(Pair("privateKey", mne.getPrivKey()));
     		mnObj.push_back(Pair("txHash", mne.getTxHash()));
     		mnObj.push_back(Pair("outputIndex", mne.getOutputIndex()));
-    		resultObj.push_back(Pair("masternode", mnObj));
+    		resultObj.push_back(Pair("banknode", mnObj));
     	}
 
     	return resultObj;
@@ -570,7 +570,7 @@ Value masternode(const Array& params, bool fHelp)
 
     if (strCommand == "outputs"){
         // Find possible candidates
-        vector<COutput> possibleCoins = activeMasternode.SelectCoinsMasternode();
+        vector<COutput> possibleCoins = activeBanknode.SelectCoinsBanknode();
 
         Object obj;
         BOOST_FOREACH(COutput& out, possibleCoins) {

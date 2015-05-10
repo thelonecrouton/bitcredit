@@ -75,7 +75,7 @@
      <item>
       <widget class="QPushButton" name="btnCopyURI">
        <property name="styleSheet">
-        <string notr="true">border: 1px solid white; color: rgb(255, 255, 255);background:transparent; </string>
+        <string notr="true">color: rgb(255, 255, 255);background:transparent; </string>
        </property>
        <property name="text">
         <string>Copy &amp;URI</string>
@@ -88,7 +88,7 @@
      <item>
       <widget class="QPushButton" name="btnCopyAddress">
        <property name="styleSheet">
-        <string notr="true">border: 1px solid white; color: rgb(255, 255, 255);background:transparent; </string>
+        <string notr="true">color: rgb(255, 255, 255);background:transparent; </string>
        </property>
        <property name="text">
         <string>Copy &amp;Address</string>
@@ -101,7 +101,7 @@
      <item>
       <widget class="QPushButton" name="btnSaveAs">
        <property name="styleSheet">
-        <string notr="true">border: 1px solid white; color: rgb(255, 255, 255);background:transparent; </string>
+        <string notr="true">color: rgb(255, 255, 255);background:transparent; </string>
        </property>
        <property name="text">
         <string>&amp;Save Image...</string>
@@ -127,7 +127,7 @@
      <item>
       <widget class="QDialogButtonBox" name="buttonBox">
        <property name="styleSheet">
-        <string notr="true">border: 1px solid white; color: rgb(255, 255, 255);background:transparent; </string>
+        <string notr="true">color: rgb(255, 255, 255);background:transparent; </string>
        </property>
        <property name="standardButtons">
         <set>QDialogButtonBox::Close</set>

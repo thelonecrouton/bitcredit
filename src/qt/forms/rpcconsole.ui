@@ -357,12 +357,12 @@
        <item row="10" column="0">
         <widget class="QLabel" name="label_25">
          <property name="text">
-          <string>Masternode Count</string>
+          <string>Banknode Count</string>
          </property>
         </widget>
        </item>
        <item row="10" column="1">
-        <widget class="QLabel" name="masternodeCount">
+        <widget class="QLabel" name="banknodeCount">
          <property name="text">
           <string>N/A</string>
          </property>

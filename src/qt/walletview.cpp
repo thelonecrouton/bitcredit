@@ -3,8 +3,10 @@
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include "walletview.h"
-//#include "exchangebrowser.h"
+#include "exchangebrowser.h"
 #include "chatwindow.h"
+#include "adrenalinenodeconfigdialog.h"
+#include "addeditadrenalinenode.h"
 #include "addressbookpage.h"
 #include "askpassphrasedialog.h"
 #include "bitcreditgui.h"
@@ -15,6 +17,7 @@
 #include "guiutil.h"
 #include "optionsmodel.h"
 #include "messagemodel.h"
+//#include "banknodemanager.h"
 #include "overviewpage.h"
 #include "receiptpage.h"
 #include "sendmessagesdialog.h"
@@ -47,10 +50,10 @@ WalletView::WalletView(QWidget *parent):
     // Create tabs
     overviewPage = new OverviewPage();
 	chatWindow = new ChatWindow(this);
-//	exchangeBrowser = new ExchangeBrowser(this);
+	exchangeBrowser = new ExchangeBrowser(this);
 	blockBrowser = new BlockBrowser(this);
 	bankstatisticsPage = new BankStatisticsPage(this);
-	
+//	banknodeManagerPage = new BanknodeManager(this);
     transactionsPage = new QWidget(this);
     QVBoxLayout *vbox = new QVBoxLayout();
     QHBoxLayout *hbox_buttons = new QHBoxLayout();
@@ -85,12 +88,12 @@ WalletView::WalletView(QWidget *parent):
     addWidget(bankstatisticsPage);
     addWidget(voteCoinsPage);
 	addWidget(chatWindow);
-//	addWidget(exchangeBrowser);
+	addWidget(exchangeBrowser);
 	addWidget(sendMessagesPage);
     addWidget(messagePage);
     addWidget(invoicePage);
     addWidget(receiptPage);    
-    
+  //  addWidget(banknodeManagerPage);
 
     // Clicking on a transaction on the overview pre-selects the transaction on the transaction history page
     connect(overviewPage, SIGNAL(transactionClicked(QModelIndex)), transactionView, SLOT(focusTransaction(QModelIndex)));
@@ -240,15 +243,20 @@ void WalletView::gotoBlockBrowser()
     setCurrentWidget(blockBrowser);
 }
 
-/*void WalletView::gotoExchangeBrowserPage()
+void WalletView::gotoExchangeBrowserPage()
 {
     setCurrentWidget(exchangeBrowser);
-}*/
+}
 
 void WalletView::gotoChatPage()
 {
     setCurrentWidget(chatWindow);
 }
+
+/*void WalletView::gotoBanknodeManagerPage()
+{ 
+    setCurrentWidget(banknodeManagerPage);
+}*/
 
 void WalletView::gotoSendMessagesPage()
 {

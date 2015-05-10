@@ -536,8 +536,8 @@ Value getblocktemplate(const Array& params, bool fHelp)
             "        { ... }                       (json object) vote candidate\n"
             "        ,...\n"
             "  ],\n"
-            "  \"masternode_payments\" : true|false,         (boolean) true, if masternode payments are enabled"
-            "  \"enforce_masternode_payments\" : true|false  (boolean) true, if masternode payments are enforced"
+            "  \"banknode_payments\" : true|false,         (boolean) true, if banknode payments are enabled"
+            "  \"enforce_banknode_payments\" : true|false  (boolean) true, if banknode payments are enforced"
             "}\n"
 
             "\nExamples:\n"
@@ -759,8 +759,8 @@ Value getblocktemplate(const Array& params, bool fHelp)
     result.push_back(Pair("mintime", (int64_t)pindexPrev->GetMedianTimePast()+1));
     result.push_back(Pair("mutable", aMutable));
     result.push_back(Pair("noncerange", "00000000ffffffff"));
-    result.push_back(Pair("sigoplimit", (int64_t)MAX_BLOCK_SIGOPS));
-    result.push_back(Pair("sizelimit", (int64_t)MAX_BLOCK_SIZE));
+    result.push_back(Pair("sigoplimit", (int64_t)MaxBlockSigops(pblock->GetBlockTime())));
+    result.push_back(Pair("sizelimit", (int64_t)MaxBlockSigops(pblock->GetBlockTime())));
     result.push_back(Pair("curtime", pblock->GetBlockTime()));
     result.push_back(Pair("bits", strprintf("%08x", pblock->nBits)));
     result.push_back(Pair("height", (int64_t)(pindexPrev->nHeight+1)));
@@ -771,18 +771,18 @@ Value getblocktemplate(const Array& params, bool fHelp)
         ExtractDestination(pblock->payee, address1);
         CBitcreditAddress address2(address1);
         result.push_back(Pair("payee", address2.ToString().c_str()));
-        result.push_back(Pair("payee_amount", (int64_t)GetMasternodePayment(pindexPrev->nHeight+1, pblock->vtx[0].GetValueOut())));
+        result.push_back(Pair("payee_amount", (int64_t)GetBanknodePayment(pindexPrev->nHeight+1, pblock->vtx[0].GetValueOut())));
     } else {
         result.push_back(Pair("payee", ""));
         result.push_back(Pair("payee_amount", ""));
     }
 
-	bool MasternodePayments = false;
+	bool BanknodePayments = false;
 	
-    if(pblock->nTime > START_MASTERNODE_PAYMENTS) MasternodePayments = true;
+    if(pblock->nTime > 1427803200) BanknodePayments = true;
    
-    result.push_back(Pair("masternode_payments", MasternodePayments));
-    result.push_back(Pair("enforce_masternode_payments", true));
+    result.push_back(Pair("banknode_payments", BanknodePayments));
+    result.push_back(Pair("enforce_banknode_payments", true));
 
     return result;
 }

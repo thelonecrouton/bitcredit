@@ -16,7 +16,6 @@
 #include "main.h"
 #include "net.h"
 #include "txdb.h" // for -dbcache defaults
-
 #ifdef ENABLE_WALLET
 #include "wallet.h"
 #include "walletdb.h"
@@ -77,7 +76,7 @@ void OptionsModel::Init()
         settings.setValue("nDarksendRounds", 2);
 
     if (!settings.contains("nAnonymizeBitcreditAmount"))
-        settings.setValue("nAnonymizeBitcreditAmount", 10000);
+        settings.setValue("nAnonymizeBitcreditAmount", 2000);
 
     nDarksendRounds = settings.value("nDarksendRounds").toLongLong();
     nAnonymizeBitcreditAmount = settings.value("nAnonymizeBitcreditAmount").toLongLong();
@@ -337,7 +336,6 @@ bool OptionsModel::setData(const QModelIndex & index, const QVariant & value, in
             }
         }
         break;
-  
 #ifdef ENABLE_WALLET
         case SpendZeroConfChange:
             if (settings.value("bSpendZeroConfChange") != value) {
@@ -403,7 +401,6 @@ bool OptionsModel::setData(const QModelIndex & index, const QVariant & value, in
             break;
         }
     }
-
     emit dataChanged(index, index);
 
     return successful;

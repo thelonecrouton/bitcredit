@@ -15,10 +15,11 @@
 #include "transactionfilterproxy.h"
 #include "transactiontablemodel.h"
 #include "walletmodel.h"
-
+#include "init.h"
 
 #include <QAbstractItemDelegate>
 #include <QPainter>
+#include <QTimer>
 #include <QPicture>
 #include <QMovie>
 #include <QFrame>
@@ -154,7 +155,7 @@ OverviewPage::OverviewPage(QWidget *parent) :
         timer->start(333);
     }
 
-    if(fMasterNode || fLiteMode){
+    if(fBankNode || fLiteMode){
         ui->toggleDarksend->setText("(" + tr("Disabled") + ")");
         ui->toggleDarksend->setEnabled(false);
     }else if(!fEnableDarksend){
@@ -174,8 +175,6 @@ void OverviewPage::handleTransactionClicked(const QModelIndex &index)
     if(filter)
         emit transactionClicked(filter->mapToSource(index));
 }
-
-
 
 OverviewPage::~OverviewPage()
 {
@@ -232,8 +231,6 @@ void OverviewPage::updateWatchOnlyLabels(bool showWatchOnly)
         //ui->labelWatchImmature->hide();
 }
 
-
-
 void OverviewPage::setClientModel(ClientModel *model)
 {
     this->clientModel = model;
@@ -279,8 +276,6 @@ void OverviewPage::setWalletModel(WalletModel *model)
     // update the display unit, to not use the default ("BCR")
     updateDisplayUnit();
 }
-
-
 
 void OverviewPage::updateDisplayUnit()
 {
@@ -384,10 +379,7 @@ void OverviewPage::darkSendStatus()
 
         QString strSettings(" " + tr("Rounds"));
         strSettings.prepend(QString::number(nDarksendRounds)).prepend(" / ");
-        strSettings.prepend(BitcreditUnits::formatWithUnit(
-            walletModel->getOptionsModel()->getDisplayUnit(),
-            nAnonymizeBitcreditAmount * COIN)
-        );
+        strSettings.prepend(BitcreditUnits::formatWithUnit(walletModel->getOptionsModel()->getDisplayUnit(),nAnonymizeBitcreditAmount * COIN));
 
         ui->labelAmountRounds->setText(strSettings);
     }
@@ -438,10 +430,10 @@ void OverviewPage::darkSendStatus()
                 showingDarkSendMessage = 0;
             }
         } else {
-            if(showingDarkSendMessage % 70 <= 40) convert << tr("Submitted following entries to masternode:").toStdString() << " " << entries << "/" << darkSendPool.GetMaxPoolTransactions();
-            else if(showingDarkSendMessage % 70 <= 50) convert << tr("Submitted to masternode, Waiting for more entries").toStdString() << " (" << entries << "/" << darkSendPool.GetMaxPoolTransactions() << " ) .";
-            else if(showingDarkSendMessage % 70 <= 60) convert << tr("Submitted to masternode, Waiting for more entries").toStdString() << " (" << entries << "/" << darkSendPool.GetMaxPoolTransactions() << " ) ..";
-            else if(showingDarkSendMessage % 70 <= 70) convert << tr("Submitted to masternode, Waiting for more entries").toStdString() << " (" << entries << "/" << darkSendPool.GetMaxPoolTransactions() << " ) ...";
+            if(showingDarkSendMessage % 70 <= 40) convert << tr("Submitted following entries to banknode:").toStdString() << " " << entries << "/" << darkSendPool.GetMaxPoolTransactions();
+            else if(showingDarkSendMessage % 70 <= 50) convert << tr("Submitted to banknode, Waiting for more entries").toStdString() << " (" << entries << "/" << darkSendPool.GetMaxPoolTransactions() << " ) .";
+            else if(showingDarkSendMessage % 70 <= 60) convert << tr("Submitted to banknode, Waiting for more entries").toStdString() << " (" << entries << "/" << darkSendPool.GetMaxPoolTransactions() << " ) ..";
+            else if(showingDarkSendMessage % 70 <= 70) convert << tr("Submitted to banknode, Waiting for more entries").toStdString() << " (" << entries << "/" << darkSendPool.GetMaxPoolTransactions() << " ) ...";
         }
     } else if(state == POOL_STATUS_SIGNING) {
         if(showingDarkSendMessage % 70 <= 10) convert << tr("Found enough users, signing ...").toStdString();
@@ -459,9 +451,9 @@ void OverviewPage::darkSendStatus()
     } else if(state == POOL_STATUS_SUCCESS) {
         convert << tr("Darksend request complete:").toStdString() << " " << darkSendPool.lastMessage;
     } else if(state == POOL_STATUS_QUEUE) {
-        if(showingDarkSendMessage % 70 <= 50) convert << tr("Submitted to masternode, waiting in queue .").toStdString();
-        else if(showingDarkSendMessage % 70 <= 60) convert << tr("Submitted to masternode, waiting in queue ..").toStdString();
-        else if(showingDarkSendMessage % 70 <= 70) convert << tr("Submitted to masternode, waiting in queue ...").toStdString();
+        if(showingDarkSendMessage % 70 <= 50) convert << tr("Submitted to banknode, waiting in queue .").toStdString();
+        else if(showingDarkSendMessage % 70 <= 60) convert << tr("Submitted to banknode, waiting in queue ..").toStdString();
+        else if(showingDarkSendMessage % 70 <= 70) convert << tr("Submitted to banknode, waiting in queue ...").toStdString();
     } else {
         convert << tr("Unknown state:").toStdString() << " id = " << state;
     }
