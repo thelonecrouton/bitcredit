@@ -551,21 +551,21 @@ QMainWindow QToolBar#toolbar3
 
 QMainWindow QToolBar#toolbar3 QToolButton
 {
-    background-image:url(:/icons/receiveg.png);
+    background-image:url(:/icons/receivetr);
     border: none;
 
 }
 
 QMainWindow QToolBar#toolbar3 QToolButton:checked 
 {
-    background-image:url(:/icons/receiver.png);
-    border:none;
+    background-image:url(:/icons/receiveselected);
+    border: none;
 }  
 
 QMainWindow QToolBar#toolbar3 QToolButton:hover 
 {
-    background-image:url(:/icons/receiver.png);
-    border:none;
+    background-image:url(:/icons/receivetr);
+    border: 1px solid #ffaa00;
 }  
 
 QMainWindow QToolBar#toolbar4
@@ -576,21 +576,21 @@ QMainWindow QToolBar#toolbar4
 
 QMainWindow QToolBar#toolbar4 QToolButton
 {
-    background-image:url(:/icons/sendg.png);
+    background-image:url(:/icons/sendtr);
     border: none;
 
 }
 
 QMainWindow QToolBar#toolbar4 QToolButton:checked 
 {
-    background-image:url(:/icons/sendr.png);
+    background-image:url(:/icons/sendselected);
     border:none;
 }  
 
 QMainWindow QToolBar#toolbar4 QToolButton:hover 
 {
-    background-image:url(:/icons/sendr.png);
-    border:none;
+    background-image:url(:/icons/sendtr);
+    border: 1px solid #ffaa00;
 }  
 
 
@@ -612,21 +612,21 @@ QMainWindow QToolBar#toolbar5
 
 QMainWindow QToolBar#toolbar5 QToolButton
 {
-    background-image:url(:/icons/sendg.png);
+    background-image:url(:/icons/receivetr);
     border: none;
 
 }
 
 QMainWindow QToolBar#toolbar5 QToolButton:checked 
 {
-    background-image:url(:/icons/sendr.png);
+    background-image:url(:/icons/receiveselected);
     border:none;
 }  
 
 QMainWindow QToolBar#toolbar5 QToolButton:hover 
 {
-    background-image:url(:/icons/sendr.png);
-    border:none;
+    background-image:url(:/icons/receivetr);
+    border: 1px solid #ffaa00;
 }
 
 QMainWindow QToolBar#toolbar6
@@ -637,21 +637,21 @@ QMainWindow QToolBar#toolbar6
 
 QMainWindow QToolBar#toolbar6 QToolButton
 {
-    background-image:url(:/icons/sendg.png);
+    background-image:url(:/icons/sendtr);
     border: none;
 
 }
 
 QMainWindow QToolBar#toolbar6 QToolButton:checked 
 {
-    background-image:url(:/icons/sendr.png);
+    background-image:url(:/icons/sendselected);
     border:none;
 }  
 
 QMainWindow QToolBar#toolbar6 QToolButton:hover 
 {
-    background-image:url(:/icons/sendr.png);
-    border:none;
+    background-image:url(:/icons/sendtr);
+    border: 1px solid #ffaa00;
 }
 
 QMainWindow QToolBar#toolbar7
@@ -662,21 +662,21 @@ QMainWindow QToolBar#toolbar7
 
 QMainWindow QToolBar#toolbar7 QToolButton
 {
-    background-image:url(:/icons/sendg.png);
+    background-image:url(:/icons/receivetr);
     border: none;
 
 }
 
 QMainWindow QToolBar#toolbar7 QToolButton:checked 
 {
-    background-image:url(:/icons/sendr.png);
+    background-image:url(:/icons/receiveselected);
     border:none;
 }  
 
 QMainWindow QToolBar#toolbar7 QToolButton:hover 
 {
-    background-image:url(:/icons/sendr.png);
-    border:none;
+    background-image:url(:/icons/receivetr);
+    border: 1px solid #ffaa00;
 }
 
 QMainWindow QToolBar#toolbar8
@@ -687,21 +687,21 @@ QMainWindow QToolBar#toolbar8
 
 QMainWindow QToolBar#toolbar8 QToolButton
 {
-    background-image:url(:/icons/sendg.png);
+    background-image:url(:/icons/sendtr);
     border: none;
 
 }
 
 QMainWindow QToolBar#toolbar8 QToolButton:checked 
 {
-    background-image:url(:/icons/sendr.png);
+    background-image:url(:/icons/sendselected);
     border:none;
 }  
 
 QMainWindow QToolBar#toolbar8 QToolButton:hover 
 {
-    background-image:url(:/icons/sendr.png);
-    border:none;
+    background-image:url(:/icons/sendtr);
+    border: 1px solid #ffaa00;
 }
 
 QMainWindow QToolBar#toolbar9
@@ -712,21 +712,21 @@ QMainWindow QToolBar#toolbar9
 
 QMainWindow QToolBar#toolbar9 QToolButton
 {
-    background-image:url(:/icons/sendg.png);
+    background-image:url(:/icons/markettr);
     border: none;
 
 }
 
 QMainWindow QToolBar#toolbar9 QToolButton:checked 
 {
-    background-image:url(:/icons/sendr.png);
+    background-image:url(:/icons/marketselected);
     border:none;
 }  
 
 QMainWindow QToolBar#toolbar9 QToolButton:hover 
 {
-    background-image:url(:/icons/sendr.png);
-    border:none;
+    background-image:url(:/icons/markettr);
+    border: 1px solid #ffaa00;
 }
 
 QMainWindow QToolBar#toolbar10
@@ -737,21 +737,21 @@ QMainWindow QToolBar#toolbar10
 
 QMainWindow QToolBar#toolbar10 QToolButton
 {
-    background-image:url(:/icons/sendg.png);
+    background-image:url(:/icons/blockexplorertr);
     border: none;
 
 }
 
 QMainWindow QToolBar#toolbar10 QToolButton:checked 
 {
-    background-image:url(:/icons/sendr.png);
+    background-image:url(:/icons/blockexplorerselected);
     border:none;
 }  
 
 QMainWindow QToolBar#toolbar10 QToolButton:hover 
 {
-    background-image:url(:/icons/sendr.png);
-    border:none;
+    background-image:url(:/icons/blockexplorertr);
+    border: 1px solid #ffaa00;
 }
 
 QMainWindow QToolBar#toolbar11
@@ -762,19 +762,19 @@ QMainWindow QToolBar#toolbar11
 
 QMainWindow QToolBar#toolbar11 QToolButton
 {
-    background-image:url(:/icons/sendg.png);
+    background-image:url(:/icons/bankstatstr);
     border: none;
 
 }
 
 QMainWindow QToolBar#toolbar11 QToolButton:checked 
 {
-    background-image:url(:/icons/sendr.png);
+    background-image:url(:/icons/bankstatsselected);
     border:none;
 }  
 
 QMainWindow QToolBar#toolbar11 QToolButton:hover 
 {
-    background-image:url(:/icons/sendr.png);
-    border:none;
+    background-image:url(:/icons/bankstatstr);
+    border: 1px solid #ffaa00;
 }
