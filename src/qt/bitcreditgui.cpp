@@ -277,12 +277,12 @@ void BitcreditGUI::createActions(const NetworkStyle *networkStyle)
     QToolBar *toolbarsend = addToolBar(tr("Send"));
     QToolBar *toolbarsend2 = addToolBar(tr("Receive"));
 
-    toolbarsend->setIconSize(QSize(396, 46));
+    toolbarsend->setIconSize(QSize(200, 35));
     toolbarsend->setObjectName("toolbar3");
-    toolbarsend2->setIconSize(QSize(400, 46));
+    toolbarsend2->setIconSize(QSize(200, 35));
     toolbarsend2->setObjectName("toolbar4");
-    toolbarsend->setFixedSize(350, 46);
-    toolbarsend2->setFixedSize(350, 46);
+    toolbarsend->setFixedSize(200, 35);
+    toolbarsend2->setFixedSize(200, 35);
     QHBoxLayout *vbox4 = new QHBoxLayout();
     vbox4->setContentsMargins(0, 0, 0, 0);
     vbox4->setSpacing(0);
@@ -290,8 +290,8 @@ void BitcreditGUI::createActions(const NetworkStyle *networkStyle)
     vbox4->addWidget(toolbarsend);
     wId2 = new QWidget(this);
     wId2->setContentsMargins(0, 0, 0, 0);
-    wId2->setFixedSize(700, 46);
-    wId2->move(215, -1);
+    wId2->setFixedSize(400, 35);
+    wId2->move(400, 9);
     wId2->setLayout(vbox4);
     wId2->setFocus();
     wId2->hide();
@@ -299,12 +299,12 @@ void BitcreditGUI::createActions(const NetworkStyle *networkStyle)
     QToolBar *toolbarmess = addToolBar(tr("Send Message"));
     QToolBar *toolbarmess2 = addToolBar(tr("Messages"));
     
-    toolbarmess->setIconSize(QSize(396, 46));
-    toolbarmess2->setIconSize(QSize(400, 46));
+    toolbarmess->setIconSize(QSize(200, 35));
+    toolbarmess2->setIconSize(QSize(200, 35));
     toolbarmess->setObjectName("toolbar5");
     toolbarmess2->setObjectName("toolbar6");
-    toolbarmess->setFixedSize(350, 46);
-    toolbarmess2->setFixedSize(350, 46);
+    toolbarmess->setFixedSize(200, 35);
+    toolbarmess2->setFixedSize(200, 35);
     QHBoxLayout *vbox3 = new QHBoxLayout();
     vbox3->setContentsMargins(0, 0, 0, 0);
     vbox3->setSpacing(0);
@@ -312,8 +312,8 @@ void BitcreditGUI::createActions(const NetworkStyle *networkStyle)
     vbox3->addWidget(toolbarmess);
     wId = new QWidget(this);
     wId->setContentsMargins(0, 0, 0, 0);
-    wId->setFixedSize(700, 46);
-    wId->move(215, -1);
+    wId->setFixedSize(400, 35);
+    wId->move(400, 9);
     wId->setLayout(vbox3);
     wId->setFocus();
     wId->hide();
@@ -321,12 +321,12 @@ void BitcreditGUI::createActions(const NetworkStyle *networkStyle)
     QToolBar *toolbarrecinv = addToolBar(tr("Receipts"));
     QToolBar *toolbarrecinv2 = addToolBar(tr("Invoices"));
     
-    toolbarrecinv->setIconSize(QSize(396, 46));
-    toolbarrecinv2->setIconSize(QSize(400, 46));
+    toolbarrecinv->setIconSize(QSize(200, 35));
+    toolbarrecinv2->setIconSize(QSize(200, 35));
     toolbarrecinv->setObjectName("toolbar7");
     toolbarrecinv2->setObjectName("toolbar8");
-    toolbarrecinv->setFixedSize(396, 46);
-    toolbarrecinv2->setFixedSize(400, 46);
+    toolbarrecinv->setFixedSize(200, 35);
+    toolbarrecinv2->setFixedSize(200, 35);
     QHBoxLayout *vbox2 = new QHBoxLayout();
     vbox2->setContentsMargins(0, 0, 0, 0);
     vbox2->setSpacing(0);
@@ -334,8 +334,8 @@ void BitcreditGUI::createActions(const NetworkStyle *networkStyle)
     vbox2->addWidget(toolbarrecinv);
     wId3 = new QWidget(this);
     wId3->setContentsMargins(0, 0, 0, 0);
-    wId3->setFixedSize(794, 46);
-    wId3->move(207, -1);
+    wId3->setFixedSize(400, 35);
+    wId3->move(400, 9);
     wId3->setLayout(vbox2);
     wId3->setFocus();
     wId3->hide();
@@ -344,15 +344,15 @@ void BitcreditGUI::createActions(const NetworkStyle *networkStyle)
     QToolBar *toolbarstats2 = addToolBar(tr("Market"));
     QToolBar *toolbarstats3 = addToolBar(tr("Bank Statistics"));
     
-    toolbarstats->setIconSize(QSize(266, 46));
-    toolbarstats2->setIconSize(QSize(266, 46));
-    toolbarstats3->setIconSize(QSize(266, 46));
+    toolbarstats->setIconSize(QSize(200, 35));
+    toolbarstats2->setIconSize(QSize(200, 35));
+    toolbarstats3->setIconSize(QSize(200, 35));
     toolbarstats->setObjectName("toolbar9");
     toolbarstats2->setObjectName("toolbar10");
     toolbarstats3->setObjectName("toolbar11");
-    toolbarstats->setFixedSize(266, 46);
-    toolbarstats2->setFixedSize(266, 46);
-    toolbarstats3->setFixedSize(266, 46);
+    toolbarstats->setFixedSize(200, 35);
+    toolbarstats2->setFixedSize(200, 35);
+    toolbarstats3->setFixedSize(200, 35);
     QHBoxLayout *vbox5 = new QHBoxLayout();
     vbox5->setContentsMargins(0, 0, 0, 0);
     vbox5->setSpacing(0);
@@ -361,8 +361,8 @@ void BitcreditGUI::createActions(const NetworkStyle *networkStyle)
     vbox5->addWidget(toolbarstats3);
     wId4 = new QWidget(this);
     wId4->setContentsMargins(0, 0, 0, 0);
-    wId4->setFixedSize(800, 46);
-    wId4->move(207, -1);
+    wId4->setFixedSize(600, 35);
+    wId4->move(300, 9);
     wId4->setLayout(vbox5);
     wId4->setFocus();
     wId4->hide();
