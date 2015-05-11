@@ -9,6 +9,16 @@
         <file alias="receiver">res/icons/receiver.png</file>
         <file alias="sendg">res/icons/sendg.png</file>
         <file alias="sendr">res/icons/sendr.png</file>
+        <file alias="sendtr">res/icons/sendtr.png</file>
+        <file alias="sendselected">res/icons/sendselected.png</file>
+        <file alias="receivetr">res/icons/receivetr.png</file>
+        <file alias="receiveselected">res/icons/receiveselected.png</file>
+        <file alias="blockexplorertr">res/icons/blockexplorertr.png</file>
+        <file alias="blockexplorerselected">res/icons/blockexplorerselected.png</file>
+        <file alias="markettr">res/icons/markettr.png</file>
+        <file alias="marketselected">res/icons/marketselected.png</file>
+        <file alias="bankstatstr">res/icons/bankstatstr.png</file>
+        <file alias="bankstatsselected">res/icons/bankstatsselected.png</file>
         <file alias="connect_0">res/icons/connect0_white.png</file>
         <file alias="connect_1">res/icons/connect1_white.png</file>
         <file alias="connect_2">res/icons/connect2_white.png</file>
