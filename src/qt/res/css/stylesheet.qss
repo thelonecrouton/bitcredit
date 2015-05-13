@@ -546,50 +546,55 @@ QMainWindow QToolBar#toolbar2 QToolButton
 QMainWindow QToolBar#toolbar3
 {
     background: transparent;
-    border: none;
+    border-radius: 6px;
 }
 
 QMainWindow QToolBar#toolbar3 QToolButton
 {
     background-image:url(:/icons/receivetr);
-    border: none;
+    border-radius: 6px;
+    border: 1px solid white;
 
 }
 
 QMainWindow QToolBar#toolbar3 QToolButton:checked 
 {
     background-image:url(:/icons/receiveselected);
-    border: none;
+    border-radius: 6px;
+    border: 1px solid white;
 }  
 
 QMainWindow QToolBar#toolbar3 QToolButton:hover 
 {
     background-image:url(:/icons/receivetr);
+    border-radius: 6px;
     border: 1px solid #ffaa00;
 }  
 
 QMainWindow QToolBar#toolbar4
 {
     background: transparent;
-    border: none;
+    border-radius: 6px;
 }
 
 QMainWindow QToolBar#toolbar4 QToolButton
 {
     background-image:url(:/icons/sendtr);
-    border: none;
-
+    border-radius: 6px;
+    border: 1px solid white;
 }
 
 QMainWindow QToolBar#toolbar4 QToolButton:checked 
 {
     background-image:url(:/icons/sendselected);
-    border:none;
+    border-radius: 6px;
+    border: 1px solid white;
 }  
 
 QMainWindow QToolBar#toolbar4 QToolButton:hover 
 {
     background-image:url(:/icons/sendtr);
+    border-radius: 6px;
     border: 1px solid #ffaa00;
 }  
 
@@ -607,174 +612,195 @@ Qframe
 QMainWindow QToolBar#toolbar5
 {
     background: transparent;
-    border: none;
+    border-radius: 6px;
 }
 
 QMainWindow QToolBar#toolbar5 QToolButton
 {
     background-image:url(:/icons/receivetr);
-    border: none;
+    border-radius: 6px;
+    border: 1px solid white;
 
 }
 
 QMainWindow QToolBar#toolbar5 QToolButton:checked 
 {
     background-image:url(:/icons/receiveselected);
-    border:none;
+    border-radius: 6px;
+    border: 1px solid white;
 }  
 
 QMainWindow QToolBar#toolbar5 QToolButton:hover 
 {
     background-image:url(:/icons/receivetr);
+    border-radius: 6px;
     border: 1px solid #ffaa00;
 }
 
 QMainWindow QToolBar#toolbar6
 {
     background: transparent;
-    border: none;
+    border-radius: 6px;
 }
 
 QMainWindow QToolBar#toolbar6 QToolButton
 {
     background-image:url(:/icons/sendtr);
-    border: none;
+    border-radius: 6px;
+    border: 1px solid white;
 
 }
 
 QMainWindow QToolBar#toolbar6 QToolButton:checked 
 {
     background-image:url(:/icons/sendselected);
-    border:none;
+    border-radius: 6px;
+    border: 1px solid white;
 }  
 
 QMainWindow QToolBar#toolbar6 QToolButton:hover 
 {
     background-image:url(:/icons/sendtr);
+    border-radius: 6px;
     border: 1px solid #ffaa00;
 }
 
 QMainWindow QToolBar#toolbar7
 {
     background: transparent;
-    border: none;
+    border-radius: 6px;
 }
 
 QMainWindow QToolBar#toolbar7 QToolButton
 {
     background-image:url(:/icons/receivetr);
-    border: none;
+    border-radius: 6px;
+    border: 1px solid white;
 
 }
 
 QMainWindow QToolBar#toolbar7 QToolButton:checked 
 {
     background-image:url(:/icons/receiveselected);
-    border:none;
+    border-radius: 6px;
+    border: 1px solid white;
 }  
 
 QMainWindow QToolBar#toolbar7 QToolButton:hover 
 {
     background-image:url(:/icons/receivetr);
+    border-radius: 6px;
     border: 1px solid #ffaa00;
 }
 
 QMainWindow QToolBar#toolbar8
 {
     background: transparent;
-    border: none;
+    border-radius: 6px;
 }
 
 QMainWindow QToolBar#toolbar8 QToolButton
 {
     background-image:url(:/icons/sendtr);
-    border: none;
+    border-radius: 6px;
+    border: 1px solid white;
 
 }
 
 QMainWindow QToolBar#toolbar8 QToolButton:checked 
 {
     background-image:url(:/icons/sendselected);
-    border:none;
+    border-radius: 6px;
+    border: 1px solid white;
 }  
 
 QMainWindow QToolBar#toolbar8 QToolButton:hover 
 {
     background-image:url(:/icons/sendtr);
+    border-radius: 6px;
     border: 1px solid #ffaa00;
 }
 
 QMainWindow QToolBar#toolbar9
 {
     background: transparent;
-    border: none;
+    border-radius: 6px;
 }
 
 QMainWindow QToolBar#toolbar9 QToolButton
 {
     background-image:url(:/icons/markettr);
-    border: none;
+    border-radius: 6px;
+    border: 1px solid white;
 
 }
 
 QMainWindow QToolBar#toolbar9 QToolButton:checked 
 {
     background-image:url(:/icons/marketselected);
-    border:none;
+    border-radius: 6px;
+    border: 1px solid white;
 }  
 
 QMainWindow QToolBar#toolbar9 QToolButton:hover 
 {
     background-image:url(:/icons/markettr);
+    border-radius: 6px;
     border: 1px solid #ffaa00;
 }
 
 QMainWindow QToolBar#toolbar10
 {
     background: transparent;
-    border: none;
+    border-radius: 6px;
 }
 
 QMainWindow QToolBar#toolbar10 QToolButton
 {
     background-image:url(:/icons/blockexplorertr);
-    border: none;
+    border-radius: 6px;
+    border: 1px solid white;
 
 }
 
 QMainWindow QToolBar#toolbar10 QToolButton:checked 
 {
     background-image:url(:/icons/blockexplorerselected);
-    border:none;
+    border-radius: 6px;
+    border: 1px solid white;
 }  
 
 QMainWindow QToolBar#toolbar10 QToolButton:hover 
 {
     background-image:url(:/icons/blockexplorertr);
+    border-radius: 6px;
     border: 1px solid #ffaa00;
 }
 
 QMainWindow QToolBar#toolbar11
 {
     background: transparent;
-    border: none;
+    border-radius: 6px;
 }
 
 QMainWindow QToolBar#toolbar11 QToolButton
 {
     background-image:url(:/icons/bankstatstr);
-    border: none;
+    border-radius: 6px;
+    border: 1px solid white;
 
 }
 
 QMainWindow QToolBar#toolbar11 QToolButton:checked 
 {
     background-image:url(:/icons/bankstatsselected);
-    border:none;
+    border-radius: 6px;
+    border: 1px solid white;
 }  
 
 QMainWindow QToolBar#toolbar11 QToolButton:hover 
 {
     background-image:url(:/icons/bankstatstr);
+    border-radius: 6px;
     border: 1px solid #ffaa00;
 }
