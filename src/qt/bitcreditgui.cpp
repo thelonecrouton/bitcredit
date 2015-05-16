@@ -145,8 +145,7 @@ BitcreditGUI::BitcreditGUI(const NetworkStyle *networkStyle, QWidget *parent) :
     qss.open(QFile::ReadOnly);
     qApp->setStyleSheet(qss.readAll());
     qss.close();
-
-	
+    	
 #ifndef Q_OS_MAC
     QApplication::setWindowIcon(networkStyle->getTrayAndWindowIcon());
     setWindowIcon(networkStyle->getTrayAndWindowIcon());
@@ -206,12 +205,18 @@ BitcreditGUI::BitcreditGUI(const NetworkStyle *networkStyle, QWidget *parent) :
     progressBar = new QProgressBar();
     addToolBarBreak(Qt::LeftToolBarArea);
     QToolBar *toolbar2 = addToolBar(tr("Toolbar"));
-    addToolBar(Qt::LeftToolBarArea, toolbar2);
-    toolbar2->setOrientation(Qt::Vertical);
+    addToolBar(Qt::BottomToolBarArea, toolbar2);
+    toolbar2->setOrientation(Qt::Horizontal);
+    toolbar2->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
     toolbar2->setMovable(false);
     toolbar2->setObjectName("toolbar2");
-    toolbar2->setFixedWidth(28);
+    toolbar2->setFixedHeight(40);
+    toolbar2->setFixedWidth(1000);
     toolbar2->setIconSize(QSize(18, 18));
+    QWidget* spacer2 = new QWidget();
+    spacer2->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+    toolbar2->addWidget(spacer2);
+    spacer2->setObjectName("spacer2");
     toolbar2->addWidget(labelConnectionsIcon);
     toolbar2->addWidget(labelBlocksIcon);
     toolbar2->addAction(openAction);
@@ -564,6 +569,7 @@ void BitcreditGUI::createToolBars()
     addToolBar(Qt::LeftToolBarArea, toolbar);
     toolbar->addWidget(mylabel);
     toolbar->setOrientation(Qt::Vertical);
+    toolbar->setFixedWidth(220);
     toolbar->setMovable(false);
     toolbar->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
 	toolbar->setIconSize(QSize(50,20));

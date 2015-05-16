@@ -45,8 +45,8 @@
    <property name="geometry">
     <rect>
      <x>10</x>
-     <y>130</y>
-     <width>771</width>
+     <y>142</y>
+     <width>750</width>
      <height>111</height>
     </rect>
    </property>
@@ -96,9 +96,9 @@
    <widget class="QPushButton" name="toggleDarksend">
     <property name="geometry">
      <rect>
-      <x>590</x>
+      <x>580</x>
       <y>60</y>
-      <width>171</width>
+      <width>161</width>
       <height>41</height>
      </rect>
     </property>
@@ -319,8 +319,8 @@
    <property name="geometry">
     <rect>
      <x>10</x>
-     <y>10</y>
-     <width>771</width>
+     <y>17</y>
+     <width>750</width>
      <height>111</height>
     </rect>
    </property>
@@ -411,7 +411,7 @@
      <cursorShape>IBeamCursor</cursorShape>
     </property>
     <property name="toolTip">
-     <string>Your current balance</string>
+     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Your current balance&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
     </property>
     <property name="styleSheet">
      <string notr="true">background: transparent; color: white;</string>
@@ -488,9 +488,9 @@
    <property name="geometry">
     <rect>
      <x>10</x>
-     <y>250</y>
-     <width>771</width>
-     <height>251</height>
+     <y>267</y>
+     <width>750</width>
+     <height>225</height>
     </rect>
    </property>
    <property name="styleSheet">
