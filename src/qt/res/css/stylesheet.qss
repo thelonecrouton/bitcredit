@@ -504,12 +504,15 @@ QMainWindow QToolBar#toolbar
 
 QMainWindow QToolBar#toolbar QToolButton:hover 
 {
-    background: #ffaa00;
+    border-radius: 5px;
+    border: 1px solid #ffa02f;
 } 
 
 QMainWindow QToolBar#toolbar QToolButton:checked 
 {
-    background: grey;
+    background: #b1b1b1;
+    border-radius: 5px;
+    border: 1px solid white;
 }  
 
 QMainWindow QToolBar#toolbar QToolButton 
@@ -517,11 +520,10 @@ QMainWindow QToolBar#toolbar QToolButton
     font-weight:600;
     font-size:10px;
     font-family:'Century Gothic';
-    padding-left:20px;
-    padding-right:181px;
+    padding-right: 70px;
     padding-top:4px;
     padding-bottom:4px; 
-    width:100%; 
+    width:200px; 
     color: white; 
     text-align: left; 
     background:transparent;
@@ -532,7 +534,6 @@ QMainWindow QToolBar#toolbar
 {
     width: 220px;
 }
-
 
 QMainWindow QToolBar#toolbar2
 {
@@ -548,9 +549,16 @@ QMainWindow QToolBar#toolbar2 QToolButton
 {
     border:none;
     padding-left:10px;
+    padding-right:10px;
     height:30px;
     width:30px;
-    margin-right: 40px;    
+     
+}
+
+QMainWindow QToolBar#toolbar2 QToolButton:hover 
+{
+    border-radius: 5px;
+    border: 1px solid #ffa02f;
 }
 
 QMainWindow QToolBar#toolbar3
@@ -608,7 +616,6 @@ QMainWindow QToolBar#toolbar4 QToolButton:hover
     border: 1px solid #ffaa00;
 }  
 
-
 QMainWindow QToolBar#toolbar2:item
 {
     background: transparent;
@@ -617,6 +624,7 @@ QMainWindow QToolBar#toolbar2:item
 Qframe
 {
     background: transparent;
+    border-radius: 6px;
 }
 
 QMainWindow QToolBar#toolbar5

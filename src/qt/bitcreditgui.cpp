@@ -214,11 +214,25 @@ BitcreditGUI::BitcreditGUI(const NetworkStyle *networkStyle, QWidget *parent) :
     toolbar2->setFixedWidth(1000);
     toolbar2->setIconSize(QSize(18, 18));
     QWidget* spacer2 = new QWidget();
-    spacer2->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+    //spacer2->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+    spacer2->setFixedWidth(190);
     toolbar2->addWidget(spacer2);
     spacer2->setObjectName("spacer2");
     toolbar2->addWidget(labelConnectionsIcon);
+
+    QWidget* spacer3 = new QWidget();
+    //spacer3->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+    spacer3->setFixedWidth(30);
+    toolbar2->addWidget(spacer3);
+    spacer3->setObjectName("spacer3");
     toolbar2->addWidget(labelBlocksIcon);
+
+    QWidget* spacer4 = new QWidget();
+    //spacer4->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+    spacer4->setFixedWidth(20);
+    toolbar2->addWidget(spacer4);
+    spacer4->setObjectName("spacer4");
+    
     toolbar2->addAction(openAction);
     toolbar2->addAction(usedSendingAddressesAction);
     toolbar2->addAction(verifyMessageAction);
