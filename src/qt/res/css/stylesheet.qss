@@ -520,7 +520,7 @@ QMainWindow QToolBar#toolbar QToolButton
     font-weight:600;
     font-size:10px;
     font-family:'Century Gothic';
-    padding-right: 70px;
+    padding-right: 65px;
     padding-top:4px;
     padding-bottom:4px; 
     width:200px; 

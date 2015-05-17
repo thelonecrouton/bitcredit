@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>729</width>
-    <height>150</height>
+    <height>157</height>
    </rect>
   </property>
   <property name="focusPolicy">
@@ -72,6 +72,9 @@
         <property name="toolTip">
          <string>Choose previously used address</string>
         </property>
+        <property name="styleSheet">
+         <string notr="true">border-radius: 5px; border: 1px solid white;</string>
+        </property>
         <property name="text">
          <string/>
         </property>
@@ -95,6 +98,9 @@
         <property name="toolTip">
          <string>Paste address from clipboard</string>
         </property>
+        <property name="styleSheet">
+         <string notr="true">border-radius: 5px; border: 1px solid white;</string>
+        </property>
         <property name="text">
          <string/>
         </property>
@@ -117,6 +123,9 @@
        <widget class="QToolButton" name="deleteButton">
         <property name="toolTip">
          <string>Remove this entry</string>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">border-radius: 5px; border: 1px solid white;</string>
         </property>
         <property name="text">
          <string/>

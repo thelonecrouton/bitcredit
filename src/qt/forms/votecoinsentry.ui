@@ -7,11 +7,14 @@
     <x>0</x>
     <y>0</y>
     <width>747</width>
-    <height>44</height>
+    <height>54</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Form</string>
+  </property>
+  <property name="styleSheet">
+   <string notr="true"/>
   </property>
   <property name="frameShape">
    <enum>QFrame::StyledPanel</enum>
@@ -25,6 +28,9 @@
    </property>
    <item row="3" column="2">
     <widget class="QLabel" name="label_2">
+     <property name="styleSheet">
+      <string notr="true">color: white; border: none;</string>
+     </property>
      <property name="text">
       <string>Preference Vote &amp;For:</string>
      </property>
@@ -48,7 +54,7 @@
        </property>
        <property name="styleSheet">
         <string notr="true">background:transparent;
-color: rgb(0, 170, 0);</string>
+color: white;</string>
        </property>
        <property name="maxLength">
         <number>34</number>
@@ -59,6 +65,9 @@ color: rgb(0, 170, 0);</string>
       <widget class="QToolButton" name="addressBookButton">
        <property name="toolTip">
         <string>Choose address from address book</string>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">border-radius: 5px; border: 1px solid white;</string>
        </property>
        <property name="text">
         <string/>
@@ -77,6 +86,9 @@ color: rgb(0, 170, 0);</string>
        <property name="toolTip">
         <string>Paste address from clipboard</string>
        </property>
+       <property name="styleSheet">
+        <string notr="true">border-radius: 5px; border: 1px solid white;</string>
+       </property>
        <property name="text">
         <string/>
        </property>
@@ -93,6 +105,9 @@ color: rgb(0, 170, 0);</string>
       <widget class="QToolButton" name="deleteButton">
        <property name="toolTip">
         <string>Remove this recipient</string>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">border-radius: 5px; border: 1px solid white;</string>
        </property>
        <property name="text">
         <string/>

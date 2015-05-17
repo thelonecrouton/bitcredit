@@ -426,7 +426,7 @@ void BitcreditGUI::createActions(const NetworkStyle *networkStyle)
     toolbarmess->addAction(messageAction);    
     tabGroup->addAction(messageAction);
     
-    actionSendReceiveMess = new QAction(QIcon(":/icons/em"), tr("&Send/Read Messages"), this);
+    actionSendReceiveMess = new QAction(QIcon(":/icons/em"), tr("&Send / Read Messages"), this);
     actionSendReceiveMess->setCheckable(true);
     actionSendReceiveMess->setShortcut(QKeySequence(Qt::ALT + Qt::Key_3));    
 
