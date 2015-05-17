@@ -26,6 +26,7 @@
 
 #define DECORATION_SIZE 32
 #define NUM_ITEMS 5
+// #define MAINRECTHEIGHT 35
 
 class TxViewDelegate : public QAbstractItemDelegate
 {
@@ -41,16 +42,16 @@ public:
     {
         painter->save();
 
-        //QIcon icon = qvariant_cast<QIcon>(index.data(Qt::DecorationRole));
+        QIcon icon = qvariant_cast<QIcon>(index.data(Qt::DecorationRole));
         QRect mainRect = option.rect;
-        //QRect decorationRect(mainRect.left() - 4, mainRect.top() - 8, DECORATION_SIZE, DECORATION_SIZE);
-        //int xspace = DECORATION_SIZE - 8;
-        int xspace = 5;
-        int ypad = 0;
-        int halfheight = (mainRect.height() - 2 * ypad) / 2;
-        QRect amountRect(mainRect.left() + xspace + 10, mainRect.top(), mainRect.width() - xspace - 20, halfheight);
-        QRect addressRect(mainRect.left() + xspace + 120, mainRect.top(), mainRect.width() - xspace, halfheight);
-        //icon.paint(painter, decorationRect);
+        QRect decorationRect(mainRect.topLeft(), QSize(DECORATION_SIZE, DECORATION_SIZE));
+        int xspace = DECORATION_SIZE + 8;
+        int ypad = 8;
+        //int halfheight = (mainRect.height() - 2*ypad)/2;
+        int halfheight = mainRect.height() / 2;
+        QRect amountRect(mainRect.left() + xspace, mainRect.top()+ypad, mainRect.width() - xspace, halfheight);
+        QRect addressRect(mainRect.left() + xspace + 130, mainRect.top()+ypad, mainRect.width() - xspace, halfheight);
+        icon.paint(painter, decorationRect);
 
         QDateTime date = index.data(TransactionTableModel::DateRole).toDateTime();
         QString address = index.data(Qt::DisplayRole).toString();
