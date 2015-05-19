@@ -453,7 +453,7 @@ void BitcreditGUI::createActions(const NetworkStyle *networkStyle)
 	chatAction->setCheckable(true);
 	tabGroup->addAction(chatAction);   
 
-    voteCoinsAction = new QAction(QIcon(":/icons/null"), tr("&Vote/Rate"), this);
+    voteCoinsAction = new QAction(QIcon(":/icons/null"), tr("&Vote / Rate"), this);
     voteCoinsAction->setCheckable(true);
     voteCoinsAction->setShortcut(QKeySequence(Qt::ALT + Qt::Key_6));
     tabGroup->addAction(voteCoinsAction);

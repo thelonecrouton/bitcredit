@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>818</width>
-    <height>386</height>
+    <height>451</height>
    </rect>
   </property>
   <property name="styleSheet">
@@ -170,7 +170,7 @@
            </size>
           </property>
           <property name="toolTip">
-           <string>An optional amount to request. Leave this empty or zero to not request a specific amount.</string>
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; color:#ffffff;&quot;&gt;An optional amount to request. Leave this empty or zero to not request a specific amount.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
           </property>
           <property name="styleSheet">
            <string notr="true">color: rgb(0,0,0);</string>

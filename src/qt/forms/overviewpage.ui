@@ -494,7 +494,7 @@
     </rect>
    </property>
    <property name="styleSheet">
-    <string notr="true">background: transparent; border-radius: 6px; border: 1px solid white;</string>
+    <string notr="true">background: transparent; border-radius: 6px; border: 1px solid white; color: white;</string>
    </property>
    <property name="frameShape">
     <enum>QFrame::StyledPanel</enum>
