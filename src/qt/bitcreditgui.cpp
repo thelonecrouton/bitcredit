@@ -605,11 +605,11 @@ void BitcreditGUI::createToolBars()
         overviewAction->setChecked(true);
     }
     
-    QWidget* spacer = new QWidget();
-    spacer->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-    toolbar->addWidget(spacer);
+    //QWidget* spacer = new QWidget();
+    //spacer->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+    //toolbar->addWidget(spacer);
     toolbar->addAction(optionsAction);
-    spacer->setObjectName("spacer");
+    //spacer->setObjectName("spacer");
         	
 }
 

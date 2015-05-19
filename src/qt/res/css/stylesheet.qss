@@ -15,8 +15,9 @@ QLabel
 
 QWidget
 {
-    color: #b1b1b1;
+    color: white;
     background-color: #232323;
+
 }
 
 QWidget:item:hover
@@ -302,6 +303,11 @@ QPlainTextEdit
     background-color: #242424;
 }
 
+QTableView
+{
+    alternate-background-color: #434343;
+}
+
 QHeaderView::section
 {
     background-color: QLinearGradient(x1:0, y1:0, x2:0, y2:1, stop:0 #616161, stop: 0.5 #505050, stop: 0.6 #434343, stop:1 #656565);
@@ -505,7 +511,7 @@ QMainWindow QToolBar#toolbar
 QMainWindow QToolBar#toolbar QToolButton:hover 
 {
     border-radius: 5px;
-    border: 1px solid #ffa02f;
+    border: 2px solid #ffa02f;
 } 
 
 QMainWindow QToolBar#toolbar QToolButton:checked 
@@ -522,12 +528,15 @@ QMainWindow QToolBar#toolbar QToolButton
     font-family:'Century Gothic';
     padding-right: 65px;
     padding-top:4px;
-    padding-bottom:4px; 
+    padding-bottom:4px;
+    margin-bottom: 4px; 
     width:200px; 
     color: white; 
     text-align: left; 
     background:transparent;
     text-transform:uppercase; 
+    border-radius: 5px;
+    border: 1px solid white
 }
 
 QMainWindow QToolBar#toolbar
@@ -547,7 +556,7 @@ QMainWindow QToolBar#toolbar2
 
 QMainWindow QToolBar#toolbar2 QToolButton 
 {
-    border:none;
+    border: none;
     padding-left:10px;
     padding-right:10px;
     height:30px;
