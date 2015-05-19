@@ -94,7 +94,7 @@ color: rgb(255, 255, 255);</string>
         <item>
          <widget class="QToolButton" name="addressBookButton">
           <property name="toolTip">
-           <string>Choose address from address book</string>
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; color:#ffffff;&quot;&gt;Choose address from address book&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
           </property>
           <property name="text">
            <string/>
@@ -111,7 +111,7 @@ color: rgb(255, 255, 255);</string>
         <item>
          <widget class="QToolButton" name="pasteButton">
           <property name="toolTip">
-           <string>Paste address from clipboard</string>
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; color:#ffffff;&quot;&gt;Paste address from clipboard&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
           </property>
           <property name="text">
            <string/>

@@ -70,7 +70,7 @@
       <item>
        <widget class="QToolButton" name="addressBookButton">
         <property name="toolTip">
-         <string>Choose previously used address</string>
+         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; color:#ffffff;&quot;&gt;Choose previously used address&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
         </property>
         <property name="styleSheet">
          <string notr="true">border-radius: 5px; border: 1px solid white;</string>
@@ -96,7 +96,7 @@
       <item>
        <widget class="QToolButton" name="pasteButton">
         <property name="toolTip">
-         <string>Paste address from clipboard</string>
+         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; color:#ffffff;&quot;&gt;Paste address from clipboard&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
         </property>
         <property name="styleSheet">
          <string notr="true">border-radius: 5px; border: 1px solid white;</string>
@@ -122,7 +122,7 @@
       <item>
        <widget class="QToolButton" name="deleteButton">
         <property name="toolTip">
-         <string>Remove this entry</string>
+         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; color:#ffffff;&quot;&gt;Remove this entry&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
         </property>
         <property name="styleSheet">
          <string notr="true">border-radius: 5px; border: 1px solid white;</string>
@@ -188,8 +188,11 @@
     </item>
     <item row="2" column="1">
      <widget class="BitcreditAmountField" name="payAmount">
+      <property name="toolTip">
+       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; color:#ffffff;&quot;&gt;Amount to send&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      </property>
       <property name="styleSheet">
-       <string notr="true">color: rgb(0, 0, 0);</string>
+       <string notr="true">color: black; background: transparent;</string>
       </property>
      </widget>
     </item>

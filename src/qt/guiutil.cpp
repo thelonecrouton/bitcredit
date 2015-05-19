@@ -116,6 +116,7 @@ void setupAmountWidget(QLineEdit *widget, QWidget *parent)
     amountValidator->setBottom(0.0);
     widget->setValidator(amountValidator);
     widget->setAlignment(Qt::AlignRight|Qt::AlignVCenter);
+    widget->setStyleSheet("color: white; background: transparent");
 }
 
 bool parseBitcreditURI(const QUrl &uri, SendCoinsRecipient *out)
