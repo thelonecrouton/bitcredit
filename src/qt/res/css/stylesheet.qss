@@ -524,7 +524,7 @@ QMainWindow QToolBar#toolbar QToolButton:checked
 QMainWindow QToolBar#toolbar QToolButton 
 {
     font-weight:600;
-    font-size:10px;
+    font-size:12px;
     font-family:'Century Gothic';
     padding-right: 65px;
     padding-top:4px;
@@ -532,7 +532,7 @@ QMainWindow QToolBar#toolbar QToolButton
     margin-bottom: 4px; 
     width:200px; 
     color: white; 
-    text-align: left; 
+    text-align: right; 
     background:transparent;
     text-transform:uppercase; 
     border-radius: 5px;
