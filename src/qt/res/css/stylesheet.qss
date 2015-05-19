@@ -511,7 +511,7 @@ QMainWindow QToolBar#toolbar
 QMainWindow QToolBar#toolbar QToolButton:hover 
 {
     border-radius: 5px;
-    border: 2px solid #ffa02f;
+    border: 1px solid #ffa02f;
 } 
 
 QMainWindow QToolBar#toolbar QToolButton:checked 
