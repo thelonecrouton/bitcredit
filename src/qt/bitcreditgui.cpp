@@ -145,8 +145,7 @@ BitcreditGUI::BitcreditGUI(const NetworkStyle *networkStyle, QWidget *parent) :
     qss.open(QFile::ReadOnly);
     qApp->setStyleSheet(qss.readAll());
     qss.close();
-
-	
+    	
 #ifndef Q_OS_MAC
     QApplication::setWindowIcon(networkStyle->getTrayAndWindowIcon());
     setWindowIcon(networkStyle->getTrayAndWindowIcon());
@@ -206,14 +205,34 @@ BitcreditGUI::BitcreditGUI(const NetworkStyle *networkStyle, QWidget *parent) :
     progressBar = new QProgressBar();
     addToolBarBreak(Qt::LeftToolBarArea);
     QToolBar *toolbar2 = addToolBar(tr("Toolbar"));
-    addToolBar(Qt::LeftToolBarArea, toolbar2);
-    toolbar2->setOrientation(Qt::Vertical);
+    addToolBar(Qt::BottomToolBarArea, toolbar2);
+    toolbar2->setOrientation(Qt::Horizontal);
+    toolbar2->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
     toolbar2->setMovable(false);
     toolbar2->setObjectName("toolbar2");
-    toolbar2->setFixedWidth(28);
+    toolbar2->setFixedHeight(40);
+    toolbar2->setFixedWidth(1000);
     toolbar2->setIconSize(QSize(18, 18));
+    QWidget* spacer2 = new QWidget();
+    //spacer2->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+    spacer2->setFixedWidth(190);
+    toolbar2->addWidget(spacer2);
+    spacer2->setObjectName("spacer2");
     toolbar2->addWidget(labelConnectionsIcon);
+
+    QWidget* spacer3 = new QWidget();
+    //spacer3->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+    spacer3->setFixedWidth(30);
+    toolbar2->addWidget(spacer3);
+    spacer3->setObjectName("spacer3");
     toolbar2->addWidget(labelBlocksIcon);
+
+    QWidget* spacer4 = new QWidget();
+    //spacer4->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+    spacer4->setFixedWidth(20);
+    toolbar2->addWidget(spacer4);
+    spacer4->setObjectName("spacer4");
+    
     toolbar2->addAction(openAction);
     toolbar2->addAction(usedSendingAddressesAction);
     toolbar2->addAction(verifyMessageAction);
@@ -263,13 +282,13 @@ void BitcreditGUI::createActions(const NetworkStyle *networkStyle)
 {
     QActionGroup *tabGroup = new QActionGroup(this);
 
-    overviewAction = new QAction(QIcon(":/icons/overview"), tr("&Overview"), this);
+    overviewAction = new QAction(QIcon(":/icons/null"), tr("&Overview"), this);
 
     overviewAction->setCheckable(true);
     overviewAction->setShortcut(QKeySequence(Qt::ALT + Qt::Key_1));
     tabGroup->addAction(overviewAction);
 
-    historyAction = new QAction(QIcon(":/icons/history"), tr("&Transactions"), this);
+    historyAction = new QAction(QIcon(":/icons/null"), tr("&Transactions"), this);
     historyAction->setCheckable(true);
     historyAction->setShortcut(QKeySequence(Qt::ALT + Qt::Key_4));
     tabGroup->addAction(historyAction);
@@ -393,7 +412,7 @@ void BitcreditGUI::createActions(const NetworkStyle *networkStyle)
     toolbarsend->addAction(receiveCoinsAction);
     tabGroup->addAction(receiveCoinsAction);
 
-    actionSendReceive = new QAction(QIcon(":/icons/send"), tr("&Send / Receive"), this);
+    actionSendReceive = new QAction(QIcon(":/icons/null"), tr("&Send / Receive"), this);
     actionSendReceive->setCheckable(true);
     actionSendReceive->setShortcut(QKeySequence(Qt::ALT + Qt::Key_2));
 
@@ -407,7 +426,7 @@ void BitcreditGUI::createActions(const NetworkStyle *networkStyle)
     toolbarmess->addAction(messageAction);    
     tabGroup->addAction(messageAction);
     
-    actionSendReceiveMess = new QAction(QIcon(":/icons/em"), tr("&Send/Read Messages"), this);
+    actionSendReceiveMess = new QAction(QIcon(":/icons/null"), tr("&Messages"), this);
     actionSendReceiveMess->setCheckable(true);
     actionSendReceiveMess->setShortcut(QKeySequence(Qt::ALT + Qt::Key_3));    
 
@@ -421,29 +440,29 @@ void BitcreditGUI::createActions(const NetworkStyle *networkStyle)
     toolbarrecinv2->addAction(receiptAction);
     tabGroup->addAction(receiptAction);
 
-    actionSendReceiveinv = new QAction(QIcon(":/icons/em"), tr("&Receipts / Invoices"), this);
+    actionSendReceiveinv = new QAction(QIcon(":/icons/null"), tr("&Receipts / Invoices"), this);
     actionSendReceiveinv->setCheckable(true);
     actionSendReceiveinv->setShortcut(QKeySequence(Qt::ALT + Qt::Key_4));
     
-    actionSendReceivestats = new QAction(QIcon(":/icons/bankstats"), tr("&Statistics"), this);
+    actionSendReceivestats = new QAction(QIcon(":/icons/null"), tr("&Statistics"), this);
     actionSendReceivestats->setCheckable(true);
     actionSendReceivestats->setShortcut(QKeySequence(Qt::ALT + Qt::Key_5));    
 
-	chatAction = new QAction(QIcon(":/icons/chat"), tr("&IRC"), this);
+	chatAction = new QAction(QIcon(":/icons/null"), tr("&IRC"), this);
 	chatAction->setToolTip(tr("View chat"));
 	chatAction->setCheckable(true);
 	tabGroup->addAction(chatAction);   
 
-    voteCoinsAction = new QAction(QIcon(":/icons/vote"), tr("&Vote/Rate"), this);
+    voteCoinsAction = new QAction(QIcon(":/icons/null"), tr("&Vote/Rate"), this);
     voteCoinsAction->setCheckable(true);
     voteCoinsAction->setShortcut(QKeySequence(Qt::ALT + Qt::Key_6));
     tabGroup->addAction(voteCoinsAction);
 
-    sendMessagesAnonAction = new QAction(QIcon(":/icons/em"), tr("S&end Messages"), this);
+    sendMessagesAnonAction = new QAction(QIcon(":/icons/null"), tr("S&end Messages"), this);
     sendMessagesAnonAction->setCheckable(true);
     tabGroup->addAction(sendMessagesAnonAction);
 
-	banknodeManagerAction = new QAction(QIcon(":/icons/exchange-w"), tr("&Bank Nodes"), this);
+	banknodeManagerAction = new QAction(QIcon(":/icons/null"), tr("&Bank Nodes"), this);
     banknodeManagerAction->setCheckable(true);
     tabGroup->addAction(banknodeManagerAction);
 
@@ -498,7 +517,7 @@ void BitcreditGUI::createActions(const NetworkStyle *networkStyle)
     aboutQtAction = new QAction(QIcon(":/icons/about_qt"), tr("About &Qt"), this);
     aboutQtAction->setStatusTip(tr("Show information about Qt"));
     aboutQtAction->setMenuRole(QAction::AboutQtRole);
-    optionsAction = new QAction(QIcon(":/icons/options"), tr("&Options..."), this);
+    optionsAction = new QAction(QIcon(":/icons/null"), tr("&Options..."), this);
     optionsAction->setStatusTip(tr("Modify configuration options for Bitcredit Core"));
     optionsAction->setMenuRole(QAction::PreferencesRole);
     toggleHideAction = new QAction(QIcon(":/icons/mini"), tr("&Show / Hide"), this);
@@ -564,6 +583,7 @@ void BitcreditGUI::createToolBars()
     addToolBar(Qt::LeftToolBarArea, toolbar);
     toolbar->addWidget(mylabel);
     toolbar->setOrientation(Qt::Vertical);
+    toolbar->setFixedWidth(220);
     toolbar->setMovable(false);
     toolbar->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
 	toolbar->setIconSize(QSize(50,20));
@@ -585,11 +605,11 @@ void BitcreditGUI::createToolBars()
         overviewAction->setChecked(true);
     }
     
-    QWidget* spacer = new QWidget();
-    spacer->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-    toolbar->addWidget(spacer);
+    //QWidget* spacer = new QWidget();
+    //spacer->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+    //toolbar->addWidget(spacer);
     toolbar->addAction(optionsAction);
-    spacer->setObjectName("spacer");
+    //spacer->setObjectName("spacer");
         	
 }
 

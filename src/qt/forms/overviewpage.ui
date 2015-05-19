@@ -45,8 +45,8 @@
    <property name="geometry">
     <rect>
      <x>10</x>
-     <y>130</y>
-     <width>771</width>
+     <y>142</y>
+     <width>750</width>
      <height>111</height>
     </rect>
    </property>
@@ -57,7 +57,7 @@
     </size>
    </property>
    <property name="styleSheet">
-    <string notr="true">background:transparent;</string>
+    <string notr="true">background:transparent; border-radius: 6px; border: 1px solid white;</string>
    </property>
    <property name="frameShape">
     <enum>QFrame::StyledPanel</enum>
@@ -81,7 +81,7 @@
      </size>
     </property>
     <property name="styleSheet">
-     <string notr="true">color: rgb(255, 255, 255);</string>
+     <string notr="true">color: rgb(255, 255, 255);border: none;</string>
     </property>
     <property name="text">
      <string>(Last Message)</string>
@@ -96,9 +96,9 @@
    <widget class="QPushButton" name="toggleDarksend">
     <property name="geometry">
      <rect>
-      <x>590</x>
+      <x>580</x>
       <y>60</y>
-      <width>171</width>
+      <width>161</width>
       <height>41</height>
      </rect>
     </property>
@@ -125,7 +125,7 @@
      </rect>
     </property>
     <property name="styleSheet">
-     <string notr="true">color: rgb(255, 255, 255);</string>
+     <string notr="true">color: rgb(255, 255, 255); border: none;</string>
     </property>
     <property name="text">
      <string>Darksend Status:</string>
@@ -141,7 +141,7 @@
      </rect>
     </property>
     <property name="styleSheet">
-     <string notr="true">color: rgb(255, 255, 255);</string>
+     <string notr="true">color: rgb(255, 255, 255);border: none;</string>
     </property>
     <property name="text">
      <string>Darksend Balance:</string>
@@ -157,7 +157,7 @@
      </rect>
     </property>
     <property name="styleSheet">
-     <string notr="true">color: rgb(255, 255, 255);</string>
+     <string notr="true">color: rgb(255, 255, 255);border: none;</string>
     </property>
     <property name="text">
      <string>Completion:</string>
@@ -207,7 +207,7 @@
      </font>
     </property>
     <property name="styleSheet">
-     <string notr="true">color: rgb(255, 255, 255);</string>
+     <string notr="true">color: rgb(255, 255, 255);border: none;</string>
     </property>
     <property name="text">
      <string>0 BCR</string>
@@ -223,7 +223,7 @@
      </rect>
     </property>
     <property name="styleSheet">
-     <string notr="true">color: rgb(255, 255, 255);</string>
+     <string notr="true">color: rgb(255, 255, 255);border: none;</string>
     </property>
     <property name="text">
      <string>Amount / Rounds:</string>
@@ -245,7 +245,7 @@
      </size>
     </property>
     <property name="styleSheet">
-     <string notr="true">color: rgb(255, 255, 255);</string>
+     <string notr="true">color: rgb(255, 255, 255);border: none;</string>
     </property>
     <property name="text">
      <string>0 BCR / 0 Rounds</string>
@@ -261,7 +261,7 @@
      </rect>
     </property>
     <property name="styleSheet">
-     <string notr="true">color: rgb(255, 255, 255);</string>
+     <string notr="true">color: rgb(255, 255, 255);border: none;</string>
     </property>
     <property name="text">
      <string>Submitted Denom:</string>
@@ -286,7 +286,7 @@
      <string>The denominations you submitted to the Banknode. To mix, other users must submit the exact same denominations.</string>
     </property>
     <property name="styleSheet">
-     <string notr="true">color: rgb(255, 255, 255);</string>
+     <string notr="true">color: rgb(255, 255, 255);border: none;</string>
     </property>
     <property name="text">
      <string>n/a</string>
@@ -308,7 +308,7 @@
      </size>
     </property>
     <property name="styleSheet">
-     <string notr="true">color: rgb(255, 255, 255);</string>
+     <string notr="true">color: rgb(255, 255, 255);border: none;</string>
     </property>
     <property name="text">
      <string>Enabled/Disabled</string>
@@ -319,8 +319,8 @@
    <property name="geometry">
     <rect>
      <x>10</x>
-     <y>10</y>
-     <width>771</width>
+     <y>17</y>
+     <width>750</width>
      <height>111</height>
     </rect>
    </property>
@@ -331,7 +331,7 @@
     </sizepolicy>
    </property>
    <property name="styleSheet">
-    <string notr="true"/>
+    <string notr="true">border-radius: 6px; border: 1px solid white;</string>
    </property>
    <property name="frameShape">
     <enum>QFrame::StyledPanel</enum>
@@ -354,7 +354,7 @@
      </font>
     </property>
     <property name="styleSheet">
-     <string notr="true">background: transparent; color: white;</string>
+     <string notr="true">background: transparent; color: white; border: none;</string>
     </property>
     <property name="text">
      <string>Available Balance:</string>
@@ -382,7 +382,7 @@
      <string>Total of transactions that have yet to be confirmed, and do not yet count toward the current balance</string>
     </property>
     <property name="styleSheet">
-     <string notr="true">background: transparent; color: white;</string>
+     <string notr="true">background: transparent; color: white; border: none;</string>
     </property>
     <property name="text">
      <string notr="true">0 BCR</string>
@@ -411,10 +411,10 @@
      <cursorShape>IBeamCursor</cursorShape>
     </property>
     <property name="toolTip">
-     <string>Your current balance</string>
+     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Your current balance&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
     </property>
     <property name="styleSheet">
-     <string notr="true">background: transparent; color: white;</string>
+     <string notr="true">background: transparent; color: white;border: none;</string>
     </property>
     <property name="text">
      <string notr="true">0 BCR</string>
@@ -433,7 +433,7 @@
      </rect>
     </property>
     <property name="styleSheet">
-     <string notr="true">background: transparent; color: white;</string>
+     <string notr="true">background: transparent; color: white; border: none;</string>
     </property>
     <property name="text">
      <string>Unconfirmed:</string>
@@ -449,7 +449,7 @@
      </rect>
     </property>
     <property name="styleSheet">
-     <string notr="true">background: transparent; color: white;</string>
+     <string notr="true">background: transparent; color: white; border: none;</string>
     </property>
     <property name="text">
      <string>Immature:</string>
@@ -474,7 +474,7 @@
      <string>Mined balance that has not yet matured</string>
     </property>
     <property name="styleSheet">
-     <string notr="true">background: transparent; color: white;</string>
+     <string notr="true">background: transparent; color: white; border: none;</string>
     </property>
     <property name="text">
      <string notr="true">0 BCR</string>
@@ -488,13 +488,13 @@
    <property name="geometry">
     <rect>
      <x>10</x>
-     <y>250</y>
-     <width>771</width>
-     <height>251</height>
+     <y>267</y>
+     <width>750</width>
+     <height>225</height>
     </rect>
    </property>
    <property name="styleSheet">
-    <string notr="true">background: transparent;</string>
+    <string notr="true">background: transparent; border-radius: 6px; border: 1px solid white;</string>
    </property>
    <property name="frameShape">
     <enum>QFrame::StyledPanel</enum>
@@ -508,7 +508,7 @@
       <item>
        <widget class="QLabel" name="label_4">
         <property name="styleSheet">
-         <string notr="true">color: white;</string>
+         <string notr="true">color: white;border: none;</string>
         </property>
         <property name="text">
          <string>&lt;b&gt;Recent transactions&lt;/b&gt;</string>
@@ -533,7 +533,7 @@
     <item>
      <widget class="QListView" name="listTransactions">
       <property name="styleSheet">
-       <string notr="true">background: transparent; </string>
+       <string notr="true">background: transparent; border: none;</string>
       </property>
       <property name="frameShape">
        <enum>QFrame::NoFrame</enum>

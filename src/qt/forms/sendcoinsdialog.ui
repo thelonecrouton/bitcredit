@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>850</width>
-    <height>565</height>
+    <height>628</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -202,16 +202,7 @@
            <string notr="true"/>
           </property>
           <layout class="QHBoxLayout" name="horizontalLayoutCoinControl5">
-           <property name="leftMargin">
-            <number>0</number>
-           </property>
-           <property name="topMargin">
-            <number>0</number>
-           </property>
-           <property name="rightMargin">
-            <number>0</number>
-           </property>
-           <property name="bottomMargin">
+           <property name="margin">
             <number>0</number>
            </property>
            <item>
@@ -700,20 +691,11 @@
         <x>0</x>
         <y>0</y>
         <width>832</width>
-        <height>69</height>
+        <height>80</height>
        </rect>
       </property>
       <layout class="QVBoxLayout" name="verticalLayout_2" stretch="0,1">
-       <property name="leftMargin">
-        <number>0</number>
-       </property>
-       <property name="topMargin">
-        <number>0</number>
-       </property>
-       <property name="rightMargin">
-        <number>0</number>
-       </property>
-       <property name="bottomMargin">
+       <property name="margin">
         <number>0</number>
        </property>
        <item>
@@ -755,7 +737,7 @@
       </size>
      </property>
      <property name="styleSheet">
-      <string notr="true">background:transparent;</string>
+      <string notr="true">background:transparent; border-radius: 5px; border: 1px solid white;</string>
      </property>
      <property name="frameShape">
       <enum>QFrame::StyledPanel</enum>
@@ -767,16 +749,7 @@
       <property name="spacing">
        <number>0</number>
       </property>
-      <property name="leftMargin">
-       <number>0</number>
-      </property>
-      <property name="topMargin">
-       <number>0</number>
-      </property>
-      <property name="rightMargin">
-       <number>0</number>
-      </property>
-      <property name="bottomMargin">
+      <property name="margin">
        <number>0</number>
       </property>
       <item>
@@ -837,7 +810,7 @@
                 </property>
                 <property name="styleSheet">
                  <string notr="true">font-weight:bold;
-color: rgb(255, 255, 255);</string>
+color: rgb(255, 255, 255); border: none;</string>
                 </property>
                 <property name="text">
                  <string>Transaction Fee:</string>
@@ -908,20 +881,14 @@ color: rgb(255, 255, 255);</string>
         </item>
         <item>
          <widget class="QFrame" name="frameFeeSelection">
+          <property name="styleSheet">
+           <string notr="true">border: none;</string>
+          </property>
           <layout class="QVBoxLayout" name="verticalLayoutFee12">
            <property name="spacing">
             <number>0</number>
            </property>
-           <property name="leftMargin">
-            <number>0</number>
-           </property>
-           <property name="topMargin">
-            <number>0</number>
-           </property>
-           <property name="rightMargin">
-            <number>0</number>
-           </property>
-           <property name="bottomMargin">
+           <property name="margin">
             <number>0</number>
            </property>
            <item>
@@ -981,7 +948,11 @@ color: rgb(255, 255, 255);</string>
                   </widget>
                  </item>
                  <item>
-                  <widget class="BitcreditAmountField" name="customFee"/>
+                  <widget class="BitcreditAmountField" name="customFee">
+                   <property name="styleSheet">
+                    <string notr="true">color: white; border-radius: 5px; border: 1px solid white;</string>
+                   </property>
+                  </widget>
                  </item>
                  <item>
                   <spacer name="horizontalSpacer_6">
@@ -1005,6 +976,9 @@ color: rgb(255, 255, 255);</string>
                    <property name="toolTip">
                     <string>Paying only the minimum fee is just fine as long as there is less transaction volume than space in the blocks. But be aware that this can end up in a never confirming transaction once there is more demand for bitcredit transactions than the network can process.</string>
                    </property>
+                   <property name="styleSheet">
+                    <string notr="true">border: none;</string>
+                   </property>
                    <property name="text">
                     <string/>
                    </property>
@@ -1019,7 +993,7 @@ color: rgb(255, 255, 255);</string>
                     <string>Paying only the minimum fee is just fine as long as there is less transaction volume than space in the blocks. But be aware that this can end up in a never confirming transaction once there is more demand for bitcredit transactions than the network can process.</string>
                    </property>
                    <property name="styleSheet">
-                    <string notr="true">color: rgb(255, 255, 255);</string>
+                    <string notr="true">color: rgb(255, 255, 255);border: none;</string>
                    </property>
                    <property name="text">
                     <string>(read the tooltip)</string>
@@ -1051,7 +1025,7 @@ color: rgb(255, 255, 255);</string>
                <item>
                 <widget class="QRadioButton" name="radioSmartFee">
                  <property name="styleSheet">
-                  <string notr="true">color: rgb(255, 255, 255);</string>
+                  <string notr="true">color: rgb(255, 255, 255);border: none;</string>
                  </property>
                  <property name="text">
                   <string>Recommended:</string>
@@ -1084,7 +1058,7 @@ color: rgb(255, 255, 255);</string>
                <item>
                 <widget class="QRadioButton" name="radioCustomFee">
                  <property name="styleSheet">
-                  <string notr="true">color: rgb(255, 255, 255);</string>
+                  <string notr="true">color: rgb(255, 255, 255);border: none;</string>
                  </property>
                  <property name="text">
                   <string>Custom:</string>
@@ -1121,6 +1095,9 @@ color: rgb(255, 255, 255);</string>
                 <layout class="QHBoxLayout" name="horizontalLayoutFee12">
                  <item>
                   <widget class="QLabel" name="labelSmartFee">
+                   <property name="styleSheet">
+                    <string notr="true">border: none;</string>
+                   </property>
                    <property name="text">
                     <string/>
                    </property>
@@ -1131,6 +1108,9 @@ color: rgb(255, 255, 255);</string>
                  </item>
                  <item>
                   <widget class="QLabel" name="labelFeeEstimation">
+                   <property name="styleSheet">
+                    <string notr="true">border: none;</string>
+                   </property>
                    <property name="text">
                     <string/>
                    </property>
@@ -1139,7 +1119,7 @@ color: rgb(255, 255, 255);</string>
                  <item>
                   <widget class="QLabel" name="labelSmartFee2">
                    <property name="styleSheet">
-                    <string notr="true">color: rgb(255, 255, 255);</string>
+                    <string notr="true">color: rgb(255, 255, 255);border: none;</string>
                    </property>
                    <property name="text">
                     <string>(Smart fee not initialized yet. This usually takes a few blocks...)</string>
@@ -1171,7 +1151,7 @@ color: rgb(255, 255, 255);</string>
                    <item>
                     <widget class="QLabel" name="labelSmartFee3">
                      <property name="styleSheet">
-                      <string notr="true">color: rgb(255, 255, 255);</string>
+                      <string notr="true">color: rgb(255, 255, 255);border: none;</string>
                      </property>
                      <property name="text">
                       <string>Confirmation time:</string>
@@ -1234,7 +1214,7 @@ color: rgb(255, 255, 255);</string>
                      <item>
                       <widget class="QLabel" name="labelSmartFeeNormal">
                        <property name="styleSheet">
-                        <string notr="true">color: rgb(255, 255, 255);</string>
+                        <string notr="true">color: rgb(255, 255, 255);border: none;</string>
                        </property>
                        <property name="text">
                         <string>normal</string>
@@ -1257,7 +1237,7 @@ color: rgb(255, 255, 255);</string>
                      <item>
                       <widget class="QLabel" name="labelSmartFeeFast">
                        <property name="styleSheet">
-                        <string notr="true">color: rgb(255, 255, 255);</string>
+                        <string notr="true">color: rgb(255, 255, 255);border: none;</string>
                        </property>
                        <property name="text">
                         <string>fast</string>
@@ -1298,7 +1278,7 @@ color: rgb(255, 255, 255);</string>
              <item>
               <widget class="QCheckBox" name="checkBoxFreeTx">
                <property name="styleSheet">
-                <string notr="true">color: rgb(255, 255, 255);</string>
+                <string notr="true">color: rgb(255, 255, 255);border: none;</string>
                </property>
                <property name="text">
                 <string>Send as zero-fee transaction if possible</string>
@@ -1308,7 +1288,7 @@ color: rgb(255, 255, 255);</string>
              <item>
               <widget class="QLabel" name="labelFreeTx">
                <property name="styleSheet">
-                <string notr="true">color: rgb(255, 255, 255);</string>
+                <string notr="true">color: rgb(255, 255, 255);border: none;</string>
                </property>
                <property name="text">
                 <string>(confirmation may take longer)</string>
@@ -1478,7 +1458,7 @@ color: rgb(255, 255, 255);</string>
         <string>Darksend</string>
        </property>
        <property name="checked">
-        <bool>true</bool>
+        <bool>false</bool>
        </property>
       </widget>
      </item>
