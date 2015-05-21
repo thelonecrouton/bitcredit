@@ -288,7 +288,7 @@ void BitcreditGUI::createActions(const NetworkStyle *networkStyle)
     overviewAction->setShortcut(QKeySequence(Qt::ALT + Qt::Key_1));
     tabGroup->addAction(overviewAction);
 
-    historyAction = new QAction(QIcon(":/icons/null"), tr("&Transactions"), this);
+    historyAction = new QAction(QIcon(":/icons/null"), tr("&Overview"), this);
     historyAction->setCheckable(true);
     historyAction->setShortcut(QKeySequence(Qt::ALT + Qt::Key_4));
     tabGroup->addAction(historyAction);

@@ -22,6 +22,7 @@ class QMenu;
 class QModelIndex;
 class QSignalMapper;
 class QTableView;
+class QLabel;
 QT_END_NAMESPACE
 
 /** Widget showing the transaction list for a wallet, including a filter row.
@@ -35,6 +36,7 @@ public:
     explicit TransactionView(QWidget *parent = 0);
 
     void setModel(WalletModel *model);
+    //void setWalletModel(WalletModel *walletModel);
 
     // Date ranges for filter
     enum DateEnum
@@ -58,6 +60,7 @@ public:
     };
 
 private:
+    WalletModel *walletModel;
     WalletModel *model;
     TransactionFilterProxy *transactionProxyModel;
     QTableView *transactionView;
@@ -82,7 +85,27 @@ private:
     virtual void resizeEvent(QResizeEvent* event);
 
     bool eventFilter(QObject *obj, QEvent *event);
-
+    
+    QFrame *bframe;
+    QWidget *spacer;
+    QLabel *availablebalancelabel;
+    QLabel *unconfirmedbalancelabel;
+    QLabel *immaturebalancelabel;
+    QLabel *labelBalance;
+    QLabel *labelUnconfirmed;
+    QLabel *labelImmature;
+    
+    CAmount currentBalance;
+    CAmount currentUnconfirmedBalance;
+    CAmount currentImmatureBalance;
+    qint64 currentAnonymizedBalance;
+    qint64 cachedTxLocks;
+    qint64 lastNewBlock;
+    CAmount currentWatchOnlyBalance;
+    CAmount currentWatchUnconfBalance;
+    CAmount currentWatchImmatureBalance;
+    
+    
 private slots:
     void contextualMenu(const QPoint &);
     void dateRangeChanged();
@@ -94,6 +117,7 @@ private slots:
     void copyTxID();
     void openThirdPartyTxUrl(QString url);
     void updateWatchOnlyColumn(bool fHaveWatchOnly);
+    void updateDisplayUnit();
 
 signals:
     void doubleClicked(const QModelIndex&);
@@ -109,6 +133,8 @@ public slots:
     void changedAmount(const QString &amount);
     void exportClicked();
     void focusTransaction(const QModelIndex&);
+    void setBalance(const CAmount& balance, const CAmount& unconfirmedBalance, const CAmount& immatureBalance,
+                    const CAmount& watchOnlyBalance, const CAmount& watchUnconfBalance, const CAmount& watchImmatureBalance, qint64 anonymizedBalance);
 
 };
 

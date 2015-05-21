@@ -34,12 +34,14 @@
 #include <QUrl>
 #include <QVBoxLayout>
 
+
+
 TransactionView::TransactionView(QWidget *parent) :
-    QWidget(parent), model(0), transactionProxyModel(0),
+    QWidget(parent), 
+    walletModel(0), 
+    transactionProxyModel(0),
     transactionView(0)
 {
-    // Build filter row
-    setContentsMargins(0,0,0,0);
 
     QHBoxLayout *hlayout = new QHBoxLayout();
     hlayout->setContentsMargins(0,0,0,0);
@@ -118,7 +120,60 @@ TransactionView::TransactionView(QWidget *parent) :
     vlayout->setContentsMargins(0,0,0,0);
     vlayout->setSpacing(0);
 
+    // create and position the balancesframe
+    bframe = new QFrame(this);
+    bframe->setFixedHeight(120);
+    bframe->setFixedWidth(750);
+    bframe->setStyleSheet("color: white; border-radius: 6px; border: 1px solid white");
+
+    // labels
+    availablebalancelabel = new QLabel(bframe);
+    availablebalancelabel->move(20, 20);
+    availablebalancelabel->setFixedWidth(200);
+    availablebalancelabel->setText("Available Balance:");
+    availablebalancelabel->setStyleSheet("border: none; font: 18pt;");
+    
+    labelBalance = new QLabel(bframe);
+    labelBalance->move(250, 20);
+    labelBalance->setFixedWidth(300);
+    labelBalance->setText("Available Balance:");
+    labelBalance->setStyleSheet("border: none; font: 18pt;");
+    
+    unconfirmedbalancelabel = new QLabel(bframe);
+    unconfirmedbalancelabel->move(20, 65);
+    unconfirmedbalancelabel->setFixedWidth(200);
+    unconfirmedbalancelabel->setText("Unconfirmed:");
+    unconfirmedbalancelabel->setStyleSheet("border: none");
+    
+    labelUnconfirmed = new QLabel(bframe);
+    labelUnconfirmed->move(250, 65);
+    labelUnconfirmed->setFixedWidth(200);
+    labelUnconfirmed->setText("Available Balance:");
+    labelUnconfirmed->setStyleSheet("border: none");
+
+    immaturebalancelabel = new QLabel(bframe);
+    immaturebalancelabel->move(20, 85);
+    immaturebalancelabel->setFixedWidth(200);
+    immaturebalancelabel->setText("Immature:");
+    immaturebalancelabel->setStyleSheet("border: none");
+    
+    labelImmature = new QLabel(bframe);
+    labelImmature->move(250, 85);
+    labelImmature->setFixedWidth(200);
+    labelImmature->setText("Available Balance:");
+    labelImmature->setStyleSheet("border: none;");
+
+   
+    //     
+    
+    QWidget *spacer = new QWidget(this);
+    spacer->setFixedHeight(20);
+    
+    
+
     QTableView *view = new QTableView(this);
+    vlayout->addWidget(bframe);
+    vlayout->addWidget(spacer);
     vlayout->addLayout(hlayout);
     vlayout->addWidget(createDateRangeWidget());
     vlayout->addWidget(view);
@@ -177,11 +232,53 @@ TransactionView::TransactionView(QWidget *parent) :
     connect(showDetailsAction, SIGNAL(triggered()), this, SLOT(showDetails()));
 }
 
+
+void TransactionView::setBalance(const CAmount& balance, const CAmount& unconfirmedBalance, const CAmount& immatureBalance, const CAmount& watchOnlyBalance, const CAmount& watchUnconfBalance, const CAmount& watchImmatureBalance, qint64 anonymizedBalance)
+{
+    int unit = walletModel->getOptionsModel()->getDisplayUnit();
+    currentBalance = balance;
+    currentUnconfirmedBalance = unconfirmedBalance;
+    currentImmatureBalance = immatureBalance;
+    currentAnonymizedBalance = anonymizedBalance;
+    currentWatchOnlyBalance = watchOnlyBalance;
+    currentWatchUnconfBalance = watchUnconfBalance;
+    currentWatchImmatureBalance = watchImmatureBalance;
+    this->labelBalance->setText(BitcreditUnits::formatWithUnit(unit, balance, false, BitcreditUnits::separatorAlways));
+    this->labelUnconfirmed->setText(BitcreditUnits::formatWithUnit(unit, unconfirmedBalance, false, BitcreditUnits::separatorAlways));
+    this->labelImmature->setText(BitcreditUnits::formatWithUnit(unit, immatureBalance, false, BitcreditUnits::separatorAlways));
+    //this->labelAnonymized->setText(BitcreditUnits::formatWithUnit(unit, anonymizedBalance));
+    //ui->labelTotal->setText(BitcreditUnits::formatWithUnit(unit, balance + unconfirmedBalance + immatureBalance, false, BitcreditUnits::separatorAlways));
+    //ui->labelWatchAvailable->setText(BitcreditUnits::formatWithUnit(unit, watchOnlyBalance, false, BitcreditUnits::separatorAlways));
+    //ui->labelWatchPending->setText(BitcreditUnits::formatWithUnit(unit, watchUnconfBalance, false, BitcreditUnits::separatorAlways));
+    //ui->labelWatchImmature->setText(BitcreditUnits::formatWithUnit(unit, watchImmatureBalance, false, BitcreditUnits::separatorAlways));
+    //ui->labelWatchTotal->setText(BitcreditUnits::formatWithUnit(unit, watchOnlyBalance + watchUnconfBalance + watchImmatureBalance, false, BitcreditUnits::separatorAlways));
+
+    // only show immature (newly mined) balance if it's non-zero, so as not to complicate things
+    // for the non-mining users
+    bool showImmature = immatureBalance != 0;
+    bool showWatchOnlyImmature = watchImmatureBalance != 0;
+
+    if(cachedTxLocks != nCompleteTXLocks){
+        cachedTxLocks = nCompleteTXLocks;
+        //ui->listTransactions->update();
+    }
+
+    // for symmetry reasons also show immature label when the watch-only one is shown
+    this->labelImmature->setVisible(showImmature || showWatchOnlyImmature);
+    this->immaturebalancelabel->setVisible(showImmature || showWatchOnlyImmature);
+    //ui->labelWatchImmature->setVisible(showWatchOnlyImmature); // show watch-only immature balance
+}
+
+
 void TransactionView::setModel(WalletModel *model)
 {
-    this->model = model;
+    this->walletModel = model;
     if(model)
     {
+        // Keep up to date with wallet
+        setBalance(model->getBalance(), model->getUnconfirmedBalance(), model->getImmatureBalance(),
+                   model->getWatchBalance(), model->getWatchUnconfirmedBalance(), model->getWatchImmatureBalance(), model->getAnonymizedBalance());
+
         transactionProxyModel = new TransactionFilterProxy(this);
         transactionProxyModel->setSourceModel(model->getTransactionTableModel());
         transactionProxyModel->setDynamicSortFilter(true);
@@ -207,6 +304,8 @@ void TransactionView::setModel(WalletModel *model)
 
         columnResizingFixer = new GUIUtil::TableViewLastColumnResizingFixer(transactionView, AMOUNT_MINIMUM_COLUMN_WIDTH, MINIMUM_COLUMN_WIDTH);
 
+
+
         if (model->getOptionsModel())
         {
             // Add third party transaction URLs to context menu
@@ -231,8 +330,27 @@ void TransactionView::setModel(WalletModel *model)
 
         // Watch-only signal
         connect(model, SIGNAL(notifyWatchonlyChanged(bool)), this, SLOT(updateWatchOnlyColumn(bool)));
+        
+        // update the display unit, to not use the default ("BCR")
+        updateDisplayUnit();
     }
 }
+
+void TransactionView::updateDisplayUnit()
+{
+    if(walletModel && walletModel->getOptionsModel())
+    {
+        if(currentBalance != -1)
+            setBalance(currentBalance, currentUnconfirmedBalance, currentImmatureBalance,
+                       currentWatchOnlyBalance, currentWatchUnconfBalance, currentWatchImmatureBalance, currentAnonymizedBalance);
+
+        // Update txdelegate->unit with the current unit
+        //txdelegate->unit = walletModel->getOptionsModel()->getDisplayUnit();
+
+        //ui->listTransactions->update();
+    }
+}
+
 
 void TransactionView::chooseDate(int idx)
 {
