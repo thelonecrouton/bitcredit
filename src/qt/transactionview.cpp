@@ -58,7 +58,7 @@ TransactionView::TransactionView(QWidget *parent) :
     watchOnlyWidget->addItem("", TransactionFilterProxy::WatchOnlyFilter_All);
     watchOnlyWidget->addItem(QIcon(":/icons/eye_plus"), "", TransactionFilterProxy::WatchOnlyFilter_Yes);
     watchOnlyWidget->addItem(QIcon(":/icons/eye_minus"), "", TransactionFilterProxy::WatchOnlyFilter_No);
-    hlayout->addWidget(watchOnlyWidget);
+    //hlayout->addWidget(watchOnlyWidget);
 
     dateWidget = new QComboBox(this);
 #ifdef Q_OS_MAC
@@ -87,11 +87,11 @@ TransactionView::TransactionView(QWidget *parent) :
                                         TransactionFilterProxy::TYPE(TransactionRecord::RecvFromOther));
     typeWidget->addItem(tr("Sent to"), TransactionFilterProxy::TYPE(TransactionRecord::SendToAddress) |
                                   TransactionFilterProxy::TYPE(TransactionRecord::SendToOther));
-    typeWidget->addItem(tr("Darksent"), TransactionFilterProxy::TYPE(TransactionRecord::Darksent));
-    typeWidget->addItem(tr("Darksend Make Collateral Inputs"), TransactionFilterProxy::TYPE(TransactionRecord::DarksendMakeCollaterals));
-    typeWidget->addItem(tr("Darksend Create Denominations"), TransactionFilterProxy::TYPE(TransactionRecord::DarksendCreateDenominations));
-    typeWidget->addItem(tr("Darksend Denominate"), TransactionFilterProxy::TYPE(TransactionRecord::DarksendDenominate));
-    typeWidget->addItem(tr("Darksend Collateral Payment"), TransactionFilterProxy::TYPE(TransactionRecord::DarksendCollateralPayment));
+    //typeWidget->addItem(tr("Darksent"), TransactionFilterProxy::TYPE(TransactionRecord::Darksent));
+    //typeWidget->addItem(tr("Darksend Make Collateral Inputs"), TransactionFilterProxy::TYPE(TransactionRecord::DarksendMakeCollaterals));
+    //typeWidget->addItem(tr("Darksend Create Denominations"), TransactionFilterProxy::TYPE(TransactionRecord::DarksendCreateDenominations));
+    //typeWidget->addItem(tr("Darksend Denominate"), TransactionFilterProxy::TYPE(TransactionRecord::DarksendDenominate));
+    //typeWidget->addItem(tr("Darksend Collateral Payment"), TransactionFilterProxy::TYPE(TransactionRecord::DarksendCollateralPayment));
     typeWidget->addItem(tr("To yourself"), TransactionFilterProxy::TYPE(TransactionRecord::SendToSelf));
     typeWidget->addItem(tr("Mined"), TransactionFilterProxy::TYPE(TransactionRecord::Generated));
     typeWidget->addItem(tr("Other"), TransactionFilterProxy::TYPE(TransactionRecord::Other));
@@ -137,6 +137,7 @@ TransactionView::TransactionView(QWidget *parent) :
     labelBalance->move(250, 20);
     labelBalance->setFixedWidth(300);
     labelBalance->setText("Available Balance:");
+    labelBalance->setTextInteractionFlags(Qt::TextSelectableByMouse);
     labelBalance->setStyleSheet("border: none; font: 18pt;");
     
     unconfirmedbalancelabel = new QLabel(bframe);
@@ -149,6 +150,7 @@ TransactionView::TransactionView(QWidget *parent) :
     labelUnconfirmed->move(250, 65);
     labelUnconfirmed->setFixedWidth(200);
     labelUnconfirmed->setText("Available Balance:");
+    labelUnconfirmed->setTextInteractionFlags(Qt::TextSelectableByMouse);
     labelUnconfirmed->setStyleSheet("border: none");
 
     immaturebalancelabel = new QLabel(bframe);
@@ -161,6 +163,7 @@ TransactionView::TransactionView(QWidget *parent) :
     labelImmature->move(250, 85);
     labelImmature->setFixedWidth(200);
     labelImmature->setText("Available Balance:");
+    labelImmature->setTextInteractionFlags(Qt::TextSelectableByMouse);
     labelImmature->setStyleSheet("border: none;");
 
    

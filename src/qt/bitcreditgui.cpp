@@ -469,7 +469,7 @@ void BitcreditGUI::createActions(const NetworkStyle *networkStyle)
     // These showNormalIfMinimized are needed because Send Coins and Receive Coins
     // can be triggered from the tray menu, and need to show the GUI to be useful.
     connect(overviewAction, SIGNAL(triggered()), this, SLOT(showNormalIfMinimized()));
-    connect(overviewAction, SIGNAL(triggered()), this, SLOT(gotoOverviewPage()));
+    connect(overviewAction, SIGNAL(triggered()), this, SLOT(gotoHistoryPage()));
     connect(sendCoinsAction, SIGNAL(triggered()), this, SLOT(showNormalIfMinimized()));
     connect(sendCoinsAction, SIGNAL(triggered()), this, SLOT(gotoSendCoinsPage()));
     connect(receiveCoinsAction, SIGNAL(triggered()), this, SLOT(showNormalIfMinimized()));
@@ -920,11 +920,12 @@ void BitcreditGUI::gotoBankStatisticsPage()
 
 void BitcreditGUI::gotoOverviewPage()
 {
-    overviewAction->setChecked(true);
+    //overviewAction->setChecked(true);
+    historyAction->setChecked(true);
     actionSendReceive->setChecked(false);
     actionSendReceiveMess->setChecked(false);
     actionSendReceiveinv->setChecked(false);
-    if (walletFrame) walletFrame->gotoOverviewPage();
+    if (walletFrame) walletFrame->gotoHistoryPage();
     
     wId2->hide();
     wId->hide();

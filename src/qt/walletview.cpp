@@ -235,7 +235,7 @@ void WalletView::processNewMessage(const QModelIndex& parent, int start, int /*e
 
 void WalletView::gotoOverviewPage()
 {
-    setCurrentWidget(overviewPage);
+    setCurrentWidget(transactionsPage);
 }
 
 void WalletView::gotoBlockBrowser()
