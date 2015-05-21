@@ -283,10 +283,9 @@ void BitcreditGUI::createActions(const NetworkStyle *networkStyle)
     QActionGroup *tabGroup = new QActionGroup(this);
 
     overviewAction = new QAction(QIcon(":/icons/null"), tr("&Overview"), this);
-
     overviewAction->setCheckable(true);
     overviewAction->setShortcut(QKeySequence(Qt::ALT + Qt::Key_1));
-    tabGroup->addAction(overviewAction);
+    //tabGroup->addAction(overviewAction);
 
     historyAction = new QAction(QIcon(":/icons/null"), tr("&Overview"), this);
     historyAction->setCheckable(true);
@@ -592,7 +591,7 @@ void BitcreditGUI::createToolBars()
     if(walletFrame)
     {
 		
-		toolbar->addAction(overviewAction);
+		//toolbar->addAction(overviewAction);
 		toolbar->addAction(historyAction);
     	toolbar->addAction(actionSendReceive);
         toolbar->addAction(actionSendReceiveMess);
@@ -602,7 +601,7 @@ void BitcreditGUI::createToolBars()
 		toolbar->addAction(chatAction);
 		toolbar->addAction(banknodeManagerAction);
 		
-        overviewAction->setChecked(true);
+        historyAction->setChecked(true);
     }
     
     //QWidget* spacer = new QWidget();
@@ -681,7 +680,7 @@ void BitcreditGUI::removeAllWallets()
 
 void BitcreditGUI::setWalletActionsEnabled(bool enabled)
 {
-    overviewAction->setEnabled(enabled);
+    //overviewAction->setEnabled(enabled);
     sendCoinsAction->setEnabled(enabled);
     receiveCoinsAction->setEnabled(enabled);
     historyAction->setEnabled(enabled);
