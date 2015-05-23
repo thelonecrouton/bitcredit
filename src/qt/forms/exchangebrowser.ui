@@ -10,7 +10,7 @@
     <x>0</x>
     <y>0</y>
     <width>766</width>
-    <height>530</height>
+    <height>518</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -82,9 +82,9 @@ QTabWidget::pane {border:none;}
        <property name="geometry">
         <rect>
          <x>-60</x>
-         <y>-10</y>
+         <y>25</y>
          <width>781</width>
-         <height>451</height>
+         <height>432</height>
         </rect>
        </property>
        <property name="font">
@@ -100,7 +100,7 @@ QTabWidget::pane {border:none;}
         <bool>false</bool>
        </property>
        <property name="styleSheet">
-        <string notr="true">QTabBar:tab {height:20px;background:none;margin:0px;margin-right:10px;text-align:center;padding:2px;border-radius:3px;font-style:italic;width:80px;font-size:12px;margin-bottom:10px;}
+        <string notr="true">QTabBar:tab {height:20px;background:none;margin:0px;margin-right:10px;text-align:center;padding:2px;border-radius:3px;font-style:italic;width:80px;font-size:12px;margin-top:25px;}
 QTabWidget::tab-bar {alignment:right;;}
 QTabBar::tab:last {margin-right:0px;}</string>
        </property>
@@ -137,9 +137,9 @@ QTabBar::tab:last {margin-right:0px;}</string>
          <property name="geometry">
           <rect>
            <x>30</x>
-           <y>-50</y>
+           <y>-79</y>
            <width>721</width>
-           <height>441</height>
+           <height>470</height>
           </rect>
          </property>
          <property name="font">
@@ -913,32 +913,6 @@ QTreeWidget {background:#323232;}
            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Close&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
           </property>
          </widget>
-         <widget class="QFrame" name="verticalFrame">
-          <property name="geometry">
-           <rect>
-            <x>30</x>
-            <y>50</y>
-            <width>800</width>
-            <height>44</height>
-           </rect>
-          </property>
-          <property name="minimumSize">
-           <size>
-            <width>800</width>
-            <height>44</height>
-           </size>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>800</width>
-            <height>44</height>
-           </size>
-          </property>
-          <property name="styleSheet">
-           <string notr="true">background:transparent;sss</string>
-          </property>
-          <layout class="QVBoxLayout" name="verticalLayout_11"/>
-         </widget>
          <zorder>qWidgetBittrexAsk</zorder>
          <zorder>qWidgetBittrexBid</zorder>
          <zorder>qWidgetBittrexLast</zorder>
@@ -962,7 +936,6 @@ QTreeWidget {background:#323232;}
          <zorder>imgBittrexBuy</zorder>
          <zorder>lblBittrexCloseBtc</zorder>
          <zorder>lblBittrexClose</zorder>
-         <zorder>verticalFrame</zorder>
         </widget>
        </widget>
        <widget class="QWidget" name="qWidgetBittrexGraphs">
