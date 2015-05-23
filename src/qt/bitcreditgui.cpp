@@ -590,16 +590,19 @@ void BitcreditGUI::createToolBars()
 	
     if(walletFrame)
     {
-		
-		//toolbar->addAction(overviewAction);
-		toolbar->addAction(historyAction);
+        QWidget* spacer5 = new QWidget();		
+        spacer5->setFixedHeight(30);
+        toolbar->addWidget(spacer5);
+        spacer5->setObjectName("spacer5");
+	//toolbar->addAction(overviewAction);
+	toolbar->addAction(historyAction);
     	toolbar->addAction(actionSendReceive);
         toolbar->addAction(actionSendReceiveMess);
-   	    toolbar->addAction(actionSendReceiveinv);
-		toolbar->addAction(actionSendReceivestats);		        		
-		toolbar->addAction(voteCoinsAction);
-		toolbar->addAction(chatAction);
-		toolbar->addAction(banknodeManagerAction);
+   	toolbar->addAction(actionSendReceiveinv);
+	toolbar->addAction(actionSendReceivestats);		        		
+	toolbar->addAction(voteCoinsAction);
+	toolbar->addAction(chatAction);
+	toolbar->addAction(banknodeManagerAction);
 		
         historyAction->setChecked(true);
     }

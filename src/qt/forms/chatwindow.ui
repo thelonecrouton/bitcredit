@@ -96,9 +96,9 @@
        <property name="geometry">
         <rect>
          <x>560</x>
-         <y>20</y>
+         <y>36</y>
          <width>181</width>
-         <height>391</height>
+         <height>375</height>
         </rect>
        </property>
        <property name="minimumSize">
@@ -160,9 +160,9 @@ color: rgb(255, 255, 255);</string>
       <widget class="QLabel" name="label_2">
        <property name="geometry">
         <rect>
-         <x>60</x>
-         <y>160</y>
-         <width>291</width>
+         <x>40</x>
+         <y>164</y>
+         <width>321</width>
          <height>211</height>
         </rect>
        </property>
