@@ -33,6 +33,7 @@
 #include <QTableView>
 #include <QUrl>
 #include <QVBoxLayout>
+#include <QPushButton>
 
 
 
@@ -104,7 +105,15 @@ TransactionView::TransactionView(QWidget *parent) :
 #endif
     hlayout->addWidget(addressWidget);
 
-    amountWidget = new QLineEdit(this);
+    QPushButton *exportButton = new QPushButton(tr("&Export"), this);
+    exportButton->setFixedHeight(24);
+    exportButton->setToolTip(tr("Export the data in the current tab to a file"));
+#ifndef Q_OS_MAC // Icons on push buttons are very uncommon on Mac
+    exportButton->setIcon(QIcon(":/icons/export"));
+#endif
+    hlayout->addWidget(exportButton);
+
+/*    amountWidget = new QLineEdit(this);
 #if QT_VERSION >= 0x040700
     amountWidget->setPlaceholderText(tr("Min amount"));
 #endif
@@ -115,7 +124,7 @@ TransactionView::TransactionView(QWidget *parent) :
 #endif
     amountWidget->setValidator(new QDoubleValidator(0, 1e20, 8, this));
     hlayout->addWidget(amountWidget);
-
+*/
     QVBoxLayout *vlayout = new QVBoxLayout(this);
     vlayout->setContentsMargins(0,0,0,0);
     vlayout->setSpacing(0);
@@ -233,6 +242,10 @@ TransactionView::TransactionView(QWidget *parent) :
     connect(copyTxIDAction, SIGNAL(triggered()), this, SLOT(copyTxID()));
     connect(editLabelAction, SIGNAL(triggered()), this, SLOT(editLabel()));
     connect(showDetailsAction, SIGNAL(triggered()), this, SLOT(showDetails()));
+    
+    // Clicking on "Export" allows to export the transaction list
+    connect(exportButton, SIGNAL(clicked()), this, SLOT(exportClicked()));
+
 }
 
 

@@ -70,6 +70,7 @@ private:
     QComboBox *watchOnlyWidget;
     QLineEdit *addressWidget;
     QLineEdit *amountWidget;
+    QPushButton *exportButton;
 
     QMenu *contextMenu;
     QSignalMapper *mapperThirdPartyTxUrls;
