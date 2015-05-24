@@ -215,7 +215,7 @@ BitcreditGUI::BitcreditGUI(const NetworkStyle *networkStyle, QWidget *parent) :
     toolbar2->setIconSize(QSize(18, 18));
     QWidget* spacer2 = new QWidget();
     //spacer2->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-    spacer2->setFixedWidth(190);
+    spacer2->setFixedWidth(50);
     toolbar2->addWidget(spacer2);
     spacer2->setObjectName("spacer2");
     toolbar2->addWidget(labelConnectionsIcon);
@@ -226,10 +226,17 @@ BitcreditGUI::BitcreditGUI(const NetworkStyle *networkStyle, QWidget *parent) :
     toolbar2->addWidget(spacer3);
     spacer3->setObjectName("spacer3");
     toolbar2->addWidget(labelBlocksIcon);
+    
+    QWidget* spacer6 = new QWidget();
+    //spacer3->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+    spacer6->setFixedWidth(30);
+    toolbar2->addWidget(spacer6);
+    spacer6->setObjectName("spacer6");
+    toolbar2->addWidget(labelEncryptionIcon);    
 
     QWidget* spacer4 = new QWidget();
     //spacer4->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-    spacer4->setFixedWidth(20);
+    spacer4->setFixedWidth(170);
     toolbar2->addWidget(spacer4);
     spacer4->setObjectName("spacer4");
     
@@ -239,10 +246,10 @@ BitcreditGUI::BitcreditGUI(const NetworkStyle *networkStyle, QWidget *parent) :
     toolbar2->addAction(encryptWalletAction);
     toolbar2->addAction(backupWalletAction);
     toolbar2->addAction(changePassphraseAction);
-	toolbar2->addAction(paperWalletAction);
+    toolbar2->addAction(paperWalletAction);
     toolbar2->addAction(openRPCConsoleAction);
     toolbar2->addAction(aboutAction);
-	toolbar2->addAction(toggleHideAction);
+    toolbar2->addAction(toggleHideAction);
     toolbar2->addAction(quitAction);
     
 
@@ -385,16 +392,16 @@ void BitcreditGUI::createActions(const NetworkStyle *networkStyle)
     wId4->setFocus();
     wId4->hide();
 
-	blockAction = new QAction(QIcon(":/icons/null"), tr("&Block Crawler"), this);
+    blockAction = new QAction(QIcon(":/icons/null"), tr("&Block Crawler"), this);
     blockAction->setShortcut(QKeySequence(Qt::ALT + Qt::Key_5));
     blockAction->setCheckable(true);
     toolbarstats2->addAction(blockAction);
     tabGroup->addAction(blockAction);
 
-	exchangeAction = new QAction(QIcon(":/icons/null"), tr("&Market Data"), this);
-	exchangeAction->setCheckable(true);
-	toolbarstats->addAction(exchangeAction);
-	tabGroup->addAction(exchangeAction); 
+    exchangeAction = new QAction(QIcon(":/icons/null"), tr("&Market Data"), this);
+    exchangeAction->setCheckable(true);
+    toolbarstats->addAction(exchangeAction);
+    tabGroup->addAction(exchangeAction); 
 	
     bankstatsAction = new QAction(QIcon(":/icons/null"), tr("&Bank Statistics"), this);
     bankstatsAction->setCheckable(true);
@@ -447,10 +454,10 @@ void BitcreditGUI::createActions(const NetworkStyle *networkStyle)
     actionSendReceivestats->setCheckable(true);
     actionSendReceivestats->setShortcut(QKeySequence(Qt::ALT + Qt::Key_5));    
 
-	chatAction = new QAction(QIcon(":/icons/null"), tr("&IRC"), this);
-	chatAction->setToolTip(tr("View chat"));
-	chatAction->setCheckable(true);
-	tabGroup->addAction(chatAction);   
+    chatAction = new QAction(QIcon(":/icons/null"), tr("&IRC"), this);
+    chatAction->setToolTip(tr("View chat"));
+    chatAction->setCheckable(true);
+    tabGroup->addAction(chatAction);   
 
     voteCoinsAction = new QAction(QIcon(":/icons/null"), tr("&Vote / Rate"), this);
     voteCoinsAction->setCheckable(true);
@@ -461,7 +468,7 @@ void BitcreditGUI::createActions(const NetworkStyle *networkStyle)
     sendMessagesAnonAction->setCheckable(true);
     tabGroup->addAction(sendMessagesAnonAction);
 
-	banknodeManagerAction = new QAction(QIcon(":/icons/null"), tr("&Bank Nodes"), this);
+    banknodeManagerAction = new QAction(QIcon(":/icons/null"), tr("&Bank Nodes"), this);
     banknodeManagerAction->setCheckable(true);
     tabGroup->addAction(banknodeManagerAction);
 
@@ -485,10 +492,10 @@ void BitcreditGUI::createActions(const NetworkStyle *networkStyle)
 
     connect(historyAction, SIGNAL(triggered()), this, SLOT(showNormalIfMinimized()));
     connect(historyAction, SIGNAL(triggered()), this, SLOT(gotoHistoryPage()));
-	connect(chatAction, SIGNAL(triggered()), this, SLOT(gotoChatPage()));
-	connect(exchangeAction, SIGNAL(triggered()), this, SLOT(gotoExchangeBrowserPage()));
-	connect(blockAction, SIGNAL(triggered()), this, SLOT(gotoBlockBrowser()));
-	connect(bankstatsAction, SIGNAL(triggered()), this, SLOT(gotoBankStatisticsPage()));
+    connect(chatAction, SIGNAL(triggered()), this, SLOT(gotoChatPage()));
+    connect(exchangeAction, SIGNAL(triggered()), this, SLOT(gotoExchangeBrowserPage()));
+    connect(blockAction, SIGNAL(triggered()), this, SLOT(gotoBlockBrowser()));
+    connect(bankstatsAction, SIGNAL(triggered()), this, SLOT(gotoBankStatisticsPage()));
     connect(voteCoinsAction, SIGNAL(triggered()), this, SLOT(showNormalIfMinimized()));
     connect(voteCoinsAction, SIGNAL(triggered()), this, SLOT(gotoVoteCoinsPage()));
     connect(sendMessagesAction, SIGNAL(triggered()), this, SLOT(showNormalIfMinimized()));
@@ -591,7 +598,7 @@ void BitcreditGUI::createToolBars()
     if(walletFrame)
     {
         QWidget* spacer5 = new QWidget();		
-        spacer5->setFixedHeight(30);
+        spacer5->setFixedHeight(35);
         toolbar->addWidget(spacer5);
         spacer5->setObjectName("spacer5");
 	//toolbar->addAction(overviewAction);
