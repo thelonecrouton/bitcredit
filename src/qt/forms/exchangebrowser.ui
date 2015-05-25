@@ -10,7 +10,7 @@
     <x>0</x>
     <y>0</y>
     <width>766</width>
-    <height>530</height>
+    <height>518</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -82,9 +82,9 @@ QTabWidget::pane {border:none;}
        <property name="geometry">
         <rect>
          <x>-60</x>
-         <y>-10</y>
+         <y>25</y>
          <width>781</width>
-         <height>451</height>
+         <height>432</height>
         </rect>
        </property>
        <property name="font">
@@ -100,7 +100,7 @@ QTabWidget::pane {border:none;}
         <bool>false</bool>
        </property>
        <property name="styleSheet">
-        <string notr="true">QTabBar:tab {height:20px;background:none;margin:0px;margin-right:10px;text-align:center;padding:2px;border-radius:3px;font-style:italic;width:80px;font-size:12px;margin-bottom:10px;}
+        <string notr="true">QTabBar:tab {height:20px;background:none;margin:0px;margin-right:10px;text-align:center;padding:2px;border-radius:3px;font-style:italic;width:80px;font-size:12px;margin-top:25px;}
 QTabWidget::tab-bar {alignment:right;;}
 QTabBar::tab:last {margin-right:0px;}</string>
        </property>
@@ -111,7 +111,7 @@ QTabBar::tab:last {margin-right:0px;}</string>
         <enum>QTabWidget::Rounded</enum>
        </property>
        <property name="currentIndex">
-        <number>0</number>
+        <number>1</number>
        </property>
        <property name="iconSize">
         <size>
@@ -137,9 +137,9 @@ QTabBar::tab:last {margin-right:0px;}</string>
          <property name="geometry">
           <rect>
            <x>30</x>
-           <y>-50</y>
+           <y>-79</y>
            <width>721</width>
-           <height>441</height>
+           <height>470</height>
           </rect>
          </property>
          <property name="font">
@@ -394,7 +394,57 @@ QTabBar::tab:last {margin-right:0px;}</string>
            <bool>true</bool>
           </property>
           <property name="styleSheet">
-           <string notr="true">QScrollBar:vertical {margin-top:22px;background: #95a5a6;}QScrollBar::handle:vertical {background: #703030;min-width: 10px;min-height:20px;}QScrollBar::add-line:vertical {width: 0px;subcontrol-position: top left;}QScrollBar::sub-line:vertical {width: 0px;subcontrol-position: top left;}QScrollBar:left-arrow:horizontal, QScrollBar::right-arrow:horizontal {width: 0px;height: 0px;}QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical {background: none;} QTreeWidget {background:#d3d6d8;}
+           <string notr="true"> QScrollBar:vertical
+{
+      background: QLinearGradient( x1: 0, y1: 0, x2: 1, y2: 0, stop: 0.0 #121212, stop: 0.2 #282828, stop: 1 #484848);
+      width: 15px;
+      margin: 16px 0 16px 0;
+      border: 1px solid #222222;
+}
+
+QScrollBar::handle:vertical
+{
+      background: QLinearGradient( x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #ffa02f, stop: 0.5 #d7801a, stop: 1 #ffa02f);
+      min-height: 20px;
+      border-radius: 2px;
+}
+
+QScrollBar::add-line:vertical
+{
+      border: 1px solid #1b1b19;
+      border-radius: 2px;
+      background: QLinearGradient( x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #ffa02f, stop: 1 #d7801a);
+      height: 14px;
+      subcontrol-position: bottom;
+      subcontrol-origin: margin;
+}
+
+QScrollBar::sub-line:vertical
+{
+      border: 1px solid #1b1b19;
+      border-radius: 2px;
+      background: QLinearGradient( x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #d7801a, stop: 1 #ffa02f);
+      height: 14px;
+      subcontrol-position: top;
+      subcontrol-origin: margin;
+}
+
+QScrollBar::up-arrow:vertical, QScrollBar::down-arrow:vertical
+{
+      border: 1px solid black;
+      width: 1px;
+      height: 1px;
+      background: white;
+}
+
+
+QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical
+{
+      background: none;
+}
+
+
+QTreeWidget {background:#323232;}
  QHeaderView::section {
      background-color: #f2594b;
      padding-left: 15px;
@@ -701,7 +751,57 @@ QTabBar::tab:last {margin-right:0px;}</string>
            </rect>
           </property>
           <property name="styleSheet">
-           <string notr="true">QScrollBar:vertical {margin-top:22px;background: #95a5a6;}QScrollBar::handle:vertical {background: #4e8e81;max-width: 5px;min-height:20px;}QScrollBar::add-line:vertical {width: 0px;subcontrol-position: top left;}QScrollBar::sub-line:vertical {width: 0px;subcontrol-position: top left;}QScrollBar:left-arrow:horizontal, QScrollBar::right-arrow:horizontal {width: 0px;height: 0px;}QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical {background: none;} QTreeWidget {background:#d3d6d8;}
+           <string notr="true">QScrollBar:vertical
+{
+      background: QLinearGradient( x1: 0, y1: 0, x2: 1, y2: 0, stop: 0.0 #121212, stop: 0.2 #282828, stop: 1 #484848);
+      width: 15px;
+      margin: 16px 0 16px 0;
+      border: 1px solid #222222;
+}
+
+QScrollBar::handle:vertical
+{
+      background: QLinearGradient( x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #ffa02f, stop: 0.5 #d7801a, stop: 1 #ffa02f);
+      min-height: 20px;
+      border-radius: 2px;
+}
+
+QScrollBar::add-line:vertical
+{
+      border: 1px solid #1b1b19;
+      border-radius: 2px;
+      background: QLinearGradient( x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #ffa02f, stop: 1 #d7801a);
+      height: 14px;
+      subcontrol-position: bottom;
+      subcontrol-origin: margin;
+}
+
+QScrollBar::sub-line:vertical
+{
+      border: 1px solid #1b1b19;
+      border-radius: 2px;
+      background: QLinearGradient( x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #d7801a, stop: 1 #ffa02f);
+      height: 14px;
+      subcontrol-position: top;
+      subcontrol-origin: margin;
+}
+
+QScrollBar::up-arrow:vertical, QScrollBar::down-arrow:vertical
+{
+      border: 1px solid black;
+      width: 1px;
+      height: 1px;
+      background: white;
+}
+
+
+QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical
+{
+      background: none;
+}
+
+
+QTreeWidget {background:#323232;}
  QHeaderView::section {
      background-color: #7cc576;
      padding-left: 15px;
@@ -813,32 +913,6 @@ QTabBar::tab:last {margin-right:0px;}</string>
            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Close&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
           </property>
          </widget>
-         <widget class="QFrame" name="verticalFrame">
-          <property name="geometry">
-           <rect>
-            <x>30</x>
-            <y>50</y>
-            <width>800</width>
-            <height>44</height>
-           </rect>
-          </property>
-          <property name="minimumSize">
-           <size>
-            <width>800</width>
-            <height>44</height>
-           </size>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>800</width>
-            <height>44</height>
-           </size>
-          </property>
-          <property name="styleSheet">
-           <string notr="true">background:transparent;sss</string>
-          </property>
-          <layout class="QVBoxLayout" name="verticalLayout_11"/>
-         </widget>
          <zorder>qWidgetBittrexAsk</zorder>
          <zorder>qWidgetBittrexBid</zorder>
          <zorder>qWidgetBittrexLast</zorder>
@@ -862,7 +936,6 @@ QTabBar::tab:last {margin-right:0px;}</string>
          <zorder>imgBittrexBuy</zorder>
          <zorder>lblBittrexCloseBtc</zorder>
          <zorder>lblBittrexClose</zorder>
-         <zorder>verticalFrame</zorder>
         </widget>
        </widget>
        <widget class="QWidget" name="qWidgetBittrexGraphs">
@@ -894,11 +967,103 @@ QTabBar::tab:last {margin-right:0px;}</string>
             <x>20</x>
             <y>0</y>
             <width>671</width>
-            <height>381</height>
+            <height>366</height>
            </rect>
           </property>
           <property name="styleSheet">
-           <string notr="true">QScrollBar:horizontal {background: white;height: 15px;margin: 0px 0px 0 0px;}QScrollBar::handle:horizontal {background: #95a5a6;min-width: 20px;}QScrollBar::add-line:horizontal {width: 0px;subcontrol-position: top right;}QScrollBar::sub-line:horizontal {width: 0px;subcontrol-position: top right;}QScrollBar:left-arrow:horizontal, QScrollBar::right-arrow:horizontal {width: 0px;height: 0px;}QScrollBar::add-page:horizontal, QScrollBar::sub-page:horizontal {background: none;}</string>
+           <string notr="true">QScrollBar:horizontal {
+     border: 1px solid #222222;
+     background: QLinearGradient( x1: 0, y1: 0, x2: 0, y2: 1, stop: 0.0 #121212, stop: 0.2 #282828, stop: 1 #484848);
+     height: 15px;
+     margin: 0px 16px 0 16px;
+}
+
+QScrollBar::handle:horizontal
+{
+      background: QLinearGradient( x1: 0, y1: 0, x2: 1, y2: 0, stop: 0 #ffa02f, stop: 0.5 #d7801a, stop: 1 #ffa02f);
+      min-height: 20px;
+      border-radius: 2px;
+}
+
+QScrollBar::add-line:horizontal {
+      border: 1px solid #1b1b19;
+      border-radius: 2px;
+      background: QLinearGradient( x1: 0, y1: 0, x2: 1, y2: 0, stop: 0 #ffa02f, stop: 1 #d7801a);
+      width: 14px;
+      subcontrol-position: right;
+      subcontrol-origin: margin;
+}
+
+QScrollBar::sub-line:horizontal {
+      border: 1px solid #1b1b19;
+      border-radius: 2px;
+      background: QLinearGradient( x1: 0, y1: 0, x2: 1, y2: 0, stop: 0 #ffa02f, stop: 1 #d7801a);
+      width: 14px;
+     subcontrol-position: left;
+     subcontrol-origin: margin;
+}
+
+QScrollBar::right-arrow:horizontal, QScrollBar::left-arrow:horizontal
+{
+      border: 1px solid black;
+      width: 1px;
+      height: 1px;
+      background: white;
+}
+
+QScrollBar::add-page:horizontal, QScrollBar::sub-page:horizontal
+{
+      background: none;
+}
+
+QScrollBar:vertical
+{
+      background: QLinearGradient( x1: 0, y1: 0, x2: 1, y2: 0, stop: 0.0 #121212, stop: 0.2 #282828, stop: 1 #484848);
+      width: 15px;
+      margin: 16px 0 16px 0;
+      border: 1px solid #222222;
+}
+
+QScrollBar::handle:vertical
+{
+      background: QLinearGradient( x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #ffa02f, stop: 0.5 #d7801a, stop: 1 #ffa02f);
+      min-height: 20px;
+      border-radius: 2px;
+}
+
+QScrollBar::add-line:vertical
+{
+      border: 1px solid #1b1b19;
+      border-radius: 2px;
+      background: QLinearGradient( x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #ffa02f, stop: 1 #d7801a);
+      height: 14px;
+      subcontrol-position: bottom;
+      subcontrol-origin: margin;
+}
+
+QScrollBar::sub-line:vertical
+{
+      border: 1px solid #1b1b19;
+      border-radius: 2px;
+      background: QLinearGradient( x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #d7801a, stop: 1 #ffa02f);
+      height: 14px;
+      subcontrol-position: top;
+      subcontrol-origin: margin;
+}
+
+QScrollBar::up-arrow:vertical, QScrollBar::down-arrow:vertical
+{
+      border: 1px solid black;
+      width: 1px;
+      height: 1px;
+      background: white;
+}
+
+
+QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical
+{
+      background: none;
+}</string>
           </property>
           <property name="frameShape">
            <enum>QFrame::NoFrame</enum>
@@ -915,10 +1080,10 @@ QTabBar::tab:last {margin-right:0px;}</string>
           <widget class="QWidget" name="scrollAreaWidgetContentsBittrex">
            <property name="geometry">
             <rect>
-             <x>0</x>
+             <x>-964</x>
              <y>0</y>
              <width>1635</width>
-             <height>366</height>
+             <height>350</height>
             </rect>
            </property>
            <property name="minimumSize">
@@ -928,16 +1093,112 @@ QTabBar::tab:last {margin-right:0px;}</string>
             </size>
            </property>
            <property name="styleSheet">
-            <string notr="true"/>
+            <string notr="true">QScrollBar:horizontal {
+     border: 1px solid #222222;
+     background: QLinearGradient( x1: 0, y1: 0, x2: 0, y2: 1, stop: 0.0 #121212, stop: 0.2 #282828, stop: 1 #484848);
+     height: 15px;
+     margin: 0px 16px 0 16px;
+}
+
+QScrollBar::handle:horizontal
+{
+      background: QLinearGradient( x1: 0, y1: 0, x2: 1, y2: 0, stop: 0 #ffa02f, stop: 0.5 #d7801a, stop: 1 #ffa02f);
+      min-height: 20px;
+      border-radius: 2px;
+}
+
+QScrollBar::add-line:horizontal {
+      border: 1px solid #1b1b19;
+      border-radius: 2px;
+      background: QLinearGradient( x1: 0, y1: 0, x2: 1, y2: 0, stop: 0 #ffa02f, stop: 1 #d7801a);
+      width: 14px;
+      subcontrol-position: right;
+      subcontrol-origin: margin;
+}
+
+QScrollBar::sub-line:horizontal {
+      border: 1px solid #1b1b19;
+      border-radius: 2px;
+      background: QLinearGradient( x1: 0, y1: 0, x2: 1, y2: 0, stop: 0 #ffa02f, stop: 1 #d7801a);
+      width: 14px;
+     subcontrol-position: left;
+     subcontrol-origin: margin;
+}
+
+QScrollBar::right-arrow:horizontal, QScrollBar::left-arrow:horizontal
+{
+      border: 1px solid black;
+      width: 1px;
+      height: 1px;
+      background: white;
+}
+
+QScrollBar::add-page:horizontal, QScrollBar::sub-page:horizontal
+{
+      background: none;
+}
+
+QScrollBar:vertical
+{
+      background: QLinearGradient( x1: 0, y1: 0, x2: 1, y2: 0, stop: 0.0 #121212, stop: 0.2 #282828, stop: 1 #484848);
+      width: 15px;
+      margin: 16px 0 16px 0;
+      border: 1px solid #222222;
+}
+
+QScrollBar::handle:vertical
+{
+      background: QLinearGradient( x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #ffa02f, stop: 0.5 #d7801a, stop: 1 #ffa02f);
+      min-height: 20px;
+      border-radius: 2px;
+}
+
+QScrollBar::add-line:vertical
+{
+      border: 1px solid #1b1b19;
+      border-radius: 2px;
+      background: QLinearGradient( x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #ffa02f, stop: 1 #d7801a);
+      height: 14px;
+      subcontrol-position: bottom;
+      subcontrol-origin: margin;
+}
+
+QScrollBar::sub-line:vertical
+{
+      border: 1px solid #1b1b19;
+      border-radius: 2px;
+      background: QLinearGradient( x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #d7801a, stop: 1 #ffa02f);
+      height: 14px;
+      subcontrol-position: top;
+      subcontrol-origin: margin;
+}
+
+QScrollBar::up-arrow:vertical, QScrollBar::down-arrow:vertical
+{
+      border: 1px solid black;
+      width: 1px;
+      height: 1px;
+      background: white;
+}
+
+
+QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical
+{
+      background: none;
+}
+</string>
            </property>
            <widget class="QLabel" name="lblBittrexTrades">
             <property name="geometry">
              <rect>
-              <x>0</x>
-              <y>330</y>
+              <x>90</x>
+              <y>328</y>
               <width>311</width>
               <height>21</height>
              </rect>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">color:white;</string>
             </property>
             <property name="text">
              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Price chart, &lt;/span&gt;last 50 trades - Satoshi/trade&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
@@ -977,6 +1238,9 @@ QTabBar::tab:last {margin-right:0px;}</string>
               <width>211</width>
               <height>20</height>
              </rect>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">color:white;</string>
             </property>
             <property name="text">
              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Order depth &lt;/span&gt;- Volume/Satoshi&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
@@ -1052,8 +1316,6 @@ QTabBar::tab:last {margin-right:0px;}</string>
         </widget>
        </widget>
       </widget>
-      <zorder>tabWidgetBittrex</zorder>
-      <zorder>verticalFrame</zorder>
      </widget>
     </widget>
    </item>
@@ -1114,9 +1376,9 @@ QTabBar::tab:last {margin-right:0px;}</string>
      <widget class="QLabel" name="lblConvertSilkcoin">
       <property name="geometry">
        <rect>
-        <x>30</x>
-        <y>10</y>
-        <width>131</width>
+        <x>40</x>
+        <y>12</y>
+        <width>121</width>
         <height>20</height>
        </rect>
       </property>
@@ -1168,7 +1430,7 @@ QTabBar::tab:last {margin-right:0px;}</string>
        </size>
       </property>
       <property name="styleSheet">
-       <string notr="true">border:1px solid #61696c;background:white;font-weight:600;</string>
+       <string notr="true">border:1px solid #61696c;background:#323232;font-weight:600;color:white;</string>
       </property>
       <property name="text">
        <string>=</string>
@@ -1177,10 +1439,10 @@ QTabBar::tab:last {margin-right:0px;}</string>
      <widget class="QLabel" name="lblConvertSilkcoinResults">
       <property name="geometry">
        <rect>
-        <x>330</x>
-        <y>0</y>
+        <x>320</x>
+        <y>7</y>
         <width>201</width>
-        <height>41</height>
+        <height>30</height>
        </rect>
       </property>
       <property name="styleSheet">
