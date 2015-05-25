@@ -249,16 +249,16 @@ TransactionView::TransactionView(QWidget *parent) :
 }
 
 
-void TransactionView::setBalance(const CAmount& balance, const CAmount& unconfirmedBalance, const CAmount& immatureBalance, const CAmount& watchOnlyBalance, const CAmount& watchUnconfBalance, const CAmount& watchImmatureBalance, qint64 anonymizedBalance)
+void TransactionView::setBalance(const CAmount& balance, const CAmount& unconfirmedBalance, const CAmount& immatureBalance)
 {
     int unit = walletModel->getOptionsModel()->getDisplayUnit();
     currentBalance = balance;
     currentUnconfirmedBalance = unconfirmedBalance;
     currentImmatureBalance = immatureBalance;
-    currentAnonymizedBalance = anonymizedBalance;
-    currentWatchOnlyBalance = watchOnlyBalance;
-    currentWatchUnconfBalance = watchUnconfBalance;
-    currentWatchImmatureBalance = watchImmatureBalance;
+    //currentAnonymizedBalance = anonymizedBalance;
+    //currentWatchOnlyBalance = watchOnlyBalance;
+    //currentWatchUnconfBalance = watchUnconfBalance;
+    //currentWatchImmatureBalance = watchImmatureBalance;
     this->labelBalance->setText(BitcreditUnits::formatWithUnit(unit, balance, false, BitcreditUnits::separatorAlways));
     this->labelUnconfirmed->setText(BitcreditUnits::formatWithUnit(unit, unconfirmedBalance, false, BitcreditUnits::separatorAlways));
     this->labelImmature->setText(BitcreditUnits::formatWithUnit(unit, immatureBalance, false, BitcreditUnits::separatorAlways));
@@ -272,16 +272,17 @@ void TransactionView::setBalance(const CAmount& balance, const CAmount& unconfir
     // only show immature (newly mined) balance if it's non-zero, so as not to complicate things
     // for the non-mining users
     bool showImmature = immatureBalance != 0;
-    bool showWatchOnlyImmature = watchImmatureBalance != 0;
+    //bool showWatchOnlyImmature = watchImmatureBalance != 0;
 
     if(cachedTxLocks != nCompleteTXLocks){
         cachedTxLocks = nCompleteTXLocks;
         //ui->listTransactions->update();
+        
     }
 
     // for symmetry reasons also show immature label when the watch-only one is shown
-    this->labelImmature->setVisible(showImmature || showWatchOnlyImmature);
-    this->immaturebalancelabel->setVisible(showImmature || showWatchOnlyImmature);
+    this->labelImmature->setVisible(showImmature);
+    this->immaturebalancelabel->setVisible(showImmature);
     //ui->labelWatchImmature->setVisible(showWatchOnlyImmature); // show watch-only immature balance
 }
 
@@ -292,8 +293,10 @@ void TransactionView::setModel(WalletModel *model)
     if(model)
     {
         // Keep up to date with wallet
-        setBalance(model->getBalance(), model->getUnconfirmedBalance(), model->getImmatureBalance(),
-                   model->getWatchBalance(), model->getWatchUnconfirmedBalance(), model->getWatchImmatureBalance(), model->getAnonymizedBalance());
+        setBalance(model->getBalance(), model->getUnconfirmedBalance(), model->getImmatureBalance());
+        connect(model, SIGNAL(balanceChanged(CAmount,CAmount,CAmount)), this, SLOT(setBalance(CAmount,CAmount,CAmount)));
+        
+     
 
         transactionProxyModel = new TransactionFilterProxy(this);
         transactionProxyModel->setSourceModel(model->getTransactionTableModel());
@@ -357,8 +360,7 @@ void TransactionView::updateDisplayUnit()
     if(walletModel && walletModel->getOptionsModel())
     {
         if(currentBalance != -1)
-            setBalance(currentBalance, currentUnconfirmedBalance, currentImmatureBalance,
-                       currentWatchOnlyBalance, currentWatchUnconfBalance, currentWatchImmatureBalance, currentAnonymizedBalance);
+            setBalance(currentBalance, currentUnconfirmedBalance, currentImmatureBalance);
 
         // Update txdelegate->unit with the current unit
         //txdelegate->unit = walletModel->getOptionsModel()->getDisplayUnit();
