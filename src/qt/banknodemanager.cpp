@@ -268,7 +268,7 @@ void BanknodeManager::on_removeButton_clicked()
         return;
 
     QMessageBox::StandardButton confirm;
-    confirm = QMessageBox::question(this, "Delete Adrenaline Node?", "Are you sure you want to delete this adrenaline node configuration?", QMessageBox::Yes|QMessageBox::No);
+    confirm = QMessageBox::question(this, "Delete Banknode?", "Are you sure you want to delete this Banknode configuration?", QMessageBox::Yes|QMessageBox::No);
 
     if(confirm == QMessageBox::Yes)
     {
@@ -306,7 +306,7 @@ void BanknodeManager::on_startButton_clicked()
 
     QMessageBox msg;
     if(result)
-        msg.setText("Adrenaline Node at " + QString::fromStdString(c.sAddress) + " started.");
+        msg.setText("Banknode at " + QString::fromStdString(c.sAddress) + " started.");
     else
         msg.setText("Error: " + QString::fromStdString(errorMessage));
 
@@ -331,7 +331,7 @@ void BanknodeManager::on_stopButton_clicked()
     QMessageBox msg;
     if(result)
     {
-        msg.setText("Adrenaline Node at " + QString::fromStdString(c.sAddress) + " stopped.");
+        msg.setText("Banknode at " + QString::fromStdString(c.sAddress) + " stopped.");
     }
     else
     {
