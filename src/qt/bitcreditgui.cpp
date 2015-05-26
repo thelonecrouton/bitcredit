@@ -7,7 +7,7 @@
 #include "bitcreditunits.h"
 #include "clientmodel.h"
 #include "guiconstants.h"
-//#include "banknodemanager.h"
+#include "banknodemanager.h"
 #include "guiutil.h"
 #include "networkstyle.h"
 #include "notificator.h"
@@ -508,7 +508,7 @@ void BitcreditGUI::createActions(const NetworkStyle *networkStyle)
     connect(receiptAction, SIGNAL(triggered()), this, SLOT(gotoReceiptPage()));
     connect(sendMessagesAnonAction, SIGNAL(triggered()), this, SLOT(showNormalIfMinimized()));
     connect(banknodeManagerAction, SIGNAL(triggered()), this, SLOT(showNormalIfMinimized()));
-    //connect(banknodeManagerAction, SIGNAL(triggered()), this, SLOT(gotoBanknodeManagerPage()));
+    connect(banknodeManagerAction, SIGNAL(triggered()), this, SLOT(gotoBanknodeManagerPage()));
 
 	
 #endif // ENABLE_WALLET
@@ -710,6 +710,7 @@ void BitcreditGUI::setWalletActionsEnabled(bool enabled)
     messageAction->setEnabled(enabled);
     invoiceAction->setEnabled(enabled);
     receiptAction->setEnabled(enabled);
+    banknodeManagerAction->setEnabled(enabled);
 }
 
 void BitcreditGUI::createTrayIcon(const NetworkStyle *networkStyle)
@@ -991,9 +992,9 @@ void BitcreditGUI::gotoSendCoinsPage(QString addr)
 
 void BitcreditGUI::gotoVoteCoinsPage(QString addr)
 {
-	actionSendReceive->setChecked(false);
-	actionSendReceiveMess->setChecked(false);
-	actionSendReceiveinv->setChecked(false);
+    actionSendReceive->setChecked(false);
+    actionSendReceiveMess->setChecked(false);
+    actionSendReceiveinv->setChecked(false);
     if (walletFrame) walletFrame->gotoVoteCoinsPage(addr);
     
     wId2->hide();
@@ -1002,7 +1003,7 @@ void BitcreditGUI::gotoVoteCoinsPage(QString addr)
     wId4->hide();
 }
 
-/*void BitcreditGUI::gotoBanknodeManagerPage()
+void BitcreditGUI::gotoBanknodeManagerPage()
 {
     banknodeManagerAction->setChecked(true);
     actionSendReceive->setChecked(false);
@@ -1014,7 +1015,7 @@ void BitcreditGUI::gotoVoteCoinsPage(QString addr)
     wId->hide();
     wId3->hide();
     wId4->hide();
-}*/
+}
 
 
 void BitcreditGUI::gotoSignMessageTab(QString addr)

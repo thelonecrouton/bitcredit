@@ -17,7 +17,7 @@
 #include "guiutil.h"
 #include "optionsmodel.h"
 #include "messagemodel.h"
-//#include "banknodemanager.h"
+#include "banknodemanager.h"
 #include "overviewpage.h"
 #include "receiptpage.h"
 #include "sendmessagesdialog.h"
@@ -252,11 +252,11 @@ void WalletView::gotoChatPage()
 {
     setCurrentWidget(chatWindow);
 }
-/*
+
 void WalletView::gotoBanknodeManagerPage()
 { 
     setCurrentWidget(banknodeManagerPage);
-}*/
+}
 
 void WalletView::gotoSendMessagesPage()
 {

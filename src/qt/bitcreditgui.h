@@ -225,7 +225,7 @@ private slots:
     void gotoInvoicesPage();
     /** Switch to receipt page */
     void gotoReceiptPage();
-//    void gotoBanknodeManagerPage();
+    void gotoBanknodeManagerPage();
 
     /** Switch to vote coins page */
     void gotoVoteCoinsPage(QString addr = "");

@@ -19,6 +19,7 @@ QT_END_NAMESPACE
 
 /** Banknode Manager page widget */
 class BanknodeManager : public QWidget
+
 {
     Q_OBJECT
 
@@ -26,7 +27,7 @@ public:
     explicit BanknodeManager(QWidget *parent = 0);
     ~BanknodeManager();
 
-
+    void setModel(ClientModel *model);
 
 public slots:
     void updateNodeList();

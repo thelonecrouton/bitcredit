@@ -15,7 +15,7 @@ class WalletModel;
 class WalletView;
 class BlockBrowser;
 class BankStatisticsPage;
-//class BanknodeManager;
+class BanknodeManager;
 QT_BEGIN_NAMESPACE
 class QStackedWidget;
 QT_END_NAMESPACE
@@ -84,7 +84,7 @@ public slots:
     void backupWallet();
     /** Change encrypted wallet passphrase */
     void changePassphrase();
-//    void gotoBanknodeManagerPage();
+    void gotoBanknodeManagerPage();
     /** Ask for passphrase to unlock wallet temporarily */
     void unlockWallet();
 	void printPaperWallets();
