@@ -59,7 +59,13 @@ OptionsDialog::OptionsDialog(QWidget *parent, bool enableWallet) :
     ui->proxyIpTor->setEnabled(false);
     ui->proxyPortTor->setEnabled(false);
     ui->proxyPortTor->setValidator(new QIntValidator(1, 65535, this));
-
+    
+    //hide Darksend stuff
+    ui->label->hide();
+    ui->label_2->hide();
+    ui->darksendRounds->hide();
+    ui->anonymizeBitcredit->hide();
+    
     connect(ui->connectSocks, SIGNAL(toggled(bool)), ui->proxyIp, SLOT(setEnabled(bool)));
     connect(ui->connectSocks, SIGNAL(toggled(bool)), ui->proxyPort, SLOT(setEnabled(bool)));
     
