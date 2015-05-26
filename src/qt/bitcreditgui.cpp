@@ -598,7 +598,7 @@ void BitcreditGUI::createToolBars()
     if(walletFrame)
     {
         QWidget* spacer5 = new QWidget();		
-        spacer5->setFixedHeight(35);
+        spacer5->setFixedHeight(15);
         toolbar->addWidget(spacer5);
         spacer5->setObjectName("spacer5");
 	//toolbar->addAction(overviewAction);
