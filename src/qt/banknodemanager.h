@@ -19,14 +19,17 @@ QT_END_NAMESPACE
 
 /** Banknode Manager page widget */
 class BanknodeManager : public QWidget
+
 {
     Q_OBJECT
 
 public:
     explicit BanknodeManager(QWidget *parent = 0);
     ~BanknodeManager();
-
-
+    
+    void setClientModel(ClientModel *clientModel);
+    void setWalletModel(WalletModel *walletModel);
+    //void setModel(ClientModel *model);
 
 public slots:
     void updateNodeList();
@@ -37,7 +40,8 @@ signals:
 private:
     QTimer *timer;
     Ui::BanknodeManager *ui;
-
+    ClientModel *clientModel;
+    WalletModel *walletModel;
     CCriticalSection cs_adrenaline;
     void subscribeToCoreSignals();
     void unsubscribeFromCoreSignals();

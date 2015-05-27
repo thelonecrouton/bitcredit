@@ -1445,6 +1445,9 @@ color: rgb(255, 255, 255); border: none;</string>
      </item>
      <item>
       <widget class="QCheckBox" name="checkUseDarksend">
+       <property name="enabled">
+        <bool>false</bool>
+       </property>
        <property name="minimumSize">
         <size>
          <width>95</width>
