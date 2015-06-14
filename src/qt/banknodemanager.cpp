@@ -155,7 +155,7 @@ void BanknodeManager::updateNodeList()
     ui->countLabel->setText("Updating...");
     ui->tableWidget->clearContents();
     ui->tableWidget->setRowCount(0);
-    BOOST_FOREACH(CBanknode mn, vBanknodes) 
+    BOOST_FOREACH(CBanknode mn, mnodeman.vBanknodes) 
     {
         int mnRow = 0;
         ui->tableWidget->insertRow(0);

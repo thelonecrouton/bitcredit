@@ -17,7 +17,7 @@ QT_BEGIN_NAMESPACE
 class QModelIndex;
 QT_END_NAMESPACE
 
-class CBanknodeMan
+
 /** Banknode Manager page widget */
 class BanknodeManager : public QWidget
 
