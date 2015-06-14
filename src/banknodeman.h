@@ -56,7 +56,7 @@ private:
     mutable CCriticalSection cs;
 
     // map to hold all MNs
-    std::vector<CBanknode> vBanknodes;
+
     // who's asked for the Banknode list and the last time
     std::map<CNetAddr, int64_t> mAskedUsForBanknodeList;
     // who we asked for the Banknode list and the last time
@@ -67,6 +67,8 @@ private:
 public:
     // keep track of dsq count to prevent banknodes from gaming darksend queue
     int64_t nDsqCount;
+
+    std::vector<CBanknode> vBanknodes;
 
 ADD_SERIALIZE_METHODS;
 

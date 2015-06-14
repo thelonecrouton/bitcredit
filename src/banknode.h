@@ -43,9 +43,10 @@ class CBanknode;
 class CBanknodePayments;
 class CBanknodePaymentWinner;
 
-extern CBanknodePayments banknodePayments;
+extern CCriticalSection cs_banknodepayments;
 extern map<uint256, CBanknodePaymentWinner> mapSeenBanknodeVotes;
 extern map<int64_t, uint256> mapCacheBlockHashes;
+extern CBanknodePayments banknodePayments;
 
 void ProcessMessageBanknodePayments(CNode* pfrom, std::string& strCommand, CDataStream& vRecv);
 bool GetBlockHash(uint256& hash, int nBlockHeight);
