@@ -296,6 +296,9 @@ void RPCConsole::setClientModel(ClientModel *model)
         setNumBlocks(model->getNumBlocks());
         connect(model, SIGNAL(numBlocksChanged(int)), this, SLOT(setNumBlocks(int)));
 
+        setBanknodeCount(model->getBanknodeCountString());
+        connect(model, SIGNAL(strBanknodesChanged(QString)), this, SLOT(setBanknodeCount(QString)));
+
         updateTrafficStats(model->getTotalBytesRecv(), model->getTotalBytesSent());
         connect(model, SIGNAL(bytesChanged(quint64,quint64)), this, SLOT(updateTrafficStats(quint64, quint64)));
 
@@ -409,11 +412,11 @@ void RPCConsole::setNumBlocks(int count)
     ui->numberOfBlocks->setText(QString::number(count));
     if(clientModel)
         ui->lastBlockTime->setText(clientModel->getLastBlockDate().toString());
+}
 
-    // set banknode count
-
-    QString banknodes = QString::number((int)vecBanknodes.size());
-    ui->banknodeCount->setText(banknodes);
+void RPCConsole::setBanknodeCount(const QString &strBanknodes)
+{
+    ui->banknodeCount->setText(strBanknodes);
 }
 
 void RPCConsole::on_lineEdit_returnPressed()
