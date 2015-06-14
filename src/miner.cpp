@@ -159,11 +159,11 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn)
 	{
     txNew.vout.resize(1);
 	}
-	else if (chainActive.Tip()->nHeight>29999 && chainActive.Tip()->nHeight<150000)
+	else if (chainActive.Tip()->nHeight>29999 && chainActive.Tip()->nHeight<200000)
 	{
 	txNew.vout.resize(3);	
 	}
-    else if (chainActive.Tip()->nHeight>149999 ){
+    else if (chainActive.Tip()->nHeight>199999 ){
 		
 			if (chainActive.Tip()->nHeight%400==0){
 				std::map<std::string,int64_t> bidtracker = getbidtracker();
@@ -180,13 +180,13 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn)
 	{
     txNew.vout[0].scriptPubKey = scriptPubKeyIn;
 	}
-    else if (chainActive.Tip()->nHeight>29999 && chainActive.Tip()->nHeight<150000)
+    else if (chainActive.Tip()->nHeight>29999 && chainActive.Tip()->nHeight<200000)
 	{
     txNew.vout[0].scriptPubKey = scriptPubKeyIn;
     txNew.vout[1].scriptPubKey = BANK_SCRIPT;
     txNew.vout[2].scriptPubKey = RESERVE_SCRIPT;
     } 
-    else if (chainActive.Tip()->nHeight>149999 ){		
+    else if (chainActive.Tip()->nHeight>199999 ){		
 		    if(activeBanknode.status == BANKNODE_IS_CAPABLE){
 				string miningkey = GetArg("-miningkey", "");
 				CBitcreditAddress maddress(miningkey);
@@ -481,7 +481,7 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn)
         if (chainActive.Tip()->nHeight<30000) {
        		txNew.vout[0].nValue = blockValue;
 		}
-		else if (chainActive.Tip()->nHeight>29999 && chainActive.Tip()->nHeight<150000){
+		else if (chainActive.Tip()->nHeight>29999 && chainActive.Tip()->nHeight<200000){
 				if(payments > 0){
 						
 					{ 
@@ -499,7 +499,7 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn)
         
 			txNew.vout[0].nValue = blockValue;
 		}
-        else if (chainActive.Tip()->nHeight>149999 ){
+        else if (chainActive.Tip()->nHeight>199999 ){
 					if (chainActive.Tip()->nHeight%400==0){
 						std::map<std::string,int64_t> bidtracker = getbidtracker();
 						std::map<std::string,int64_t>::iterator balit;

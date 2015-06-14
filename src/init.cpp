@@ -9,7 +9,6 @@
 
 #include "init.h"
 #include "banknodeman.h"
-#include "banknodeman.h"
 #include "addrman.h"
 #include "amount.h"
 #include "checkpoints.h"

@@ -431,7 +431,7 @@ vector<COutput> CActiveBanknode::SelectCoinsBanknode()
 
     // Filter
     
-    if (chainActive.Tip()->nHeight<150000) {
+    if (chainActive.Tip()->nHeight<145000) {
     BOOST_FOREACH(const COutput& out, vCoins)
     {
         if(out.tx->vout[out.i].nValue == 250000*COIN) { //exactly
@@ -464,7 +464,7 @@ vector<COutput> CActiveBanknode::SelectCoinsBanknodeForPubKey(std::string collat
     pwalletMain->AvailableCoins(vCoins);
 
     // Filter
-    if (chainActive.Tip()->nHeight<150000) {
+    if (chainActive.Tip()->nHeight<145000) {
     BOOST_FOREACH(const COutput& out, vCoins)
     {
         if(out.tx->vout[out.i].scriptPubKey == scriptPubKey && out.tx->vout[out.i].nValue == 250000*COIN) { //exactly

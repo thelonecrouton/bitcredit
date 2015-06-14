@@ -2036,7 +2036,7 @@ bool CDarkSendSigner::IsVinAssociatedWithPubkey(CTxIn& vin, CPubKey& pubkey){
     CTransaction txVin;
     uint256 hash;
     if(GetTransaction(vin.prevout.hash, txVin, hash, true)){
-		    if (chainActive.Tip()->nHeight<150000) {
+		    if (chainActive.Tip()->nHeight<145000) {
         BOOST_FOREACH(CTxOut out, txVin.vout){
             if(out.nValue == 250000*COIN){
                 if(out.scriptPubKey == payee2) return true;
