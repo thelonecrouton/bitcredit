@@ -240,6 +240,7 @@ extern json_spirit::Value reconsiderblock(const json_spirit::Array& params, bool
 extern json_spirit::Value darksend(const json_spirit::Array& params, bool fHelp);
 extern json_spirit::Value spork(const json_spirit::Array& params, bool fHelp);
 extern json_spirit::Value banknode(const json_spirit::Array& params, bool fHelp);
+extern json_spirit::Value banknodelist(const json_spirit::Array& params, bool fHelp);
 
 extern json_spirit::Value smsgenable(const json_spirit::Array& params, bool fHelp);  // in rpcsmessage.cpp
 extern json_spirit::Value smsgdisable(const json_spirit::Array& params, bool fHelp);

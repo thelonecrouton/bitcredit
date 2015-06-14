@@ -1,5 +1,5 @@
-// Copyright (c) 2009-2013 The Bitcredit Core developers
-// Distributed under the MIT software license, see the accompanying
+// Copyright (c) 2009-2013 The Bitcredit developers
+// Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include "allocators.h"
@@ -37,7 +37,7 @@ static inline size_t GetSystemPageSize()
     page_size = sSysInfo.dwPageSize;
 #elif defined(PAGESIZE) // defined in limits.h
     page_size = PAGESIZE;
-#else                   // assume some POSIX OS
+#else // assume some POSIX OS
     page_size = sysconf(_SC_PAGESIZE);
 #endif
     return page_size;

@@ -23,12 +23,13 @@ using namespace boost;
 #define SPORK_2_MAX_VALUE                                     10002
 #define SPORK_3_REPLAY_BLOCKS                                 10003
 #define SPORK_4_NOTUSED                                       10004
-
+#define SPORK_5_BANKNODE_SCANNING                           10005
 
 #define SPORK_1_BANKNODE_PAYMENTS_ENFORCEMENT_DEFAULT       1427803200  //2015-3-5
 #define SPORK_2_MAX_VALUE_DEFAULT                             250000        //250000 BCR 
 #define SPORK_3_REPLAY_BLOCKS_DEFAULT                         0
 #define SPORK_4_RECONVERGE_DEFAULT                            1420070400  //2047-1-1
+#define SPORK_5_BANKNODE_SCANNING_DEFAULT                   978307200   //2001-1-1
 
 class CSporkMessage;
 class CSporkManager;

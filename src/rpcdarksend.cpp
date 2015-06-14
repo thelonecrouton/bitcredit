@@ -110,7 +110,7 @@ Value getpoolinfo(const Array& params, bool fHelp)
             "Returns an object containing anonymous pool-related information.");
 
     Object obj;
-    obj.push_back(Pair("current_banknode",        GetCurrentBankNode()));
+    obj.push_back(Pair("current_banknode",        mnodeman.GetCurrentBankNode()->addr.ToString()));
     obj.push_back(Pair("state",        darkSendPool.GetState()));
     obj.push_back(Pair("entries",      darkSendPool.GetEntriesCount()));
     obj.push_back(Pair("entries_accepted",      darkSendPool.GetCountEntriesAccepted()));
@@ -126,9 +126,33 @@ Value banknode(const Array& params, bool fHelp)
 
     if (fHelp  ||
         (strCommand != "start" && strCommand != "start-alias" && strCommand != "start-many" && strCommand != "stop" && strCommand != "stop-alias" && strCommand != "stop-many" && strCommand != "list" && strCommand != "list-conf" && strCommand != "count"  && strCommand != "enforce"
-            && strCommand != "debug" && strCommand != "current" && strCommand != "winners" && strCommand != "genkey" && strCommand != "connect" && strCommand != "outputs"))
+            && strCommand != "debug" && strCommand != "current" && strCommand != "winners" && strCommand != "genkey" && strCommand != "connect" && strCommand != "outputs" && strCommand != "vote-many" && strCommand != "vote"))
         throw runtime_error(
-            "banknode <start|start-alias|start-many|stop|stop-alias|stop-many|list|list-conf|count|debug|current|winners|genkey|enforce|outputs> [passphrase]\n");
+                "banknode \"command\"... ( \"passphrase\" )\n"
+                "Set of commands to execute banknode related actions\n"
+                "\nArguments:\n"
+                "1. \"command\"        (string or set of strings, required) The command to execute\n"
+                "2. \"passphrase\"     (string, optional) The wallet passphrase\n"
+                "\nAvailable commands:\n"
+                "  count        - Print number of all known banknodes (optional: 'enabled', 'both')\n"
+                "  current      - Print info on current banknode winner\n"
+                "  debug        - Print banknode status\n"
+                "  genkey       - Generate new banknodeprivkey\n"
+                "  enforce      - Enforce banknode payments\n"
+                "  outputs      - Print banknode compatible outputs\n"
+                "  start        - Start banknode configured in dash.conf\n"
+                "  start-alias  - Start single banknode by assigned alias configured in banknode.conf\n"
+                "  start-many   - Start all banknodes configured in banknode.conf\n"
+                "  stop         - Stop banknode configured in dash.conf\n"
+                "  stop-alias   - Stop single banknode by assigned alias configured in banknode.conf\n"
+                "  stop-many    - Stop all banknodes configured in banknode.conf\n"
+                "  list         - Print list of all known banknodes (see banknodelist for more info)\n"
+                "  list-conf    - Print banknode.conf in JSON format\n"
+                "  winners      - Print list of banknode winners\n"
+                "  vote-many    - Vote on a BCR initiative\n"
+                "  vote         - Vote on a BCR initiative\n"
+                );
+
 
     if (strCommand == "stop")
     {
@@ -272,46 +296,24 @@ Value banknode(const Array& params, bool fHelp)
 
     if (strCommand == "list")
     {
-        std::string strCommand = "active";
-
-        if (params.size() == 2){
-            strCommand = params[1].get_str().c_str();
-        }
-
-        if (strCommand != "active" && strCommand != "vin" && strCommand != "pubkey" && strCommand != "lastseen" && strCommand != "activeseconds" && strCommand != "rank" && strCommand != "protocol"){
-            throw runtime_error(
-                "list supports 'active', 'vin', 'pubkey', 'lastseen', 'activeseconds', 'rank', 'protocol'\n");
-        }
-
-        Object obj;
-        BOOST_FOREACH(CBankNode mn, vecBanknodes) {
-            mn.Check();
-
-            if(strCommand == "active"){
-                obj.push_back(Pair(mn.addr.ToString().c_str(),       (int)mn.IsEnabled()));
-            } else if (strCommand == "vin") {
-                obj.push_back(Pair(mn.addr.ToString().c_str(),       mn.vin.prevout.hash.ToString().c_str()));
-            } else if (strCommand == "pubkey") {
-                CScript pubkey;
-                pubkey =GetScriptForDestination(mn.pubkey.GetID());
-                CTxDestination address1;
-                ExtractDestination(pubkey, address1);
-                CBitcreditAddress address2(address1);
-
-                obj.push_back(Pair(mn.addr.ToString().c_str(),       address2.ToString().c_str()));
-            } else if (strCommand == "protocol") {
-                obj.push_back(Pair(mn.addr.ToString().c_str(),       (int64_t)mn.protocolVersion));
-            } else if (strCommand == "lastseen") {
-                obj.push_back(Pair(mn.addr.ToString().c_str(),       (int64_t)mn.lastTimeSeen));
-            } else if (strCommand == "activeseconds") {
-                obj.push_back(Pair(mn.addr.ToString().c_str(),       (int64_t)(mn.lastTimeSeen - mn.now)));
-            } else if (strCommand == "rank") {
-                obj.push_back(Pair(mn.addr.ToString().c_str(),       (int)(GetBanknodeRank(mn.vin, chainActive.Tip()->nHeight))));
-            }
-        }
-        return obj;
+        Array newParams(params.size() - 1);
+        std::copy(params.begin() + 1, params.end(), newParams.begin());
+        return banknodelist(newParams, fHelp);
     }
-    if (strCommand == "count") return (int)vecBanknodes.size();
+
+    if (strCommand == "count")
+    {
+        if (params.size() > 2){
+            throw runtime_error(
+            "too many parameters\n");
+        }
+        if (params.size() == 2)
+        {
+            if(params[1] == "enabled") return mnodeman.CountEnabled();
+            if(params[1] == "both") return boost::lexical_cast<std::string>(mnodeman.CountEnabled()) + " / " + boost::lexical_cast<std::string>(mnodeman.size());
+        }
+        return mnodeman.size();
+    }
 
     if (strCommand == "start")
     {
@@ -439,7 +441,7 @@ Value banknode(const Array& params, bool fHelp)
 
 			Object statusObj;
 			statusObj.push_back(Pair("alias", mne.getAlias()));
-			statusObj.push_back(Pair("result", result ? "succesful" : "failed"));
+            statusObj.push_back(Pair("result", result ? "successful" : "failed"));
 
 			if(result) {
 				successful++;
@@ -488,9 +490,22 @@ Value banknode(const Array& params, bool fHelp)
 
     if (strCommand == "current")
     {
-        int winner = GetCurrentBankNode(1);
-        if(winner >= 0) {
-            return vecBanknodes[winner].addr.ToString().c_str();
+        CBanknode* winner = mnodeman.GetCurrentBankNode(1);
+        if(winner) {
+            Object obj;
+            CScript pubkey;
+            pubkey=GetScriptForDestination(winner->pubkey.GetID());
+            CTxDestination address1;
+            ExtractDestination(pubkey, address1);
+            CBitcreditAddress address2(address1);
+
+            obj.push_back(Pair("IP:port",       winner->addr.ToString().c_str()));
+            obj.push_back(Pair("protocol",      (int64_t)winner->protocolVersion));
+            obj.push_back(Pair("vin",           winner->vin.prevout.hash.ToString().c_str()));
+            obj.push_back(Pair("pubkey",        address2.ToString().c_str()));
+            obj.push_back(Pair("lastseen",      (int64_t)winner->lastTimeSeen));
+            obj.push_back(Pair("activeseconds", (int64_t)(winner->lastTimeSeen - winner->sigTime)));
+            return obj;
         }
 
         return "unknown";
@@ -565,7 +580,7 @@ Value banknode(const Array& params, bool fHelp)
     		resultObj.push_back(Pair("banknode", mnObj));
     	}
 
-    	return resultObj;
+        return resultObj;
     }
 
     if (strCommand == "outputs"){
@@ -581,6 +596,233 @@ Value banknode(const Array& params, bool fHelp)
 
     }
 
+    if(strCommand == "vote-many")
+    {
+        std::vector<CBanknodeConfig::CBanknodeEntry> mnEntries;
+        mnEntries = banknodeConfig.getEntries();
+
+        if (params.size() != 2)
+            throw runtime_error("You can only vote 'yea' or 'nay'");
+
+        std::string vote = params[1].get_str().c_str();
+        if(vote != "yea" && vote != "nay") return "You can only vote 'yea' or 'nay'";
+        int nVote = 0;
+        if(vote == "yea") nVote = 1;
+        if(vote == "nay") nVote = -1;
+
+
+        int success = 0;
+        int failed = 0;
+
+        Object resultObj;
+
+        BOOST_FOREACH(CBanknodeConfig::CBanknodeEntry mne, banknodeConfig.getEntries()) {
+            std::string errorMessage;
+            std::vector<unsigned char> vchBankNodeSignature;
+            std::string strBankNodeSignMessage;
+
+            CPubKey pubKeyCollateralAddress;
+            CKey keyCollateralAddress;
+            CPubKey pubKeyBanknode;
+            CKey keyBanknode;
+
+            if(!darkSendSigner.SetKey(mne.getPrivKey(), errorMessage, keyBanknode, pubKeyBanknode)){
+                printf(" Error upon calling SetKey for %s\n", mne.getAlias().c_str());
+                failed++;
+                continue;
+            }
+
+            CBanknode* pmn = mnodeman.Find(pubKeyBanknode);
+            if(pmn == NULL)
+            {
+                printf("Can't find banknode by pubkey for %s\n", mne.getAlias().c_str());
+                failed++;
+                continue;
+            }
+
+            std::string strMessage = pmn->vin.ToString() + boost::lexical_cast<std::string>(nVote);
+
+            if(!darkSendSigner.SignMessage(strMessage, errorMessage, vchBankNodeSignature, keyBanknode)){
+                printf(" Error upon calling SignMessage for %s\n", mne.getAlias().c_str());
+                failed++;
+                continue;
+            }
+
+            if(!darkSendSigner.VerifyMessage(pubKeyBanknode, vchBankNodeSignature, strMessage, errorMessage)){
+                printf(" Error upon calling VerifyMessage for %s\n", mne.getAlias().c_str());
+                failed++;
+                continue;
+            }
+
+            success++;
+
+            //send to all peers
+            LOCK(cs_vNodes);
+            BOOST_FOREACH(CNode* pnode, vNodes)
+                pnode->PushMessage("mvote", pmn->vin, vchBankNodeSignature, nVote);
+        }
+
+        return("Voted successfully " + boost::lexical_cast<std::string>(success) + " time(s) and failed " + boost::lexical_cast<std::string>(failed) + " time(s).");
+    }
+
+    if(strCommand == "vote")
+    {
+        std::vector<CBanknodeConfig::CBanknodeEntry> mnEntries;
+        mnEntries = banknodeConfig.getEntries();
+
+        if (params.size() != 2)
+            throw runtime_error("You can only vote 'yea' or 'nay'");
+
+        std::string vote = params[1].get_str().c_str();
+        if(vote != "yea" && vote != "nay") return "You can only vote 'yea' or 'nay'";
+        int nVote = 0;
+        if(vote == "yea") nVote = 1;
+        if(vote == "nay") nVote = -1;
+
+        // Choose coins to use
+        CPubKey pubKeyCollateralAddress;
+        CKey keyCollateralAddress;
+        CPubKey pubKeyBanknode;
+        CKey keyBanknode;
+
+        std::string errorMessage;
+        std::vector<unsigned char> vchBankNodeSignature;
+        std::string strMessage = activeBanknode.vin.ToString() + boost::lexical_cast<std::string>(nVote);
+
+        if(!darkSendSigner.SetKey(strBankNodePrivKey, errorMessage, keyBanknode, pubKeyBanknode))
+            return(" Error upon calling SetKey");
+
+        if(!darkSendSigner.SignMessage(strMessage, errorMessage, vchBankNodeSignature, keyBanknode))
+            return(" Error upon calling SignMessage");
+
+        if(!darkSendSigner.VerifyMessage(pubKeyBanknode, vchBankNodeSignature, strMessage, errorMessage))
+            return(" Error upon calling VerifyMessage");
+
+        //send to all peers
+        LOCK(cs_vNodes);
+        BOOST_FOREACH(CNode* pnode, vNodes)
+            pnode->PushMessage("mvote", activeBanknode.vin, vchBankNodeSignature, nVote);
+
+    }
+
     return Value::null;
 }
 
+Value banknodelist(const Array& params, bool fHelp)
+{
+    std::string strMode = "status";
+    std::string strFilter = "";
+
+    if (params.size() >= 1) strMode = params[0].get_str();
+    if (params.size() == 2) strFilter = params[1].get_str();
+
+    if (fHelp ||
+            (strMode != "status" && strMode != "vin" && strMode != "pubkey" && strMode != "lastseen" && strMode != "activeseconds" && strMode != "rank"
+                && strMode != "protocol" && strMode != "full" && strMode != "votes" && strMode != "donation" && strMode != "pose"))
+    {
+        throw runtime_error(
+                "banknodelist ( \"mode\" \"filter\" )\n"
+                "Get a list of banknodes in different modes\n"
+                "\nArguments:\n"
+                "1. \"mode\"      (string, optional/required to use filter, defaults = status) The mode to run list in\n"
+                "2. \"filter\"    (string, optional) Filter results. Partial match by IP by default in all modes, additional matches in some modes\n"
+                "\nAvailable modes:\n"
+                "  activeseconds  - Print number of seconds banknode recognized by the network as enabled\n"
+                "  donation       - Show donation settings\n"
+                "  full           - Print info in format 'status protocol pubkey vin lastseen activeseconds' (can be additionally filtered, partial match)\n"
+                "  lastseen       - Print timestamp of when a banknode was last seen on the network\n"
+                "  pose           - Print Proof-of-Service score\n"
+                "  protocol       - Print protocol of a banknode (can be additionally filtered, exact match))\n"
+                "  pubkey         - Print public key associated with a banknode (can be additionally filtered, partial match)\n"
+                "  rank           - Print rank of a banknode based on current block\n"
+                "  status         - Print banknode status: ENABLED / EXPIRED / VIN_SPENT / REMOVE / POS_ERROR (can be additionally filtered, partial match)\n"
+                "  vin            - Print vin associated with a banknode (can be additionally filtered, partial match)\n"
+                "  votes          - Print all banknode votes for a Dash initiative (can be additionally filtered, partial match)\n"
+                );
+    }
+
+    Object obj;
+    if (strMode == "rank") {
+        std::vector<pair<int, CBanknode> > vBanknodeRanks = mnodeman.GetBanknodeRanks(chainActive.Tip()->nHeight);
+        BOOST_FOREACH(PAIRTYPE(int, CBanknode)& s, vBanknodeRanks) {
+            std::string strAddr = s.second.addr.ToString();
+            if(strFilter !="" && strAddr.find(strFilter) == string::npos) continue;
+            obj.push_back(Pair(strAddr,       s.first));
+        }
+    } else {
+        std::vector<CBanknode> vBanknodes = mnodeman.GetFullBanknodeVector();
+        BOOST_FOREACH(CBanknode& mn, vBanknodes) {
+            std::string strAddr = mn.addr.ToString();
+            if (strMode == "activeseconds") {
+                if(strFilter !="" && strAddr.find(strFilter) == string::npos) continue;
+                obj.push_back(Pair(strAddr,       (int64_t)(mn.lastTimeSeen - mn.sigTime)));
+            } else if (strMode == "full") {
+                CScript pubkey;
+                pubkey=GetScriptForDestination(mn.pubkey.GetID());
+                CTxDestination address1;
+                ExtractDestination(pubkey, address1);
+                CBitcreditAddress address2(address1);
+
+                std::ostringstream addrStream;
+                addrStream << setw(21) << strAddr;
+
+                std::ostringstream stringStream;
+                stringStream << setw(10) <<
+                               mn.Status() << " " <<
+                               mn.protocolVersion << " " <<
+                               address2.ToString() << " " <<
+                               mn.vin.prevout.hash.ToString() << " " <<
+                               mn.lastTimeSeen << " " << setw(8) <<
+                               (mn.lastTimeSeen - mn.sigTime);
+                std::string output = stringStream.str();
+                stringStream << " " << strAddr;
+                if(strFilter !="" && stringStream.str().find(strFilter) == string::npos &&
+                        strAddr.find(strFilter) == string::npos) continue;
+                obj.push_back(Pair(addrStream.str(), output));
+            } else if (strMode == "lastseen") {
+                if(strFilter !="" && strAddr.find(strFilter) == string::npos) continue;
+                obj.push_back(Pair(strAddr,       (int64_t)mn.lastTimeSeen));
+            } else if (strMode == "protocol") {
+                if(strFilter !="" && strFilter != boost::lexical_cast<std::string>(mn.protocolVersion) &&
+                    strAddr.find(strFilter) == string::npos) continue;
+                obj.push_back(Pair(strAddr,       (int64_t)mn.protocolVersion));
+            } else if (strMode == "pubkey") {
+                CScript pubkey;
+                pubkey=GetScriptForDestination(mn.pubkey.GetID());
+                CTxDestination address1;
+                ExtractDestination(pubkey, address1);
+                CBitcreditAddress address2(address1);
+
+                if(strFilter !="" && address2.ToString().find(strFilter) == string::npos &&
+                    strAddr.find(strFilter) == string::npos) continue;
+                obj.push_back(Pair(strAddr,       address2.ToString().c_str()));
+            } else if (strMode == "pose") {
+                if(strFilter !="" && strAddr.find(strFilter) == string::npos) continue;
+                std::string strOut = boost::lexical_cast<std::string>(mn.nScanningErrorCount);
+                obj.push_back(Pair(strAddr,       strOut.c_str()));
+            } else if(strMode == "status") {
+                std::string strStatus = mn.Status();
+                if(strFilter !="" && strAddr.find(strFilter) == string::npos && strStatus.find(strFilter) == string::npos) continue;
+                obj.push_back(Pair(strAddr,       strStatus.c_str()));
+            } else if (strMode == "vin") {
+                if(strFilter !="" && mn.vin.prevout.hash.ToString().find(strFilter) == string::npos &&
+                    strAddr.find(strFilter) == string::npos) continue;
+                obj.push_back(Pair(strAddr,       mn.vin.prevout.hash.ToString().c_str()));
+            } else if(strMode == "votes"){
+                std::string strStatus = "ABSTAIN";
+
+                //voting lasts 30 days, ignore the last vote if it was older than that
+                if((GetAdjustedTime() - mn.lastVote) < (60*60*30*24))
+                {
+                    if(mn.nVote == -1) strStatus = "NAY";
+                    if(mn.nVote == 1) strStatus = "YEA";
+                }
+
+                if(strFilter !="" && (strAddr.find(strFilter) == string::npos && strStatus.find(strFilter) == string::npos)) continue;
+                obj.push_back(Pair(strAddr,       strStatus.c_str()));
+            }
+        }
+    }
+    return obj;
+
+}

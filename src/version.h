@@ -22,6 +22,8 @@ static const int MIN_PEER_PROTO_VERSION = 70008;
 
 static const int MIN_INSTANTX_PROTO_VERSION = 70008;
 
+static const int MIN_POOL_PEER_PROTO_VERSION = 70008;
+
 static const int MIN_MN_PROTO_VERSION = 70008;
 
 //! nTime field added to CAddress, starting with this version;

@@ -642,20 +642,4 @@ protected:
     friend void ::UnregisterAllValidationInterfaces();
 };
 
-
 #endif // BITCREDIT_MAIN_H
-
-bool isGrantAwardBlock(int64_t nHeight);
-bool getGrantAwards(int64_t nHeight);
-int64_t getGrantDatabaseBlockHeight();
-void processNextBlockIntoGrantDatabase();
-bool getGrantAwardsFromDatabaseForBlock(int64_t nHeight);
-bool ensureGrantDatabaseUptoDate(int64_t nHeight);
-bool startsWith(const char *str, const char *pre);
-void getWinnersFromBallots(int64_t nHeight,int officeNumber);
-string electOrEliminate(int64_t droopQuota,  unsigned int requiredCandidates);
-void electCandidate(string topOfThePoll, double gregorySurplusTransferValue,bool isLastCandidate);
-void eliminateCandidate(string topOfThePoll,bool isLastCandidate);
-void printBallots();
-
-bool deSerializeGrantDB(string filename);

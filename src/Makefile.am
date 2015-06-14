@@ -92,6 +92,7 @@ BITCREDIT_CORE_H = \
   core_io.h \
   crypter.h \
   darksend.h \
+  darksend-relay.h \
   db.h \
   eccryptoverify.h \
   ecwrapper.h \
@@ -106,6 +107,8 @@ BITCREDIT_CORE_H = \
   lz4/lz4.h \
   main.h \
   banknode.h \
+  banknode-pos.h \
+  banknodeman.h \
   banknodeconfig.h \
   merkleblock.h \
   miner.h \
@@ -266,7 +269,10 @@ libbitcredit_common_a_SOURCES = \
   coins.cpp \
   compressor.cpp \
   darksend.cpp \
+  darksend-relay.cpp \
   banknode.cpp \
+  banknode-pos.cpp \
+  banknodeman.cpp \
   banknodeconfig.cpp \
   instantx.cpp \
   momentum.cpp \

@@ -96,7 +96,7 @@ CAmount Rawdata::banksubsidy (int nHeight, CAmount& nFees )
 
 CAmount Rawdata::votesubsidy (int nHeight, CAmount& nFees )
 {
-	CAmount x = GetGrantValue(nHeight, nFees);	
+	CAmount x = GetBanknodePayment(nHeight, nFees);	
 		return x;
 }
 
