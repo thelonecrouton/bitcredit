@@ -148,11 +148,13 @@ static QString seconds_to_DHMS(quint32 duration)
 
 void BanknodeManager::updateNodeList()
 {
-    
+    TRY_LOCK(cs_banknodepayments, lockBanknodes);
+    if(!lockBanknodes)
+        return;
+
     ui->countLabel->setText("Updating...");
     ui->tableWidget->clearContents();
     ui->tableWidget->setRowCount(0);
-    std::vector<CBanknode> vBanknodes = mnodeman.GetFullBanknodeVector();
     BOOST_FOREACH(CBanknode mn, vBanknodes) 
     {
         int mnRow = 0;
