@@ -16,6 +16,7 @@
 #include <QFile>
 #include <QStyle>
 #include <QStringList>
+#include <QCheckBox>
 
 class OptionsModel;
 class QValidatedLineEdit;
@@ -80,6 +81,7 @@ private:
     QFile *qss;
     QString file1;
     QStringList *filters;
+    QCheckBox *checkBox;
 };
 
 #endif // BITCREDIT_QT_OPTIONSDIALOG_H

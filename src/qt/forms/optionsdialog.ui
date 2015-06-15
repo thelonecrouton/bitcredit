@@ -20,7 +20,7 @@
    <item>
     <widget class="QTabWidget" name="tabWidget">
      <property name="currentIndex">
-      <number>5</number>
+      <number>0</number>
      </property>
      <widget class="QWidget" name="tabMain">
       <attribute name="title">
@@ -723,8 +723,8 @@
       <widget class="QPushButton" name="pushButton_apply_theme">
        <property name="geometry">
         <rect>
-         <x>430</x>
-         <y>194</y>
+         <x>440</x>
+         <y>199</y>
          <width>89</width>
          <height>27</height>
         </rect>
@@ -742,7 +742,7 @@
          <x>10</x>
          <y>33</y>
          <width>321</width>
-         <height>131</height>
+         <height>108</height>
         </rect>
        </property>
        <property name="toolTip">
@@ -753,9 +753,9 @@
        <property name="geometry">
         <rect>
          <x>10</x>
-         <y>199</y>
+         <y>172</y>
          <width>321</width>
-         <height>22</height>
+         <height>18</height>
         </rect>
        </property>
        <property name="text">
@@ -769,13 +769,26 @@
        <property name="geometry">
         <rect>
          <x>10</x>
-         <y>180</y>
+         <y>150</y>
          <width>141</width>
          <height>17</height>
         </rect>
        </property>
        <property name="text">
         <string>Selected:</string>
+       </property>
+      </widget>
+      <widget class="QCheckBox" name="checkBox">
+       <property name="geometry">
+        <rect>
+         <x>10</x>
+         <y>203</y>
+         <width>321</width>
+         <height>22</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Write theme choice to bitcredit.conf file</string>
        </property>
       </widget>
      </widget>

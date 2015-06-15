@@ -84,10 +84,7 @@ OptionsDialog::OptionsDialog(QWidget *parent, bool enableWallet) :
 
     ui->proxyIp->installEventFilter(this);
 
- 
- 
- ///////////////////////////////////////////////////////////////////////////////////////////
-    //display list of available themes
+    //display list of available themes, lists any .qss or .css file in user-home/themes    /// change this to .bitcredit dir...
     QFileSystemModel *model2 = new QFileSystemModel;
     model2->setRootPath("");
     QStringList filters;
