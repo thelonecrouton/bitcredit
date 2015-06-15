@@ -30,6 +30,15 @@
 #include <QLocale>
 #include <QMessageBox>
 #include <QTimer>
+#include <QPushButton>
+#include <QLabel>
+#include <QDir>
+#include <QStringList>
+#include <QModelIndex>
+#include <QString>
+#include <QFileInfo>
+#include <QFile>
+#include <QStyle>
 
 OptionsDialog::OptionsDialog(QWidget *parent, bool enableWallet) :
     QDialog(parent),
@@ -74,6 +83,24 @@ OptionsDialog::OptionsDialog(QWidget *parent, bool enableWallet) :
 
     ui->proxyIp->installEventFilter(this);
 
+ 
+ 
+ ///////////////////////////////////////////////////////////////////////////////////////////
+    //display list of available themes
+    QFileSystemModel *model2 = new QFileSystemModel;
+    model2->setRootPath("");
+    //model2->setFilter(QDir::Files);
+    ui->tree->setModel(model2);
+    ui->tree->hideColumn(1);
+    ui->tree->hideColumn(2);
+    ui->tree->hideColumn(3);
+    QModelIndex idx = model2->index("/home/stu/Desktop/themes");
+    ui->tree->setRootIndex(idx);
+    ui->pushButton_apply_theme->setEnabled(false);
+    connect(ui->pushButton_apply_theme, SIGNAL(clicked()), this, SLOT(setTheme()));
+    connect(ui->tree, SIGNAL(clicked(QModelIndex)), this, SLOT(getData(QModelIndex)));
+
+    
     /* Window elements init */
 #ifdef Q_OS_MAC
     /* remove Window tab on Mac */
@@ -133,6 +160,22 @@ OptionsDialog::~OptionsDialog()
 {
     GUIUtil::saveWindowGeometry("nOptionsDialogWindow", this);
     delete ui;
+}
+
+void OptionsDialog::getData(const QModelIndex &index)
+{
+    selected = model2->filePath(index);
+    ui->test->setText(selected);
+    ui->pushButton_apply_theme->setEnabled(true);
+}
+
+void OptionsDialog::setTheme()
+{
+    //QString file1 = model2->filePath(index);
+    QFile qss(selected);
+    qss.open(QFile::ReadOnly);
+    qApp->setStyleSheet(qss.readAll());
+    qss.close();
 }
 
 void OptionsDialog::setModel(OptionsModel *model)
