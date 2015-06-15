@@ -21,7 +21,6 @@
 
 class ClientModel;
 class NetworkStyle;
-class VoteCoinsDialog;
 class MessagePage;
 class InvoicePage;
 class ReceiptPage;
@@ -129,7 +128,6 @@ private:
 	QAction *blockAction;
 	QAction *bankstatsAction;
 	QAction *paperWalletAction;
-	QAction *voteCoinsAction;
     QAction *sendMessagesAction;
     QAction *sendMessagesAnonAction;
     QAction *messageAction;
@@ -227,8 +225,8 @@ private slots:
     void gotoReceiptPage();
     void gotoBanknodeManagerPage();
 
-    /** Switch to vote coins page */
-    void gotoVoteCoinsPage(QString addr = "");
+    /** Switch to vote page */
+ 
     /** Show Sign/Verify Message dialog and switch to sign message tab */
     void gotoSignMessageTab(QString addr = "");
     /** Show Sign/Verify Message dialog and switch to verify message tab */
