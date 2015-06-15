@@ -709,9 +709,12 @@
         <rect>
          <x>10</x>
          <y>14</y>
-         <width>111</width>
+         <width>411</width>
          <height>17</height>
         </rect>
+       </property>
+       <property name="toolTip">
+        <string>Searches your-home-directory/themes folder for stylesheet files</string>
        </property>
        <property name="text">
         <string>Available themes:</string>
@@ -726,6 +729,9 @@
          <height>27</height>
         </rect>
        </property>
+       <property name="toolTip">
+        <string>Apply selected theme</string>
+       </property>
        <property name="text">
         <string>Apply</string>
        </property>
@@ -738,6 +744,9 @@
          <width>321</width>
          <height>131</height>
         </rect>
+       </property>
+       <property name="toolTip">
+        <string>Lists any available stylesheet files - *.qss or *.css - in your-home-directory/themes folder</string>
        </property>
       </widget>
       <widget class="QLabel" name="test">

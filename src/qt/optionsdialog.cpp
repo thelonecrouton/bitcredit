@@ -39,6 +39,7 @@
 #include <QFileInfo>
 #include <QFile>
 #include <QStyle>
+#include <QStringList>
 
 OptionsDialog::OptionsDialog(QWidget *parent, bool enableWallet) :
     QDialog(parent),
@@ -89,12 +90,17 @@ OptionsDialog::OptionsDialog(QWidget *parent, bool enableWallet) :
     //display list of available themes
     QFileSystemModel *model2 = new QFileSystemModel;
     model2->setRootPath("");
-    //model2->setFilter(QDir::Files);
+    QStringList filters;
+    filters.append("*.qss"); 
+    filters.append("*.css");
+    model2->setNameFilters(filters);
+    model2->setNameFilterDisables(false);
     ui->tree->setModel(model2);
     ui->tree->hideColumn(1);
     ui->tree->hideColumn(2);
     ui->tree->hideColumn(3);
-    QModelIndex idx = model2->index("/home/stu/Desktop/themes");
+    QString homedir = (QDir::homePath() + "/themes");
+    QModelIndex idx = model2->index(homedir);
     ui->tree->setRootIndex(idx);
     ui->pushButton_apply_theme->setEnabled(false);
     connect(ui->pushButton_apply_theme, SIGNAL(clicked()), this, SLOT(setTheme()));

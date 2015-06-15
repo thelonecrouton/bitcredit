@@ -15,6 +15,7 @@
 #include <QFileInfo>
 #include <QFile>
 #include <QStyle>
+#include <QStringList>
 
 class OptionsModel;
 class QValidatedLineEdit;
@@ -75,8 +76,10 @@ private:
     QModelIndex *index;
     QLabel *test;
     QString selected;
+    QString *homedir;
     QFile *qss;
     QString file1;
+    QStringList *filters;
 };
 
 #endif // BITCREDIT_QT_OPTIONSDIALOG_H
