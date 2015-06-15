@@ -323,8 +323,6 @@ class CAutoFile
 {
 private:
     // Disallow copies
-    CAutoFile(const CAutoFile&);
-    CAutoFile& operator=(const CAutoFile&);
 
     int nType;
     int nVersion;
@@ -332,6 +330,10 @@ private:
     FILE* file;	
 
 public:
+
+    CAutoFile(const CAutoFile&);
+    CAutoFile& operator=(const CAutoFile&);
+
     CAutoFile(FILE* filenew, int nTypeIn, int nVersionIn)
     {
         file = filenew;

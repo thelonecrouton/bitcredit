@@ -9,8 +9,8 @@
 #include "base58.h"
 #include "protocol.h"
 #include "instantx.h"
-#include "banknode.h"
 #include "activebanknode.h"
+#include "banknodeman.h"
 #include "darksend.h"
 #include "spork.h"
 #include <boost/lexical_cast.hpp>
@@ -241,7 +241,7 @@ int64_t CreateNewLock(CTransaction tx)
 
         CTransactionLock newLock;
         newLock.nBlockHeight = nBlockHeight;
-        newLock.nExpiration = GetTime()+(60*60); //locks expire after 15 minutes (6 confirmations)
+        newLock.nExpiration = GetTime()+(60*60); //locks expire after 60 minutes (6 confirmations)
         newLock.nTimeout = GetTime()+(60*5);
         newLock.txHash = tx.GetHash();
         mapTxLocks.insert(make_pair(tx.GetHash(), newLock));
@@ -249,6 +249,8 @@ int64_t CreateNewLock(CTransaction tx)
         mapTxLocks[tx.GetHash()].nBlockHeight = nBlockHeight;
         if(fDebug) LogPrintf("CreateNewLock - Transaction Lock Exists %s !\n", tx.GetHash().ToString().c_str());
     }
+
+
 
     return nBlockHeight;
 }
@@ -258,7 +260,7 @@ void DoConsensusVote(CTransaction& tx, int64_t nBlockHeight)
 {
     if(!fBankNode) return;
 
-    int n = GetBanknodeRank(activeBanknode.vin, nBlockHeight, MIN_INSTANTX_PROTO_VERSION);
+    int n = mnodeman.GetBanknodeRank(activeBanknode.vin, nBlockHeight, MIN_INSTANTX_PROTO_VERSION);
 
     if(n == -1)
     {
@@ -306,11 +308,12 @@ void DoConsensusVote(CTransaction& tx, int64_t nBlockHeight)
 //received a consensus vote
 bool ProcessConsensusVote(CConsensusVote& ctx)
 {
-    int n = GetBanknodeRank(ctx.vinBanknode, ctx.nBlockHeight, MIN_INSTANTX_PROTO_VERSION);
+    int n = mnodeman.GetBanknodeRank(ctx.vinBanknode, ctx.nBlockHeight, MIN_INSTANTX_PROTO_VERSION);
 
-    int x = GetBanknodeByVin(ctx.vinBanknode);
-    if(x != -1){
-        if(fDebug) LogPrintf("InstantX::ProcessConsensusVote - Banknode ADDR %s %d\n", vecBanknodes[x].addr.ToString().c_str(), n);
+    CBanknode* pmn = mnodeman.Find(ctx.vinBanknode);
+    if(pmn != NULL)
+    {
+        if(fDebug) LogPrintf("InstantX::ProcessConsensusVote - Banknode ADDR %s %d\n", pmn->addr.ToString().c_str(), n);
     }
 
     if(n == -1)
@@ -446,6 +449,27 @@ void CleanTransactionLocksList()
         if(GetTime() > it->second.nExpiration){ //keep them for an hour
             LogPrintf("Removing old transaction lock %s\n", it->second.txHash.ToString().c_str());
 
+            // loop through banknodes that responded
+            for(int nRank = 0; nRank <= INSTANTX_SIGNATURES_TOTAL; nRank++)
+            {
+                CBanknode* pmn = mnodeman.GetBanknodeByRank(nRank, it->second.nBlockHeight, MIN_INSTANTX_PROTO_VERSION);
+                if(!pmn) continue;
+
+                bool fFound = false;
+                BOOST_FOREACH(CConsensusVote& v, it->second.vecConsensusVotes)
+                {
+                    if(pmn->vin == v.vinBanknode){ //Banknode responded
+                        fFound = true;
+                    }
+                }
+
+                if(!fFound){
+                    //increment a scanning error
+                    CBanknodeScanningError mnse(pmn->vin, SCANNING_ERROR_IX_NO_RESPONSE, it->second.nBlockHeight);
+                    pmn->ApplyScanningError(mnse);
+                }
+            }
+
             if(mapTxLockReq.count(it->second.txHash)){
                 CTransaction& tx = mapTxLockReq[it->second.txHash];
 
@@ -479,9 +503,9 @@ bool CConsensusVote::SignatureValid()
     std::string strMessage = txHash.ToString().c_str() + boost::lexical_cast<std::string>(nBlockHeight);
     //LogPrintf("verify strMessage %s \n", strMessage.c_str());
 
-    int n = GetBanknodeByVin(vinBanknode);
+    CBanknode* pmn = mnodeman.Find(vinBanknode);
 
-    if(n == -1)
+    if(pmn == NULL)
     {
         LogPrintf("InstantX::CConsensusVote::SignatureValid() - Unknown Banknode\n");
         return false;
@@ -492,13 +516,13 @@ bool CConsensusVote::SignatureValid()
     //LogPrintf("verify addr %d %s \n", n, vecBanknodes[n].addr.ToString().c_str());
 
     CScript pubkey;
-    pubkey =GetScriptForDestination(vecBanknodes[n].pubkey2.GetID());
+    pubkey =GetScriptForDestination(pmn->pubkey2.GetID());
     CTxDestination address1;
     ExtractDestination(pubkey, address1);
     CBitcreditAddress address2(address1);
     //LogPrintf("verify pubkey2 %s \n", address2.ToString().c_str());
 
-    if(!darkSendSigner.VerifyMessage(vecBanknodes[n].pubkey2, vchBankNodeSignature, strMessage, errorMessage)) {
+    if(!darkSendSigner.VerifyMessage(pmn->pubkey2, vchBankNodeSignature, strMessage, errorMessage)) {
         LogPrintf("InstantX::CConsensusVote::SignatureValid() - Verify message failed\n");
         return false;
     }
@@ -548,7 +572,7 @@ bool CTransactionLock::SignaturesValid()
 
     BOOST_FOREACH(CConsensusVote vote, vecConsensusVotes)
     {
-        int n = GetBanknodeRank(vote.vinBanknode, vote.nBlockHeight, MIN_INSTANTX_PROTO_VERSION);
+        int n = mnodeman.GetBanknodeRank(vote.vinBanknode, vote.nBlockHeight, MIN_INSTANTX_PROTO_VERSION);
 
         if(n == -1)
         {

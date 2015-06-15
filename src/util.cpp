@@ -100,7 +100,7 @@ string strBankNodeAddr = "";
 bool fLiteMode = false;
 int nInstantXDepth = 1;
 int nDarksendRounds = 2;
-int nAnonymizeBitcreditAmount = 250000;
+int nAnonymizeBitcreditAmount = 5000;
 int nLiquidityProvider = 0;
 /** Spork enforcement enabled time */
 int64_t enforceBanknodePaymentsTime = 4085657524;
@@ -498,8 +498,13 @@ void ReadConfigFile(map<string, string>& mapSettingsRet,
                     map<string, vector<string> >& mapMultiSettingsRet)
 {
     boost::filesystem::ifstream streamConfig(GetConfigFile());
-    if (!streamConfig.good())
-        return; // No bitcredit.conf file is OK
+    if (!streamConfig.good()){
+        // Create empty bitcredit.conf if it does not excist
+        FILE* configFile = fopen(GetConfigFile().string().c_str(), "a");
+        if (configFile != NULL)
+            fclose(configFile);
+        return; // Nothing to read, so just return
+    }
 
     set<string> setOptions;
     setOptions.insert("*");

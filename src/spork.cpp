@@ -19,9 +19,11 @@ using namespace boost;
 class CSporkMessage;
 class CSporkManager;
 
+CSporkManager sporkManager;
+
 std::map<uint256, CSporkMessage> mapSporks;
 std::map<int, CSporkMessage> mapSporksActive;
-CSporkManager sporkManager;
+
 
 void ProcessSpork(CNode* pfrom, std::string& strCommand, CDataStream& vRecv)
 {
@@ -37,7 +39,7 @@ void ProcessSpork(CNode* pfrom, std::string& strCommand, CDataStream& vRecv)
         if(chainActive.Tip() == NULL) return;
 
         uint256 hash = spork.GetHash();
-        if(mapSporks.count(hash) && mapSporksActive.count(spork.nSporkID)) {
+        if(mapSporksActive.count(spork.nSporkID)) {
             if(mapSporksActive[spork.nSporkID].nTimeSigned >= spork.nTimeSigned){
                 if(fDebug) LogPrintf("spork - seen %s block %d \n", hash.ToString().c_str(), chainActive.Tip()->nHeight);
                 return;
@@ -84,6 +86,7 @@ bool IsSporkActive(int nSporkID)
         if(nSporkID == SPORK_1_BANKNODE_PAYMENTS_ENFORCEMENT) r = SPORK_1_BANKNODE_PAYMENTS_ENFORCEMENT_DEFAULT;
         if(nSporkID == SPORK_2_MAX_VALUE) r = SPORK_2_MAX_VALUE_DEFAULT;
         if(nSporkID == SPORK_3_REPLAY_BLOCKS) r = SPORK_3_REPLAY_BLOCKS_DEFAULT;
+        if(nSporkID == SPORK_5_BANKNODE_SCANNING) r = SPORK_5_BANKNODE_SCANNING;
 
         if(r == 0) LogPrintf("GetSpork::Unknown Spork %d\n", nSporkID);
     }
@@ -103,6 +106,7 @@ int GetSporkValue(int nSporkID)
         if(nSporkID == SPORK_1_BANKNODE_PAYMENTS_ENFORCEMENT) r = SPORK_1_BANKNODE_PAYMENTS_ENFORCEMENT_DEFAULT;
         if(nSporkID == SPORK_2_MAX_VALUE) r = SPORK_2_MAX_VALUE_DEFAULT;
         if(nSporkID == SPORK_3_REPLAY_BLOCKS) r = SPORK_3_REPLAY_BLOCKS_DEFAULT;
+        if(nSporkID == SPORK_5_BANKNODE_SCANNING) r = SPORK_5_BANKNODE_SCANNING;
 
         if(r == 0) LogPrintf("GetSpork::Unknown Spork %d\n", nSporkID);
     }
@@ -112,10 +116,6 @@ int GetSporkValue(int nSporkID)
 
 void ExecuteSpork(int nSporkID, int nValue)
 {
-    //replay and process blocks (to sync to the longest chain after disabling sporks)
-    if(nSporkID == SPORK_3_REPLAY_BLOCKS){
-        DisconnectBlocksAndReprocess(nValue);
-    }
 }
 
 
@@ -213,6 +213,7 @@ int CSporkManager::GetSporkIDByName(std::string strName)
     if(strName == "SPORK_1_BANKNODE_PAYMENTS_ENFORCEMENT") return SPORK_1_BANKNODE_PAYMENTS_ENFORCEMENT;
     if(strName == "SPORK_2_MAX_VALUE") return SPORK_2_MAX_VALUE;
     if(strName == "SPORK_3_REPLAY_BLOCKS") return SPORK_3_REPLAY_BLOCKS;
+    if(strName == "SPORK_5_BANKNODE_SCANNING") return SPORK_5_BANKNODE_SCANNING;
 
     return -1;
 }
@@ -222,6 +223,7 @@ std::string CSporkManager::GetSporkNameByID(int id)
     if(id == SPORK_1_BANKNODE_PAYMENTS_ENFORCEMENT) return "SPORK_1_BANKNODE_PAYMENTS_ENFORCEMENT";
     if(id == SPORK_2_MAX_VALUE) return "SPORK_2_MAX_VALUE";
     if(id == SPORK_3_REPLAY_BLOCKS) return "SPORK_3_REPLAY_BLOCKS";
+    if(id == SPORK_5_BANKNODE_SCANNING) return "SPORK_5_BANKNODE_SCANNING";
 
     return "Unknown";
 }

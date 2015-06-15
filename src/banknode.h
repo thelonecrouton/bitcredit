@@ -18,11 +18,7 @@
 #include "base58.h"
 #include "main.h"
 #include "timedata.h"
-
-
-class CBankNode;
-class CBanknodePayments;
-class uint256;
+#include "banknode-pos.h"
 
 #define BANKNODE_NOT_PROCESSED               0 // initial state
 #define BANKNODE_IS_CAPABLE                  1
@@ -43,69 +39,137 @@ class uint256;
 
 using namespace std;
 
+class CBanknode;
+class CBanknodePayments;
 class CBanknodePaymentWinner;
 
-extern CCriticalSection cs_banknodes;
-extern std::vector<CBankNode> vecBanknodes;
-extern CBanknodePayments banknodePayments;
-extern std::vector<CTxIn> vecBanknodeAskedFor;
+extern CCriticalSection cs_banknodepayments;
 extern map<uint256, CBanknodePaymentWinner> mapSeenBanknodeVotes;
 extern map<int64_t, uint256> mapCacheBlockHashes;
+extern CBanknodePayments banknodePayments;
 
-
-// manage the banknode connections
-void ProcessBanknodeConnections();
-int CountBanknodesAboveProtocol(int protocolVersion);
-
-
-void ProcessMessageBanknode(CNode* pfrom, std::string& strCommand, CDataStream& vRecv);
+void ProcessMessageBanknodePayments(CNode* pfrom, std::string& strCommand, CDataStream& vRecv);
+bool GetBlockHash(uint256& hash, int nBlockHeight);
 
 //
-// The Banknode Class. For managing the darksend process. It contains the input of the 1000DRK, signature to prove
+// The Banknode Class. For managing the Darksend process. It contains the input of the 1000DRK, signature to prove
 // it's the one who own that ip address and code for calculating the payment election.
 //
-class CBankNode
+class CBanknode
 {
+private:
+    // critical section to protect the inner data structures
+    mutable CCriticalSection cs;
+
 public:
-	static int minProtoVersion;
-    CService addr;
+    enum state {
+        BANKNODE_ENABLED = 1,
+        BANKNODE_EXPIRED = 2,
+        BANKNODE_VIN_SPENT = 3,
+        BANKNODE_REMOVE = 4,
+        BANKNODE_POS_ERROR = 5
+    };
+
     CTxIn vin;
-    int64_t lastTimeSeen;
+    CService addr;
     CPubKey pubkey;
     CPubKey pubkey2;
     std::vector<unsigned char> sig;
-    int64_t now; //dsee message times
+    int activeState;
+    int64_t sigTime; //dsee message times
     int64_t lastDseep;
+    int64_t lastTimeSeen;
     int cacheInputAge;
     int cacheInputAgeBlock;
-    int enabled;
     bool unitTest;
     bool allowFreeTx;
     int protocolVersion;
+    int64_t nLastDsq; //the dsq count from the last dsq broadcast of this node
+    int nVote;
+    int64_t lastVote;
+    int nScanningErrorCount;
+    int nLastScanningErrorBlockHeight;
 
-    //the dsq count from the last dsq broadcast of this node
-    int64_t nLastDsq;
+    CBanknode();
+    CBanknode(const CBanknode& other);
+    CBanknode(CService newAddr, CTxIn newVin, CPubKey newPubkey, std::vector<unsigned char> newSig, int64_t newSigTime, CPubKey newPubkey2, int protocolVersionIn);
 
-    CBankNode(CService newAddr, CTxIn newVin, CPubKey newPubkey, std::vector<unsigned char> newSig, int64_t newNow, CPubKey newPubkey2, int protocolVersionIn)
+    void swap(CBanknode& first, CBanknode& second) // nothrow
     {
-        addr = newAddr;
-        vin = newVin;
-        pubkey = newPubkey;
-        pubkey2 = newPubkey2;
-        sig = newSig;
-        now = newNow;
-        enabled = 1;
-        lastTimeSeen = 0;
-        unitTest = false;
-        cacheInputAge = 0;
-        cacheInputAgeBlock = 0;
-        nLastDsq = 0;
-        lastDseep = 0;
-        allowFreeTx = true;
-        protocolVersion = protocolVersionIn;
+        // enable ADL (not necessary in our case, but good practice)
+        using std::swap;
+
+        // by swapping the members of two classes,
+        // the two classes are effectively swapped
+        swap(first.vin, second.vin);
+        swap(first.addr, second.addr);
+        swap(first.pubkey, second.pubkey);
+        swap(first.pubkey2, second.pubkey2);
+        swap(first.sig, second.sig);
+        swap(first.activeState, second.activeState);
+        swap(first.sigTime, second.sigTime);
+        swap(first.lastDseep, second.lastDseep);
+        swap(first.lastTimeSeen, second.lastTimeSeen);
+        swap(first.cacheInputAge, second.cacheInputAge);
+        swap(first.cacheInputAgeBlock, second.cacheInputAgeBlock);
+        swap(first.unitTest, second.unitTest);
+        swap(first.allowFreeTx, second.allowFreeTx);
+        swap(first.protocolVersion, second.protocolVersion);
+        swap(first.nLastDsq, second.nLastDsq);
+        swap(first.nVote, second.nVote);
+        swap(first.lastVote, second.lastVote);
+        swap(first.nScanningErrorCount, second.nScanningErrorCount);
+        swap(first.nLastScanningErrorBlockHeight, second.nLastScanningErrorBlockHeight);
+    }
+
+    CBanknode& operator=(CBanknode from)
+    {
+        swap(*this, from);
+        return *this;
+    }
+    friend bool operator==(const CBanknode& a, const CBanknode& b)
+    {
+        return a.vin == b.vin;
+    }
+    friend bool operator!=(const CBanknode& a, const CBanknode& b)
+    {
+        return !(a.vin == b.vin);
     }
 
     uint256 CalculateScore(int mod=1, int64_t nBlockHeight=0);
+
+    ADD_SERIALIZE_METHODS;
+
+    template <typename Stream, typename Operation>
+    inline void SerializationOp(Stream& s, Operation ser_action, int nType, int nVersion){
+        // serialized format:
+        // * version byte (currently 0)
+        // * all fields (?)
+        {
+                LOCK(cs);
+                unsigned char nVersion = 0;
+                READWRITE(nVersion);
+                READWRITE(vin);
+                READWRITE(addr);
+                READWRITE(pubkey);
+                READWRITE(pubkey2);
+                READWRITE(sig);
+                READWRITE(activeState);
+                READWRITE(sigTime);
+                READWRITE(lastDseep);
+                READWRITE(lastTimeSeen);
+                READWRITE(cacheInputAge);
+                READWRITE(cacheInputAgeBlock);
+                READWRITE(unitTest);
+                READWRITE(allowFreeTx);
+                READWRITE(protocolVersion);
+                READWRITE(nLastDsq);
+                READWRITE(nVote);
+                READWRITE(lastVote);
+                READWRITE(nScanningErrorCount);
+                READWRITE(nLastScanningErrorBlockHeight);
+        }
+	}
 
     void UpdateLastSeen(int64_t override=0)
     {
@@ -139,7 +203,7 @@ public:
 
     bool IsEnabled()
     {
-        return enabled == 1;
+        return activeState == BANKNODE_ENABLED;
     }
 
     int GetBanknodeInputAge()
@@ -153,16 +217,36 @@ public:
 
         return cacheInputAge+(chainActive.Tip()->nHeight-cacheInputAgeBlock);
     }
+
+    void ApplyScanningError(CBanknodeScanningError& mnse)
+    {
+        if(!mnse.IsValid()) return;
+
+        if(mnse.nBlockHeight == nLastScanningErrorBlockHeight) return;
+        nLastScanningErrorBlockHeight = mnse.nBlockHeight;
+
+        if(mnse.nErrorType == SCANNING_SUCCESS){
+            nScanningErrorCount--;
+            if(nScanningErrorCount < 0) nScanningErrorCount = 0;
+        } else { //all other codes are equally as bad
+            nScanningErrorCount++;
+            if(nScanningErrorCount > BANKNODE_SCANNING_ERROR_THESHOLD*2) nScanningErrorCount = BANKNODE_SCANNING_ERROR_THESHOLD*2;
+        }
+    }
+
+    std::string Status() {
+        std::string strStatus = "ACTIVE";
+
+        if(activeState == CBanknode::BANKNODE_ENABLED) strStatus   = "ENABLED";
+        if(activeState == CBanknode::BANKNODE_EXPIRED) strStatus   = "EXPIRED";
+        if(activeState == CBanknode::BANKNODE_VIN_SPENT) strStatus = "VIN_SPENT";
+        if(activeState == CBanknode::BANKNODE_REMOVE) strStatus    = "REMOVE";
+        if(activeState == CBanknode::BANKNODE_POS_ERROR) strStatus = "POS_ERROR";
+
+        return strStatus;
+    }
+
 };
-
-
-// Get the current winner for this block
-int GetCurrentBankNode(int mod=1, int64_t nBlockHeight=0, int minProtocol=CBankNode::minProtoVersion);
-
-int GetBanknodeByVin(CTxIn& vin);
-int GetBanknodeRank(CTxIn& vin, int64_t nBlockHeight=0, int minProtocol=CBankNode::minProtoVersion);
-int GetBanknodeByRank(int findRank, int64_t nBlockHeight=0, int minProtocol=CBankNode::minProtoVersion);
-
 
 // for storing the winning payments
 class CBanknodePaymentWinner
@@ -214,6 +298,7 @@ private:
     std::string strTestPubKey;
     std::string strMainPubKey;
     bool enabled;
+    int nLastBlockHeight;
 
 public:
 
@@ -239,12 +324,11 @@ public:
     void Relay(CBanknodePaymentWinner& winner);
     void Sync(CNode* node);
     void CleanPaymentList();
-    int LastPayment(CBankNode& mn);
+    int LastPayment(CBanknode& mn);
 
     //slow
     bool GetBlockPayee(int nBlockHeight, CScript& payee);
 };
-
 
 
 #endif

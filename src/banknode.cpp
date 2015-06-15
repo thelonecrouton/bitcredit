@@ -1,345 +1,65 @@
+// Copyright (c) 2014-2015 The Dash developers
+// Distributed under the MIT/X11 software license, see the accompanying
+// file COPYING or http://www.opensource.org/licenses/mit-license.php.
+
 #include "banknode.h"
-#include "activebanknode.h"
+#include "banknodeman.h"
 #include "darksend.h"
 #include "primitives/transaction.h"
 #include "util.h"
 #include "addrman.h"
 #include <boost/lexical_cast.hpp>
 
+CCriticalSection cs_banknodepayments;
 
-int CBankNode::minProtoVersion = MIN_MN_PROTO_VERSION;
-
-CCriticalSection cs_banknodes;
-
-/** The list of active banknodes */
-std::vector<CBankNode> vecBanknodes;
 /** Object for who's going to get paid on which blocks */
 CBanknodePayments banknodePayments;
-// keep track of banknode votes I've seen
+// keep track of Banknode votes I've seen
 map<uint256, CBanknodePaymentWinner> mapSeenBanknodeVotes;
 // keep track of the scanning errors I've seen
 map<uint256, int> mapSeenBanknodeScanningErrors;
-// who's asked for the banknode list and the last time
-std::map<CNetAddr, int64_t> askedForBanknodeList;
-// which banknodes we've asked for
-std::map<COutPoint, int64_t> askedForBanknodeListEntry;
 // cache block hashes as we calculate them
 std::map<int64_t, uint256> mapCacheBlockHashes;
 
-// manage the banknode connections
-void ProcessBanknodeConnections(){
-    LOCK(cs_vNodes);
-
-    BOOST_FOREACH(CNode* pnode, vNodes)
-    {
-        //if it's our banknode, let it be
-        if(darkSendPool.submittedToBanknode == pnode->addr) continue;
-
-        if(pnode->fDarkSendMaster){
-            LogPrintf("Closing banknode connection %s \n", pnode->addr.ToString().c_str());
-            pnode->CloseSocketDisconnect();
-        }
-    }
-}
-
-void ProcessMessageBanknode(CNode* pfrom, std::string& strCommand, CDataStream& vRecv)
+void ProcessMessageBanknodePayments(CNode* pfrom, std::string& strCommand, CDataStream& vRecv)
 {
+    if(IsInitialBlockDownload()) return;
 
-    if (strCommand == "dsee") { //DarkSend Election Entry
-        if(fLiteMode) return; //disable all darksend/banknode related functionality
+    if (strCommand == "mnget") { //Banknode Payments Request Sync
+        if(fLiteMode) return; //disable all Darksend/Banknode related functionality
 
-        bool fIsInitialDownload = IsInitialBlockDownload();
-        if(fIsInitialDownload) return;
-
-        CTxIn vin;
-        CService addr;
-        CPubKey pubkey;
-        CPubKey pubkey2;
-        vector<unsigned char> vchSig;
-        int64_t sigTime;
-        int count;
-        int current;
-        int64_t lastUpdated;
-        int protocolVersion;
-        std::string strMessage;
-
-        // 70047 and greater
-        vRecv >> vin >> addr >> vchSig >> sigTime >> pubkey >> pubkey2 >> count >> current >> lastUpdated >> protocolVersion;
-
-        // make sure signature isn't in the future (past is OK)
-        if (sigTime > GetAdjustedTime() + 60 * 60) {
-            LogPrintf("dsee - Signature rejected, too far into the future %s\n", vin.ToString().c_str());
+        if(pfrom->HasFulfilledRequest("mnget")) {
+            LogPrintf("mnget - peer already asked me for the list\n");
+            Misbehaving(pfrom->GetId(), 20);
             return;
         }
-
-        bool isLocal = addr.IsRFC1918() || addr.IsLocal();
-        
-        std::string vchPubKey(pubkey.begin(), pubkey.end());
-        std::string vchPubKey2(pubkey2.begin(), pubkey2.end());
-
-        strMessage = addr.ToString() + boost::lexical_cast<std::string>(sigTime) + vchPubKey + vchPubKey2 + boost::lexical_cast<std::string>(protocolVersion);
-
-        if(protocolVersion < MIN_MN_PROTO_VERSION) {
-            LogPrintf("dsee - ignoring outdated banknode %s protocol version %d\n", vin.ToString().c_str(), protocolVersion);
-            return;
-        }
-
-        CScript pubkeyScript;
-        pubkeyScript =GetScriptForDestination(pubkey.GetID());
-
-        if(pubkeyScript.size() != 25) {
-            LogPrintf("dsee - pubkey the wrong size\n");
-            Misbehaving(pfrom->GetId(), 100);
-            return;
-        }
-
-        CScript pubkeyScript2;
-        pubkeyScript2 =GetScriptForDestination(pubkey2.GetID());
-
-        if(pubkeyScript2.size() != 25) {
-            LogPrintf("dsee - pubkey2 the wrong size\n");
-            Misbehaving(pfrom->GetId(), 100);
-            return;
-        }
-
-        std::string errorMessage = "";
-        if(!darkSendSigner.VerifyMessage(pubkey, vchSig, strMessage, errorMessage)){
-            LogPrintf("dsee - Got bad banknode address signature\n");
-            Misbehaving(pfrom->GetId(), 100);
-            return;
-        }
-
-        
-
-        //search existing banknode list, this is where we update existing banknodes with new dsee broadcasts
-	LOCK(cs_banknodes);
-        BOOST_FOREACH(CBankNode& mn, vecBanknodes) {
-            if(mn.vin.prevout == vin.prevout) {
-                // count == -1 when it's a new entry
-                //   e.g. We don't want the entry relayed/time updated when we're syncing the list
-                // mn.pubkey = pubkey, IsVinAssociatedWithPubkey is validated once below,
-                //   after that they just need to match
-                if(count == -1 && mn.pubkey == pubkey && !mn.UpdatedWithin(BANKNODE_MIN_DSEE_SECONDS)){
-                    mn.UpdateLastSeen();
-
-                    if(mn.now < sigTime){ //take the newest entry
-                        LogPrintf("dsee - Got updated entry for %s\n", addr.ToString().c_str());
-                        mn.pubkey2 = pubkey2;
-                        mn.now = sigTime;
-                        mn.sig = vchSig;
-                        mn.protocolVersion = protocolVersion;
-                        mn.addr = addr;
-
-                        RelayDarkSendElectionEntry(vin, addr, vchSig, sigTime, pubkey, pubkey2, count, current, lastUpdated, protocolVersion);
-                    }
-                }
-
-                return;
-            }
-        }
-
-        // make sure the vout that was signed is related to the transaction that spawned the banknode
-        //  - this is expensive, so it's only done once per banknode
-        if(!darkSendSigner.IsVinAssociatedWithPubkey(vin, pubkey)) {
-            LogPrintf("dsee - Got mismatched pubkey and vin\n");
-            Misbehaving(pfrom->GetId(), 100);
-            return;
-        }
-
-        if(fDebug) LogPrintf("dsee - Got NEW banknode entry %s\n", addr.ToString().c_str());
-
-        // make sure it's still unspent
-        //  - this is checked later by .check() in many places and by ThreadCheckDarkSendPool()
-
-        CValidationState state;
-        CMutableTransaction tx = CTransaction();
-        CTxOut vout = CTxOut(249999.99*COIN, darkSendPool.collateralPubKey);
-        tx.vin.push_back(vin);
-        tx.vout.push_back(vout);
-        if(AcceptableInputs(mempool, state, tx)){
-            if(fDebug) LogPrintf("dsee - Accepted banknode entry %i %i\n", count, current);
-
-            if(GetInputAge(vin) < BANKNODE_MIN_CONFIRMATIONS){
-                LogPrintf("dsee - Input must have least %d confirmations\n", BANKNODE_MIN_CONFIRMATIONS);
-                Misbehaving(pfrom->GetId(), 20);
-                return;
-            }
-
-            // use this as a peer
-            addrman.Add(CAddress(addr), pfrom->addr, 2*60*60);
-
-            // add our banknode
-            CBankNode mn(addr, vin, pubkey, vchSig, sigTime, pubkey2, protocolVersion);
-            mn.UpdateLastSeen(lastUpdated);
-            vecBanknodes.push_back(mn);
-
-            // if it matches our banknodeprivkey, then we've been remotely activated
-            if(pubkey2 == activeBanknode.pubKeyBanknode && protocolVersion == PROTOCOL_VERSION){
-                activeBanknode.EnableHotColdBankNode(vin, addr);
-            }
-
-            if(count == -1 && !isLocal)
-                RelayDarkSendElectionEntry(vin, addr, vchSig, sigTime, pubkey, pubkey2, count, current, lastUpdated, protocolVersion);
-
-        } else {
-            LogPrintf("dsee - Rejected banknode entry %s\n", addr.ToString().c_str());
-
-            int nDoS = 0;
-            if (state.IsInvalid(nDoS))
-            {
-                LogPrintf("dsee - %s from %s %s was not accepted into the memory pool\n", tx.GetHash().ToString().c_str(),
-                    pfrom->addr.ToString().c_str(), pfrom->cleanSubVer.c_str());
-                if (nDoS > 0)
-                    Misbehaving(pfrom->GetId(), nDoS);
-            }
-        }
-    }
-
-    else if (strCommand == "dseep") { //DarkSend Election Entry Ping
-        if(fLiteMode) return; //disable all darksend/banknode related functionality
-        bool fIsInitialDownload = IsInitialBlockDownload();
-        if(fIsInitialDownload) return;
-
-        CTxIn vin;
-        vector<unsigned char> vchSig;
-        int64_t sigTime;
-        bool stop;
-        vRecv >> vin >> vchSig >> sigTime >> stop;
-
-        //LogPrintf("dseep - Received: vin: %s sigTime: %lld stop: %s\n", vin.ToString().c_str(), sigTime, stop ? "true" : "false");
-
-        if (sigTime > GetAdjustedTime() + 60 * 60) {
-            LogPrintf("dseep - Signature rejected, too far into the future %s\n", vin.ToString().c_str());
-            return;
-        }
-
-        if (sigTime <= GetAdjustedTime() - 60 * 60) {
-            LogPrintf("dseep - Signature rejected, too far into the past %s - %d %d \n", vin.ToString().c_str(), sigTime, GetAdjustedTime());
-            return;
-        }
-
-        // see if we have this banknode
-	LOCK(cs_banknodes);
-        BOOST_FOREACH(CBankNode& mn, vecBanknodes) {
-            if(mn.vin.prevout == vin.prevout) {
-            	// LogPrintf("dseep - Found corresponding mn for vin: %s\n", vin.ToString().c_str());
-            	// take this only if it's newer
-                if(mn.lastDseep < sigTime){
-                    std::string strMessage = mn.addr.ToString() + boost::lexical_cast<std::string>(sigTime) + boost::lexical_cast<std::string>(stop);
-
-                    std::string errorMessage = "";
-                    if(!darkSendSigner.VerifyMessage(mn.pubkey2, vchSig, strMessage, errorMessage)){
-                        LogPrintf("dseep - Got bad banknode address signature %s \n", vin.ToString().c_str());
-                        //Misbehaving(pfrom->GetId(), 100);
-                        return;
-                    }
-
-                    mn.lastDseep = sigTime;
-
-                    if(!mn.UpdatedWithin(BANKNODE_MIN_DSEEP_SECONDS)){
-                        mn.UpdateLastSeen();
-                        if(stop) {
-                            mn.Disable();
-                            mn.Check();
-                        }
-                        RelayDarkSendElectionEntryPing(vin, vchSig, sigTime, stop);
-                    }
-                }
-                return;
-            }
-        }
-
-        if(fDebug) LogPrintf("dseep - Couldn't find banknode entry %s\n", vin.ToString().c_str());
-
-        std::map<COutPoint, int64_t>::iterator i = askedForBanknodeListEntry.find(vin.prevout);
-        if (i != askedForBanknodeListEntry.end()){
-            int64_t t = (*i).second;
-            if (GetTime() < t) {
-                // we've asked recently
-                return;
-            }
-        }
-
-        // ask for the dsee info once from the node that sent dseep
-
-        LogPrintf("dseep - Asking source node for missing entry %s\n", vin.ToString().c_str());
-        pfrom->PushMessage("dseg", vin);
-        int64_t askAgain = GetTime()+(60*60*24);
-        askedForBanknodeListEntry[vin.prevout] = askAgain;
-
-    } else if (strCommand == "dseg") { //Get banknode list or specific entry
-        if(fLiteMode) return; //disable all darksend/banknode related functionality
-        CTxIn vin;
-        vRecv >> vin;
-
-        if(vin == CTxIn()) { //only should ask for this once
-            //local network
-
-                std::map<CNetAddr, int64_t>::iterator i = askedForBanknodeList.find(pfrom->addr);
-                if (i != askedForBanknodeList.end())
-                {
-                    int64_t t = (*i).second;
-                    if (GetTime() < t) {
-
-                    }
-                }
-
-                int64_t askAgain = GetTime()+(60*60*3);
-                askedForBanknodeList[pfrom->addr] = askAgain;
-         
-        } //else, asking for a specific node which is ok
-
-	LOCK(cs_banknodes);
-        int count = vecBanknodes.size();
-        int i = 0;
-
-        BOOST_FOREACH(CBankNode mn, vecBanknodes) {
-
-            if(mn.addr.IsRFC1918()) continue; //local network
-
-            if(vin == CTxIn()){
-                mn.Check();
-                if(mn.IsEnabled()) {
-                    if(fDebug) LogPrintf("dseg - Sending banknode entry - %s \n", mn.addr.ToString().c_str());
-                    pfrom->PushMessage("dsee", mn.vin, mn.addr, mn.sig, mn.now, mn.pubkey, mn.pubkey2, count, i, mn.lastTimeSeen, mn.protocolVersion);
-                }
-            } else if (vin == mn.vin) {
-                if(fDebug) LogPrintf("dseg - Sending banknode entry - %s \n", mn.addr.ToString().c_str());
-                pfrom->PushMessage("dsee", mn.vin, mn.addr, mn.sig, mn.now, mn.pubkey, mn.pubkey2, count, i, mn.lastTimeSeen, mn.protocolVersion);
-                LogPrintf("dseg - Sent 1 banknode entries to %s\n", pfrom->addr.ToString().c_str());
-                return;
-            }
-            i++;
-        }
-
-        LogPrintf("dseg - Sent %d banknode entries to %s\n", count, pfrom->addr.ToString().c_str());
-    }
-
-    else if (strCommand == "mnget") { //Banknode Payments Request Sync
-        if(fLiteMode) return; //disable all darksend/banknode related functionality
-
-
 
         pfrom->FulfilledRequest("mnget");
         banknodePayments.Sync(pfrom);
-        LogPrintf("mnget - Sent banknode winners to %s\n", pfrom->addr.ToString().c_str());
+        LogPrintf("mnget - Sent Banknode winners to %s\n", pfrom->addr.ToString().c_str());
     }
     else if (strCommand == "mnw") { //Banknode Payments Declare Winner
+
+        LOCK(cs_banknodepayments);
+
         //this is required in litemode
         CBanknodePaymentWinner winner;
-        int a = 0;
-        vRecv >> winner >> a;
+        vRecv >> winner;
 
         if(chainActive.Tip() == NULL) return;
 
+        CTxDestination address1;
+        ExtractDestination(winner.payee, address1);
+        CBitcreditAddress address2(address1);
+
         uint256 hash = winner.GetHash();
         if(mapSeenBanknodeVotes.count(hash)) {
-            if(fDebug) LogPrintf("mnw - seen vote %s Height %d bestHeight %d\n", hash.ToString().c_str(), winner.nBlockHeight, chainActive.Tip()->nHeight);
+            if(fDebug) LogPrintf("mnw - seen vote %s Addr %s Height %d bestHeight %d\n", hash.ToString().c_str(), address2.ToString().c_str(), winner.nBlockHeight, chainActive.Tip()->nHeight);
             return;
         }
 
         if(winner.nBlockHeight < chainActive.Tip()->nHeight - 10 || winner.nBlockHeight > chainActive.Tip()->nHeight+20){
-            LogPrintf("mnw - winner out of range %s Height %d bestHeight %d\n", winner.vin.ToString().c_str(), winner.nBlockHeight, chainActive.Tip()->nHeight);
+            LogPrintf("mnw - winner out of range %s Addr %s Height %d bestHeight %d\n", winner.vin.ToString().c_str(), address2.ToString().c_str(), winner.nBlockHeight, chainActive.Tip()->nHeight);
             return;
         }
 
@@ -349,7 +69,7 @@ void ProcessMessageBanknode(CNode* pfrom, std::string& strCommand, CDataStream& 
             return;
         }
 
-        LogPrintf("mnw - winning vote  %s Height %d bestHeight %d\n", winner.vin.ToString().c_str(), winner.nBlockHeight, chainActive.Tip()->nHeight);
+        LogPrintf("mnw - winning vote - Vin %s Addr %s Height %d bestHeight %d\n", winner.vin.ToString().c_str(), address2.ToString().c_str(), winner.nBlockHeight, chainActive.Tip()->nHeight);
 
         if(!banknodePayments.CheckSignature(winner)){
             LogPrintf("mnw - invalid signature\n");
@@ -373,140 +93,6 @@ struct CompareValueOnly
         return t1.first < t2.first;
     }
 };
-
-struct CompareValueOnly2
-{
-    bool operator()(const pair<int64_t, int>& t1,
-                    const pair<int64_t, int>& t2) const
-    {
-        return t1.first < t2.first;
-    }
-};
-
-int CountBanknodesAboveProtocol(int protocolVersion)
-{
-    int i = 0;
-    LOCK(cs_banknodes);
-    BOOST_FOREACH(CBankNode& mn, vecBanknodes) {
-        if(mn.protocolVersion < protocolVersion) continue;
-        i++;
-    }
-
-    return i;
-
-}
-
-
-int GetBanknodeByVin(CTxIn& vin)
-{
-    int i = 0;
-    LOCK(cs_banknodes);
-    BOOST_FOREACH(CBankNode& mn, vecBanknodes) {
-        if (mn.vin == vin) return i;
-        i++;
-    }
-
-    return -1;
-}
-
-int GetCurrentBankNode(int mod, int64_t nBlockHeight, int minProtocol)
-{
-    int i = 0;
-    unsigned int score = 0;
-    int winner = -1;
-    LOCK(cs_banknodes);
-    // scan for winner
-    BOOST_FOREACH(CBankNode mn, vecBanknodes) {
-        mn.Check();
-        if(mn.protocolVersion < minProtocol) continue;
-        if(!mn.IsEnabled()) {
-            i++;
-            continue;
-        }
-
-        // calculate the score for each banknode
-        uint256 n = mn.CalculateScore(mod, nBlockHeight);
-        unsigned int n2 = 0;
-        memcpy(&n2, &n, sizeof(n2));
-
-        // determine the winner
-        if(n2 > score){
-            score = n2;
-            winner = i;
-        }
-        i++;
-    }
-
-    return winner;
-}
-
-int GetBanknodeByRank(int findRank, int64_t nBlockHeight, int minProtocol)
-{
-    LOCK(cs_banknodes);
-    int i = 0;
-
-    std::vector<pair<unsigned int, int> > vecBanknodeScores;
-
-    i = 0;
-    BOOST_FOREACH(CBankNode mn, vecBanknodes) {
-        mn.Check();
-        if(mn.protocolVersion < minProtocol) continue;
-        if(!mn.IsEnabled()) {
-            i++;
-            continue;
-        }
-
-        uint256 n = mn.CalculateScore(1, nBlockHeight);
-        unsigned int n2 = 0;
-        memcpy(&n2, &n, sizeof(n2));
-
-        vecBanknodeScores.push_back(make_pair(n2, i));
-        i++;
-    }
-
-    sort(vecBanknodeScores.rbegin(), vecBanknodeScores.rend(), CompareValueOnly2());
-
-    int rank = 0;
-    BOOST_FOREACH (PAIRTYPE(unsigned int, int)& s, vecBanknodeScores){
-        rank++;
-        if(rank == findRank) return s.second;
-    }
-
-    return -1;
-}
-
-int GetBanknodeRank(CTxIn& vin, int64_t nBlockHeight, int minProtocol)
-{
-    LOCK(cs_banknodes);
-    std::vector<pair<unsigned int, CTxIn> > vecBanknodeScores;
-
-    BOOST_FOREACH(CBankNode& mn, vecBanknodes) {
-        mn.Check();
-
-        if(mn.protocolVersion < minProtocol) continue;
-        if(!mn.IsEnabled()) {
-            continue;
-        }
-
-        uint256 n = mn.CalculateScore(1, nBlockHeight);
-        unsigned int n2 = 0;
-        memcpy(&n2, &n, sizeof(n2));
-
-        vecBanknodeScores.push_back(make_pair(n2, mn.vin));
-    }
-
-    sort(vecBanknodeScores.rbegin(), vecBanknodeScores.rend(), CompareValueOnly());
-
-    unsigned int rank = 0;
-    BOOST_FOREACH (PAIRTYPE(unsigned int, CTxIn)& s, vecBanknodeScores){
-        rank++;
-        if(s.second == vin) {
-            return rank;
-        }
-    }
-
-    return -1;
-}
 
 //Get the last hash that matches the modulus given. Processed in reverse order
 bool GetBlockHash(uint256& hash, int nBlockHeight)
@@ -546,12 +132,84 @@ bool GetBlockHash(uint256& hash, int nBlockHeight)
     return false;
 }
 
+CBanknode::CBanknode()
+{
+    LOCK(cs);
+    vin = CTxIn();
+    addr = CService();
+    pubkey = CPubKey();
+    pubkey2 = CPubKey();
+    sig = std::vector<unsigned char>();
+    activeState = BANKNODE_ENABLED;
+    sigTime = GetAdjustedTime();
+    lastDseep = 0;
+    lastTimeSeen = 0;
+    cacheInputAge = 0;
+    cacheInputAgeBlock = 0;
+    unitTest = false;
+    allowFreeTx = true;
+    protocolVersion = MIN_PEER_PROTO_VERSION;
+    nLastDsq = 0;
+    nVote = 0;
+    lastVote = 0;
+    nScanningErrorCount = 0;
+    nLastScanningErrorBlockHeight = 0;
+}
+
+CBanknode::CBanknode(const CBanknode& other)
+{
+    LOCK(cs);
+    vin = other.vin;
+    addr = other.addr;
+    pubkey = other.pubkey;
+    pubkey2 = other.pubkey2;
+    sig = other.sig;
+    activeState = other.activeState;
+    sigTime = other.sigTime;
+    lastDseep = other.lastDseep;
+    lastTimeSeen = other.lastTimeSeen;
+    cacheInputAge = other.cacheInputAge;
+    cacheInputAgeBlock = other.cacheInputAgeBlock;
+    unitTest = other.unitTest;
+    allowFreeTx = other.allowFreeTx;
+    protocolVersion = other.protocolVersion;
+    nLastDsq = other.nLastDsq;
+    nVote = other.nVote;
+    lastVote = other.lastVote;
+    nScanningErrorCount = other.nScanningErrorCount;
+    nLastScanningErrorBlockHeight = other.nLastScanningErrorBlockHeight;
+}
+
+CBanknode::CBanknode(CService newAddr, CTxIn newVin, CPubKey newPubkey, std::vector<unsigned char> newSig, int64_t newSigTime, CPubKey newPubkey2, int protocolVersionIn)
+{
+    LOCK(cs);
+    vin = newVin;
+    addr = newAddr;
+    pubkey = newPubkey;
+    pubkey2 = newPubkey2;
+    sig = newSig;
+    activeState = BANKNODE_ENABLED;
+    sigTime = newSigTime;
+    lastDseep = 0;
+    lastTimeSeen = 0;
+    cacheInputAge = 0;
+    cacheInputAgeBlock = 0;
+    unitTest = false;
+    allowFreeTx = true;
+    protocolVersion = protocolVersionIn;
+    nLastDsq = 0;
+    nVote = 0;
+    lastVote = 0;
+    nScanningErrorCount = 0;
+    nLastScanningErrorBlockHeight = 0;
+}
+
 //
-// Deterministically calculate a given "score" for a banknode depending on how close it's hash is to
+// Deterministically calculate a given "score" for a Banknode depending on how close it's hash is to
 // the proof of work for that block. The further away they are the better, the furthest will win the election
 // and get paid this block
 //
-uint256 CBankNode::CalculateScore(int mod, int64_t nBlockHeight)
+uint256 CBanknode::CalculateScore(int mod, int64_t nBlockHeight)
 {
     if(chainActive.Tip() == NULL) return 0;
 
@@ -561,43 +219,60 @@ uint256 CBankNode::CalculateScore(int mod, int64_t nBlockHeight)
     if(!GetBlockHash(hash, nBlockHeight)) return 0;
 
     uint256 hash2 = Hash(BEGIN(hash), END(hash));
-    uint256 hash3 = Hash(BEGIN(hash), END(aux));
+    uint256 hash3 = Hash(BEGIN(hash), END(hash), BEGIN(aux), END(aux));
 
     uint256 r = (hash3 > hash2 ? hash3 - hash2 : hash2 - hash3);
 
     return r;
 }
 
-void CBankNode::Check()
+void CBanknode::Check()
 {
+    //TODO: Random segfault with this line removed
+    TRY_LOCK(cs_main, lockRecv);
+    if(!lockRecv) return;
+
+    if(nScanningErrorCount >= BANKNODE_SCANNING_ERROR_THESHOLD)
+    {
+        activeState = BANKNODE_POS_ERROR;
+        return;
+    }
+
     //once spent, stop doing the checks
-    if(enabled==3) return;
+    if(activeState == BANKNODE_VIN_SPENT) return;
 
 
     if(!UpdatedWithin(BANKNODE_REMOVAL_SECONDS)){
-        enabled = 4;
+        activeState = BANKNODE_REMOVE;
         return;
     }
 
     if(!UpdatedWithin(BANKNODE_EXPIRATION_SECONDS)){
-        enabled = 2;
+        activeState = BANKNODE_EXPIRED;
         return;
     }
 
     if(!unitTest){
         CValidationState state;
         CMutableTransaction tx = CTransaction();
+        if (chainActive.Tip()->nHeight<145000) {
         CTxOut vout = CTxOut(249999.99*COIN, darkSendPool.collateralPubKey);
-        tx.vin.push_back(vin);
+                tx.vin.push_back(vin);
         tx.vout.push_back(vout);
+		}else {
+        CTxOut vout = CTxOut(49999.99*COIN, darkSendPool.collateralPubKey);
+                tx.vin.push_back(vin);
+        tx.vout.push_back(vout);
+		}
+
 
         if(!AcceptableInputs(mempool, state, tx)){
-            enabled = 3;
+            activeState = BANKNODE_VIN_SPENT;
             return;
         }
     }
 
-    enabled = 1; // OK
+    activeState = BANKNODE_ENABLED; // OK
 }
 
 bool CBanknodePayments::CheckSignature(CBanknodePaymentWinner& winner)
@@ -625,7 +300,7 @@ bool CBanknodePayments::Sign(CBanknodePaymentWinner& winner)
 
     if(!darkSendSigner.SetKey(strMasterPrivKey, errorMessage, key2, pubkey2))
     {
-        LogPrintf("CBanknodePayments::Sign - ERROR: Invalid banknodeprivkey: '%s'\n", errorMessage.c_str());
+        LogPrintf("CBanknodePayments::Sign - ERROR: Invalid Banknodeprivkey: '%s'\n", errorMessage.c_str());
         return false;
     }
 
@@ -699,6 +374,8 @@ bool CBanknodePayments::AddWinningBanknode(CBanknodePaymentWinner& winnerIn)
                 winner.payee = winnerIn.payee;
                 winner.vchSig = winnerIn.vchSig;
 
+                mapSeenBanknodeVotes.insert(make_pair(winnerIn.GetHash(), winnerIn));
+
                 return true;
             }
         }
@@ -717,15 +394,16 @@ bool CBanknodePayments::AddWinningBanknode(CBanknodePaymentWinner& winnerIn)
 
 void CBanknodePayments::CleanPaymentList()
 {
-    LOCK(cs_banknodes);
+    LOCK(cs_banknodepayments);
+
     if(chainActive.Tip() == NULL) return;
 
-    int nLimit = std::max(((int)vecBanknodes.size())*2, 1000);
+    int nLimit = std::max(((int)mnodeman.size())*2, 1000);
 
     vector<CBanknodePaymentWinner>::iterator it;
     for(it=vWinning.begin();it<vWinning.end();it++){
         if(chainActive.Tip()->nHeight - (*it).nBlockHeight > nLimit){
-            if(fDebug) LogPrintf("CBanknodePayments::CleanPaymentList - Removing old banknode payment - block %d\n", (*it).nBlockHeight);
+            if(fDebug) LogPrintf("CBanknodePayments::CleanPaymentList - Removing old Banknode payment - block %d\n", (*it).nBlockHeight);
             vWinning.erase(it);
             break;
         }
@@ -734,50 +412,91 @@ void CBanknodePayments::CleanPaymentList()
 
 bool CBanknodePayments::ProcessBlock(int nBlockHeight)
 {
-    LOCK(cs_banknodes);
+    LOCK(cs_banknodepayments);
+
+    if(nBlockHeight <= nLastBlockHeight) return false;
     if(!enabled) return false;
-    CBanknodePaymentWinner winner;
+    CBanknodePaymentWinner newWinner;
+    int nMinimumAge = mnodeman.CountEnabled();
+    CScript payeeSource;
+
+    uint256 hash;
+    if(!GetBlockHash(hash, nBlockHeight-10)) return false;
+    unsigned int nHash;
+    memcpy(&nHash, &hash, 2);
+
+    LogPrintf(" ProcessBlock Start nHeight %d. \n", nBlockHeight);
 
     std::vector<CTxIn> vecLastPayments;
-    int c = 0;
-    BOOST_REVERSE_FOREACH(CBanknodePaymentWinner& winner, vWinning){
+    BOOST_REVERSE_FOREACH(CBanknodePaymentWinner& winner, vWinning)
+    {
+        //if we already have the same vin - we have one full payment cycle, break
+        if(vecLastPayments.size() > nMinimumAge) break;
         vecLastPayments.push_back(winner.vin);
-        //if we have one full payment cycle, break
-        if(++c > (int)vecBanknodes.size()) break;
     }
 
-    std::random_shuffle ( vecBanknodes.begin(), vecBanknodes.end() );
-    BOOST_FOREACH(CBankNode& mn, vecBanknodes) {
-        bool found = false;
-        BOOST_FOREACH(CTxIn& vin, vecLastPayments)
-            if(mn.vin == vin) found = true;
+    // pay to the oldest MN that still had no payment but its input is old enough and it was active long enough
+    CBanknode *pmn = mnodeman.FindOldestNotInVec(vecLastPayments, nMinimumAge, 0);
+    if(pmn != NULL)
+    {
+        LogPrintf(" Found by FindOldestNotInVec \n");
 
-        if(found) continue;
+        newWinner.score = 0;
+        newWinner.nBlockHeight = nBlockHeight;
+        newWinner.vin = pmn->vin;
 
-        mn.Check();
-        if(!mn.IsEnabled()) {
-            continue;
+        {   newWinner.payee=GetScriptForDestination(pmn->pubkey.GetID());
         }
 
-        winner.score = 0;
-        winner.nBlockHeight = nBlockHeight;
-        winner.vin = mn.vin;
-        winner.payee =GetScriptForDestination(mn.pubkey.GetID());
-
-        break;
+        payeeSource=GetScriptForDestination(pmn->pubkey.GetID());
     }
 
-    //if we can't find someone to get paid, pick randomly
-    if(winner.nBlockHeight == 0 && vecBanknodes.size() > 0) {
-        winner.score = 0;
-        winner.nBlockHeight = nBlockHeight;
-        winner.vin = vecBanknodes[0].vin;
-        winner.payee =GetScriptForDestination(vecBanknodes[0].pubkey.GetID());
+    //if we can't find new MN to get paid, pick first active MN counting back from the end of vecLastPayments list
+    if(newWinner.nBlockHeight == 0 && nMinimumAge > 0)
+    {
+        LogPrintf(" Find by reverse \n");
+
+        BOOST_REVERSE_FOREACH(CTxIn& vinLP, vecLastPayments)
+        {
+            CBanknode* pmn = mnodeman.Find(vinLP);
+            if(pmn != NULL)
+            {
+                pmn->Check();
+                if(!pmn->IsEnabled()) continue;
+
+                newWinner.score = 0;
+                newWinner.nBlockHeight = nBlockHeight;
+                newWinner.vin = pmn->vin;
+
+                {
+                    newWinner.payee=GetScriptForDestination(pmn->pubkey.GetID());
+                }
+
+                payeeSource=GetScriptForDestination(pmn->pubkey.GetID());
+
+                break; // we found active MN
+            }
+        }
     }
 
-    if(Sign(winner)){
-        if(AddWinningBanknode(winner)){
-            Relay(winner);
+    if(newWinner.nBlockHeight == 0) return false;
+
+    CTxDestination address1;
+    ExtractDestination(newWinner.payee, address1);
+    CBitcreditAddress address2(address1);
+
+    CTxDestination address3;
+    ExtractDestination(payeeSource, address3);
+    CBitcreditAddress address4(address3);
+
+    LogPrintf("Winner payee %s nHeight %d vin source %s. \n", address2.ToString().c_str(), newWinner.nBlockHeight, address4.ToString().c_str());
+
+    if(Sign(newWinner))
+    {
+        if(AddWinningBanknode(newWinner))
+        {
+            Relay(newWinner);
+            nLastBlockHeight = nBlockHeight;
             return true;
         }
     }
@@ -799,10 +518,11 @@ void CBanknodePayments::Relay(CBanknodePaymentWinner& winner)
 
 void CBanknodePayments::Sync(CNode* node)
 {
-    int a = 0;
+    LOCK(cs_banknodepayments);
+
     BOOST_FOREACH(CBanknodePaymentWinner& winner, vWinning)
         if(winner.nBlockHeight >= chainActive.Tip()->nHeight-10 && winner.nBlockHeight <= chainActive.Tip()->nHeight + 20)
-            node->PushMessage("mnw", winner, a);
+            node->PushMessage("mnw", winner);
 }
 
 
@@ -816,7 +536,7 @@ bool CBanknodePayments::SetPrivKey(std::string strPrivKey)
     Sign(winner);
 
     if(CheckSignature(winner)){
-        LogPrintf("CBanknodePayments::SetPrivKey - Successfully initialized as banknode payments master\n");
+        LogPrintf("CBanknodePayments::SetPrivKey - Successfully initialized as Banknode payments master\n");
         enabled = true;
         return true;
     } else {

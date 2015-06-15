@@ -23,6 +23,8 @@
 #include "ui_interface.h"
 #include "util.h"
 #include "activebanknode.h"
+#include "banknodeman.h"
+#include "banknodeconfig.h"
 #include "spork.h"
 #include "utilmoneystr.h"
 #ifdef ENABLE_WALLET
@@ -52,6 +54,7 @@ using namespace std;
 
 #ifdef ENABLE_WALLET
 CWallet* pwalletMain = NULL;
+int nWalletBackups = 10;
 #endif
 bool fFeeEstimatesInitialized = false;
 
@@ -140,6 +143,7 @@ void Shutdown()
     GenerateBitcredits(false, NULL, 0);
 #endif
     StopNode();
+    DumpBanknodes();
     UnregisterNodeSignals(GetNodeSignals());
 
     if (fFeeEstimatesInitialized)
@@ -357,6 +361,7 @@ std::string HelpMessage(HelpMessageMode mode)
     strUsage += "\n" + _("Banknode options:") + "\n";
     strUsage += "  -banknode=<n>            " + _("Enable the client to act as a banknode (0-1, default: 0)") + "\n";
     strUsage += "  -mnconf=<file>             " + _("Specify banknode configuration file (default: banknode.conf)") + "\n";
+    strUsage += "  -mnconflock=<n>            " + _("Lock banknodes from banknode configuration file (default: 1)") + "\n";
     strUsage += "  -banknodeprivkey=<n>     " + _("Set the banknode private key") + "\n";
     strUsage += "  -banknodeaddr=<n>        " + _("Set external address:port to get to this banknode (example: address:port)") + "\n";
     strUsage += "  -banknodeminprotocol=<n> " + _("Ignore banknodes less than version (example: 70007; default : 0)") + "\n";
@@ -854,7 +859,7 @@ bool AppInit2(boost::thread_group& threadGroup)
     }
 
     //ignore banknodes below protocol version
-    CBankNode::minProtoVersion = GetArg("-banknodeminprotocol", MIN_MN_PROTO_VERSION);
+    //nBanknodeMinProtocol = GetArg("-banknodeminprotocol", MIN_MN_PROTO_VERSION);
 
     if (fNoSmsg)
         nLocalServices &= ~(SMSG_RELAY);
@@ -864,6 +869,75 @@ bool AppInit2(boost::thread_group& threadGroup)
     // ********************************************************* Step 5: verify wallet database integrity
 #ifdef ENABLE_WALLET
     if (!fDisableWallet) {
+    
+        filesystem::path backupDir = GetDataDir() / "backups";
+        if (!filesystem::exists(backupDir))
+        {
+            // Always create backup folder to not confuse the operating system's file browser
+            filesystem::create_directories(backupDir);
+        }
+        nWalletBackups = GetArg("-createwalletbackups", 10);
+        nWalletBackups = std::max(0, std::min(10, nWalletBackups));
+        if(nWalletBackups > 0)
+        {
+            if (filesystem::exists(backupDir))
+            {
+                // Create backup of the wallet
+                std::string dateTimeStr = DateTimeStrFormat(".%Y-%m-%d-%H.%M", GetTime());
+                std::string backupPathStr = backupDir.string();
+                backupPathStr += "/" + strWalletFile;
+                std::string sourcePathStr = GetDataDir().string();
+                sourcePathStr += "/" + strWalletFile;
+                boost::filesystem::path sourceFile = sourcePathStr;
+                boost::filesystem::path backupFile = backupPathStr + dateTimeStr;
+                sourceFile.make_preferred();
+                backupFile.make_preferred();
+                try {
+                    boost::filesystem::copy_file(sourceFile, backupFile);
+                    LogPrintf("Creating backup of %s -> %s\n", sourceFile, backupFile);
+                } catch(boost::filesystem::filesystem_error &error) {
+                    LogPrintf("Failed to create backup %s\n", error.what());
+                }
+                // Keep only the last 10 backups, including the new one of course
+                typedef std::multimap<std::time_t, boost::filesystem::path> folder_set_t;
+                folder_set_t folder_set;
+                boost::filesystem::directory_iterator end_iter;
+                boost::filesystem::path backupFolder = backupDir.string();
+                backupFolder.make_preferred();
+                // Build map of backup files for current(!) wallet sorted by last write time
+                boost::filesystem::path currentFile;
+                for (boost::filesystem::directory_iterator dir_iter(backupFolder); dir_iter != end_iter; ++dir_iter)
+                {
+                    // Only check regular files
+                    if ( boost::filesystem::is_regular_file(dir_iter->status()))
+                    {
+                        currentFile = dir_iter->path().filename();
+                        // Only add the backups for the current wallet, e.g. wallet.dat.*
+                        if(currentFile.string().find(strWalletFile) != string::npos)
+                        {
+                            folder_set.insert(folder_set_t::value_type(boost::filesystem::last_write_time(dir_iter->path()), *dir_iter));
+                        }
+                    }
+                }
+                // Loop backward through backup files and keep the N newest ones (1 <= N <= 10)
+                int counter = 0;
+                BOOST_REVERSE_FOREACH(PAIRTYPE(const std::time_t, boost::filesystem::path) file, folder_set)
+                {
+                    counter++;
+                    if (counter > nWalletBackups)
+                    {
+                        // More than nWalletBackups backups: delete oldest one(s)
+                        try {
+                            boost::filesystem::remove(file.second);
+                            LogPrintf("Old backup deleted: %s\n", file.second);
+                        } catch(boost::filesystem::filesystem_error &error) {
+                            LogPrintf("Failed to delete backup %s\n", error.what());
+                        }
+                    }
+                }
+            }
+        }
+
         LogPrintf("Using wallet %s\n", strWalletFile);
         uiInterface.InitMessage(_("Verifying wallet..."));
 
@@ -1309,6 +1383,21 @@ bool AppInit2(boost::thread_group& threadGroup)
 
     // ********************************************************* Step 10: start node
 
+    uiInterface.InitMessage(_("Loading banknode cache..."));
+
+    CBanknodeDB mndb;
+    CBanknodeDB::ReadResult readResult = mndb.Read(mnodeman);
+    if (readResult == CBanknodeDB::FileError)
+        LogPrintf("Missing banknode cache file - mncache.dat, will try to recreate\n");
+    else if (readResult != CBanknodeDB::Ok)
+    {
+        LogPrintf("Error reading mncache.dat: ");
+        if(readResult == CBanknodeDB::IncorrectFormat)
+            LogPrintf("magic is ok but data has invalid format, will try to recreate\n");
+        else
+            LogPrintf("file format is unknown or invalid, please fix it manually\n");
+    }
+
 	fBankNode = GetBoolArg("-banknode", false);
     if(fBankNode) {
         LogPrintf("IS DARKSEND BANK NODE\n");
@@ -1339,6 +1428,17 @@ bool AppInit2(boost::thread_group& threadGroup)
 
         } else {
             return InitError(_("You must specify a banknodeprivkey in the configuration. Please see documentation for help."));
+        }
+    }
+
+    if(GetBoolArg("-mnconflock", true)) {
+        LogPrintf("Locking Banknodes:\n");
+        uint256 mnTxHash;
+        BOOST_FOREACH(CBanknodeConfig::CBanknodeEntry mne, banknodeConfig.getEntries()) {
+            LogPrintf("  %s %s\n", mne.getTxHash(), mne.getOutputIndex());
+            mnTxHash.SetHex(mne.getTxHash());
+            COutPoint outpoint = COutPoint(mnTxHash, boost::lexical_cast<unsigned int>(mne.getOutputIndex()));
+            pwalletMain->LockCoin(outpoint);
         }
     }
 

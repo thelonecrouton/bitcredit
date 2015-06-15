@@ -15,6 +15,7 @@
 #include "net.h"
 #include "ui_interface.h"
 #include "util.h"
+#include "banknodeman.h"
 
 #include <stdint.h>
 
@@ -29,6 +30,7 @@ ClientModel::ClientModel(OptionsModel *optionsModel, QObject *parent) :
     optionsModel(optionsModel),
     peerTableModel(0),
     cachedNumBlocks(0),
+    cachedBanknodeCountString(""),
     cachedReindexing(0), cachedImporting(0),
     numBlocksAtStartup(-1), pollTimer(0)
 {
@@ -36,6 +38,10 @@ ClientModel::ClientModel(OptionsModel *optionsModel, QObject *parent) :
     pollTimer = new QTimer(this);
     connect(pollTimer, SIGNAL(timeout()), this, SLOT(updateTimer()));
     pollTimer->start(MODEL_UPDATE_DELAY);
+    pollMnTimer = new QTimer(this);
+    connect(pollMnTimer, SIGNAL(timeout()), this, SLOT(updateMnTimer()));
+    // no need to update as frequent as data for balances/txes/blocks
+    pollMnTimer->start(MODEL_UPDATE_DELAY * 4);
 
     subscribeToCoreSignals();
 }
@@ -57,6 +63,11 @@ int ClientModel::getNumConnections(unsigned int flags) const
         nNum++;
 
     return nNum;
+}
+
+QString ClientModel::getBanknodeCountString() const
+{
+    return QString::number((int)mnodeman.CountEnabled()) + " / " + QString::number((int)mnodeman.size());
 }
 
 int ClientModel::getNumBlocks() const
@@ -120,6 +131,24 @@ void ClientModel::updateTimer()
     }
 
     emit bytesChanged(getTotalBytesRecv(), getTotalBytesSent());
+}
+
+void ClientModel::updateMnTimer()
+{
+    // Get required lock upfront. This avoids the GUI from getting stuck on
+    // periodical polls if the core is holding the locks for a longer time -
+    // for example, during a wallet rescan.
+    TRY_LOCK(cs_main, lockMain);
+    if(!lockMain)
+        return;
+    QString newBanknodeCountString = getBanknodeCountString();
+
+    if (cachedBanknodeCountString != newBanknodeCountString)
+    {
+        cachedBanknodeCountString = newBanknodeCountString;
+
+        emit strBanknodesChanged(cachedBanknodeCountString);
+    }
 }
 
 void ClientModel::updateNumConnections(int numConnections)

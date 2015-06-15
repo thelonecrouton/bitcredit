@@ -19,7 +19,8 @@
 
 static const int64_t DARKSEND_COLLATERAL = (0.1*COIN);
 static const int64_t DARKSEND_FEE = (0.0925*COIN);
-static const int64_t DARKSEND_POOL_MAX = (249999.99*COIN);
+static const int64_t DARKSEND_POOL_MAX = (49999.99*COIN);
+
 
 /*
     At 15 signatures, 1/2 of the banknode network can be owned by
@@ -142,7 +143,8 @@ class CTxOut
 public:
     CAmount nValue;
     CScript scriptPubKey;
-
+	int nRounds;
+	
     CTxOut()
     {
         SetNull();
@@ -162,6 +164,7 @@ public:
     {
         nValue = -1;
         scriptPubKey.clear();
+        nRounds = -10;
     }
 
     bool IsNull() const
@@ -188,7 +191,8 @@ public:
     friend bool operator==(const CTxOut& a, const CTxOut& b)
     {
         return (a.nValue       == b.nValue &&
-                a.scriptPubKey == b.scriptPubKey);
+                a.scriptPubKey == b.scriptPubKey &&
+                a.nRounds      == b.nRounds);
     }
 
     friend bool operator!=(const CTxOut& a, const CTxOut& b)
