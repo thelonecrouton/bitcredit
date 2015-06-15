@@ -134,7 +134,7 @@
            </column>
            <column>
             <property name="text">
-             <string>Active (secs)</string>
+             <string>Uptime</string>
             </property>
            </column>
            <column>
