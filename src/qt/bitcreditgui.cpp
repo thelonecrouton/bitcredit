@@ -19,6 +19,7 @@
 #include "utilitydialog.h"
 #include "exchangebrowser.h"
 #include "chatwindow.h"
+#include "util.h"
 #ifdef ENABLE_WALLET
 #include "walletframe.h"
 #include "walletmodel.h"
@@ -141,10 +142,33 @@ BitcreditGUI::BitcreditGUI(const NetworkStyle *networkStyle, QWidget *parent) :
     }
     windowTitle += " " + networkStyle->getTitleAddText();
 
-    QFile qss(":/css/stylesheet");
-    qss.open(QFile::ReadOnly);
-    qApp->setStyleSheet(qss.readAll());
-    qss.close();
+    //if theme=blah line exists in bitcredit.conf, use it
+    
+    theme = GetArg("-theme", "");
+    QString str = QString::fromUtf8(theme.c_str());
+    if (mapArgs.count("-theme"))
+    {
+        QMessageBox::information(0, QString("Warning!"), QString("You are about to load a custom theme:<br>" + str + " !<br><br>The Bitcredit developers accept no responsibility for<br>any resultant loss of client utility, sanity, or breakfast!"), QMessageBox::Ok);
+        QFile qss(str);
+        qss.open(QFile::ReadOnly);
+        qApp->setStyleSheet(qss.readAll());
+        qss.close();
+    }
+    //if not, load the default theme
+    else
+    {
+        //QMessageBox::information(0, QString("Information!"), QString("loading default theme" + str), QMessageBox::Ok);
+        QFile qss(":/css/stylesheet");
+        qss.open(QFile::ReadOnly);
+        qApp->setStyleSheet(qss.readAll());
+        qss.close();
+    }
+    
+    //if theme
+    //QFile qss(":/css/stylesheet");
+    //qss.open(QFile::ReadOnly);
+    //qApp->setStyleSheet(qss.readAll());
+    //qss.close();
     	
 #ifndef Q_OS_MAC
     QApplication::setWindowIcon(networkStyle->getTrayAndWindowIcon());

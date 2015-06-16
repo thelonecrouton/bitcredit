@@ -17,6 +17,7 @@
 #include <QStyle>
 #include <QStringList>
 #include <QCheckBox>
+#include <QTextStream>
 
 class OptionsModel;
 class QValidatedLineEdit;
@@ -54,7 +55,6 @@ private slots:
     void on_resetButton_clicked();
     void on_okButton_clicked();
     void on_cancelButton_clicked();
-    //void setTheme(const QModelIndex &index);
     void setTheme();
     void getData(const QModelIndex &index);
     void showRestartWarning(bool fPersistent = false);
@@ -79,9 +79,11 @@ private:
     QString selected;
     QString *homedir;
     QFile *qss;
-    QString file1;
+    QString confFile;
+    QString themename;
     QStringList *filters;
     QCheckBox *checkBox;
+    
 };
 
 #endif // BITCREDIT_QT_OPTIONSDIALOG_H

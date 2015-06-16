@@ -18,6 +18,8 @@
 #include "netbase.h"
 #include "txdb.h" // for -dbcache defaults
 
+#include <boost/filesystem.hpp>
+
 #ifdef ENABLE_WALLET
 #include "wallet.h" // for CWallet::minTxFee
 #endif
@@ -40,6 +42,7 @@
 #include <QFile>
 #include <QStyle>
 #include <QStringList>
+#include <QTextStream>
 
 OptionsDialog::OptionsDialog(QWidget *parent, bool enableWallet) :
     QDialog(parent),
@@ -174,11 +177,55 @@ void OptionsDialog::getData(const QModelIndex &index)
 
 void OptionsDialog::setTheme()
 {
-    //QString file1 = model2->filePath(index);
     QFile qss(selected);
     qss.open(QFile::ReadOnly);
     qApp->setStyleSheet(qss.readAll());
     qss.close();
+    
+    //if checkBox checked, read bitcredit.conf file and see if there is a 'theme=blah' line in it
+    //if there is, overwrite it, if not, just append 'theme=blah' to it
+    if (ui->checkBox->isChecked())
+        //read bitcredit.conf into a list
+        //boost::filesystem::path pathConf = GetDataDir() / "bitcredit.conf";
+
+	confFile = ("/home/stu/.bitcredit/bitcredit.conf");
+        QFile f(confFile);
+        QStringList confList;
+
+        if (!f.open(QIODevice::ReadOnly))
+        {
+            QMessageBox::information(0, "Error opening file", f.errorString());
+        }
+        else
+        {  
+            while(!f.atEnd())
+            {
+                confList.append(f.readLine());
+            }
+
+            f.close();
+        }
+
+        QStringList theme = confList.filter(QRegExp("theme"));
+        QString data = theme.join("");
+        if (data == "")
+        {
+            QMessageBox::information(0, QString("Information!"), QString("theme line NOT found!"), QMessageBox::Ok);
+            //append 'theme=blah' line to file
+            QString themename = qss.fileName();
+            QFile f(confFile);
+            if (f.open(QIODevice::Append)) 
+            {    
+                QTextStream stream(&f);
+                stream << "theme=" + themename << endl;
+                QMessageBox::information(0, QString("Information!"), QString("appended: theme=" + themename + " to file!"), QMessageBox::Ok);
+            }
+        }
+        else
+        {
+            QMessageBox::information(0, QString("Information!"), QString(data), QMessageBox::Ok);
+            //replace theme=blah' line in file
+        }
 }
 
 void OptionsDialog::setModel(OptionsModel *model)

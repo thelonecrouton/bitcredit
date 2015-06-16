@@ -11,6 +11,7 @@
 
 #include "amount.h"
 
+#include <string>
 #include <QLabel>
 #include <QMainWindow>
 #include <QMap>
@@ -142,6 +143,8 @@ private:
     QMenu *trayIconMenu;
     Notificator *notificator;
     RPCConsole *rpcConsole;
+    std::string theme;
+    QString str;
 
     /** Keep track of previous number of blocks, to detect progress */
     int prevBlocks;
@@ -275,7 +278,6 @@ protected:
 private:
     OptionsModel *optionsModel;
     QMenu* menu;
-
     /** Shows context menu with Display Unit options by the mouse coordinates */
     void onDisplayUnitsClicked(const QPoint& point);
     /** Creates context menu, its actions, and wires up all the relevant signals for mouse events. */
