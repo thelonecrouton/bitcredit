@@ -231,7 +231,7 @@ std::string HelpMessage(HelpMessageMode mode)
     strUsage += "  -checkblocks=<n>       " + strprintf(_("How many blocks to check at startup (default: %u, 0 = all)"), 288) + "\n";
     strUsage += "  -checklevel=<n>        " + strprintf(_("How thorough the block verification of -checkblocks is (0-4, default: %u)"), 3) + "\n";
     strUsage += "  -conf=<file>           " + strprintf(_("Specify configuration file (default: %s)"), "bitcredit.conf") + "\n";
-    strUsage += "  -theme=<path>          " + strprintf(_("Load stylesheet from specified path")) + "\n";
+    strUsage += "  -theme=<path>          " + _("Load stylesheet from specified path") + "\n";
     if (mode == HMM_BITCREDITD)
     {
 #if !defined(WIN32)
