@@ -1,14 +1,14 @@
 /*					main window border				*/
 QMainWindow 
 {
-border: 3px solid #ff0dc9;
+border: 2px solid #323232;
 }
 
 QStatusBar
 {
-border-left: 3px solid #ff0dc9;
-border-right: 3px solid #ff0dc9;
-border-bottom: 3px solid #ff0dc9;
+border-left: 2px solid #323232;
+border-right: 2px solid #323232;
+border-bottom: 2px solid #323232;
 }
 
 /*					transactionview page				*/
@@ -50,7 +50,7 @@ QMainWindow QToolBar#toolbar
 border:none;
 height:100%;
 padding-top:20px; 
-background: #ff0dc9; 
+background: transparent; 
 text-align: left; 
 /*color: white;*/
 min-width:180px;
@@ -283,10 +283,4 @@ QMainWindow QToolBar#toolbar11 QToolButton:hover
 {
 background-image:url(:/icons/bankstatstr);
 border: 1px solid #ffa405;
-}
-
-#wIdx
-{
-background: blue;
-border: 1 px solid white;
 }
