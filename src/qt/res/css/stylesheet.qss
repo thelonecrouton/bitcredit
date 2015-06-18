@@ -1,3 +1,20 @@
+/*					transactionview page				*/
+#bframe 
+{ 
+border: 2px solid #ffa405;
+}
+
+#availablebalancelabel
+{
+font: 18pt;
+}
+
+#labelBalance
+{
+color: #ffa405;
+font: bold 18pt;
+}
+
 QToolTip
 {
      border: 1px solid black;

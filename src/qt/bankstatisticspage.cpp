@@ -19,7 +19,7 @@ BankStatisticsPage::BankStatisticsPage(QWidget *parent) :
     ui(new Ui::BankStatisticsPage)
 {
     ui->setupUi(this);
-	this->setStyleSheet("background-image:url(:/images/background);");
+	//this->setStyleSheet("background-image:url(:/images/background);");
     //setFixedSize(768, 512);
 
     connect(ui->startButton, SIGNAL(pressed()), this, SLOT(updateStatistics()));

@@ -113,7 +113,7 @@ SendCoinsDialog::SendCoinsDialog(QWidget *parent) :
     minimizeFeeSection(settings.value("fFeeSectionMinimized").toBool());
     ui->checkUseDarksend->hide();
 
-	this->setStyleSheet("background-image:url(:/images/background);");
+	//this->setStyleSheet("background-image:url(:/images/background);");
 
 }
 

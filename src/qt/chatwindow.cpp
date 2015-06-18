@@ -34,7 +34,7 @@ ChatWindow::ChatWindow(QWidget *parent)
     connect(ui->tab, SIGNAL(currentChanged(int)), this, SLOT(tabChanged(int)) );
     connect(ui->tab, SIGNAL(tabCloseRequested(int)), this, SLOT(tabClosing(int)) );
     
-    this->setStyleSheet("background-image:url(:/images/background);");
+    //this->setStyleSheet("background-image:url(:/images/background);");
 }
 
 void ChatWindow::tabChanged(int index)

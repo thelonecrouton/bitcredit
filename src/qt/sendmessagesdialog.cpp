@@ -51,7 +51,7 @@ SendMessagesDialog::SendMessagesDialog(Mode mode, Type type, QWidget *parent) :
     if(type == SendMessagesDialog::Page)
         ui->closeButton->hide();
         
-        this->setStyleSheet("background-image:url(:/images/background);");
+        //this->setStyleSheet("background-image:url(:/images/background);");
 }
 
 void SendMessagesDialog::setModel(MessageModel *model)

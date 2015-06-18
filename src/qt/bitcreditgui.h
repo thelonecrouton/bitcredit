@@ -101,11 +101,10 @@ private:
     QWidget *wId2;
     QWidget *wId;
     QWidget *wId3;
-    QWidget *wId4;   
-
+    QWidget *wId4; 
     QMenuBar *appMenuBar;
-	QAction *chatAction;
-	QAction *exchangeAction;
+    QAction *chatAction;
+    QAction *exchangeAction;
     QAction *overviewAction;
     QAction *historyAction;
     QAction *quitAction;
@@ -121,14 +120,14 @@ private:
     QAction *encryptWalletAction;
     QAction *backupWalletAction;
     QAction *changePassphraseAction;
-	QAction *banknodeManagerAction;
+    QAction *banknodeManagerAction;
     QAction *aboutQtAction;
     QAction *openRPCConsoleAction;
     QAction *openAction;
     QAction *showHelpMessageAction;
-	QAction *blockAction;
-	QAction *bankstatsAction;
-	QAction *paperWalletAction;
+    QAction *blockAction;
+    QAction *bankstatsAction;
+    QAction *paperWalletAction;
     QAction *sendMessagesAction;
     QAction *sendMessagesAnonAction;
     QAction *messageAction;
