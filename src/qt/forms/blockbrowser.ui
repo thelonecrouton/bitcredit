@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>918</width>
-    <height>629</height>
+    <height>562</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -16,644 +16,813 @@
   <property name="styleSheet">
    <string notr="true"/>
   </property>
-  <widget class="QWidget" name="gridLayoutWidget_3">
+  <widget class="QSpinBox" name="heightBox">
    <property name="geometry">
     <rect>
-     <x>0</x>
-     <y>4</y>
-     <width>751</width>
-     <height>526</height>
+     <x>169</x>
+     <y>116</y>
+     <width>201</width>
+     <height>25</height>
     </rect>
    </property>
-   <layout class="QGridLayout" name="gridLayout_3">
-    <property name="verticalSpacing">
-     <number>6</number>
+   <property name="sizePolicy">
+    <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+     <horstretch>0</horstretch>
+     <verstretch>0</verstretch>
+    </sizepolicy>
+   </property>
+   <property name="minimumSize">
+    <size>
+     <width>0</width>
+     <height>20</height>
+    </size>
+   </property>
+   <property name="maximumSize">
+    <size>
+     <width>400</width>
+     <height>16777215</height>
+    </size>
+   </property>
+   <property name="styleSheet">
+    <string notr="true"/>
+   </property>
+   <property name="maximum">
+    <number>99999999</number>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="blockButton">
+   <property name="geometry">
+    <rect>
+     <x>380</x>
+     <y>116</y>
+     <width>50</width>
+     <height>25</height>
+    </rect>
+   </property>
+   <property name="minimumSize">
+    <size>
+     <width>0</width>
+     <height>20</height>
+    </size>
+   </property>
+   <property name="maximumSize">
+    <size>
+     <width>340</width>
+     <height>16777215</height>
+    </size>
+   </property>
+   <property name="styleSheet">
+    <string notr="true"/>
+   </property>
+   <property name="text">
+    <string>Go</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="txButton">
+   <property name="geometry">
+    <rect>
+     <x>650</x>
+     <y>146</y>
+     <width>50</width>
+     <height>25</height>
+    </rect>
+   </property>
+   <property name="minimumSize">
+    <size>
+     <width>0</width>
+     <height>20</height>
+    </size>
+   </property>
+   <property name="maximumSize">
+    <size>
+     <width>340</width>
+     <height>16777215</height>
+    </size>
+   </property>
+   <property name="styleSheet">
+    <string notr="true"/>
+   </property>
+   <property name="text">
+    <string>Go</string>
+   </property>
+  </widget>
+  <widget class="QLineEdit" name="txBox">
+   <property name="geometry">
+    <rect>
+     <x>169</x>
+     <y>146</y>
+     <width>470</width>
+     <height>25</height>
+    </rect>
+   </property>
+   <property name="sizePolicy">
+    <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+     <horstretch>0</horstretch>
+     <verstretch>0</verstretch>
+    </sizepolicy>
+   </property>
+   <property name="minimumSize">
+    <size>
+     <width>0</width>
+     <height>20</height>
+    </size>
+   </property>
+   <property name="maximumSize">
+    <size>
+     <width>500</width>
+     <height>16777215</height>
+    </size>
+   </property>
+   <property name="styleSheet">
+    <string notr="true"/>
+   </property>
+   <property name="inputMask">
+    <string comment="Transaction id" extracomment="Transaction id"/>
+   </property>
+   <property name="placeholderText">
+    <string comment="Transaction ID" extracomment="Transaction ID"/>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="addrButton">
+   <property name="geometry">
+    <rect>
+     <x>570</x>
+     <y>176</y>
+     <width>50</width>
+     <height>25</height>
+    </rect>
+   </property>
+   <property name="minimumSize">
+    <size>
+     <width>0</width>
+     <height>20</height>
+    </size>
+   </property>
+   <property name="maximumSize">
+    <size>
+     <width>340</width>
+     <height>16777215</height>
+    </size>
+   </property>
+   <property name="styleSheet">
+    <string notr="true"/>
+   </property>
+   <property name="text">
+    <string>Go</string>
+   </property>
+  </widget>
+  <widget class="QLineEdit" name="addrBox">
+   <property name="geometry">
+    <rect>
+     <x>169</x>
+     <y>176</y>
+     <width>391</width>
+     <height>25</height>
+    </rect>
+   </property>
+   <property name="sizePolicy">
+    <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+     <horstretch>0</horstretch>
+     <verstretch>0</verstretch>
+    </sizepolicy>
+   </property>
+   <property name="minimumSize">
+    <size>
+     <width>0</width>
+     <height>20</height>
+    </size>
+   </property>
+   <property name="maximumSize">
+    <size>
+     <width>400</width>
+     <height>16777215</height>
+    </size>
+   </property>
+   <property name="styleSheet">
+    <string notr="true"/>
+   </property>
+   <property name="inputMask">
+    <string comment="Transaction id" extracomment="Transaction id"/>
+   </property>
+   <property name="placeholderText">
+    <string comment="Transaction ID" extracomment="Transaction ID"/>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label">
+   <property name="geometry">
+    <rect>
+     <x>50</x>
+     <y>120</y>
+     <width>81</width>
+     <height>17</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Query Block:</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_2">
+   <property name="geometry">
+    <rect>
+     <x>50</x>
+     <y>150</y>
+     <width>115</width>
+     <height>17</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Query Transaction:</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_3">
+   <property name="geometry">
+    <rect>
+     <x>50</x>
+     <y>180</y>
+     <width>110</width>
+     <height>17</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Query Address:</string>
+   </property>
+  </widget>
+  <widget class="QFrame" name="addrFrame">
+   <property name="geometry">
+    <rect>
+     <x>50</x>
+     <y>230</y>
+     <width>650</width>
+     <height>160</height>
+    </rect>
+   </property>
+   <property name="maximumSize">
+    <size>
+     <width>650</width>
+     <height>16777215</height>
+    </size>
+   </property>
+   <property name="frameShape">
+    <enum>QFrame::StyledPanel</enum>
+   </property>
+   <property name="frameShadow">
+    <enum>QFrame::Raised</enum>
+   </property>
+   <widget class="QWidget" name="layoutWidget">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>11</y>
+      <width>551</width>
+      <height>143</height>
+     </rect>
     </property>
-    <item row="2" column="0">
-     <layout class="QGridLayout" name="gridLayout_2">
-      <property name="sizeConstraint">
-       <enum>QLayout::SetNoConstraint</enum>
-      </property>
-      <item row="7" column="1">
-       <widget class="QPushButton" name="addrButton">
-        <property name="minimumSize">
-         <size>
-          <width>0</width>
-          <height>20</height>
-         </size>
-        </property>
-        <property name="maximumSize">
-         <size>
-          <width>340</width>
-          <height>16777215</height>
-         </size>
-        </property>
-        <property name="styleSheet">
-         <string notr="true"/>
-        </property>
-        <property name="text">
-         <string>Display Address Details</string>
-        </property>
-       </widget>
-      </item>
-      <item row="8" column="0">
-       <widget class="QLabel" name="Transactioncountlabel">
-        <property name="styleSheet">
-         <string notr="true"/>
-        </property>
-        <property name="text">
-         <string>Tx Count:</string>
-        </property>
-        <property name="alignment">
-         <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
-        </property>
-       </widget>
-      </item>
-      <item row="11" column="0">
-       <widget class="QLabel" name="outputLabel_3">
-        <property name="styleSheet">
-         <string notr="true"/>
-        </property>
-        <property name="text">
-         <string>Balance:</string>
-        </property>
-        <property name="alignment">
-         <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
-        </property>
-       </widget>
-      </item>
-      <item row="12" column="0">
-       <widget class="QLabel" name="outputLabel_4">
-        <property name="styleSheet">
-         <string notr="true"/>
-        </property>
-        <property name="text">
-         <string>Tx Frequency:</string>
-        </property>
-        <property name="alignment">
-         <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
-        </property>
-       </widget>
-      </item>
-      <item row="9" column="0">
-       <widget class="QLabel" name="trustlabel">
-        <property name="styleSheet">
-         <string notr="true"/>
-        </property>
-        <property name="text">
-         <string>Trust Rating :</string>
-        </property>
-        <property name="alignment">
-         <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
-        </property>
-       </widget>
-      </item>
-      <item row="10" column="0">
-       <widget class="QLabel" name="outputLabel_2">
-        <property name="styleSheet">
-         <string notr="true"/>
-        </property>
-        <property name="text">
-         <string>Credit Score:</string>
-        </property>
-        <property name="alignment">
-         <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
-        </property>
-       </widget>
-      </item>
-      <item row="13" column="0">
-       <widget class="QLabel" name="networklabel">
-        <property name="styleSheet">
-         <string notr="true"/>
-        </property>
-        <property name="text">
-         <string>Network Label:</string>
-        </property>
-        <property name="alignment">
-         <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
-        </property>
-       </widget>
-      </item>
-      <item row="2" column="1">
-       <widget class="QLabel" name="txID">
-        <property name="styleSheet">
-         <string notr="true"/>
-        </property>
-        <property name="text">
-         <string>000</string>
-        </property>
-       </widget>
-      </item>
-      <item row="5" column="0">
-       <widget class="QLabel" name="outputLabel">
-        <property name="styleSheet">
-         <string notr="true"/>
-        </property>
-        <property name="text">
-         <string>Outputs:</string>
-        </property>
-        <property name="alignment">
-         <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
-        </property>
-       </widget>
-      </item>
-      <item row="4" column="0">
-       <widget class="QLabel" name="feesLabel">
-        <property name="styleSheet">
-         <string notr="true"/>
-        </property>
-        <property name="text">
-         <string>Fees:</string>
-        </property>
-       </widget>
-      </item>
-      <item row="3" column="0">
-       <widget class="QLabel" name="valueLabel">
-        <property name="styleSheet">
-         <string notr="true"/>
-        </property>
-        <property name="text">
-         <string>Value out:</string>
-        </property>
-       </widget>
-      </item>
-      <item row="5" column="1">
-       <widget class="QLabel" name="outputBox">
-        <property name="styleSheet">
-         <string notr="true"/>
-        </property>
-        <property name="text">
-         <string/>
-        </property>
-        <property name="alignment">
-         <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
-        </property>
-       </widget>
-      </item>
-      <item row="2" column="0">
-       <widget class="QLabel" name="txLabel">
-        <property name="styleSheet">
-         <string notr="true"/>
-        </property>
-        <property name="text">
-         <string>Transaction ID:</string>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="0">
-       <widget class="QLineEdit" name="txBox">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <property name="minimumSize">
-         <size>
-          <width>0</width>
-          <height>20</height>
-         </size>
-        </property>
-        <property name="maximumSize">
-         <size>
-          <width>340</width>
-          <height>16777215</height>
-         </size>
-        </property>
-        <property name="styleSheet">
-         <string notr="true"/>
-        </property>
-        <property name="inputMask">
-         <string comment="Transaction id" extracomment="Transaction id"/>
-        </property>
-        <property name="placeholderText">
-         <string comment="Transaction ID" extracomment="Transaction ID"/>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="1">
-       <widget class="QPushButton" name="txButton">
-        <property name="minimumSize">
-         <size>
-          <width>0</width>
-          <height>20</height>
-         </size>
-        </property>
-        <property name="maximumSize">
-         <size>
-          <width>340</width>
-          <height>16777215</height>
-         </size>
-        </property>
-        <property name="styleSheet">
-         <string notr="true"/>
-        </property>
-        <property name="text">
-         <string>Decode Transaction</string>
-        </property>
-       </widget>
-      </item>
-      <item row="3" column="1">
-       <widget class="QLabel" name="valueBox">
-        <property name="styleSheet">
-         <string notr="true"/>
-        </property>
-        <property name="text">
-         <string/>
-        </property>
-       </widget>
-      </item>
-      <item row="4" column="1">
-       <widget class="QLabel" name="feesBox">
-        <property name="styleSheet">
-         <string notr="true"/>
-        </property>
-        <property name="text">
-         <string/>
-        </property>
-       </widget>
-      </item>
-      <item row="6" column="0">
-       <widget class="QLabel" name="inputLabel">
-        <property name="styleSheet">
-         <string notr="true"/>
-        </property>
-        <property name="text">
-         <string>Inputs:</string>
-        </property>
-        <property name="alignment">
-         <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
-        </property>
-       </widget>
-      </item>
-      <item row="6" column="1">
-       <widget class="QLabel" name="inputBox">
-        <property name="styleSheet">
-         <string notr="true"/>
-        </property>
-        <property name="text">
-         <string/>
-        </property>
-        <property name="alignment">
-         <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
-        </property>
-       </widget>
-      </item>
-      <item row="7" column="0">
-       <widget class="QLineEdit" name="addrBox">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <property name="minimumSize">
-         <size>
-          <width>0</width>
-          <height>20</height>
-         </size>
-        </property>
-        <property name="maximumSize">
-         <size>
-          <width>340</width>
-          <height>16777215</height>
-         </size>
-        </property>
-        <property name="styleSheet">
-         <string notr="true"/>
-        </property>
-        <property name="inputMask">
-         <string comment="Transaction id" extracomment="Transaction id"/>
-        </property>
-        <property name="placeholderText">
-         <string comment="Transaction ID" extracomment="Transaction ID"/>
-        </property>
-       </widget>
-      </item>
-      <item row="8" column="1">
-       <widget class="QLabel" name="txcount">
-        <property name="styleSheet">
-         <string notr="true"/>
-        </property>
-        <property name="text">
-         <string>0</string>
-        </property>
-       </widget>
-      </item>
-      <item row="9" column="1">
-       <widget class="QLabel" name="trustrating">
-        <property name="styleSheet">
-         <string notr="true"/>
-        </property>
-        <property name="text">
-         <string>0</string>
-        </property>
-       </widget>
-      </item>
-      <item row="10" column="1">
-       <widget class="QLabel" name="creditscore">
-        <property name="styleSheet">
-         <string notr="true"/>
-        </property>
-        <property name="text">
-         <string>0</string>
-        </property>
-       </widget>
-      </item>
-      <item row="11" column="1">
-       <widget class="QLabel" name="addrbalance">
-        <property name="styleSheet">
-         <string notr="true"/>
-        </property>
-        <property name="text">
-         <string>0</string>
-        </property>
-       </widget>
-      </item>
-      <item row="12" column="1">
-       <widget class="QLabel" name="txfrequency">
-        <property name="styleSheet">
-         <string notr="true"/>
-        </property>
-        <property name="text">
-         <string>0</string>
-        </property>
-       </widget>
-      </item>
-      <item row="13" column="1">
-       <widget class="QLabel" name="networklabel_2">
-        <property name="styleSheet">
-         <string notr="true"/>
-        </property>
-        <property name="text">
-         <string>Normal</string>
-        </property>
-       </widget>
-      </item>
-     </layout>
-    </item>
-    <item row="0" column="0">
-     <widget class="QFrame" name="verticalFrame">
-      <property name="minimumSize">
-       <size>
-        <width>800</width>
-        <height>44</height>
-       </size>
-      </property>
-      <property name="maximumSize">
-       <size>
-        <width>800</width>
-        <height>44</height>
-       </size>
-      </property>
-      <property name="styleSheet">
-       <string notr="true"/>
-      </property>
-      <layout class="QVBoxLayout" name="verticalLayout_10"/>
-     </widget>
-    </item>
-    <item row="1" column="0">
-     <layout class="QGridLayout" name="gridLayout">
-      <property name="sizeConstraint">
-       <enum>QLayout::SetNoConstraint</enum>
-      </property>
-      <property name="horizontalSpacing">
-       <number>6</number>
-      </property>
-      <item row="2" column="0">
-       <widget class="QLabel" name="hashLabel">
-        <property name="styleSheet">
-         <string notr="true"/>
-        </property>
-        <property name="text">
-         <string>Block Hash:</string>
-        </property>
-       </widget>
-      </item>
-      <item row="5" column="0">
-       <widget class="QLabel" name="bitsLabel">
-        <property name="styleSheet">
-         <string notr="true"/>
-        </property>
-        <property name="text">
-         <string>Block nBits:</string>
-        </property>
-       </widget>
-      </item>
-      <item row="3" column="1">
-       <widget class="QLabel" name="merkleBox">
-        <property name="minimumSize">
-         <size>
-          <width>187</width>
-          <height>0</height>
-         </size>
-        </property>
-        <property name="styleSheet">
-         <string notr="true"/>
-        </property>
-        <property name="text">
-         <string>0x0</string>
-        </property>
-       </widget>
-      </item>
-      <item row="3" column="0">
-       <widget class="QLabel" name="merkleLabel">
-        <property name="styleSheet">
-         <string notr="true"/>
-        </property>
-        <property name="text">
-         <string>Block Merkle:</string>
-        </property>
-       </widget>
-      </item>
-      <item row="2" column="1">
-       <widget class="QLabel" name="hashBox">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <property name="minimumSize">
-         <size>
-          <width>0</width>
-          <height>0</height>
-         </size>
-        </property>
-        <property name="styleSheet">
-         <string notr="true"/>
-        </property>
-        <property name="text">
-         <string>0x0</string>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="0">
-       <widget class="QSpinBox" name="heightBox">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <property name="minimumSize">
-         <size>
-          <width>0</width>
-          <height>20</height>
-         </size>
-        </property>
-        <property name="maximumSize">
-         <size>
-          <width>340</width>
-          <height>16777215</height>
-         </size>
-        </property>
-        <property name="styleSheet">
-         <string notr="true"/>
-        </property>
-        <property name="maximum">
-         <number>99999999</number>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="1">
-       <widget class="QPushButton" name="blockButton">
-        <property name="minimumSize">
-         <size>
-          <width>0</width>
-          <height>20</height>
-         </size>
-        </property>
-        <property name="maximumSize">
-         <size>
-          <width>340</width>
-          <height>16777215</height>
-         </size>
-        </property>
-        <property name="styleSheet">
-         <string notr="true"/>
-        </property>
-        <property name="text">
-         <string>Jump to Block</string>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="0">
-       <widget class="QLabel" name="heightLabel_2">
-        <property name="styleSheet">
-         <string notr="true"/>
-        </property>
-        <property name="text">
-         <string>Block Height:</string>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="1">
-       <widget class="QLabel" name="heightLabel">
-        <property name="styleSheet">
-         <string notr="true"/>
-        </property>
-        <property name="text">
-         <string>0</string>
-        </property>
-       </widget>
-      </item>
-      <item row="6" column="0">
-       <widget class="QLabel" name="timeLabel">
-        <property name="styleSheet">
-         <string notr="true"/>
-        </property>
-        <property name="text">
-         <string>Block Timestamp:</string>
-        </property>
-       </widget>
-      </item>
-      <item row="8" column="1">
-       <widget class="QLabel" name="pawBox">
-        <property name="styleSheet">
-         <string notr="true"/>
-        </property>
-        <property name="text">
-         <string>0000 H/s</string>
-        </property>
-       </widget>
-      </item>
-      <item row="4" column="1">
-       <widget class="QLabel" name="nonceBox">
-        <property name="styleSheet">
-         <string notr="true"/>
-        </property>
-        <property name="text">
-         <string>0</string>
-        </property>
-       </widget>
-      </item>
-      <item row="4" column="0">
-       <widget class="QLabel" name="nonceLabel">
-        <property name="styleSheet">
-         <string notr="true"/>
-        </property>
-        <property name="text">
-         <string>Block nNonce:</string>
-        </property>
-       </widget>
-      </item>
-      <item row="7" column="0">
-       <widget class="QLabel" name="hardLabel">
-        <property name="styleSheet">
-         <string notr="true"/>
-        </property>
-        <property name="text">
-         <string>Block Difficulty:</string>
-        </property>
-       </widget>
-      </item>
-      <item row="5" column="1">
-       <widget class="QLabel" name="bitsBox">
-        <property name="styleSheet">
-         <string notr="true"/>
-        </property>
-        <property name="text">
-         <string>0</string>
-        </property>
-       </widget>
-      </item>
-      <item row="7" column="1">
-       <widget class="QLabel" name="hardBox">
-        <property name="styleSheet">
-         <string notr="true"/>
-        </property>
-        <property name="text">
-         <string>0.00</string>
-        </property>
-       </widget>
-      </item>
-      <item row="8" column="0">
-       <widget class="QLabel" name="pawLabel">
-        <property name="styleSheet">
-         <string notr="true"/>
-        </property>
-        <property name="text">
-         <string>Block Hashrate:</string>
-        </property>
-       </widget>
-      </item>
-      <item row="6" column="1">
-       <widget class="QLabel" name="timeBox">
-        <property name="styleSheet">
-         <string notr="true"/>
-        </property>
-        <property name="text">
-         <string>0</string>
-        </property>
-       </widget>
-      </item>
-     </layout>
-    </item>
-   </layout>
+    <layout class="QGridLayout" name="gridLayout_2">
+     <property name="sizeConstraint">
+      <enum>QLayout::SetNoConstraint</enum>
+     </property>
+     <property name="horizontalSpacing">
+      <number>6</number>
+     </property>
+     <item row="2" column="0">
+      <widget class="QLabel" name="creditscoreLabel">
+       <property name="styleSheet">
+        <string notr="true"/>
+       </property>
+       <property name="text">
+        <string>Credit Score:</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+       </property>
+      </widget>
+     </item>
+     <item row="5" column="1">
+      <widget class="QLabel" name="networkLabel_2">
+       <property name="styleSheet">
+        <string notr="true"/>
+       </property>
+       <property name="text">
+        <string>Normal</string>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="1">
+      <widget class="QLabel" name="trustrating">
+       <property name="styleSheet">
+        <string notr="true"/>
+       </property>
+       <property name="text">
+        <string>0</string>
+       </property>
+      </widget>
+     </item>
+     <item row="4" column="1">
+      <widget class="QLabel" name="txfrequency">
+       <property name="styleSheet">
+        <string notr="true"/>
+       </property>
+       <property name="text">
+        <string>0</string>
+       </property>
+      </widget>
+     </item>
+     <item row="4" column="0">
+      <widget class="QLabel" name="txfreqLabel">
+       <property name="styleSheet">
+        <string notr="true"/>
+       </property>
+       <property name="text">
+        <string>Tx Frequency:</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="1">
+      <widget class="QLabel" name="creditscore">
+       <property name="styleSheet">
+        <string notr="true"/>
+       </property>
+       <property name="text">
+        <string>0</string>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="0">
+      <widget class="QLabel" name="Transactioncountlabel">
+       <property name="styleSheet">
+        <string notr="true"/>
+       </property>
+       <property name="text">
+        <string>Tx Count:</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+       </property>
+      </widget>
+     </item>
+     <item row="3" column="0">
+      <widget class="QLabel" name="balanceLabel">
+       <property name="styleSheet">
+        <string notr="true"/>
+       </property>
+       <property name="text">
+        <string>Balance:</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+       </property>
+      </widget>
+     </item>
+     <item row="3" column="1">
+      <widget class="QLabel" name="addrBalance">
+       <property name="styleSheet">
+        <string notr="true"/>
+       </property>
+       <property name="text">
+        <string>0</string>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="1">
+      <widget class="QLabel" name="txcount">
+       <property name="styleSheet">
+        <string notr="true"/>
+       </property>
+       <property name="text">
+        <string>0</string>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="0">
+      <widget class="QLabel" name="trustLabel">
+       <property name="styleSheet">
+        <string notr="true"/>
+       </property>
+       <property name="text">
+        <string>Trust Rating :</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+       </property>
+      </widget>
+     </item>
+     <item row="5" column="0">
+      <widget class="QLabel" name="networkLabel">
+       <property name="styleSheet">
+        <string notr="true"/>
+       </property>
+       <property name="text">
+        <string>Network Label:</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </widget>
+  </widget>
+  <widget class="QFrame" name="txFrame">
+   <property name="geometry">
+    <rect>
+     <x>50</x>
+     <y>230</y>
+     <width>650</width>
+     <height>174</height>
+    </rect>
+   </property>
+   <property name="maximumSize">
+    <size>
+     <width>650</width>
+     <height>16777215</height>
+    </size>
+   </property>
+   <property name="frameShape">
+    <enum>QFrame::StyledPanel</enum>
+   </property>
+   <property name="frameShadow">
+    <enum>QFrame::Raised</enum>
+   </property>
+   <widget class="QWidget" name="layoutWidget_2">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>11</y>
+      <width>551</width>
+      <height>124</height>
+     </rect>
+    </property>
+    <layout class="QGridLayout" name="gridLayout_3">
+     <property name="sizeConstraint">
+      <enum>QLayout::SetNoConstraint</enum>
+     </property>
+     <property name="horizontalSpacing">
+      <number>6</number>
+     </property>
+     <item row="4" column="0">
+      <widget class="QLabel" name="inputLabel">
+       <property name="styleSheet">
+        <string notr="true"/>
+       </property>
+       <property name="text">
+        <string>Inputs:</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="0">
+      <widget class="QLabel" name="feesLabel">
+       <property name="styleSheet">
+        <string notr="true"/>
+       </property>
+       <property name="text">
+        <string>Fees:</string>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="0">
+      <widget class="QLabel" name="valueLabel">
+       <property name="styleSheet">
+        <string notr="true"/>
+       </property>
+       <property name="text">
+        <string>Value out:</string>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="1">
+      <widget class="QLabel" name="feesBox">
+       <property name="styleSheet">
+        <string notr="true"/>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+      </widget>
+     </item>
+     <item row="4" column="1">
+      <widget class="QLabel" name="inputBox">
+       <property name="styleSheet">
+        <string notr="true"/>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="1">
+      <widget class="QLabel" name="txID">
+       <property name="styleSheet">
+        <string notr="true"/>
+       </property>
+       <property name="text">
+        <string>000</string>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="1">
+      <widget class="QLabel" name="valueBox">
+       <property name="styleSheet">
+        <string notr="true"/>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+      </widget>
+     </item>
+     <item row="3" column="1">
+      <widget class="QLabel" name="outputBox">
+       <property name="styleSheet">
+        <string notr="true"/>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+       </property>
+      </widget>
+     </item>
+     <item row="3" column="0">
+      <widget class="QLabel" name="outputLabel">
+       <property name="styleSheet">
+        <string notr="true"/>
+       </property>
+       <property name="text">
+        <string>Outputs:</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="0">
+      <widget class="QLabel" name="txLabel">
+       <property name="styleSheet">
+        <string notr="true"/>
+       </property>
+       <property name="text">
+        <string>Transaction ID:</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </widget>
+  </widget>
+  <widget class="QFrame" name="blockFrame">
+   <property name="geometry">
+    <rect>
+     <x>50</x>
+     <y>230</y>
+     <width>650</width>
+     <height>241</height>
+    </rect>
+   </property>
+   <property name="maximumSize">
+    <size>
+     <width>650</width>
+     <height>16777215</height>
+    </size>
+   </property>
+   <property name="frameShape">
+    <enum>QFrame::StyledPanel</enum>
+   </property>
+   <property name="frameShadow">
+    <enum>QFrame::Raised</enum>
+   </property>
+   <widget class="QWidget" name="layoutWidget">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>11</y>
+      <width>551</width>
+      <height>218</height>
+     </rect>
+    </property>
+    <layout class="QGridLayout" name="gridLayout">
+     <property name="sizeConstraint">
+      <enum>QLayout::SetNoConstraint</enum>
+     </property>
+     <property name="horizontalSpacing">
+      <number>6</number>
+     </property>
+     <item row="1" column="0">
+      <widget class="QLabel" name="hashLabel">
+       <property name="styleSheet">
+        <string notr="true"/>
+       </property>
+       <property name="text">
+        <string>Block Hash:</string>
+       </property>
+      </widget>
+     </item>
+     <item row="4" column="0">
+      <widget class="QLabel" name="bitsLabel">
+       <property name="styleSheet">
+        <string notr="true"/>
+       </property>
+       <property name="text">
+        <string>Block nBits:</string>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="1">
+      <widget class="QLabel" name="merkleBox">
+       <property name="minimumSize">
+        <size>
+         <width>187</width>
+         <height>0</height>
+        </size>
+       </property>
+       <property name="styleSheet">
+        <string notr="true"/>
+       </property>
+       <property name="text">
+        <string>0x0</string>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="0">
+      <widget class="QLabel" name="merkleLabel">
+       <property name="styleSheet">
+        <string notr="true"/>
+       </property>
+       <property name="text">
+        <string>Block Merkle:</string>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="1">
+      <widget class="QLabel" name="hashBox">
+       <property name="enabled">
+        <bool>true</bool>
+       </property>
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="minimumSize">
+        <size>
+         <width>0</width>
+         <height>0</height>
+        </size>
+       </property>
+       <property name="styleSheet">
+        <string notr="true"/>
+       </property>
+       <property name="text">
+        <string>0x0</string>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="0">
+      <widget class="QLabel" name="heightLabel_2">
+       <property name="styleSheet">
+        <string notr="true"/>
+       </property>
+       <property name="text">
+        <string>Block Height:</string>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="1">
+      <widget class="QLabel" name="heightLabel">
+       <property name="styleSheet">
+        <string notr="true"/>
+       </property>
+       <property name="text">
+        <string>0</string>
+       </property>
+      </widget>
+     </item>
+     <item row="7" column="1">
+      <widget class="QLabel" name="pawBox">
+       <property name="styleSheet">
+        <string notr="true"/>
+       </property>
+       <property name="text">
+        <string>0000 H/s</string>
+       </property>
+      </widget>
+     </item>
+     <item row="3" column="1">
+      <widget class="QLabel" name="nonceBox">
+       <property name="styleSheet">
+        <string notr="true"/>
+       </property>
+       <property name="text">
+        <string>0</string>
+       </property>
+      </widget>
+     </item>
+     <item row="3" column="0">
+      <widget class="QLabel" name="nonceLabel">
+       <property name="styleSheet">
+        <string notr="true"/>
+       </property>
+       <property name="text">
+        <string>Block nNonce:</string>
+       </property>
+      </widget>
+     </item>
+     <item row="6" column="0">
+      <widget class="QLabel" name="hardLabel">
+       <property name="styleSheet">
+        <string notr="true"/>
+       </property>
+       <property name="text">
+        <string>Block Difficulty:</string>
+       </property>
+      </widget>
+     </item>
+     <item row="4" column="1">
+      <widget class="QLabel" name="bitsBox">
+       <property name="styleSheet">
+        <string notr="true"/>
+       </property>
+       <property name="text">
+        <string>0</string>
+       </property>
+      </widget>
+     </item>
+     <item row="6" column="1">
+      <widget class="QLabel" name="hardBox">
+       <property name="styleSheet">
+        <string notr="true"/>
+       </property>
+       <property name="text">
+        <string>0.00</string>
+       </property>
+      </widget>
+     </item>
+     <item row="7" column="0">
+      <widget class="QLabel" name="pawLabel">
+       <property name="styleSheet">
+        <string notr="true"/>
+       </property>
+       <property name="text">
+        <string>Block Hashrate:</string>
+       </property>
+      </widget>
+     </item>
+     <item row="5" column="1">
+      <widget class="QLabel" name="timeBox">
+       <property name="styleSheet">
+        <string notr="true"/>
+       </property>
+       <property name="text">
+        <string>0</string>
+       </property>
+      </widget>
+     </item>
+     <item row="5" column="0">
+      <widget class="QLabel" name="timeLabel">
+       <property name="styleSheet">
+        <string notr="true"/>
+       </property>
+       <property name="text">
+        <string>Block Timestamp:</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </widget>
+  </widget>
+  <widget class="QFrame" name="verticalFrame">
+   <property name="geometry">
+    <rect>
+     <x>1</x>
+     <y>5</y>
+     <width>800</width>
+     <height>44</height>
+    </rect>
+   </property>
+   <property name="minimumSize">
+    <size>
+     <width>800</width>
+     <height>44</height>
+    </size>
+   </property>
+   <property name="maximumSize">
+    <size>
+     <width>800</width>
+     <height>44</height>
+    </size>
+   </property>
+   <property name="styleSheet">
+    <string notr="true"/>
+   </property>
+   <layout class="QVBoxLayout" name="verticalLayout_10"/>
   </widget>
  </widget>
  <resources>
