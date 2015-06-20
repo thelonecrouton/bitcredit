@@ -147,15 +147,15 @@ void BankStatisticsPage::updateStatistics()
 
     if(trust > trustPrevious)
     {
-        ui->trust->setText("<font color=\"green\">" + ntrust + "</font>");
+        ui->trustscoreLabel->setText("<font color=\"green\">" + ntrust + "</font>");
     }
     else if (trust < trustPrevious)
     {
-        ui->trust->setText("<font color=\"red\">" + ntrust + "</font>");
+        ui->trustscoreLabel->setText("<font color=\"red\">" + ntrust + "</font>");
     }
     else
     {
-    ui->trust->setText(ntrust);
+    ui->trustscoreLabel->setText(ntrust);
     }
 
     if(inflationindex > inflationindexPrevious)
