@@ -11,8 +11,7 @@
    </rect>
   </property>
   <property name="styleSheet">
-   <string notr="true">background:transparent;
-</string>
+   <string notr="true"/>
   </property>
   <layout class="QGridLayout" name="gridLayout">
    <property name="leftMargin">
@@ -48,7 +47,7 @@
         </rect>
        </property>
        <property name="styleSheet">
-        <string notr="true">background:transparent;</string>
+        <string notr="true"/>
        </property>
        <property name="tabShape">
         <enum>QTabWidget::Rounded</enum>
@@ -108,8 +107,7 @@
         </size>
        </property>
        <property name="styleSheet">
-        <string notr="true">border-radius:10px;
-background-color: rgb(255, 255, 255);</string>
+        <string notr="true"/>
        </property>
       </widget>
       <widget class="QPushButton" name="disconnect">
@@ -122,8 +120,7 @@ background-color: rgb(255, 255, 255);</string>
         </rect>
        </property>
        <property name="styleSheet">
-        <string notr="true">background:transparent;
-color: rgb(255, 255, 255);</string>
+        <string notr="true"/>
        </property>
        <property name="text">
         <string>Disconnect</string>
@@ -167,10 +164,10 @@ color: rgb(255, 255, 255);</string>
         </rect>
        </property>
        <property name="styleSheet">
-        <string notr="true">background:transparent;</string>
+        <string notr="true"/>
        </property>
        <property name="text">
-        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; color:#ffffff;&quot;&gt;A few IRC commands :&lt;/span&gt;&lt;/p&gt;&lt;ul style=&quot;margin-top: 0px; margin-bottom: 0px; margin-left: 0px; margin-right: 0px; -qt-list-indent: 1;&quot;&gt;&lt;li style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; color:#ffffff;&quot;&gt;/JOIN #channel &lt;/span&gt;&lt;span style=&quot; color:#9a9a9a;&quot;&gt; - Join a channel&lt;/span&gt;&lt;/li&gt;&lt;li style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; color:#ffffff;&quot;&gt;/NICK nickname&lt;/span&gt;&lt;span style=&quot; color:#9a9a9a;&quot;&gt; - Change nickname&lt;/span&gt;&lt;/li&gt;&lt;li style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; color:#ffffff;&quot;&gt;/PRIVMSG nickname message&lt;/span&gt;&lt;span style=&quot; color:#9a9a9a;&quot;&gt; - Send PM &lt;/span&gt;&lt;/li&gt;&lt;li style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; color:#ffffff;&quot;&gt;If userlist gets buggy, switch tabs to fix&lt;/span&gt;&lt;/li&gt;&lt;/ul&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; color:#232323;&quot;&gt;A few IRC commands :&lt;/span&gt;&lt;/p&gt;&lt;ul style=&quot;margin-top: 0px; margin-bottom: 0px; margin-left: 0px; margin-right: 0px; -qt-list-indent: 1;&quot;&gt;&lt;li style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; color:#232323;&quot;&gt;/JOIN #channel &lt;/span&gt;&lt;span style=&quot; color:#9a9a9a;&quot;&gt; - Join a channel&lt;/span&gt;&lt;/li&gt;&lt;li style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; color:#232323;&quot;&gt;/NICK nickname&lt;/span&gt;&lt;span style=&quot; color:#9a9a9a;&quot;&gt; - Change nickname&lt;/span&gt;&lt;/li&gt;&lt;li style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; color:#232323;&quot;&gt;/PRIVMSG nickname message&lt;/span&gt;&lt;span style=&quot; color:#9a9a9a;&quot;&gt; - Send PM &lt;/span&gt;&lt;/li&gt;&lt;li style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; color:#232323;&quot;&gt;If userlist gets buggy, switch tabs to fix&lt;/span&gt;&lt;/li&gt;&lt;/ul&gt;&lt;/body&gt;&lt;/html&gt;</string>
        </property>
       </widget>
       <widget class="QLineEdit" name="editPseudo">
@@ -183,8 +180,7 @@ color: rgb(255, 255, 255);</string>
         </rect>
        </property>
        <property name="styleSheet">
-        <string notr="true">background:transparent;
-color: rgb(0, 170, 0);</string>
+        <string notr="true"/>
        </property>
        <property name="text">
         <string/>
@@ -195,15 +191,15 @@ color: rgb(0, 170, 0);</string>
         <rect>
          <x>380</x>
          <y>194</y>
-         <width>61</width>
+         <width>81</width>
          <height>21</height>
         </rect>
        </property>
        <property name="styleSheet">
-        <string notr="true">color: rgb(255, 255, 255);background:transparent;</string>
+        <string notr="true"/>
        </property>
        <property name="text">
-        <string>Nickname</string>
+        <string>Nickname:</string>
        </property>
       </widget>
       <widget class="QPushButton" name="buttonConnect">

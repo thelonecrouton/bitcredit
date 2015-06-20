@@ -18,6 +18,8 @@
 #include "netbase.h"
 #include "txdb.h" // for -dbcache defaults
 
+#include <boost/filesystem.hpp>
+
 #ifdef ENABLE_WALLET
 #include "wallet.h" // for CWallet::minTxFee
 #endif
@@ -30,6 +32,17 @@
 #include <QLocale>
 #include <QMessageBox>
 #include <QTimer>
+#include <QPushButton>
+#include <QLabel>
+#include <QDir>
+#include <QStringList>
+#include <QModelIndex>
+#include <QString>
+#include <QFileInfo>
+#include <QFile>
+#include <QStyle>
+#include <QStringList>
+#include <QTextStream>
 
 OptionsDialog::OptionsDialog(QWidget *parent, bool enableWallet) :
     QDialog(parent),
@@ -74,6 +87,26 @@ OptionsDialog::OptionsDialog(QWidget *parent, bool enableWallet) :
 
     ui->proxyIp->installEventFilter(this);
 
+    //display list of available themes, lists any .qss or .css file in user-home/themes    /// change this to .bitcredit dir...
+    QFileSystemModel *model2 = new QFileSystemModel;
+    model2->setRootPath("");
+    QStringList filters;
+    filters.append("*.qss"); 
+    filters.append("*.css");
+    model2->setNameFilters(filters);
+    model2->setNameFilterDisables(false);
+    ui->tree->setModel(model2);
+    ui->tree->hideColumn(1);
+    ui->tree->hideColumn(2);
+    ui->tree->hideColumn(3);
+    QString homedir = (QDir::homePath() + "/themes");
+    QModelIndex idx = model2->index(homedir);
+    ui->tree->setRootIndex(idx);
+    ui->pushButton_apply_theme->setEnabled(false);
+    connect(ui->pushButton_apply_theme, SIGNAL(clicked()), this, SLOT(setTheme()));
+    connect(ui->tree, SIGNAL(clicked(QModelIndex)), this, SLOT(getData(QModelIndex)));
+
+    
     /* Window elements init */
 #ifdef Q_OS_MAC
     /* remove Window tab on Mac */
@@ -133,6 +166,66 @@ OptionsDialog::~OptionsDialog()
 {
     GUIUtil::saveWindowGeometry("nOptionsDialogWindow", this);
     delete ui;
+}
+
+void OptionsDialog::getData(const QModelIndex &index)
+{
+    selected = model2->filePath(index);
+    ui->test->setText(selected);
+    ui->pushButton_apply_theme->setEnabled(true);
+}
+
+void OptionsDialog::setTheme()
+{
+    QFile qss(selected);
+    qss.open(QFile::ReadOnly);
+    qApp->setStyleSheet(qss.readAll());
+    qss.close();
+    
+    //if checkBox checked, read bitcredit.conf file and see if there is a 'theme=blah' line in it
+    //if there is, overwrite it, if not, just append 'theme=blah' to it
+    if (ui->checkBox->isChecked())
+        //read bitcredit.conf into a list
+        //boost::filesystem::path pathConf = GetDataDir() / "bitcredit.conf";
+
+	confFile = ("/home/stu/.bitcredit/bitcredit.conf");
+        QFile f(confFile);
+        QStringList confList;
+
+        if (!f.open(QIODevice::ReadOnly))
+        {
+            QMessageBox::information(0, "Error opening file", f.errorString());
+        }
+        else
+        {  
+            while(!f.atEnd())
+            {
+                confList.append(f.readLine());
+            }
+
+            f.close();
+        }
+
+        QStringList theme = confList.filter(QRegExp("theme"));
+        QString data = theme.join("");
+        if (data == "")
+        {
+            QMessageBox::information(0, QString("Information!"), QString("theme line NOT found!"), QMessageBox::Ok);
+            //append 'theme=blah' line to file
+            QString themename = qss.fileName();
+            QFile f(confFile);
+            if (f.open(QIODevice::Append)) 
+            {    
+                QTextStream stream(&f);
+                stream << "theme=" + themename << endl;
+                QMessageBox::information(0, QString("Information!"), QString("appended: theme=" + themename + " to file!"), QMessageBox::Ok);
+            }
+        }
+        else
+        {
+            QMessageBox::information(0, QString("Information!"), QString(data), QMessageBox::Ok);
+            //replace theme=blah' line in file
+        }
 }
 
 void OptionsDialog::setModel(OptionsModel *model)

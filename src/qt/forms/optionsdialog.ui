@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>560</width>
-    <height>400</height>
+    <height>404</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -699,6 +699,98 @@
         </spacer>
        </item>
       </layout>
+     </widget>
+     <widget class="QWidget" name="tab">
+      <attribute name="title">
+       <string>Theme</string>
+      </attribute>
+      <widget class="QLabel" name="label_available_themes">
+       <property name="geometry">
+        <rect>
+         <x>10</x>
+         <y>14</y>
+         <width>411</width>
+         <height>17</height>
+        </rect>
+       </property>
+       <property name="toolTip">
+        <string>Searches your-home-directory/themes folder for stylesheet files</string>
+       </property>
+       <property name="text">
+        <string>Available themes:</string>
+       </property>
+      </widget>
+      <widget class="QPushButton" name="pushButton_apply_theme">
+       <property name="geometry">
+        <rect>
+         <x>440</x>
+         <y>199</y>
+         <width>89</width>
+         <height>27</height>
+        </rect>
+       </property>
+       <property name="toolTip">
+        <string>Apply selected theme</string>
+       </property>
+       <property name="text">
+        <string>Apply</string>
+       </property>
+      </widget>
+      <widget class="QTreeView" name="tree">
+       <property name="geometry">
+        <rect>
+         <x>10</x>
+         <y>33</y>
+         <width>321</width>
+         <height>108</height>
+        </rect>
+       </property>
+       <property name="toolTip">
+        <string>Lists any available stylesheet files - *.qss or *.css - in your-home-directory/themes folder</string>
+       </property>
+      </widget>
+      <widget class="QLabel" name="test">
+       <property name="geometry">
+        <rect>
+         <x>10</x>
+         <y>172</y>
+         <width>321</width>
+         <height>18</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+       <property name="wordWrap">
+        <bool>true</bool>
+       </property>
+      </widget>
+      <widget class="QLabel" name="label_3">
+       <property name="geometry">
+        <rect>
+         <x>10</x>
+         <y>150</y>
+         <width>141</width>
+         <height>17</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Selected:</string>
+       </property>
+      </widget>
+      <widget class="QCheckBox" name="checkBox">
+       <property name="geometry">
+        <rect>
+         <x>10</x>
+         <y>203</y>
+         <width>321</width>
+         <height>22</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Write theme choice to bitcredit.conf file</string>
+       </property>
+      </widget>
      </widget>
     </widget>
    </item>

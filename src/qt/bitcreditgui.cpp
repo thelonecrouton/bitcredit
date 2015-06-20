@@ -19,6 +19,7 @@
 #include "utilitydialog.h"
 #include "exchangebrowser.h"
 #include "chatwindow.h"
+#include "util.h"
 #ifdef ENABLE_WALLET
 #include "walletframe.h"
 #include "walletmodel.h"
@@ -141,10 +142,25 @@ BitcreditGUI::BitcreditGUI(const NetworkStyle *networkStyle, QWidget *parent) :
     }
     windowTitle += " " + networkStyle->getTitleAddText();
 
-    QFile qss(":/css/stylesheet");
-    qss.open(QFile::ReadOnly);
-    qApp->setStyleSheet(qss.readAll());
-    qss.close();
+    //if theme= line exists in bitcredit.conf, use it
+    theme = GetArg("-theme", "");
+    QString str = QString::fromUtf8(theme.c_str());
+    if (mapArgs.count("-theme"))
+    {
+        QMessageBox::information(0, QString("Warning!"), QString("You are about to load a custom theme:<br>" + str + " !<br><br>The Bitcredit developers accept no responsibility for<br>any resultant loss of client utility, sanity, or breakfast!"), QMessageBox::Ok);
+        QFile qss(str);
+        qss.open(QFile::ReadOnly);
+        qApp->setStyleSheet(qss.readAll());
+        qss.close();
+    }
+    //if not, load the default theme
+    else
+    {
+        QFile qss(":/css/stylesheet");
+        qss.open(QFile::ReadOnly);
+        qApp->setStyleSheet(qss.readAll());
+        qss.close();
+    }
     	
 #ifndef Q_OS_MAC
     QApplication::setWindowIcon(networkStyle->getTrayAndWindowIcon());
@@ -193,11 +209,14 @@ BitcreditGUI::BitcreditGUI(const NetworkStyle *networkStyle, QWidget *parent) :
      // Status bar notification icons
     unitDisplayControl = new UnitDisplayStatusBarControl();
     labelEncryptionIcon = new QLabel();
+    labelEncryptionIcon->setObjectName("labelEncryptionIcon");
     labelConnectionsIcon = new QLabel();
     labelConnectionsIcon->setPixmap(QIcon(":/icons/connect_0").pixmap(STATUSBAR_ICONSIZE, 44));
+    labelConnectionsIcon->setObjectName("labelConnectionsIcon");
     labelBlocksIcon = new QLabel();
     labelBlocksIcon->setPixmap(QIcon(":/icons/connecting").pixmap(STATUSBAR_ICONSIZE, 44)); //Initialize with 'searching' icon so people with slow connections see something
     labelBlocksIcon->setToolTip("Looking for more network connections");
+    labelBlocksIcon->setObjectName("labelBlocksIcon");
 
     // Progress bar and label for blocks download
     progressBarLabel = new QLabel();
@@ -215,7 +234,7 @@ BitcreditGUI::BitcreditGUI(const NetworkStyle *networkStyle, QWidget *parent) :
     toolbar2->setIconSize(QSize(18, 18));
     QWidget* spacer2 = new QWidget();
     //spacer2->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-    spacer2->setFixedWidth(50);
+    spacer2->setFixedWidth(90);
     toolbar2->addWidget(spacer2);
     spacer2->setObjectName("spacer2");
     toolbar2->addWidget(labelConnectionsIcon);
@@ -236,7 +255,7 @@ BitcreditGUI::BitcreditGUI(const NetworkStyle *networkStyle, QWidget *parent) :
 
     QWidget* spacer4 = new QWidget();
     //spacer4->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-    spacer4->setFixedWidth(170);
+    spacer4->setFixedWidth(160);
     toolbar2->addWidget(spacer4);
     spacer4->setObjectName("spacer4");
     
@@ -574,9 +593,9 @@ void BitcreditGUI::createActions(const NetworkStyle *networkStyle)
 
 void BitcreditGUI::createToolBars()
 {
-	QLabel *mylabel = new QLabel(this);
-	mylabel->setPixmap(QPixmap(":images/head"));
-	mylabel->show();
+    QLabel *mylabel = new QLabel(this);
+    mylabel->setPixmap(QPixmap(":images/head"));
+    mylabel->show();
     QToolBar *toolbar = addToolBar(tr("Menu"));
     toolbar->setObjectName("toolbar");
     addToolBar(Qt::LeftToolBarArea, toolbar);
@@ -585,7 +604,7 @@ void BitcreditGUI::createToolBars()
     toolbar->setFixedWidth(220);
     toolbar->setMovable(false);
     toolbar->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
-	toolbar->setIconSize(QSize(50,20));
+    toolbar->setIconSize(QSize(50,20));
 	
 	
     if(walletFrame)
@@ -602,7 +621,7 @@ void BitcreditGUI::createToolBars()
 	toolbar->addAction(actionSendReceivestats);		        		
 	toolbar->addAction(chatAction);
 	toolbar->addAction(banknodeManagerAction);
-		
+
         historyAction->setChecked(true);
     }
     
@@ -610,8 +629,6 @@ void BitcreditGUI::createToolBars()
     //spacer->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     //toolbar->addWidget(spacer);
     toolbar->addAction(optionsAction);
-    //spacer->setObjectName("spacer");
-        	
 }
 
 void BitcreditGUI::setClientModel(ClientModel *clientModel)

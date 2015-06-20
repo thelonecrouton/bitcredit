@@ -6,6 +6,18 @@
 #define BITCREDIT_QT_OPTIONSDIALOG_H
 
 #include <QDialog>
+#include <QTreeView>
+#include <QPushButton>
+#include <QFileSystemModel>
+#include <QModelIndex>
+#include <QLabel>
+#include <QString>
+#include <QFileInfo>
+#include <QFile>
+#include <QStyle>
+#include <QStringList>
+#include <QCheckBox>
+#include <QTextStream>
 
 class OptionsModel;
 class QValidatedLineEdit;
@@ -43,7 +55,8 @@ private slots:
     void on_resetButton_clicked();
     void on_okButton_clicked();
     void on_cancelButton_clicked();
-
+    void setTheme();
+    void getData(const QModelIndex &index);
     void showRestartWarning(bool fPersistent = false);
     void clearStatusLabel();
     void doProxyIpChecks(QValidatedLineEdit *pUiProxyIp, int nProxyPort);
@@ -57,6 +70,20 @@ private:
     OptionsModel *model;
     QDataWidgetMapper *mapper;
     bool fProxyIpsValid;
+    QTreeView *tree;
+    QPushButton *pushButton_apply_theme;
+    QFileSystemModel *model2;
+    QModelIndex *idx;
+    QModelIndex *index;
+    QLabel *test;
+    QString selected;
+    QString *homedir;
+    QFile *qss;
+    QString confFile;
+    QString themename;
+    QStringList *filters;
+    QCheckBox *checkBox;
+    
 };
 
 #endif // BITCREDIT_QT_OPTIONSDIALOG_H

@@ -133,47 +133,50 @@ TransactionView::TransactionView(QWidget *parent) :
     bframe = new QFrame(this);
     bframe->setFixedHeight(120);
     bframe->setFixedWidth(750);
-    bframe->setStyleSheet("color: white; border-radius: 6px; border: 1px solid white");
+    bframe->setObjectName("bframe");
+    //bframe->setStyleSheet("color: white; border-radius: 6px; border: 1px solid white");
 
     // labels
     availablebalancelabel = new QLabel(bframe);
     availablebalancelabel->move(20, 20);
     availablebalancelabel->setFixedWidth(200);
     availablebalancelabel->setText("Available Balance:");
-    availablebalancelabel->setStyleSheet("border: none; font: 18pt;");
+    availablebalancelabel->setObjectName("availablebalancelabel");
+    //availablebalancelabel->setStyleSheet("border: none; font: 18pt;");
     
     labelBalance = new QLabel(bframe);
     labelBalance->move(250, 20);
     labelBalance->setFixedWidth(300);
     labelBalance->setText("Available Balance:");
     labelBalance->setTextInteractionFlags(Qt::TextSelectableByMouse);
-    labelBalance->setStyleSheet("border: none; font: 18pt;");
+    labelBalance->setObjectName("labelBalance");
+    //labelBalance->setStyleSheet("border: none; font: 18pt;");
     
     unconfirmedbalancelabel = new QLabel(bframe);
     unconfirmedbalancelabel->move(20, 65);
     unconfirmedbalancelabel->setFixedWidth(200);
     unconfirmedbalancelabel->setText("Unconfirmed:");
-    unconfirmedbalancelabel->setStyleSheet("border: none");
+    //unconfirmedbalancelabel->setStyleSheet("border: none");
     
     labelUnconfirmed = new QLabel(bframe);
     labelUnconfirmed->move(250, 65);
     labelUnconfirmed->setFixedWidth(200);
     labelUnconfirmed->setText("Available Balance:");
     labelUnconfirmed->setTextInteractionFlags(Qt::TextSelectableByMouse);
-    labelUnconfirmed->setStyleSheet("border: none");
+    //labelUnconfirmed->setStyleSheet("border: none");
 
     immaturebalancelabel = new QLabel(bframe);
     immaturebalancelabel->move(20, 85);
     immaturebalancelabel->setFixedWidth(200);
     immaturebalancelabel->setText("Immature:");
-    immaturebalancelabel->setStyleSheet("border: none");
+    //immaturebalancelabel->setStyleSheet("border: none");
     
     labelImmature = new QLabel(bframe);
     labelImmature->move(250, 85);
     labelImmature->setFixedWidth(200);
     labelImmature->setText("Available Balance:");
     labelImmature->setTextInteractionFlags(Qt::TextSelectableByMouse);
-    labelImmature->setStyleSheet("border: none;");
+    //labelImmature->setStyleSheet("border: none;");
 
    
     //     

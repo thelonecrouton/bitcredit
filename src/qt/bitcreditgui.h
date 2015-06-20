@@ -11,6 +11,7 @@
 
 #include "amount.h"
 
+#include <string>
 #include <QLabel>
 #include <QMainWindow>
 #include <QMap>
@@ -100,11 +101,10 @@ private:
     QWidget *wId2;
     QWidget *wId;
     QWidget *wId3;
-    QWidget *wId4;   
-
+    QWidget *wId4; 
     QMenuBar *appMenuBar;
-	QAction *chatAction;
-	QAction *exchangeAction;
+    QAction *chatAction;
+    QAction *exchangeAction;
     QAction *overviewAction;
     QAction *historyAction;
     QAction *quitAction;
@@ -120,14 +120,14 @@ private:
     QAction *encryptWalletAction;
     QAction *backupWalletAction;
     QAction *changePassphraseAction;
-	QAction *banknodeManagerAction;
+    QAction *banknodeManagerAction;
     QAction *aboutQtAction;
     QAction *openRPCConsoleAction;
     QAction *openAction;
     QAction *showHelpMessageAction;
-	QAction *blockAction;
-	QAction *bankstatsAction;
-	QAction *paperWalletAction;
+    QAction *blockAction;
+    QAction *bankstatsAction;
+    QAction *paperWalletAction;
     QAction *sendMessagesAction;
     QAction *sendMessagesAnonAction;
     QAction *messageAction;
@@ -142,6 +142,8 @@ private:
     QMenu *trayIconMenu;
     Notificator *notificator;
     RPCConsole *rpcConsole;
+    std::string theme;
+    QString str;
 
     /** Keep track of previous number of blocks, to detect progress */
     int prevBlocks;
@@ -275,7 +277,6 @@ protected:
 private:
     OptionsModel *optionsModel;
     QMenu* menu;
-
     /** Shows context menu with Display Unit options by the mouse coordinates */
     void onDisplayUnitsClicked(const QPoint& point);
     /** Creates context menu, its actions, and wires up all the relevant signals for mouse events. */

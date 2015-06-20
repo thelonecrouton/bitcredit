@@ -16,6 +16,7 @@
 #include <QMap>
 #include <QSettings>
 #include <QSlider>
+#include <QFrame>
 
 
 
@@ -56,7 +57,8 @@ public slots:
     
     void blockClicked();
     void txClicked();
-    void updateExplorer(bool);
+    void addrClicked();
+
 
 private slots:
 

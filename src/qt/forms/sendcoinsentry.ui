@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>729</width>
-    <height>157</height>
+    <height>306</height>
    </rect>
   </property>
   <property name="focusPolicy">
@@ -39,7 +39,7 @@
     <item row="0" column="0">
      <widget class="QLabel" name="payToLabel">
       <property name="styleSheet">
-       <string notr="true">color: rgb(255, 255, 255);background: transparent;</string>
+       <string notr="true"/>
       </property>
       <property name="text">
        <string>Pay &amp;To:</string>
@@ -63,17 +63,17 @@
          <string>The Bitcredits address to send the payment to</string>
         </property>
         <property name="styleSheet">
-         <string notr="true">color: rgb(255,255,255); background: transparent;</string>
+         <string notr="true"/>
         </property>
        </widget>
       </item>
       <item>
        <widget class="QToolButton" name="addressBookButton">
         <property name="toolTip">
-         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; color:#ffffff;&quot;&gt;Choose previously used address&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         <string>Choose previously used address</string>
         </property>
         <property name="styleSheet">
-         <string notr="true">border-radius: 5px; border: 1px solid white;</string>
+         <string notr="true"/>
         </property>
         <property name="text">
          <string/>
@@ -96,10 +96,10 @@
       <item>
        <widget class="QToolButton" name="pasteButton">
         <property name="toolTip">
-         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; color:#ffffff;&quot;&gt;Paste address from clipboard&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         <string>Paste address from clipboard</string>
         </property>
         <property name="styleSheet">
-         <string notr="true">border-radius: 5px; border: 1px solid white;</string>
+         <string notr="true"/>
         </property>
         <property name="text">
          <string/>
@@ -122,10 +122,10 @@
       <item>
        <widget class="QToolButton" name="deleteButton">
         <property name="toolTip">
-         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; color:#ffffff;&quot;&gt;Remove this entry&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         <string>Remove this entry</string>
         </property>
         <property name="styleSheet">
-         <string notr="true">border-radius: 5px; border: 1px solid white;</string>
+         <string notr="true"/>
         </property>
         <property name="text">
          <string/>
@@ -147,7 +147,7 @@
     <item row="1" column="0">
      <widget class="QLabel" name="labellLabel">
       <property name="styleSheet">
-       <string notr="true">color: rgb(255, 255, 255);background: transparent;</string>
+       <string notr="true"/>
       </property>
       <property name="text">
        <string>&amp;Label:</string>
@@ -166,14 +166,14 @@
        <string>Enter a label for this address to add it to the list of used addresses</string>
       </property>
       <property name="styleSheet">
-       <string notr="true">color: rgb(255,255,255); background: transparent;</string>
+       <string notr="true"/>
       </property>
      </widget>
     </item>
     <item row="2" column="0">
      <widget class="QLabel" name="amountLabel">
       <property name="styleSheet">
-       <string notr="true">color: rgb(255, 255, 255);background: transparent;</string>
+       <string notr="true"/>
       </property>
       <property name="text">
        <string>A&amp;mount:</string>
@@ -189,17 +189,17 @@
     <item row="2" column="1">
      <widget class="BitcreditAmountField" name="payAmount">
       <property name="toolTip">
-       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; color:#ffffff;&quot;&gt;Amount to send&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+       <string>Amount to send</string>
       </property>
       <property name="styleSheet">
-       <string notr="true">color: black; background: transparent;</string>
+       <string notr="true"/>
       </property>
      </widget>
     </item>
     <item row="3" column="0">
      <widget class="QLabel" name="messageLabel">
       <property name="styleSheet">
-       <string notr="true">color: rgb(255, 255, 255);background: transparent;</string>
+       <string notr="true"/>
       </property>
       <property name="text">
        <string>Message:</string>
@@ -215,7 +215,7 @@
        <string>A message that was attached to the bitcredit: URI which will be stored with the transaction for your reference. Note: This message will not be sent over the Bitcredit network.</string>
       </property>
       <property name="styleSheet">
-       <string notr="true">color: rgb(255, 255, 255);background: transparent;</string>
+       <string notr="true"/>
       </property>
       <property name="textFormat">
        <enum>Qt::PlainText</enum>
@@ -1274,14 +1274,15 @@
  </widget>
  <customwidgets>
   <customwidget>
-   <class>QValidatedLineEdit</class>
-   <extends>QLineEdit</extends>
-   <header>qvalidatedlineedit.h</header>
-  </customwidget>
-  <customwidget>
    <class>BitcreditAmountField</class>
    <extends>QLineEdit</extends>
    <header>bitcreditamountfield.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>QValidatedLineEdit</class>
+   <extends>QLineEdit</extends>
+   <header>qvalidatedlineedit.h</header>
   </customwidget>
  </customwidgets>
  <tabstops>

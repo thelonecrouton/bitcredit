@@ -329,105 +329,86 @@ BlockBrowser::BlockBrowser(QWidget *parent) :
     ui(new Ui::BlockBrowser)
 {
     ui->setupUi(this);
-
-    //setFixedSize(400, 420);
-        
+      
+    ui->addrFrame->hide();
+    ui->blockFrame->hide();
+    ui->txFrame->hide();
+    
     connect(ui->blockButton, SIGNAL(pressed()), this, SLOT(blockClicked()));
     connect(ui->txButton, SIGNAL(pressed()), this, SLOT(txClicked()));
-    this->setStyleSheet("background-image:url(:/images/background);");
-}
-
-void BlockBrowser::updateExplorer(bool block)
-{    
-    if(block)
-    {
-        ui->heightLabel->show();
-        ui->heightLabel_2->show();
-        ui->hashLabel->show();
-        ui->hashBox->show();
-        ui->merkleLabel->show();
-        ui->merkleBox->show();
-        ui->nonceLabel->show();
-        ui->nonceBox->show();
-        ui->bitsLabel->show();
-        ui->bitsBox->show();
-        ui->timeLabel->show();
-        ui->timeBox->show();
-        ui->hardLabel->show();
-        ui->hardBox->show();;
-        ui->pawLabel->show();
-        ui->pawBox->show();
-        int height = ui->heightBox->value();
-        if (height > chainActive.Tip()->nHeight)
-        {
-            ui->heightBox->setValue(chainActive.Tip()->nHeight);
-            height = chainActive.Tip()->nHeight;
-        }
-        int Pawrate = getBlockHashrate(height);
-        double Pawrate2 = 0.000000;
-        Pawrate2 = ((double)Pawrate);
-        std::string hash = getBlockHash(height);
-        std::string merkle = getBlockMerkle(height);
-        int nBits = getBlocknBits(height);
-        int nNonce = getBlockNonce(height);
-        int atime = getBlockTime(height);
-        double hardness = getBlockHardness(height);
-        QString QHeight = QString::number(height);
-        QString QHash = QString::fromUtf8(hash.c_str());
-        QString QMerkle = QString::fromUtf8(merkle.c_str());
-        QString QBits = QString::number(nBits);
-        QString QNonce = QString::number(nNonce);
-        QString QTime = QString::number(atime);
-        QString QHardness = QString::number(hardness, 'f', 8);
-        QString QPawrate = QString::number(Pawrate2, 'f', 6);
-        ui->heightLabel->setText(QHeight);
-        ui->hashBox->setText(QHash);
-        ui->merkleBox->setText(QMerkle);
-        ui->bitsBox->setText(QBits);
-        ui->nonceBox->setText(QNonce);
-        ui->timeBox->setText(QTime);     
-        ui->hardBox->setText(QHardness);
-        ui->pawBox->setText(QPawrate + " H/s");
-    } 
-    
-    if(block == false) {
-        ui->txID->show();
-        ui->txLabel->show();
-        ui->valueLabel->show();
-        ui->valueBox->show();
-        ui->inputLabel->show();
-        ui->inputBox->show();
-        ui->outputLabel->show();
-        ui->outputBox->show();
-        ui->feesLabel->show();
-        ui->feesBox->show();
-        std::string txid = ui->txBox->text().toUtf8().constData();
-        double value = getTxTotalValue(txid);
-        double fees = getTxFees(txid);
-        std::string outputs = getOutputs(txid);
-        std::string inputs = getInputs(txid);
-        QString QValue = QString::number(value, 'f', 6);
-        QString QID = QString::fromUtf8(txid.c_str());
-        QString QOutputs = QString::fromUtf8(outputs.c_str());
-        QString QInputs = QString::fromUtf8(inputs.c_str());
-        QString QFees = QString::number(fees, 'f', 6);
-        ui->valueBox->setText(QValue + " BCR");
-        ui->txID->setText(QID);
-        ui->outputBox->setText(QOutputs);
-        ui->inputBox->setText(QInputs);
-        ui->feesBox->setText(QFees + " BCR");
-    }
+    connect(ui->addrButton, SIGNAL(pressed()), this, SLOT(addrClicked()));
 }
 
 
 void BlockBrowser::txClicked()
 {
-    updateExplorer(false);
+    ui->blockFrame->hide();
+    ui->txFrame->show();
+    ui->addrFrame->hide();
+    
+    std::string txid = ui->txBox->text().toUtf8().constData();
+    double value = getTxTotalValue(txid);
+    double fees = getTxFees(txid);
+    std::string outputs = getOutputs(txid);
+    std::string inputs = getInputs(txid);
+    QString QValue = QString::number(value, 'f', 6);
+    QString QID = QString::fromUtf8(txid.c_str());
+    QString QOutputs = QString::fromUtf8(outputs.c_str());
+    QString QInputs = QString::fromUtf8(inputs.c_str());
+    QString QFees = QString::number(fees, 'f', 6);
+    ui->valueBox->setText(QValue + " BCR");
+    ui->txID->setText(QID);
+    ui->outputBox->setText(QOutputs);
+    ui->inputBox->setText(QInputs);
+    ui->feesBox->setText(QFees + " BCR");
 }
 
 void BlockBrowser::blockClicked()
 {
-    updateExplorer(true);
+    ui->blockFrame->show();
+    ui->txFrame->hide();
+    ui->addrFrame->hide();
+    
+    int height = ui->heightBox->value();
+    if (height > chainActive.Tip()->nHeight)
+    {
+        ui->heightBox->setValue(chainActive.Tip()->nHeight);
+        height = chainActive.Tip()->nHeight;
+    }
+    int Pawrate = getBlockHashrate(height);
+    double Pawrate2 = 0.000000;
+    Pawrate2 = ((double)Pawrate);
+    std::string hash = getBlockHash(height);
+    std::string merkle = getBlockMerkle(height);
+    int nBits = getBlocknBits(height);
+    int nNonce = getBlockNonce(height);
+    int atime = getBlockTime(height);
+    double hardness = getBlockHardness(height);
+    QString QHeight = QString::number(height);
+    QString QHash = QString::fromUtf8(hash.c_str());
+    QString QMerkle = QString::fromUtf8(merkle.c_str());
+    QString QBits = QString::number(nBits);
+    QString QNonce = QString::number(nNonce);
+    QString QTime = QString::number(atime);
+    QString QHardness = QString::number(hardness, 'f', 8);
+    QString QPawrate = QString::number(Pawrate2, 'f', 6);
+    ui->heightLabel->setText(QHeight);
+    ui->hashBox->setText(QHash);
+    ui->merkleBox->setText(QMerkle);
+    ui->bitsBox->setText(QBits);
+    ui->nonceBox->setText(QNonce);
+    ui->timeBox->setText(QTime);     
+    ui->hardBox->setText(QHardness);
+    ui->pawBox->setText(QPawrate + " H/s");
+}
+
+void BlockBrowser::addrClicked()
+{
+    ui->blockFrame->hide();
+    ui->txFrame->hide();
+    ui->addrFrame->show();
+    //QString Address = ui->addrBox->text();
+    //ui->trustrating->setText("Investigating: " + Address);
 }
 
 void BlockBrowser::setModel(ClientModel *model)

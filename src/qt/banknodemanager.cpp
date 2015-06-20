@@ -165,8 +165,8 @@ void BanknodeManager::updateNodeList()
 	QTableWidgetItem *activeItem = new QTableWidgetItem(QString::number(mn.IsEnabled()));
 	QTableWidgetItem *addressItem = new QTableWidgetItem(QString::fromStdString(mn.addr.ToString()));
 	QTableWidgetItem *rankItem = new QTableWidgetItem(QString::number(mnodeman.GetBanknodeRank(mn.vin, chainActive.Tip()->nHeight)));
-	QTableWidgetItem *activeSecondsItem = new QTableWidgetItem(seconds_to_DHMS((qint64)(mn.lastTimeSeen - GetTime())));
-	QTableWidgetItem *lastSeenItem = new QTableWidgetItem(QString::fromStdString(DateTimeStrFormat("%Y-%m-%d %H:%M:%S",mn.lastTimeSeen)));
+	QTableWidgetItem *activeSecondsItem = new QTableWidgetItem(seconds_to_DHMS((qint64)(mn.lastTimeSeen - mn.sigTime)));
+	QTableWidgetItem *lastSeenItem = new QTableWidgetItem(seconds_to_DHMS((qint64)(GetTime()-mn.lastTimeSeen)));
 
 	
 	CScript pubkey;

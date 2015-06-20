@@ -14,7 +14,7 @@
    <string>Send Messages</string>
   </property>
   <property name="styleSheet">
-   <string notr="true">background:transparent;</string>
+   <string notr="true"/>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout" stretch="0,1,0,0">
    <property name="bottomMargin">
@@ -35,7 +35,7 @@
       </size>
      </property>
      <property name="styleSheet">
-      <string notr="true">background:transparent;sss</string>
+      <string notr="true"/>
      </property>
      <layout class="QVBoxLayout" name="verticalLayout_9"/>
     </widget>
@@ -55,7 +55,7 @@
       </size>
      </property>
      <property name="styleSheet">
-      <string notr="true">border-radius: 6px; border: 1px solid white;</string>
+      <string notr="true"/>
      </property>
      <property name="frameShape">
       <enum>QFrame::StyledPanel</enum>
@@ -67,8 +67,7 @@
       <item>
        <widget class="QLabel" name="addressFromLabel">
         <property name="styleSheet">
-         <string notr="true">background:transparent;
-color: rgb(255, 255, 255);border: none;</string>
+         <string notr="true">;</string>
         </property>
         <property name="text">
          <string>Address &amp;From:</string>
@@ -86,8 +85,7 @@ color: rgb(255, 255, 255);border: none;</string>
         <item>
          <widget class="QValidatedLineEdit" name="addressFrom">
           <property name="styleSheet">
-           <string notr="true">background:transparent;
-color: rgb(255, 255, 255);</string>
+           <string notr="true"/>
           </property>
          </widget>
         </item>
@@ -95,6 +93,9 @@ color: rgb(255, 255, 255);</string>
          <widget class="QToolButton" name="addressBookButton">
           <property name="toolTip">
            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; color:#ffffff;&quot;&gt;Choose address from address book&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          </property>
+          <property name="styleSheet">
+           <string notr="true"/>
           </property>
           <property name="text">
            <string/>
@@ -112,6 +113,9 @@ color: rgb(255, 255, 255);</string>
          <widget class="QToolButton" name="pasteButton">
           <property name="toolTip">
            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; color:#ffffff;&quot;&gt;Paste address from clipboard&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          </property>
+          <property name="styleSheet">
+           <string notr="true"/>
           </property>
           <property name="text">
            <string/>
@@ -133,7 +137,7 @@ color: rgb(255, 255, 255);</string>
    <item>
     <widget class="QScrollArea" name="scrollArea">
      <property name="styleSheet">
-      <string notr="true">border: none;</string>
+      <string notr="true"/>
      </property>
      <property name="widgetResizable">
       <bool>true</bool>
@@ -143,9 +147,12 @@ color: rgb(255, 255, 255);</string>
        <rect>
         <x>0</x>
         <y>0</y>
-        <width>832</width>
-        <height>79</height>
+        <width>830</width>
+        <height>80</height>
        </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true"/>
       </property>
       <layout class="QVBoxLayout" name="verticalLayout_2">
        <property name="margin">
@@ -183,8 +190,7 @@ color: rgb(255, 255, 255);</string>
         <string>Send to multiple recipients at once</string>
        </property>
        <property name="styleSheet">
-        <string notr="true">background:transparent;
-color: rgb(255, 255, 255);</string>
+        <string notr="true"/>
        </property>
        <property name="text">
         <string>Add &amp;Recipient</string>
@@ -210,8 +216,7 @@ color: rgb(255, 255, 255);</string>
         <string>Remove all transaction fields</string>
        </property>
        <property name="styleSheet">
-        <string notr="true">background:transparent;
-color: rgb(255, 255, 255);</string>
+        <string notr="true"/>
        </property>
        <property name="text">
         <string>Clear &amp;All</string>
@@ -253,8 +258,7 @@ color: rgb(255, 255, 255);</string>
         <string>Confirm the send action</string>
        </property>
        <property name="styleSheet">
-        <string notr="true">background:transparent;
-color: rgb(255, 255, 255);</string>
+        <string notr="true"/>
        </property>
        <property name="text">
         <string>S&amp;end</string>
@@ -271,8 +275,7 @@ color: rgb(255, 255, 255);</string>
      <item>
       <widget class="QPushButton" name="closeButton">
        <property name="styleSheet">
-        <string notr="true">background:transparent;
-color: rgb(255, 255, 255);</string>
+        <string notr="true"/>
        </property>
        <property name="text">
         <string>&amp;Close</string>

@@ -29,7 +29,7 @@
       </size>
      </property>
      <property name="styleSheet">
-      <string notr="true">background:transparent;sss</string>
+      <string notr="true"/>
      </property>
      <layout class="QVBoxLayout" name="verticalLayout_9"/>
     </widget>
@@ -57,7 +57,7 @@
            <string>Reuse one of the previously used receiving addresses. Reusing addresses has security and privacy issues. Do not use this unless re-generating a payment request made before.</string>
           </property>
           <property name="styleSheet">
-           <string notr="true">color: rgb(255, 255, 255);background: transparent;</string>
+           <string notr="true"/>
           </property>
           <property name="text">
            <string>R&amp;euse an existing receiving address (not recommended)</string>
@@ -67,7 +67,7 @@
         <item row="7" column="0">
          <widget class="QLabel" name="label_4">
           <property name="styleSheet">
-           <string notr="true">color: rgb(255, 255, 255); background: transparent;</string>
+           <string notr="true"/>
           </property>
           <property name="text">
            <string/>
@@ -80,7 +80,7 @@
            <string>An optional message to attach to the payment request, which will be displayed when the request is opened. Note: The message will not be sent with the payment over the Bitcredits network.</string>
           </property>
           <property name="styleSheet">
-           <string notr="true">color: rgb(255, 255, 255); background: transparent;</string>
+           <string notr="true"/>
           </property>
           <property name="text">
            <string>&amp;Message:</string>
@@ -99,7 +99,7 @@
            <string>An optional label to associate with the new receiving address.</string>
           </property>
           <property name="styleSheet">
-           <string notr="true">color: rgb(255, 255, 255); background: transparent;</string>
+           <string notr="true"/>
           </property>
          </widget>
         </item>
@@ -109,14 +109,14 @@
            <string>An optional message to attach to the payment request, which will be displayed when the request is opened. Note: The message will not be sent with the payment over the Bitcredits network.</string>
           </property>
           <property name="styleSheet">
-           <string notr="true">color: rgb(255, 255, 255); background: transparent;</string>
+           <string notr="true"/>
           </property>
          </widget>
         </item>
         <item row="2" column="2">
          <widget class="QLabel" name="label_5">
           <property name="styleSheet">
-           <string notr="true">color: rgb(255, 255, 255);</string>
+           <string notr="true"/>
           </property>
           <property name="text">
            <string>Use this form to request payments. All fields are &lt;b&gt;optional&lt;/b&gt;.</string>
@@ -129,7 +129,7 @@
            <string>An optional label to associate with the new receiving address.</string>
           </property>
           <property name="styleSheet">
-           <string notr="true">color: rgb(255, 255, 255); background: transparent;</string>
+           <string notr="true"/>
           </property>
           <property name="text">
            <string>&amp;Label:</string>
@@ -148,7 +148,7 @@
            <string>An optional amount to request. Leave this empty or zero to not request a specific amount.</string>
           </property>
           <property name="styleSheet">
-           <string notr="true">color: rgb(255, 255, 255); background: transparent;</string>
+           <string notr="true"/>
           </property>
           <property name="text">
            <string>&amp;Amount:</string>
@@ -170,10 +170,10 @@
            </size>
           </property>
           <property name="toolTip">
-           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; color:#ffffff;&quot;&gt;An optional amount to request. Leave this empty or zero to not request a specific amount.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+           <string>An optional amount to request. Leave this empty or zero to not request a specific amount.</string>
           </property>
           <property name="styleSheet">
-           <string notr="true">color: rgb(0,0,0);</string>
+           <string notr="true"/>
           </property>
          </widget>
         </item>
@@ -188,7 +188,7 @@
              </size>
             </property>
             <property name="styleSheet">
-             <string notr="true">color: rgb(255, 255, 255); background: transparent;</string>
+             <string notr="true"/>
             </property>
             <property name="text">
              <string>&amp;Request payment</string>
@@ -211,7 +211,7 @@
              <string>Clear all fields of the form.</string>
             </property>
             <property name="styleSheet">
-             <string notr="true">color: rgb(255, 255, 255); background: transparent;</string>
+             <string notr="true"/>
             </property>
             <property name="text">
              <string>Clear</string>
@@ -243,7 +243,7 @@
         <item row="8" column="0">
          <widget class="QLabel" name="label_7">
           <property name="styleSheet">
-           <string notr="true">color: rgb(255, 255, 255); background: transparent;</string>
+           <string notr="true"/>
           </property>
           <property name="text">
            <string/>
@@ -292,7 +292,7 @@
          </font>
         </property>
         <property name="styleSheet">
-         <string notr="true">color: rgb(255, 255, 255);</string>
+         <string notr="true"/>
         </property>
         <property name="text">
          <string>Requested payments history</string>
@@ -305,7 +305,7 @@
          <enum>Qt::CustomContextMenu</enum>
         </property>
         <property name="styleSheet">
-         <string notr="true">color: rgb(34,177,76); background: transparent;</string>
+         <string notr="true"/>
         </property>
         <property name="tabKeyNavigation">
          <bool>false</bool>
@@ -326,7 +326,7 @@
            <string>Show the selected request (does the same as double clicking an entry)</string>
           </property>
           <property name="styleSheet">
-           <string notr="true">color: rgb(255, 255, 255); background: transparent;</string>
+           <string notr="true"/>
           </property>
           <property name="text">
            <string>Show</string>
@@ -349,7 +349,7 @@
            <string>Remove the selected entries from the list</string>
           </property>
           <property name="styleSheet">
-           <string notr="true">color: rgb(255, 255, 255); background: transparent;</string>
+           <string notr="true"/>
           </property>
           <property name="text">
            <string>Remove</string>
