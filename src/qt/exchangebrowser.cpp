@@ -63,10 +63,6 @@ ExchangeBrowser::ExchangeBrowser(QWidget* parent) : QWidget(parent), ui(new Ui::
         //One time primer
         pollAPIs();
     } 
- 
-    //One time primer
-    //pollAPIs();
-
 }
 
 void ExchangeBrowser::on_btnConvertSilkoin_clicked()

@@ -143,7 +143,6 @@ private:
     Notificator *notificator;
     RPCConsole *rpcConsole;
     std::string theme;
-    std::string noexchange;
     QString str;
 
     /** Keep track of previous number of blocks, to detect progress */
