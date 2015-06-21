@@ -712,9 +712,9 @@ void BitcreditGUI::setWalletActionsEnabled(bool enabled)
     usedReceivingAddressesAction->setEnabled(enabled);
     openAction->setEnabled(enabled);
     paperWalletAction->setEnabled(enabled);
-	chatAction->setEnabled(enabled);
-	exchangeAction->setEnabled(enabled);
-	sendMessagesAction->setEnabled(enabled);
+    chatAction->setEnabled(enabled);
+    exchangeAction->setEnabled(enabled);
+    sendMessagesAction->setEnabled(enabled);
     messageAction->setEnabled(enabled);
     invoiceAction->setEnabled(enabled);
     receiptAction->setEnabled(enabled);

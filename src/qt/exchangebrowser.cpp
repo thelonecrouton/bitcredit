@@ -5,6 +5,7 @@
 #include "base58.h"
 #include "clientmodel.h"
 #include "rpcclient.h"
+#include "util.h"
 
 #include <sstream>
 #include <string>
@@ -51,9 +52,21 @@ ExchangeBrowser::ExchangeBrowser(QWidget* parent) : QWidget(parent), ui(new Ui::
 
     QObject::connect(&m_nam, SIGNAL(finished(QNetworkReply*)), this, SLOT(parseNetworkResponse(QNetworkReply*)), Qt::AutoConnection);
 
+    //if 'exchange=' line bitcredit.conf, disbale this page
+    if (mapArgs.count("-noexchange"))
+    {
+        ui->btnConvertSilkoin->setEnabled(false);
+        ui->btnUpdateMarketData->setEnabled(false);
+    }
+    else
+    {
+        //One time primer
+        pollAPIs();
+    } 
+ 
     //One time primer
-    pollAPIs();
-	//this->setStyleSheet("background-image:url(:/images/background);");
+    //pollAPIs();
+
 }
 
 void ExchangeBrowser::on_btnConvertSilkoin_clicked()
