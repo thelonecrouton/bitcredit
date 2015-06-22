@@ -380,7 +380,7 @@ void OverviewPage::darkSendStatus()
 
         QString strSettings(" " + tr("Rounds"));
         strSettings.prepend(QString::number(nDarksendRounds)).prepend(" / ");
-        strSettings.prepend(BitcreditUnits::formatWithUnit(walletModel->getOptionsModel()->getDisplayUnit(),nAnonymizeBitcreditAmount * COIN));
+        //strSettings.prepend(BitcreditUnits::formatWithUnit(walletModel->getOptionsModel()->getDisplayUnit(),nAnonymizeBitcreditAmount * COIN));
 
         ui->labelAmountRounds->setText(strSettings);
     }
