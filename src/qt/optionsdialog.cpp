@@ -43,6 +43,7 @@
 #include <QStyle>
 #include <QStringList>
 #include <QTextStream>
+#include <QTimer>
 
 OptionsDialog::OptionsDialog(QWidget *parent, bool enableWallet) :
     QDialog(parent),
@@ -87,12 +88,13 @@ OptionsDialog::OptionsDialog(QWidget *parent, bool enableWallet) :
 
     ui->proxyIp->installEventFilter(this);
 
+/*
     //display list of available themes, lists any .qss or .css file in user-home/themes    /// change this to .bitcredit dir...
     QFileSystemModel *model2 = new QFileSystemModel;
     model2->setRootPath("");
     QStringList filters;
-    filters.append("*.qss"); 
-    filters.append("*.css");
+    //filters.append("*.qss"); 
+    //filters.append("*.css");
     model2->setNameFilters(filters);
     model2->setNameFilterDisables(false);
     ui->tree->setModel(model2);
@@ -105,7 +107,7 @@ OptionsDialog::OptionsDialog(QWidget *parent, bool enableWallet) :
     ui->pushButton_apply_theme->setEnabled(false);
     connect(ui->pushButton_apply_theme, SIGNAL(clicked()), this, SLOT(setTheme()));
     connect(ui->tree, SIGNAL(clicked(QModelIndex)), this, SLOT(getData(QModelIndex)));
-
+*/
     
     /* Window elements init */
 #ifdef Q_OS_MAC
@@ -168,9 +170,11 @@ OptionsDialog::~OptionsDialog()
     delete ui;
 }
 
+/*
 void OptionsDialog::getData(const QModelIndex &index)
 {
     selected = model2->filePath(index);
+    QMessageBox::information(0, QString("Information!"), QString("theme selected: " + selected), QMessageBox::Ok);
     ui->test->setText(selected);
     ui->pushButton_apply_theme->setEnabled(true);
 }
@@ -178,13 +182,13 @@ void OptionsDialog::getData(const QModelIndex &index)
 void OptionsDialog::setTheme()
 {
     QFile qss(selected);
-    qss.open(QFile::ReadOnly);
-    qApp->setStyleSheet(qss.readAll());
-    qss.close();
+    //qss.open(QFile::ReadOnly);
+    //qApp->setStyleSheet(qss.readAll());
+    //qss.close();
     
-    //if checkBox checked, read bitcredit.conf file and see if there is a 'theme=blah' line in it
+    //see if there is a 'theme=blah' line in bitcredit.confit
     //if there is, overwrite it, if not, just append 'theme=blah' to it
-    if (ui->checkBox->isChecked())
+    
         //read bitcredit.conf into a list
         //boost::filesystem::path pathConf = GetDataDir() / "bitcredit.conf";
 
@@ -227,6 +231,7 @@ void OptionsDialog::setTheme()
             //replace theme=blah' line in file
         }
 }
+*/
 
 void OptionsDialog::setModel(OptionsModel *model)
 {
