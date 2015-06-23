@@ -13,8 +13,6 @@
 #include "wallet.h"
 #include "init.h"
 
-#include "stdio.h"
-
 #include <QAbstractItemDelegate>
 #include <QPainter>
 #include <QTimer>
@@ -25,11 +23,6 @@
 #include <QApplication>
 #include <QClipboard>
 #include <QMessageBox>
-#include <QPushButton>
-#include <QDebug>
-#include <QTextStream>
-
-
 
 BanknodeManager::BanknodeManager(QWidget *parent) :
     QWidget(parent),
@@ -48,24 +41,6 @@ BanknodeManager::BanknodeManager(QWidget *parent) :
     ui->tableWidget->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
     ui->tableWidget_2->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
 
-/*
-    //load mybanknodelist.txt if present
-    QFile myTextFile("/home/stu/Desktop/mybanknodes.txt");
-    QStringList myStringList;
-    if (!myTextFile.open(QIODevice::ReadOnly))
-        {
-            QMessageBox::information(0, "Error opening file", myTextFile.errorString());
-        }
-    else
-        {  
-            while(!myTextFile.atEnd())
-            {
-                myStringList.append(myTextFile.readLine());
-            }
-            myTextFile.close();
-        }
-    QString listitems = myStringList.join(",");
-*/    
     subscribeToCoreSignals();
 
     timer = new QTimer(this);
@@ -79,8 +54,6 @@ BanknodeManager::BanknodeManager(QWidget *parent) :
     }
 
     updateNodeList();
-    
-    //connect(btnMine, SIGNAL(clicked()), this, SLOT(mine()));
 }
 
 BanknodeManager::~BanknodeManager()
@@ -201,48 +174,16 @@ void BanknodeManager::updateNodeList()
         CTxDestination address1;
         ExtractDestination(pubkey, address1);
         CBitcreditAddress address2(address1);
-        QTableWidgetItem *pubkeyItem = new QTableWidgetItem(QString::fromStdString(address2.ToString()));
-
+	QTableWidgetItem *pubkeyItem = new QTableWidgetItem(QString::fromStdString(address2.ToString()));
+	
 	ui->tableWidget->setItem(mnRow, 0, addressItem);
 	ui->tableWidget->setItem(mnRow, 1, rankItem);
 	ui->tableWidget->setItem(mnRow, 2, activeItem);
 	ui->tableWidget->setItem(mnRow, 3, activeSecondsItem);
 	ui->tableWidget->setItem(mnRow, 4, lastSeenItem);
 	ui->tableWidget->setItem(mnRow, 5, pubkeyItem);
-	}
-/*
-    //load mybanknodelist.txt if present
-    QFile myTextFile("/home/stu/Desktop/mybanknodes.txt");
-    QStringList myStringList;
-    if (!myTextFile.open(QIODevice::ReadOnly))
-        {
-            QMessageBox::information(0, "Error opening file", myTextFile.errorString());
-        }
-    else
-        {  
-            while(!myTextFile.atEnd())
-            {
-                myStringList.append(myTextFile.readLine());
-            }
-            myTextFile.close();
-        }
-    QString listitems = myStringList.join(""); 
-    //QTextStream(stdout) << listitems;
-    //QTextStream(stdout) << "\n";  
-    
-    int rows = ui->tableWidget->rowCount();
-    if (rows >1)
-    for(int i = 0; i < rows; ++i)
-    {
-        QTableWidgetItem *temp = ui->tableWidget->item(i, 5);
-        QString str1 = temp->text();
-        //QTextStream(stdout) << str1;
-        //QTextStream(stdout) << "\n";
-        if (listitems.contains(str1))
-        {
-            ui->tableWidget->item(i, 5)->setBackgroundColor(Qt::blue);
-        }
-    }*/
+    }
+
     ui->countLabel->setText(QString::number(ui->tableWidget->rowCount()));
 }
 

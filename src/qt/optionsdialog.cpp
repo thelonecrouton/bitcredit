@@ -87,7 +87,6 @@ OptionsDialog::OptionsDialog(QWidget *parent, bool enableWallet) :
 
     ui->proxyIp->installEventFilter(this);
 
-/*
     //display list of available themes, lists any .qss or .css file in user-home/themes    /// change this to .bitcredit dir...
     QFileSystemModel *model2 = new QFileSystemModel;
     model2->setRootPath("");
@@ -106,7 +105,7 @@ OptionsDialog::OptionsDialog(QWidget *parent, bool enableWallet) :
     ui->pushButton_apply_theme->setEnabled(false);
     connect(ui->pushButton_apply_theme, SIGNAL(clicked()), this, SLOT(setTheme()));
     connect(ui->tree, SIGNAL(clicked(QModelIndex)), this, SLOT(getData(QModelIndex)));
-*/
+
     
     /* Window elements init */
 #ifdef Q_OS_MAC
@@ -169,7 +168,6 @@ OptionsDialog::~OptionsDialog()
     delete ui;
 }
 
-/*
 void OptionsDialog::getData(const QModelIndex &index)
 {
     selected = model2->filePath(index);
@@ -229,7 +227,6 @@ void OptionsDialog::setTheme()
             //replace theme=blah' line in file
         }
 }
-*/
 
 void OptionsDialog::setModel(OptionsModel *model)
 {

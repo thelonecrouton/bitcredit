@@ -28,9 +28,6 @@
      <property name="toolTip">
       <string>QR Code</string>
      </property>
-     <property name="styleSheet">
-      <string notr="true"/>
-     </property>
      <property name="textFormat">
       <enum>Qt::PlainText</enum>
      </property>
@@ -57,7 +54,7 @@
       </size>
      </property>
      <property name="styleSheet">
-      <string notr="true"/>
+      <string notr="true">color: rgb(255, 255, 255);background:transparent; </string>
      </property>
      <property name="frameShape">
       <enum>QFrame::NoFrame</enum>
@@ -78,7 +75,7 @@
      <item>
       <widget class="QPushButton" name="btnCopyURI">
        <property name="styleSheet">
-        <string notr="true"/>
+        <string notr="true">color: rgb(255, 255, 255);background:transparent; </string>
        </property>
        <property name="text">
         <string>Copy &amp;URI</string>
@@ -91,7 +88,7 @@
      <item>
       <widget class="QPushButton" name="btnCopyAddress">
        <property name="styleSheet">
-        <string notr="true"/>
+        <string notr="true">color: rgb(255, 255, 255);background:transparent; </string>
        </property>
        <property name="text">
         <string>Copy &amp;Address</string>
@@ -104,7 +101,7 @@
      <item>
       <widget class="QPushButton" name="btnSaveAs">
        <property name="styleSheet">
-        <string notr="true"/>
+        <string notr="true">color: rgb(255, 255, 255);background:transparent; </string>
        </property>
        <property name="text">
         <string>&amp;Save Image...</string>
@@ -130,7 +127,7 @@
      <item>
       <widget class="QDialogButtonBox" name="buttonBox">
        <property name="styleSheet">
-        <string notr="true"/>
+        <string notr="true">color: rgb(255, 255, 255);background:transparent; </string>
        </property>
        <property name="standardButtons">
         <set>QDialogButtonBox::Close</set>
