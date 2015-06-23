@@ -6,6 +6,9 @@
 
 #include <QWidget>
 #include <QTimer>
+#include <QStringList>
+#include <QString>
+#include <QFile>
 
 namespace Ui {
     class BanknodeManager;
@@ -46,6 +49,11 @@ private:
     CCriticalSection cs_adrenaline;
     void subscribeToCoreSignals();
     void unsubscribeFromCoreSignals();
+    QStringList myStringList;
+    QString listitems;
+    QFile *myTextFile;
+
+    
 
 private slots:
     void on_copyAddressButton_clicked();
@@ -58,6 +66,7 @@ private slots:
     void on_stopAllButton_clicked();
     void on_removeButton_clicked();
     void on_tableWidget_2_itemSelectionChanged();
+
 };
 
 #endif // BANKNODEMANAGER_H
