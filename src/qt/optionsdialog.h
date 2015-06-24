@@ -14,10 +14,9 @@
 #include <QString>
 #include <QFileInfo>
 #include <QFile>
-#include <QStyle>
 #include <QStringList>
-#include <QCheckBox>
 #include <QTextStream>
+
 
 class OptionsModel;
 class QValidatedLineEdit;
@@ -55,8 +54,8 @@ private slots:
     void on_resetButton_clicked();
     void on_okButton_clicked();
     void on_cancelButton_clicked();
-    void setTheme();
-    void getData(const QModelIndex &index);
+    //void setTheme();
+    //void getData(const QModelIndex &index);
     void showRestartWarning(bool fPersistent = false);
     void clearStatusLabel();
     void doProxyIpChecks(QValidatedLineEdit *pUiProxyIp, int nProxyPort);
@@ -82,7 +81,6 @@ private:
     QString confFile;
     QString themename;
     QStringList *filters;
-    QCheckBox *checkBox;
     
 };
 
