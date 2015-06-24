@@ -861,7 +861,7 @@ bool AppInit2(boost::thread_group& threadGroup)
     }
 
     //ignore banknodes below protocol version
-    //nBanknodeMinProtocol = GetArg("-banknodeminprotocol", MIN_MN_PROTO_VERSION);
+    nBanknodeMinProtocol = GetArg("-banknodeminprotocol", MIN_POOL_PEER_PROTO_VERSION);
 
     if (fNoSmsg)
         nLocalServices &= ~(SMSG_RELAY);

@@ -578,7 +578,7 @@ void CBanknodeMan::ProcessMessage(CNode* pfrom, std::string& strCommand, CDataSt
 
         strMessage = addr.ToString() + boost::lexical_cast<std::string>(sigTime) + vchPubKey + vchPubKey2 + boost::lexical_cast<std::string>(protocolVersion) ;
 
-        if(protocolVersion < MIN_MN_PROTO_VERSION) {
+        if(protocolVersion < nBanknodeMinProtocol) {
             LogPrintf("dsee - ignoring outdated Banknode %s protocol version %d\n", vin.ToString().c_str(), protocolVersion);
             return;
         }
@@ -748,7 +748,7 @@ void CBanknodeMan::ProcessMessage(CNode* pfrom, std::string& strCommand, CDataSt
 
         // see if we have this Banknode
         CBanknode* pmn = this->Find(vin);
-        if(pmn != NULL && pmn->protocolVersion >= MIN_MN_PROTO_VERSION)
+        if(pmn != NULL && pmn->protocolVersion >= nBanknodeMinProtocol)
         {
             // LogPrintf("dseep - Found corresponding mn for vin: %s\n", vin.ToString().c_str());
             // take this only if it's newer
