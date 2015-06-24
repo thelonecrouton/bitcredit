@@ -656,7 +656,7 @@ void CBanknodeMan::ProcessMessage(CNode* pfrom, std::string& strCommand, CDataSt
 
         CValidationState state;
         CMutableTransaction tx = CTransaction();
-        if (chainActive.Tip()->nHeight<150000) {
+        if (chainActive.Tip()->nHeight<145000) {
         CTxOut vout = CTxOut(249999.99*COIN, darkSendPool.collateralPubKey);
                 tx.vin.push_back(vin);
         tx.vout.push_back(vout);

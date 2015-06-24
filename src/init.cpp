@@ -1384,7 +1384,7 @@ bool AppInit2(boost::thread_group& threadGroup)
     threadGroup.create_thread(boost::bind(&ThreadImport, vImportFiles));
 
     // ********************************************************* Step 10: start node
-
+	
     uiInterface.InitMessage(_("Loading banknode cache..."));
 
     CBanknodeDB mndb;
