@@ -65,6 +65,7 @@ public:
     */
     void setClientModel(ClientModel *clientModel);
 
+    
 #ifdef ENABLE_WALLET
     /** Set the wallet model.
         The wallet model represents a bitcredit wallet, and offers access to the list of transactions, address book and sending
@@ -136,7 +137,7 @@ private:
     QAction *actionSendReceive;
     QAction *actionSendReceiveMess;
     QAction *actionSendReceiveinv;
-    QAction *actionSendReceivestats;	
+    QAction *actionSendReceivestats;
 
     QSystemTrayIcon *trayIcon;
     QMenu *trayIconMenu;
@@ -167,6 +168,8 @@ private:
     void subscribeToCoreSignals();
     /** Disconnect core signals from GUI client */
     void unsubscribeFromCoreSignals();
+    
+    void tb2hover();
 
 signals:
     /** Signal raised when a URI was entered or dragged to the GUI */

@@ -23,6 +23,8 @@
 #ifdef ENABLE_WALLET
 #include "walletframe.h"
 #include "walletmodel.h"
+#include "stdio.h"
+
 #endif // ENABLE_WALLET
 
 #ifdef Q_OS_MAC
@@ -232,6 +234,9 @@ BitcreditGUI::BitcreditGUI(const NetworkStyle *networkStyle, QWidget *parent) :
     toolbar2->setFixedHeight(40);
     toolbar2->setFixedWidth(1000);
     toolbar2->setIconSize(QSize(18, 18));
+    toolbar2->setMouseTracking(true);
+    toolbar2->installEventFilter(this);
+    
     QWidget* spacer2 = new QWidget();
     //spacer2->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     spacer2->setFixedWidth(90);
@@ -521,6 +526,8 @@ void BitcreditGUI::createActions(const NetworkStyle *networkStyle)
     connect(sendMessagesAnonAction, SIGNAL(triggered()), this, SLOT(showNormalIfMinimized()));
     connect(banknodeManagerAction, SIGNAL(triggered()), this, SLOT(showNormalIfMinimized()));
     connect(banknodeManagerAction, SIGNAL(triggered()), this, SLOT(gotoBanknodeManagerPage()));
+    
+    //connect(toolbar2, SIGNAL(onHover()), this, SLOT(tb2hover()));
 
 	
 #endif // ENABLE_WALLET
@@ -590,6 +597,15 @@ void BitcreditGUI::createActions(const NetworkStyle *networkStyle)
     }
 #endif
 }
+
+
+
+/*
+void BitcreditGUI::tb2hover()
+{
+    QMessageBox::information(0, "Event!", "Toolbar 2 airspace entered!");
+}
+*/
 
 void BitcreditGUI::createToolBars()
 {
@@ -1312,8 +1328,44 @@ bool BitcreditGUI::eventFilter(QObject *object, QEvent *event)
         if (progressBarLabel->isVisible() || progressBar->isVisible())
             return true;
     }
-    return QMainWindow::eventFilter(object, event);
+    else if (event->type() == QEvent::Enter)
+    {
+        if (event->type() == QEvent::Enter)
+        {
+            QTextStream(stdout) << "airspace entered!";
+            QTextStream(stdout) << "\n";
+        }
+        return true;
+    }
+    else    
+    {
+        return QMainWindow::eventFilter(object, event);
+    }
 }
+/*
+bool BitcreditGUI::eventFilter(QObject *obj, QEvent *event)
+{
+    // This function repeatedly call for those QObjects
+    // which have installed eventFilter (Step 2)
+
+    if (obj == (QObject*)toolbar2) {
+
+        if (event->type() == QEvent::Enter)
+        {
+        // Whatever you want to do when mouse goes over targetQObject
+            //qDebug() << "airspace entered!";
+            QTextStream(stdout) << "airspace entered!";
+            QTextStream(stdout) << "\n";
+            //ui->btn2->setStyleSheet("background: pink; color: green;");
+        }
+        return true;
+    }else {
+        // pass the event on to the parent class
+        return QWidget::eventFilter(obj, event);
+    }
+}
+*/
+
 
 #ifdef ENABLE_WALLET
 bool BitcreditGUI::handlePaymentRequest(const SendCoinsRecipient& recipient)
