@@ -234,8 +234,6 @@ BitcreditGUI::BitcreditGUI(const NetworkStyle *networkStyle, QWidget *parent) :
     toolbar2->setFixedHeight(40);
     toolbar2->setFixedWidth(1000);
     toolbar2->setIconSize(QSize(18, 18));
-    toolbar2->setMouseTracking(true);
-    toolbar2->installEventFilter(this);
     
     QWidget* spacer2 = new QWidget();
     //spacer2->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
@@ -1323,49 +1321,15 @@ bool BitcreditGUI::eventFilter(QObject *object, QEvent *event)
 {
     // Catch status tip events
     if (event->type() == QEvent::StatusTip)
-    {
+        {
         // Prevent adding text from setStatusTip(), if we currently use the status bar for displaying other stuff
         if (progressBarLabel->isVisible() || progressBar->isVisible())
             return true;
-    }
-    else if (event->type() == QEvent::Enter)
-    {
-        if (event->type() == QEvent::Enter)
-        {
-            QTextStream(stdout) << "airspace entered!";
-            QTextStream(stdout) << "\n";
         }
-        return true;
-    }
-    else    
     {
         return QMainWindow::eventFilter(object, event);
     }
 }
-/*
-bool BitcreditGUI::eventFilter(QObject *obj, QEvent *event)
-{
-    // This function repeatedly call for those QObjects
-    // which have installed eventFilter (Step 2)
-
-    if (obj == (QObject*)toolbar2) {
-
-        if (event->type() == QEvent::Enter)
-        {
-        // Whatever you want to do when mouse goes over targetQObject
-            //qDebug() << "airspace entered!";
-            QTextStream(stdout) << "airspace entered!";
-            QTextStream(stdout) << "\n";
-            //ui->btn2->setStyleSheet("background: pink; color: green;");
-        }
-        return true;
-    }else {
-        // pass the event on to the parent class
-        return QWidget::eventFilter(obj, event);
-    }
-}
-*/
-
 
 #ifdef ENABLE_WALLET
 bool BitcreditGUI::handlePaymentRequest(const SendCoinsRecipient& recipient)
