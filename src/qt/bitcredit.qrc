@@ -76,6 +76,7 @@
         <file alias="about">res/images/about.png</file>
         <file alias="blockhead">res/images/blockt.png</file>
         <file alias="head">res/images/head.png</file>
+        <file alias="intro">res/images/intro.png</file>
         <file alias="splash">res/images/splash.png</file>
         <file alias="splash_testnet">res/images/splash_testnet.png</file>
 		<file alias="background">res/images/background.png</file>
