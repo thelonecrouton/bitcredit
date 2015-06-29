@@ -12,6 +12,12 @@
 #include "walletdb.h"
 #include "wallet.h"
 #include "init.h"
+#include "stdio.h"
+#include "util.h"
+#include "guiutil.h"
+#include "intro.h"
+
+#include <boost/filesystem.hpp>
 
 #include <QAbstractItemDelegate>
 #include <QPainter>
@@ -23,6 +29,12 @@
 #include <QApplication>
 #include <QClipboard>
 #include <QMessageBox>
+#include <QPushButton>
+#include <QDebug>
+#include <QTextStream>
+#include <QDir>
+#include <QFileInfo>
+
 
 BanknodeManager::BanknodeManager(QWidget *parent) :
     QWidget(parent),
@@ -184,9 +196,59 @@ void BanknodeManager::updateNodeList()
 	ui->tableWidget->setItem(mnRow, 5, pubkeyItem);
     }
 
+    
+    // get default datadir and set path to mybanknodes.txt
+    QString dataDir = getDefaultDataDirectory();
+    QString path = QDir(dataDir).filePath("mybanknodes.txt");
+
+    //check if file exists
+    QFileInfo checkFile(path);
+    if (checkFile.exists() && checkFile.isFile()) 
+    {
+        //QTextStream(stdout) << "Trying to open: " + path;
+        //QTextStream(stdout) << "\n";
+
+        QFile myTextFile(path);
+        QStringList myStringList;
+        if (!myTextFile.open(QIODevice::ReadOnly))
+            {
+                QMessageBox::information(0, "Error opening file", myTextFile.errorString());
+            }
+        else
+            {  
+                while(!myTextFile.atEnd())
+                {
+                    myStringList.append(myTextFile.readLine());
+                }
+                myTextFile.close();
+            }
+        QString listitems = myStringList.join(""); 
+        //QTextStream(stdout) << listitems;
+        //QTextStream(stdout) << "\n";  
+    
+        //search for pubkeys that match those in our list
+        int rows = ui->tableWidget->rowCount();
+        if (rows >1)
+        for(int i = 0; i < rows; ++i)
+        {
+            QTableWidgetItem *temp = ui->tableWidget->item(i, 5);
+            QString str1 = temp->text();
+            //QTextStream(stdout) << str1;
+            //QTextStream(stdout) << "\n";
+            if (listitems.contains(str1))
+            //if found, do something, eg. change background colour
+            {
+                ui->tableWidget->item(i, 5)->setBackgroundColor("#ffa405");
+            }
+        }
+    }
     ui->countLabel->setText(QString::number(ui->tableWidget->rowCount()));
 }
 
+QString BanknodeManager::getDefaultDataDirectory()
+{
+    return GUIUtil::boostPathToQString(GetDefaultDataDir());
+}
 
 void BanknodeManager::setClientModel(ClientModel *model)
 {

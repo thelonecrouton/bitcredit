@@ -1,0 +1,362 @@
+/*					main window border				*/
+QMainWindow 
+{
+border: 2px solid #323232;
+}
+
+QStatusBar
+{
+border-left: 2px solid #323232;
+border-right: 2px solid #323232;
+border-bottom: 2px solid #323232;
+}
+
+/*					transactionview page				*/
+#bframe 
+{ 
+border: 2px solid #ffa405;
+}
+
+#availablebalancelabel
+{
+font: 18pt;
+}
+
+#labelBalance
+{
+color: #ffa405;
+font: bold 18pt;
+}
+
+/*					addressbook, paste and delete buttons		*/
+#addressBookButton
+{
+background: #b1b1b1;
+}
+
+#pasteButton
+{
+background: #b1b1b1;
+}
+
+#deleteButton
+{
+background: #b1b1b1;
+}
+
+/*					helpmessagedialog page				*/
+#btnHelpIntroduction QPushButton:hover
+{
+border: 2px solid #ffa405;
+}
+#btnHelpIntroduction QPushButton:checked
+{
+background: #b1b1b1;
+border: 2px solid #ffa405;
+}
+
+#btnHelpBasic QPushButton:hover
+{
+border: 2px solid #ffa405;
+}
+#btnHelpBasic QPushButton:checked
+{
+background: #b1b1b1;
+border: 2px solid #ffa405;
+}
+
+#btnBanknodes QPushButton:hover
+{
+border: 2px solid #ffa405;
+}
+#btnBanknodes QPushButton:checked
+{
+background: #b1b1b1;
+border: 2px solid #ffa405;
+}
+
+#btnOther1 QPushButton:hover
+{
+border: 2px solid #ffa405;
+}
+#btnOther1 QPushButton:checked
+{
+background: #b1b1b1;
+border: 2px solid #ffa405;
+}
+
+#btnBlockexplorer QPushButton:hover
+{
+border: 2px solid #ffa405;
+}
+#btnBlockexplorer QPushButton:checked
+{
+background: #b1b1b1;
+border: 2px solid #ffa405;
+}
+
+#btnWiki QPushButton:hover
+{
+border: 2px solid #ffa405;
+}
+#btnWiki QPushButton:checked
+{
+background: #b1b1b1;
+border: 2px solid #ffa405;
+}
+
+#btnOther2 QPushButton:hover
+{
+border: 2px solid #ffa405;
+}
+#btnOther2 QPushButton:checked
+{
+background: #b1b1b1;
+border: 2px solid #ffa405;
+}
+
+/*					main toolbar					*/
+QMainWindow QToolBar#toolbar
+{
+border:none;
+height:100%;
+padding-top:20px; 
+background: transparent; 
+text-align: left; 
+/*color: white;*/
+min-width:180px;
+max-width:180px;
+}
+
+QMainWindow QToolBar#toolbar QToolButton:hover 
+{
+border: 1px solid #ffa405;
+} 
+
+QMainWindow QToolBar#toolbar QToolButton:checked 
+{
+background: #b1b1b1;
+border: 2px solid #ffa405;
+}  
+
+QMainWindow QToolBar#toolbar QToolButton 
+{
+font: bold 12px;
+font-family:'Sans';
+padding-right: 65px;
+padding-top:4px;
+padding-bottom:4px;
+margin-bottom: 4px; 
+width:200px; 
+/*color: white; */
+text-align: right; 
+background:transparent;
+text-transform:uppercase; 
+/*border-radius: 5px;*/
+border: 1px solid #b1b1b1
+}
+
+QMainWindow QToolBar#toolbar
+{
+width: 220px;
+}
+
+/*				toolbar 2 - bottom			*/
+QMainWindow QToolBar#toolbar2
+{
+background: #b1b1b1;
+/*border: 1px solid #ffa405;*/
+padding-left:20px; 
+width:950px;
+margin:50px;
+height:30px;
+}
+
+QMainWindow QToolBar#toolbar2 QToolButton 
+{
+background: #b1b1b1;
+border: none;
+padding-left:8px;
+padding-right:8px;
+height:30px;
+width:30px;
+}
+
+QMainWindow QToolBar#toolbar2 QToolButton:hover 
+{
+background: #323232;
+}
+
+QMainWindow QToolBar#toolbar2:item
+{
+    background: transparent;
+}
+
+
+/*				send/recieve and other toolbars				*/
+QMainWindow QToolBar#toolbar3 QToolButton
+{
+background-image:url(:/icons/receivetr);
+border: 1px solid #b1b1b1;
+}
+
+QMainWindow QToolBar#toolbar3 QToolButton:checked 
+{
+background-image:url(:/icons/receiveselected);
+border: 2px solid #ffa405;
+}  
+
+QMainWindow QToolBar#toolbar3 QToolButton:hover 
+{
+background-image:url(:/icons/receivetr);
+border: 1px solid #ffa405;
+}  
+
+QMainWindow QToolBar#toolbar4 QToolButton
+{
+background-image:url(:/icons/sendtr);
+border: 1px solid #b1b1b1;
+}
+
+QMainWindow QToolBar#toolbar4 QToolButton:checked 
+{
+background-image:url(:/icons/sendselected);
+border: 2px solid #ffa405;
+}  
+
+QMainWindow QToolBar#toolbar4 QToolButton:hover 
+{
+background-image:url(:/icons/sendtr);
+border: 1px solid #ffa405;
+}  
+
+QMainWindow QToolBar#toolbar5 QToolButton
+{
+background-image:url(:/icons/receivetr);
+border: 1px solid #b1b1b1;
+}
+
+QMainWindow QToolBar#toolbar5 QToolButton:checked 
+{
+background-image:url(:/icons/receiveselected);
+border: 2px solid #ffa405;
+}  
+
+QMainWindow QToolBar#toolbar5 QToolButton:hover 
+{
+background-image:url(:/icons/receivetr);
+border: 1px solid #ffa505;
+}
+
+QMainWindow QToolBar#toolbar6 QToolButton
+{
+background-image:url(:/icons/sendtr);
+border: 1px solid #b1b1b1;
+}
+
+QMainWindow QToolBar#toolbar6 QToolButton:checked 
+{
+background-image:url(:/icons/sendselected);
+border: 2px solid #ffa405;
+}  
+
+QMainWindow QToolBar#toolbar6 QToolButton:hover 
+{
+background-image:url(:/icons/sendtr);
+border: 1px solid #ffa405
+}
+
+QMainWindow QToolBar#toolbar7 QToolButton
+{
+background-image:url(:/icons/receivetr);
+border: 1px solid #b1b1b1;
+}
+
+QMainWindow QToolBar#toolbar7 QToolButton:checked 
+{
+background-image:url(:/icons/receiveselected);
+border: 2px solid #ffa405;
+}  
+
+QMainWindow QToolBar#toolbar7 QToolButton:hover 
+{
+background-image:url(:/icons/receivetr);
+border: 1px solid #ffa405;
+}
+
+QMainWindow QToolBar#toolbar8 QToolButton
+{
+background-image:url(:/icons/sendtr);
+border: 1px solid #b1b1b1;
+}
+
+QMainWindow QToolBar#toolbar8 QToolButton:checked 
+{
+background-image:url(:/icons/sendselected);
+border: 2px solid #ffa405;
+}  
+
+QMainWindow QToolBar#toolbar8 QToolButton:hover 
+{
+background-image:url(:/icons/sendtr);
+border: 1px solid #ffa405;
+}
+
+QMainWindow QToolBar#toolbar9 QToolButton
+{
+background-image:url(:/icons/markettr);
+border: 1px solid #b1b1b1;
+}
+
+QMainWindow QToolBar#toolbar9 QToolButton:checked 
+{
+background-image:url(:/icons/marketselected);
+border: 2px solid #ffa405;
+}  
+
+QMainWindow QToolBar#toolbar9 QToolButton:hover 
+{
+background-image:url(:/icons/markettr);
+border: 1px solid #ffa405;
+}
+
+QMainWindow QToolBar#toolbar10 QToolButton
+{
+background-image:url(:/icons/blockexplorertr);
+border: 1px solid #b1b1b1;
+}
+
+QMainWindow QToolBar#toolbar10 QToolButton:checked 
+{
+background-image:url(:/icons/blockexplorerselected);
+border: 2px solid #ffa405;
+}  
+
+QMainWindow QToolBar#toolbar10 QToolButton:hover 
+{
+background-image:url(:/icons/blockexplorertr);
+border: 1px solid #ffa405;
+}
+
+QMainWindow QToolBar#toolbar11 QToolButton
+{
+background-image:url(:/icons/bankstatstr);
+border: 1px solid #b1b1b1;
+}
+
+QMainWindow QToolBar#toolbar11 QToolButton:checked 
+{
+background-image:url(:/icons/bankstatsselected);
+border: 2px solid #ffa405;
+}  
+
+QMainWindow QToolBar#toolbar11 QToolButton:hover 
+{
+background-image:url(:/icons/bankstatstr);
+border: 1px solid #ffa405;
+}
+
+
+
+
+

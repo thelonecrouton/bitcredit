@@ -265,7 +265,6 @@ BITCREDIT_QT_H = \
   qt/adrenalinenodeconfigdialog.h \
   qt/addeditadrenalinenode.h
   
-
 RES_ICONS = \
   qt/res/icons/add.png \
   qt/res/icons/address-book.png \

@@ -16,6 +16,7 @@
 #include <QFile>
 #include <QStringList>
 #include <QTextStream>
+#include <QRadioButton>
 
 
 class OptionsModel;
@@ -54,13 +55,17 @@ private slots:
     void on_resetButton_clicked();
     void on_okButton_clicked();
     void on_cancelButton_clicked();
-    //void setTheme();
+    void setTheme();
     //void getData(const QModelIndex &index);
     void showRestartWarning(bool fPersistent = false);
     void clearStatusLabel();
     void doProxyIpChecks(QValidatedLineEdit *pUiProxyIp, int nProxyPort);
 	/* query the networks, for which the default proxy is used */
     void updateDefaultProxyNets();
+    
+    QString getDefaultDataDirectory();
+    
+     
 signals:
     void proxyIpChecks(QValidatedLineEdit *pUiProxyIp, int nProxyPort);
 
@@ -81,6 +86,21 @@ private:
     QString confFile;
     QString themename;
     QStringList *filters;
+    QRadioButton *checkOrange;
+    QRadioButton *checkDark;
+    QRadioButton *checkGreen;
+    QRadioButton *checkBlue;
+    QRadioButton *checkPink;
+    QRadioButton *checkPurple;
+    QRadioButton *checkTurq;
+    QString path;
+    QString dataDir;
+    QStringList confList;
+    QStringList themepath;
+    QString data;
+    QString tempfile;
+    QString tempstring;
+    
     
 };
 

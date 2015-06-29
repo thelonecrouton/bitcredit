@@ -23,6 +23,8 @@
 #ifdef ENABLE_WALLET
 #include "walletframe.h"
 #include "walletmodel.h"
+#include "stdio.h"
+
 #endif // ENABLE_WALLET
 
 #ifdef Q_OS_MAC
@@ -147,16 +149,62 @@ BitcreditGUI::BitcreditGUI(const NetworkStyle *networkStyle, QWidget *parent) :
     QString str = QString::fromUtf8(theme.c_str());
     if (mapArgs.count("-theme"))
     {
-        QMessageBox::information(0, QString("Warning!"), QString("You are about to load a custom theme:<br>" + str + " !<br><br>The Bitcredit developers accept no responsibility for<br>any resultant loss of client utility, sanity, or breakfast!"), QMessageBox::Ok);
-        QFile qss(str);
-        qss.open(QFile::ReadOnly);
-        qApp->setStyleSheet(qss.readAll());
-        qss.close();
+        QFile qss;
+        //QMessageBox::information(0, QString("Warning!"), QString("You are about to load a custom theme:<br>" + str + " !<br><br>The Bitcredit developers accept no responsibility for<br>any resultant loss of client utility!"), QMessageBox::Ok);
+        if (str.contains("orange"))
+        {
+            QFile qss(":/css/orange");
+            qss.open(QFile::ReadOnly);
+            qApp->setStyleSheet(qss.readAll());
+            qss.close();
+        }
+        else if (str.contains("dark"))
+        {
+            QFile qss(":/css/dark");
+            qss.open(QFile::ReadOnly);
+            qApp->setStyleSheet(qss.readAll());
+            qss.close();            
+        }
+        else if (str.contains("green"))
+        {
+            QFile qss(":/css/green");
+            qss.open(QFile::ReadOnly);
+            qApp->setStyleSheet(qss.readAll());
+            qss.close();            
+        }
+        else if (str.contains("blue"))
+        {
+            QFile qss(":/css/blue");
+            qss.open(QFile::ReadOnly);
+            qApp->setStyleSheet(qss.readAll());
+            qss.close();            
+        }
+        else if (str.contains("pink"))
+        {
+            QFile qss(":/css/pink");
+            qss.open(QFile::ReadOnly);
+            qApp->setStyleSheet(qss.readAll());
+            qss.close();            
+        }
+        else if (str.contains("purple"))
+        {
+            QFile qss(":/css/purple");
+            qss.open(QFile::ReadOnly);
+            qApp->setStyleSheet(qss.readAll());
+            qss.close();            
+        }
+        else if (str.contains("turq"))
+        {
+            QFile qss(":/css/turq");
+            qss.open(QFile::ReadOnly);
+            qApp->setStyleSheet(qss.readAll());
+            qss.close();            
+        }        
     }
     //if not, load the default theme
     else
     {
-        QFile qss(":/css/stylesheet");
+        QFile qss(":/css/orange");
         qss.open(QFile::ReadOnly);
         qApp->setStyleSheet(qss.readAll());
         qss.close();
@@ -232,6 +280,7 @@ BitcreditGUI::BitcreditGUI(const NetworkStyle *networkStyle, QWidget *parent) :
     toolbar2->setFixedHeight(40);
     toolbar2->setFixedWidth(1000);
     toolbar2->setIconSize(QSize(18, 18));
+    
     QWidget* spacer2 = new QWidget();
     //spacer2->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     spacer2->setFixedWidth(90);
@@ -521,6 +570,8 @@ void BitcreditGUI::createActions(const NetworkStyle *networkStyle)
     connect(sendMessagesAnonAction, SIGNAL(triggered()), this, SLOT(showNormalIfMinimized()));
     connect(banknodeManagerAction, SIGNAL(triggered()), this, SLOT(showNormalIfMinimized()));
     connect(banknodeManagerAction, SIGNAL(triggered()), this, SLOT(gotoBanknodeManagerPage()));
+    
+    //connect(toolbar2, SIGNAL(onHover()), this, SLOT(tb2hover()));
 
 	
 #endif // ENABLE_WALLET
@@ -591,15 +642,25 @@ void BitcreditGUI::createActions(const NetworkStyle *networkStyle)
 #endif
 }
 
+
+
+/*
+void BitcreditGUI::tb2hover()
+{
+    QMessageBox::information(0, "Event!", "Toolbar 2 airspace entered!");
+}
+*/
+
 void BitcreditGUI::createToolBars()
 {
-    QLabel *mylabel = new QLabel(this);
-    mylabel->setPixmap(QPixmap(":images/head"));
-    mylabel->show();
+    QLabel *labelLogo = new QLabel(this);
+    //to-do - head image set in themefile.qss
+    labelLogo->setPixmap(QPixmap(":images/head"));
+    labelLogo->show();
     QToolBar *toolbar = addToolBar(tr("Menu"));
     toolbar->setObjectName("toolbar");
     addToolBar(Qt::LeftToolBarArea, toolbar);
-    toolbar->addWidget(mylabel);
+    toolbar->addWidget(labelLogo);
     toolbar->setOrientation(Qt::Vertical);
     toolbar->setFixedWidth(220);
     toolbar->setMovable(false);
@@ -796,8 +857,10 @@ void BitcreditGUI::aboutClicked()
     if(!clientModel)
         return;
 
-    HelpMessageDialog dlg(this, true);
-    dlg.exec();
+    QDialog* dlg = new HelpMessageDialog(this, true);
+    //HelpMessageDialog dlg(this, true);
+    dlg->setModal(false);
+    dlg->show();
 }
 
 void BitcreditGUI::showHelpMessageClicked()
@@ -1307,12 +1370,14 @@ bool BitcreditGUI::eventFilter(QObject *object, QEvent *event)
 {
     // Catch status tip events
     if (event->type() == QEvent::StatusTip)
-    {
+        {
         // Prevent adding text from setStatusTip(), if we currently use the status bar for displaying other stuff
         if (progressBarLabel->isVisible() || progressBar->isVisible())
             return true;
+        }
+    {
+        return QMainWindow::eventFilter(object, event);
     }
-    return QMainWindow::eventFilter(object, event);
 }
 
 #ifdef ENABLE_WALLET

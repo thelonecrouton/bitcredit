@@ -38,6 +38,7 @@ extern int nLiquidityProvider;
 extern bool fEnableDarksend;
 extern int64_t enforceBanknodePaymentsTime;
 extern std::string strBankNodeAddr;
+extern int nBanknodeMinProtocol;
 extern int keysLoaded;
 extern bool fSucessfullyLoaded;
 extern std::vector<int64_t> darkSendDenominations;

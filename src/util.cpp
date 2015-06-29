@@ -104,6 +104,7 @@ int nAnonymizeBitcreditAmount = 5000;
 int nLiquidityProvider = 0;
 /** Spork enforcement enabled time */
 int64_t enforceBanknodePaymentsTime = 4085657524;
+int nBanknodeMinProtocol = 0;
 bool fSucessfullyLoaded = false;
 bool fEnableDarksend = false;
 /** All denominations used by darksend */

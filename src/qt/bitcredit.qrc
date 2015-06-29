@@ -76,6 +76,7 @@
         <file alias="about">res/images/about.png</file>
         <file alias="blockhead">res/images/blockt.png</file>
         <file alias="head">res/images/head.png</file>
+        <file alias="intro">res/images/intro.png</file>
         <file alias="splash">res/images/splash.png</file>
         <file alias="splash_testnet">res/images/splash_testnet.png</file>
 		<file alias="background">res/images/background.png</file>
@@ -119,7 +120,13 @@
         <file alias="spinner-035">res/movies/spinner-035.png</file>
     </qresource>
     <qresource prefix="/css">
-        <file alias="stylesheet">res/css/stylesheet.qss</file>
+        <file alias="dark">res/css/dark.qss</file>
+        <file alias="orange">res/css/orange.qss</file>
+        <file alias="green">res/css/green.qss</file>
+        <file alias="blue">res/css/blue.qss</file>
+        <file alias="pink">res/css/pink.qss</file>
+        <file alias="purple">res/css/purple.qss</file>
+        <file alias="turq">res/css/turq.qss</file>
         <file alias="darkstylesheet">res/css/qdarkstyle.qss</file>        
         <file alias="main.css">res/css/main.css</file>
         <file alias="contextMenu.css">res/css/contextMenu.css</file>

@@ -1,15 +1,19 @@
 #ifndef BANKNODEMANAGER_H
 #define BANKNODEMANAGER_H
 
-#include "util.h"
 #include "sync.h"
 
 #include <QWidget>
 #include <QTimer>
+#include <QStringList>
+#include <QString>
+#include <QFile>
+#include <QDir>
 
 namespace Ui {
     class BanknodeManager;
 }
+ 
 class ClientModel;
 class WalletModel;
 
@@ -35,7 +39,8 @@ public:
 public slots:
     void updateNodeList();
     void updateAdrenalineNode(QString alias, QString addr, QString privkey, QString collateral);
-
+    
+    
 signals:
 
 private:
@@ -46,7 +51,13 @@ private:
     CCriticalSection cs_adrenaline;
     void subscribeToCoreSignals();
     void unsubscribeFromCoreSignals();
-
+    QStringList myStringList;
+    QString listitems;
+    QFile *myTextFile;
+    QString path;
+    QString dataDir;
+    
+    
 private slots:
     void on_copyAddressButton_clicked();
     void on_createButton_clicked();
@@ -58,6 +69,9 @@ private slots:
     void on_stopAllButton_clicked();
     void on_removeButton_clicked();
     void on_tableWidget_2_itemSelectionChanged();
+    
+    QString getDefaultDataDirectory();
+    
 };
 
 #endif // BANKNODEMANAGER_H

@@ -34,6 +34,7 @@
 #include <QInputDialog>
 #include <QRegExp>
 #include <QVBoxLayout>
+#include <QUrl>
 
 #ifdef USE_QRCODE
 #include <qrencode.h>
@@ -58,6 +59,8 @@ HelpMessageDialog::HelpMessageDialog(QWidget *parent, bool about) :
     ui(new Ui::HelpMessageDialog)
 {
     ui->setupUi(this);
+    this->setWindowModality(Qt::NonModal);
+            
     GUIUtil::restoreWindowGeometry("nHelpMessageDialogWindow", this->size(), this);
 
     QString version = tr("Bitcredit Core") + " " + tr("version") + " " + QString::fromStdString(FormatFullVersion());
@@ -84,11 +87,21 @@ HelpMessageDialog::HelpMessageDialog(QWidget *parent, bool about) :
         // Replace newlines with HTML breaks
         licenseInfoHTML.replace("\n\n", "<br><br>");
 
-        ui->helpMessageLabel->setTextFormat(Qt::RichText);
-        ui->scrollArea->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
+        //ui->helpMessage->setTextFormat(Qt::RichText);
+        //ui->scrollArea->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
         text = version + "\n" + licenseInfo;
-        ui->helpMessageLabel->setText(version + "<br><br>" + licenseInfoHTML);
-        ui->helpMessageLabel->setWordWrap(true);
+        ui->helpMessage->setText(version + "<br><br>" + licenseInfoHTML);
+        //ui->helpMessage->setWordWrap(true);
+        
+        connect(ui->btnIntro, SIGNAL(clicked()), this, SLOT(showIntro()));
+        connect(ui->btnBasic, SIGNAL(clicked()), this, SLOT(showBasic()));
+        connect(ui->btnBanknodes, SIGNAL(clicked()), this, SLOT(showBanknodes()));
+        connect(ui->btnTech, SIGNAL(clicked()), this, SLOT(showTech()));
+        connect(ui->btnOther1, SIGNAL(clicked()), this, SLOT(showOther1()));
+        connect(ui->btnChainz, SIGNAL(clicked()), this, SLOT(showChainz()));
+        connect(ui->btnWiki, SIGNAL(clicked()), this, SLOT(showWiki()));
+        connect(ui->btnOther2, SIGNAL(clicked()), this, SLOT(showOther2()));
+        
     } else {
         setWindowTitle(tr("Command-line options"));
         QString header = tr("Usage:") + "\n" +
@@ -103,9 +116,9 @@ HelpMessageDialog::HelpMessageDialog(QWidget *parent, bool about) :
             "  -rootcertificates=<file>  " + tr("Set SSL root certificates for payment request (default: -system-)") + "\n" +
             "  -splash                   " + tr("Show splash screen on startup (default: 1)");
 
-        ui->helpMessageLabel->setFont(GUIUtil::bitcreditAddressFont());
+        ui->helpMessage->setFont(GUIUtil::bitcreditAddressFont());
         text = version + "\n" + header + "\n" + coreOptions + "\n" + uiOptions;
-        ui->helpMessageLabel->setText(text);
+        ui->helpMessage->setText(text);
     }
 }
 
@@ -113,6 +126,55 @@ HelpMessageDialog::~HelpMessageDialog()
 {
     GUIUtil::saveWindowGeometry("nHelpMessageDialogWindow", this);
     delete ui;
+}
+
+void HelpMessageDialog::showIntro()
+{
+    QString html = "<html><head><title>Intro</title></head><body>Intro</body></html>";
+    ui->helpMessage_2->setHtml(html);
+}
+
+void HelpMessageDialog::showBasic()
+{
+    QString html = "<html><head><title>Basic</title></head><body>Basic</body></html>";
+    ui->helpMessage_2->setHtml(html);
+}
+
+void HelpMessageDialog::showBanknodes()
+{
+    QString html = "<html><head><title>Banknodes</title></head><body>Banknodes</body></html>";
+    //ui->helpMessage_2->setSource(QUrl("res/css/test.html"));
+    ui->helpMessage_2->setHtml(html);
+}
+
+void HelpMessageDialog::showTech()
+{
+    QString html = "<html><head><title>Tech</title></head><body>Tech</body></html>";
+    ui->helpMessage_2->setHtml(html);
+}
+
+void HelpMessageDialog::showOther1()
+{
+    QString html = "<html><head><title>Other1</title></head><body>Other1</body></html>";
+    ui->helpMessage_2->setHtml(html);
+}
+
+void HelpMessageDialog::showChainz()
+{
+    QString html = "<html><head><title>Chainz</title></head><body>Chainz</body></html>";
+    ui->helpMessage_2->setHtml(html);
+}
+
+void HelpMessageDialog::showWiki()
+{
+    QString html = "<html><head><title>Wiki</title></head><body>Wiki</body></html>";
+    ui->helpMessage_2->setHtml(html);
+}
+
+void HelpMessageDialog::showOther2()
+{
+    QString html = "<html><head><title>Other2</title></head><body>Other2</body></html>";
+    ui->helpMessage_2->setHtml(html);
 }
 
 void HelpMessageDialog::printToConsole()

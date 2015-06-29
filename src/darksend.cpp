@@ -391,7 +391,7 @@ int randomizeList (int i) { return std::rand()%i;}
 // Recursively determine the rounds of a given input (How deep is the Darksend chain for a given input)
 int GetInputDarksendRounds(CTxIn in, int rounds)
 {
-    static std::map<uint256, CWalletTx> mDenomWtxes;
+    static std::map<uint256, CMutableTransaction> mDenomWtxes;
 
     if(rounds >= 17) return rounds;
 
@@ -401,12 +401,12 @@ int GetInputDarksendRounds(CTxIn in, int rounds)
     CWalletTx wtx;
     if(pwalletMain->GetTransaction(hash, wtx))
     {
-        std::map<uint256, CWalletTx>::const_iterator mdwi = mDenomWtxes.find(hash);
+        std::map<uint256, CMutableTransaction>::const_iterator mdwi = mDenomWtxes.find(hash);
         // not known yet, let's add it
         if(mdwi == mDenomWtxes.end())
         {
             if(fDebug) LogPrintf("GetInputDarksendRounds INSERTING %s\n", hash.ToString());
-            mDenomWtxes[hash] = wtx;
+            mDenomWtxes[hash] = CMutableTransaction(wtx);
         }
         // found and it's not an initial value, just return it
         else if(mDenomWtxes[hash].vout[nout].nRounds != -10)
@@ -418,24 +418,24 @@ int GetInputDarksendRounds(CTxIn in, int rounds)
         // bounds check
         if(nout >= wtx.vout.size())
         {
-            //mDenomWtxes[hash].vout[nout].nRounds = -4;
+            mDenomWtxes[hash].vout[nout].nRounds = -4;
             if(fDebug) LogPrintf("GetInputDarksendRounds UPDATED   %s %3d %d\n", hash.ToString(), nout, mDenomWtxes[hash].vout[nout].nRounds);
             return mDenomWtxes[hash].vout[nout].nRounds;
         }
 
-       // mDenomWtxes[hash].vout[nout].nRounds = -3;
+        mDenomWtxes[hash].vout[nout].nRounds = -3;
         if(pwalletMain->IsCollateralAmount(wtx.vout[nout].nValue))
         {
-            //mDenomWtxes[hash].vout[nout].nRounds = -3;
+            mDenomWtxes[hash].vout[nout].nRounds = -3;
             if(fDebug) LogPrintf("GetInputDarksendRounds UPDATED   %s %3d %d\n", hash.ToString(), nout, mDenomWtxes[hash].vout[nout].nRounds);
             return mDenomWtxes[hash].vout[nout].nRounds;
         }
 
         //make sure the final output is non-denominate
-        //mDenomWtxes[hash].vout[nout].nRounds = -2;
+        mDenomWtxes[hash].vout[nout].nRounds = -2;
         if(!pwalletMain->IsDenominatedAmount(wtx.vout[nout].nValue)) //NOT DENOM
         {
-          //  mDenomWtxes[hash].vout[nout].nRounds = -2;
+            mDenomWtxes[hash].vout[nout].nRounds = -2;
             if(fDebug) LogPrintf("GetInputDarksendRounds UPDATED   %s %3d %d\n", hash.ToString(), nout, mDenomWtxes[hash].vout[nout].nRounds);
             return mDenomWtxes[hash].vout[nout].nRounds;
         }
@@ -448,7 +448,7 @@ int GetInputDarksendRounds(CTxIn in, int rounds)
         // this one is denominated but there is another non-denominated output found in the same tx
         if(!fAllDenoms)
         {
-           // mDenomWtxes[hash].vout[nout].nRounds = 0;
+            mDenomWtxes[hash].vout[nout].nRounds = 0;
             if(fDebug) LogPrintf("GetInputDarksendRounds UPDATED   %s %3d %d\n", hash.ToString(), nout, mDenomWtxes[hash].vout[nout].nRounds);
             return mDenomWtxes[hash].vout[nout].nRounds;
         }
@@ -469,9 +469,9 @@ int GetInputDarksendRounds(CTxIn in, int rounds)
                 }
             }
         }
-        //mDenomWtxes[hash].vout[nout].nRounds = fDenomFound
-               /* ? nShortest + 1 // good, we a +1 to the shortest one
-                : 0;    */        // too bad, we are the fist one in that chain
+        mDenomWtxes[hash].vout[nout].nRounds = fDenomFound
+                ? nShortest + 1 // good, we a +1 to the shortest one
+                : 0;            // too bad, we are the fist one in that chain
         if(fDebug) LogPrintf("GetInputDarksendRounds UPDATED   %s %3d %d\n", hash.ToString(), nout, mDenomWtxes[hash].vout[nout].nRounds);
         return mDenomWtxes[hash].vout[nout].nRounds;
     }

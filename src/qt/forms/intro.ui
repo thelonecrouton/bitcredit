@@ -284,7 +284,9 @@
    </item>
   </layout>
  </widget>
- <resources/>
+ <resources>
+  <include location="../bitcredit.qrc"/>
+ </resources>
  <connections>
   <connection>
    <sender>buttonBox</sender>

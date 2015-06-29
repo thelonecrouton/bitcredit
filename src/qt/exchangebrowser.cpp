@@ -52,7 +52,7 @@ ExchangeBrowser::ExchangeBrowser(QWidget* parent) : QWidget(parent), ui(new Ui::
 
     QObject::connect(&m_nam, SIGNAL(finished(QNetworkReply*)), this, SLOT(parseNetworkResponse(QNetworkReply*)), Qt::AutoConnection);
 
-    //if 'exchange=' line bitcredit.conf, disbale this page
+    /*//if 'exchange=' line bitcredit.conf, disbale this page
     if (mapArgs.count("-noexchange"))
     {
         ui->btnConvertSilkoin->setEnabled(false);
@@ -62,7 +62,7 @@ ExchangeBrowser::ExchangeBrowser(QWidget* parent) : QWidget(parent), ui(new Ui::
     {
         //One time primer
         pollAPIs();
-    } 
+    } */
 }
 
 void ExchangeBrowser::on_btnConvertSilkoin_clicked()

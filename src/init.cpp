@@ -411,9 +411,9 @@ std::string HelpMessage(HelpMessageMode mode)
 std::string LicenseInfo()
 {
     return FormatParagraph(strprintf(_("Copyright (C) 2009-%i The Bitcredit Core Developers"), COPYRIGHT_YEAR)) + "\n" +
-           "\n" +
+           
            FormatParagraph(_("This is experimental software.")) + "\n" +
-           "\n" +
+           
            FormatParagraph(_("Distributed under the MIT software license, see the accompanying file COPYING or <http://www.opensource.org/licenses/mit-license.php>.")) + "\n" +
            "\n" +
            FormatParagraph(_("This product includes software developed by the OpenSSL Project for use in the OpenSSL Toolkit <https://www.openssl.org/> and cryptographic software written by Eric Young and UPnP software written by Thomas Bernard.")) +
@@ -861,7 +861,7 @@ bool AppInit2(boost::thread_group& threadGroup)
     }
 
     //ignore banknodes below protocol version
-    //nBanknodeMinProtocol = GetArg("-banknodeminprotocol", MIN_MN_PROTO_VERSION);
+    nBanknodeMinProtocol = GetArg("-banknodeminprotocol", MIN_POOL_PEER_PROTO_VERSION);
 
     if (fNoSmsg)
         nLocalServices &= ~(SMSG_RELAY);
@@ -1384,7 +1384,7 @@ bool AppInit2(boost::thread_group& threadGroup)
     threadGroup.create_thread(boost::bind(&ThreadImport, vImportFiles));
 
     // ********************************************************* Step 10: start node
-
+	
     uiInterface.InitMessage(_("Loading banknode cache..."));
 
     CBanknodeDB mndb;

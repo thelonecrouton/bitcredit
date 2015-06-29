@@ -22,6 +22,9 @@
      <property name="enabled">
       <bool>true</bool>
      </property>
+     <property name="focusPolicy">
+      <enum>Qt::NoFocus</enum>
+     </property>
      <property name="currentIndex">
       <number>0</number>
      </property>
@@ -702,6 +705,118 @@
         </spacer>
        </item>
       </layout>
+     </widget>
+     <widget class="QWidget" name="tab">
+      <attribute name="title">
+       <string>Theme</string>
+      </attribute>
+      <widget class="QLabel" name="label_3">
+       <property name="geometry">
+        <rect>
+         <x>10</x>
+         <y>15</y>
+         <width>171</width>
+         <height>17</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Switch to a different theme:</string>
+       </property>
+      </widget>
+      <widget class="QRadioButton" name="checkOrange">
+       <property name="geometry">
+        <rect>
+         <x>10</x>
+         <y>50</y>
+         <width>88</width>
+         <height>22</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Orange</string>
+       </property>
+       <property name="checked">
+        <bool>true</bool>
+       </property>
+      </widget>
+      <widget class="QRadioButton" name="checkGreen">
+       <property name="geometry">
+        <rect>
+         <x>400</x>
+         <y>50</y>
+         <width>88</width>
+         <height>22</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Green</string>
+       </property>
+      </widget>
+      <widget class="QRadioButton" name="checkBlue">
+       <property name="geometry">
+        <rect>
+         <x>10</x>
+         <y>100</y>
+         <width>88</width>
+         <height>22</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Blue</string>
+       </property>
+      </widget>
+      <widget class="QRadioButton" name="checkPink">
+       <property name="geometry">
+        <rect>
+         <x>210</x>
+         <y>100</y>
+         <width>88</width>
+         <height>22</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Pink</string>
+       </property>
+      </widget>
+      <widget class="QRadioButton" name="checkPurple">
+       <property name="geometry">
+        <rect>
+         <x>400</x>
+         <y>100</y>
+         <width>88</width>
+         <height>22</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Purple</string>
+       </property>
+      </widget>
+      <widget class="QRadioButton" name="checkDark">
+       <property name="geometry">
+        <rect>
+         <x>210</x>
+         <y>50</y>
+         <width>88</width>
+         <height>22</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Dark</string>
+       </property>
+      </widget>
+      <widget class="QRadioButton" name="checkTurq">
+       <property name="geometry">
+        <rect>
+         <x>10</x>
+         <y>150</y>
+         <width>88</width>
+         <height>22</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Turquoise</string>
+       </property>
+      </widget>
      </widget>
     </widget>
    </item>
