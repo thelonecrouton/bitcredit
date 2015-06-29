@@ -145,6 +145,7 @@ private:
     RPCConsole *rpcConsole;
     std::string theme;
     QString str;
+    QString str2;
 
     /** Keep track of previous number of blocks, to detect progress */
     int prevBlocks;

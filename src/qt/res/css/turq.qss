@@ -11,10 +11,11 @@ border-right: 2px solid #323232;
 border-bottom: 2px solid #323232;
 }
 
+
 /*					transactionview page				*/
 #bframe 
 { 
-border: 2px solid #ffa405;
+border: 2px solid #0ab4dc;
 }
 
 #availablebalancelabel
@@ -24,7 +25,7 @@ font: 18pt;
 
 #labelBalance
 {
-color: #ffa405;
+color: #0ab4dc;
 font: bold 18pt;
 }
 
@@ -44,6 +45,77 @@ background: #b1b1b1;
 background: #b1b1b1;
 }
 
+/*					helpmessagedialog page				*/
+#btnHelpIntroduction QPushButton:hover
+{
+border: 2px solid #0ab4dc;
+}
+#btnHelpIntroduction QPushButton:checked
+{
+background: #b1b1b1;
+border: 2px solid #0ab4dc;
+}
+
+#btnHelpBasic QPushButton:hover
+{
+border: 2px solid #0ab4dc;
+}
+#btnHelpBasic QPushButton:checked
+{
+background: #b1b1b1;
+border: 2px solid #0ab4dc;
+}
+
+#btnBanknodes QPushButton:hover
+{
+border: 2px solid #0ab4dc;
+}
+#btnBanknodes QPushButton:checked
+{
+background: #b1b1b1;
+border: 2px solid #0ab4dc;
+}
+
+#btnOther1 QPushButton:hover
+{
+border: 2px solid #0ab4dc;
+}
+#btnOther1 QPushButton:checked
+{
+background: #b1b1b1;
+border: 2px solid #0ab4dc;
+}
+
+#btnBlockexplorer QPushButton:hover
+{
+border: 2px solid #0ab4dc;
+}
+#btnBlockexplorer QPushButton:checked
+{
+background: #b1b1b1;
+border: 2px solid #0ab4dc;
+}
+
+#btnWiki QPushButton:hover
+{
+border: 2px solid #0ab4dc;
+}
+#btnWiki QPushButton:checked
+{
+background: #b1b1b1;
+border: 2px solid #0ab4dc;
+}
+
+#btnOther2 QPushButton:hover
+{
+border: 2px solid #0ab4dc;
+}
+#btnOther2 QPushButton:checked
+{
+background: #b1b1b1;
+border: 2px solid #0ab4dc;
+}
+
 /*					main toolbar					*/
 QMainWindow QToolBar#toolbar
 {
@@ -59,13 +131,13 @@ max-width:180px;
 
 QMainWindow QToolBar#toolbar QToolButton:hover 
 {
-border: 1px solid #ffa405;
+border: 1px solid #0ab4dc;
 } 
 
 QMainWindow QToolBar#toolbar QToolButton:checked 
 {
 background: #b1b1b1;
-border: 2px solid #ffa405;
+border: 2px solid #0ab4dc;
 }  
 
 QMainWindow QToolBar#toolbar QToolButton 
@@ -94,7 +166,7 @@ width: 220px;
 QMainWindow QToolBar#toolbar2
 {
 background: #b1b1b1;
-/*border: 1px solid #ffa405;*/
+/*border: 1px solid #0ab4dc;*/
 padding-left:20px; 
 width:950px;
 margin:50px;
@@ -132,13 +204,13 @@ border: 1px solid #b1b1b1;
 QMainWindow QToolBar#toolbar3 QToolButton:checked 
 {
 background-image:url(:/icons/receiveselected);
-border: 2px solid #ffa405;
+border: 2px solid #0ab4dc;
 }  
 
 QMainWindow QToolBar#toolbar3 QToolButton:hover 
 {
 background-image:url(:/icons/receivetr);
-border: 1px solid #ffa405;
+border: 1px solid #0ab4dc;
 }  
 
 QMainWindow QToolBar#toolbar4 QToolButton
@@ -150,13 +222,13 @@ border: 1px solid #b1b1b1;
 QMainWindow QToolBar#toolbar4 QToolButton:checked 
 {
 background-image:url(:/icons/sendselected);
-border: 2px solid #ffa405;
+border: 2px solid #0ab4dc;
 }  
 
 QMainWindow QToolBar#toolbar4 QToolButton:hover 
 {
 background-image:url(:/icons/sendtr);
-border: 1px solid #ffa405;
+border: 1px solid #0ab4dc;
 }  
 
 QMainWindow QToolBar#toolbar5 QToolButton
@@ -168,7 +240,7 @@ border: 1px solid #b1b1b1;
 QMainWindow QToolBar#toolbar5 QToolButton:checked 
 {
 background-image:url(:/icons/receiveselected);
-border: 2px solid #ffa405;
+border: 2px solid #0ab4dc;
 }  
 
 QMainWindow QToolBar#toolbar5 QToolButton:hover 
@@ -186,13 +258,13 @@ border: 1px solid #b1b1b1;
 QMainWindow QToolBar#toolbar6 QToolButton:checked 
 {
 background-image:url(:/icons/sendselected);
-border: 2px solid #ffa405;
+border: 2px solid #0ab4dc;
 }  
 
 QMainWindow QToolBar#toolbar6 QToolButton:hover 
 {
 background-image:url(:/icons/sendtr);
-border: 1px solid #ffa405
+border: 1px solid #0ab4dc
 }
 
 QMainWindow QToolBar#toolbar7 QToolButton
@@ -204,13 +276,13 @@ border: 1px solid #b1b1b1;
 QMainWindow QToolBar#toolbar7 QToolButton:checked 
 {
 background-image:url(:/icons/receiveselected);
-border: 2px solid #ffa405;
+border: 2px solid #0ab4dc;
 }  
 
 QMainWindow QToolBar#toolbar7 QToolButton:hover 
 {
 background-image:url(:/icons/receivetr);
-border: 1px solid #ffa405;
+border: 1px solid #0ab4dc;
 }
 
 QMainWindow QToolBar#toolbar8 QToolButton
@@ -222,13 +294,13 @@ border: 1px solid #b1b1b1;
 QMainWindow QToolBar#toolbar8 QToolButton:checked 
 {
 background-image:url(:/icons/sendselected);
-border: 2px solid #ffa405;
+border: 2px solid #0ab4dc;
 }  
 
 QMainWindow QToolBar#toolbar8 QToolButton:hover 
 {
 background-image:url(:/icons/sendtr);
-border: 1px solid #ffa405;
+border: 1px solid #0ab4dc;
 }
 
 QMainWindow QToolBar#toolbar9 QToolButton
@@ -240,13 +312,13 @@ border: 1px solid #b1b1b1;
 QMainWindow QToolBar#toolbar9 QToolButton:checked 
 {
 background-image:url(:/icons/marketselected);
-border: 2px solid #ffa405;
+border: 2px solid #0ab4dc;
 }  
 
 QMainWindow QToolBar#toolbar9 QToolButton:hover 
 {
 background-image:url(:/icons/markettr);
-border: 1px solid #ffa405;
+border: 1px solid #0ab4dc;
 }
 
 QMainWindow QToolBar#toolbar10 QToolButton
@@ -258,13 +330,13 @@ border: 1px solid #b1b1b1;
 QMainWindow QToolBar#toolbar10 QToolButton:checked 
 {
 background-image:url(:/icons/blockexplorerselected);
-border: 2px solid #ffa405;
+border: 2px solid #0ab4dc;
 }  
 
 QMainWindow QToolBar#toolbar10 QToolButton:hover 
 {
 background-image:url(:/icons/blockexplorertr);
-border: 1px solid #ffa405;
+border: 1px solid #0ab4dc;
 }
 
 QMainWindow QToolBar#toolbar11 QToolButton
@@ -276,11 +348,16 @@ border: 1px solid #b1b1b1;
 QMainWindow QToolBar#toolbar11 QToolButton:checked 
 {
 background-image:url(:/icons/bankstatsselected);
-border: 2px solid #ffa405;
+border: 2px solid #0ab4dc;
 }  
 
 QMainWindow QToolBar#toolbar11 QToolButton:hover 
 {
 background-image:url(:/icons/bankstatstr);
-border: 1px solid #ffa405;
+border: 1px solid #0ab4dc;
 }
+
+
+
+
+

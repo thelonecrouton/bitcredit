@@ -149,16 +149,62 @@ BitcreditGUI::BitcreditGUI(const NetworkStyle *networkStyle, QWidget *parent) :
     QString str = QString::fromUtf8(theme.c_str());
     if (mapArgs.count("-theme"))
     {
-        QMessageBox::information(0, QString("Warning!"), QString("You are about to load a custom theme:<br>" + str + " !<br><br>The Bitcredit developers accept no responsibility for<br>any resultant loss of client utility, sanity, or breakfast!"), QMessageBox::Ok);
-        QFile qss(str);
-        qss.open(QFile::ReadOnly);
-        qApp->setStyleSheet(qss.readAll());
-        qss.close();
+        QFile qss;
+        //QMessageBox::information(0, QString("Warning!"), QString("You are about to load a custom theme:<br>" + str + " !<br><br>The Bitcredit developers accept no responsibility for<br>any resultant loss of client utility!"), QMessageBox::Ok);
+        if (str.contains("orange"))
+        {
+            QFile qss(":/css/orange");
+            qss.open(QFile::ReadOnly);
+            qApp->setStyleSheet(qss.readAll());
+            qss.close();
+        }
+        else if (str.contains("dark"))
+        {
+            QFile qss(":/css/dark");
+            qss.open(QFile::ReadOnly);
+            qApp->setStyleSheet(qss.readAll());
+            qss.close();            
+        }
+        else if (str.contains("green"))
+        {
+            QFile qss(":/css/green");
+            qss.open(QFile::ReadOnly);
+            qApp->setStyleSheet(qss.readAll());
+            qss.close();            
+        }
+        else if (str.contains("blue"))
+        {
+            QFile qss(":/css/blue");
+            qss.open(QFile::ReadOnly);
+            qApp->setStyleSheet(qss.readAll());
+            qss.close();            
+        }
+        else if (str.contains("pink"))
+        {
+            QFile qss(":/css/pink");
+            qss.open(QFile::ReadOnly);
+            qApp->setStyleSheet(qss.readAll());
+            qss.close();            
+        }
+        else if (str.contains("purple"))
+        {
+            QFile qss(":/css/purple");
+            qss.open(QFile::ReadOnly);
+            qApp->setStyleSheet(qss.readAll());
+            qss.close();            
+        }
+        else if (str.contains("turq"))
+        {
+            QFile qss(":/css/turq");
+            qss.open(QFile::ReadOnly);
+            qApp->setStyleSheet(qss.readAll());
+            qss.close();            
+        }        
     }
     //if not, load the default theme
     else
     {
-        QFile qss(":/css/stylesheet");
+        QFile qss(":/css/orange");
         qss.open(QFile::ReadOnly);
         qApp->setStyleSheet(qss.readAll());
         qss.close();
@@ -607,13 +653,14 @@ void BitcreditGUI::tb2hover()
 
 void BitcreditGUI::createToolBars()
 {
-    QLabel *mylabel = new QLabel(this);
-    mylabel->setPixmap(QPixmap(":images/head"));
-    mylabel->show();
+    QLabel *labelLogo = new QLabel(this);
+    //to-do - head image set in themefile.qss
+    labelLogo->setPixmap(QPixmap(":images/head"));
+    labelLogo->show();
     QToolBar *toolbar = addToolBar(tr("Menu"));
     toolbar->setObjectName("toolbar");
     addToolBar(Qt::LeftToolBarArea, toolbar);
-    toolbar->addWidget(mylabel);
+    toolbar->addWidget(labelLogo);
     toolbar->setOrientation(Qt::Vertical);
     toolbar->setFixedWidth(220);
     toolbar->setMovable(false);
@@ -810,8 +857,10 @@ void BitcreditGUI::aboutClicked()
     if(!clientModel)
         return;
 
-    HelpMessageDialog dlg(this, true);
-    dlg.exec();
+    QDialog* dlg = new HelpMessageDialog(this, true);
+    //HelpMessageDialog dlg(this, true);
+    dlg->setModal(false);
+    dlg->show();
 }
 
 void BitcreditGUI::showHelpMessageClicked()
