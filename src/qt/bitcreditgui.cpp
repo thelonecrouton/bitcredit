@@ -581,7 +581,7 @@ void BitcreditGUI::createActions(const NetworkStyle *networkStyle)
     quitAction->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_Q));
     quitAction->setMenuRole(QAction::QuitRole);
     //aboutAction = new QAction(QIcon(":/icons/about"), tr("&About Bitcredit Core"), this);
-    
+    //colour code according to theme    
     if (themestr.contains("orange"))
     {
         aboutAction = new QAction(QIcon(":/icons/about-orange"), tr("&About Bitcredit Core"), this);
@@ -688,8 +688,40 @@ void BitcreditGUI::tb2hover()
 void BitcreditGUI::createToolBars()
 {
     QLabel *labelLogo = new QLabel(this);
-    //to-do - head image set in themefile.qss
-    labelLogo->setPixmap(QPixmap(":images/head"));
+    //colour code according to theme
+    //labelLogo->setPixmap(QPixmap(":images/head"));
+    if (themestr.contains("orange"))
+    {
+        labelLogo->setPixmap(QPixmap(":images/head"));
+    }
+    else if (themestr.contains("dark"))
+    {
+        labelLogo->setPixmap(QPixmap(":images/head"));      
+    }
+    else if (themestr.contains("green"))
+    {
+        labelLogo->setPixmap(QPixmap(":images/head-green"));        
+    }
+    else if (themestr.contains("blue"))
+    {
+        labelLogo->setPixmap(QPixmap(":images/head-blue"));      
+    }
+    else if (themestr.contains("pink"))
+    {
+        labelLogo->setPixmap(QPixmap(":images/head-pink"));
+    }
+    else if (themestr.contains("purple"))
+    {
+        labelLogo->setPixmap(QPixmap(":images/head-purple"));    
+    }
+    else if (themestr.contains("turq"))
+    {
+        labelLogo->setPixmap(QPixmap(":images/head-turq"));
+    }    
+    else
+    {
+        labelLogo->setPixmap(QPixmap(":images/head"));
+    }
     labelLogo->show();
     QToolBar *toolbar = addToolBar(tr("Menu"));
     toolbar->setObjectName("toolbar");

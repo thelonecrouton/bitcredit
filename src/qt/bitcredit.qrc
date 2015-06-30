@@ -82,6 +82,11 @@
         <file alias="about">res/images/about.png</file>
         <file alias="blockhead">res/images/blockt.png</file>
         <file alias="head">res/images/head.png</file>
+        <file alias="head-green">res/images/head-green.png</file>
+        <file alias="head-blue">res/images/head-blue.png</file>
+        <file alias="head-pink">res/images/head-pink.png</file>
+        <file alias="head-purple">res/images/head-purple.png</file>
+        <file alias="head-turq">res/images/head-turq.png</file>
         <file alias="intro">res/images/intro.png</file>
         <file alias="splash">res/images/splash.png</file>
         <file alias="splash_testnet">res/images/splash_testnet.png</file>
