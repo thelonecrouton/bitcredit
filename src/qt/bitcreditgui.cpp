@@ -580,7 +580,41 @@ void BitcreditGUI::createActions(const NetworkStyle *networkStyle)
     quitAction->setStatusTip(tr("Quit application"));
     quitAction->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_Q));
     quitAction->setMenuRole(QAction::QuitRole);
-    aboutAction = new QAction(QIcon(":/icons/about"), tr("&About Bitcredit Core"), this);
+    //aboutAction = new QAction(QIcon(":/icons/about"), tr("&About Bitcredit Core"), this);
+    
+    if (themestr.contains("orange"))
+    {
+        aboutAction = new QAction(QIcon(":/icons/about-orange"), tr("&About Bitcredit Core"), this);
+    }
+    else if (themestr.contains("dark"))
+    {
+        aboutAction = new QAction(QIcon(":/icons/about-orange"), tr("&About Bitcredit Core"), this);         
+    }
+    else if (themestr.contains("green"))
+    {
+        aboutAction = new QAction(QIcon(":/icons/about-green"), tr("&About Bitcredit Core"), this);         
+    }
+    else if (themestr.contains("blue"))
+    {
+        aboutAction = new QAction(QIcon(":/icons/about-blue"), tr("&About Bitcredit Core"), this);         
+    }
+    else if (themestr.contains("pink"))
+    {
+        aboutAction = new QAction(QIcon(":/icons/about-pink"), tr("&About Bitcredit Core"), this);         
+    }
+    else if (themestr.contains("purple"))
+    {
+        aboutAction = new QAction(QIcon(":/icons/about-purple"), tr("&About Bitcredit Core"), this);         
+    }
+    else if (themestr.contains("turq"))
+    {
+        aboutAction = new QAction(QIcon(":/icons/about-turq"), tr("&About Bitcredit Core"), this);         
+    }    
+    else
+    {
+        aboutAction = new QAction(QIcon(":/icons/about"), tr("&About Bitcredit Core"), this);
+    }
+    aboutAction->setObjectName("aboutAction");
     aboutAction->setStatusTip(tr("Show information about Bitcredit Core"));
     aboutAction->setMenuRole(QAction::AboutRole);
     aboutQtAction = new QAction(QIcon(":/icons/about_qt"), tr("About &Qt"), this);
