@@ -16,6 +16,7 @@
 #include "util.h"
 #include "guiutil.h"
 #include "intro.h"
+#include "bitcreditgui.h"
 
 #include <boost/filesystem.hpp>
 
@@ -200,6 +201,11 @@ void BanknodeManager::updateNodeList()
     // get default datadir and set path to mybanknodes.txt
     QString dataDir = getDefaultDataDirectory();
     QString path = QDir(dataDir).filePath("mybanknodes.txt");
+        
+    // get theme info
+    theme = GetArg("-theme", "");
+    themestring = QString::fromUtf8(theme.c_str());  
+    //QTextStream(stdout) << "themestring: " + themestring;
 
     //check if file exists
     QFileInfo checkFile(path);
@@ -224,8 +230,8 @@ void BanknodeManager::updateNodeList()
             }
         QString listitems = myStringList.join(""); 
         //QTextStream(stdout) << listitems;
-        //QTextStream(stdout) << "\n";  
-    
+        //QTextStream(stdout) << "\n";
+        
         //search for pubkeys that match those in our list
         int rows = ui->tableWidget->rowCount();
         if (rows >1)
@@ -238,7 +244,40 @@ void BanknodeManager::updateNodeList()
             if (listitems.contains(str1))
             //if found, do something, eg. change background colour
             {
+                //highlight according to stylesheet
+                if (themestring.contains("orange"))
+                {
+                    ui->tableWidget->item(i, 5)->setBackgroundColor("#ffa405");
+                }
+                else if (themestring.contains("dark"))
+                {
+                    ui->tableWidget->item(i, 5)->setBackgroundColor("#ffa405");
+                }
+                else if (themestring.contains("green"))
+                {
+                    ui->tableWidget->item(i, 5)->setBackgroundColor("#45f806");      
+                }
+                else if (themestring.contains("blue"))
+                {
+                    ui->tableWidget->item(i, 5)->setBackgroundColor("#088af8");         
+                }
+                else if (themestring.contains("pink"))
+                {
+                    ui->tableWidget->item(i, 5)->setBackgroundColor("#fb04db");        
+                }
+                else if (themestring.contains("purple"))
+                {
+                    ui->tableWidget->item(i, 5)->setBackgroundColor("#cb03d2");            
+                }
+                else if (themestring.contains("turq"))
+                {
+                    ui->tableWidget->item(i, 5)->setBackgroundColor("#0ab4dc");          
+                } 
+                //fallback on default
+                else
+                {    
                 ui->tableWidget->item(i, 5)->setBackgroundColor("#ffa405");
+                }
             }
         }
     }

@@ -13,7 +13,7 @@
 namespace Ui {
     class BanknodeManager;
 }
- 
+
 class ClientModel;
 class WalletModel;
 
@@ -36,6 +36,7 @@ public:
     void setWalletModel(WalletModel *walletModel);
     //void setModel(ClientModel *model);
 
+
 public slots:
     void updateNodeList();
     void updateAdrenalineNode(QString alias, QString addr, QString privkey, QString collateral);
@@ -56,6 +57,8 @@ private:
     QFile *myTextFile;
     QString path;
     QString dataDir;
+    std::string theme;
+    QString themestring;
     
     
 private slots:
