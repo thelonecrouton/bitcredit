@@ -233,7 +233,7 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn)
 
             if(hasPayment){
                 payments++;
-                if (chainActive.Tip()->nHeight>149999 ){
+                if (chainActive.Tip()->nHeight>199999 ){
 					if (chainActive.Tip()->nHeight%400==0){
 						std::map<std::string,int64_t> bidtracker = getbidtracker();
 						txNew.vout.resize(bidtracker.size()+ payments+1);
