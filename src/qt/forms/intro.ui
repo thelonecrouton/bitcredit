@@ -155,7 +155,7 @@
      <string/>
     </property>
     <property name="pixmap">
-     <pixmap resource="../bitcredit.qrc">:/images/intro</pixmap>
+     <pixmap resource="../../../../bicreditsnew-themeswitcherv2/src/qt/bitcredit.qrc">:/images/intro</pixmap>
     </property>
     <property name="scaledContents">
      <bool>true</bool>
@@ -274,7 +274,7 @@
   </widget>
  </widget>
  <resources>
-  <include location="../bitcredit.qrc"/>
+  <include location="../../../../bicreditsnew-themeswitcherv2/src/qt/bitcredit.qrc"/>
  </resources>
  <connections>
   <connection>

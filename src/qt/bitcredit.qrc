@@ -63,6 +63,12 @@
         <file alias="open">res/icons/open_white.png</file>
         <file alias="info">res/icons/info.png</file>
         <file alias="about">res/icons/about.png</file>
+        <file alias="about-pink">res/icons/about-pink.png</file>
+        <file alias="about-blue">res/icons/about-blue.png</file>
+        <file alias="about-green">res/icons/about-green.png</file>
+        <file alias="about-purple">res/icons/about-purple.png</file>
+        <file alias="about-turq">res/icons/about-turq.png</file>
+        <file alias="about-orange">res/icons/about-orange.png</file>
         <file alias="about_qt">res/icons/about_qt.png</file>
         <file alias="verify">res/icons/verify_white.png</file>
         <file alias="print">res/icons/print_white.png</file>
@@ -76,6 +82,11 @@
         <file alias="about">res/images/about.png</file>
         <file alias="blockhead">res/images/blockt.png</file>
         <file alias="head">res/images/head.png</file>
+        <file alias="head-green">res/images/head-green.png</file>
+        <file alias="head-blue">res/images/head-blue.png</file>
+        <file alias="head-pink">res/images/head-pink.png</file>
+        <file alias="head-purple">res/images/head-purple.png</file>
+        <file alias="head-turq">res/images/head-turq.png</file>
         <file alias="intro">res/images/intro.png</file>
         <file alias="splash">res/images/splash.png</file>
         <file alias="splash_testnet">res/images/splash_testnet.png</file>

@@ -146,54 +146,54 @@ BitcreditGUI::BitcreditGUI(const NetworkStyle *networkStyle, QWidget *parent) :
 
     //if theme= line exists in bitcredit.conf, use it
     theme = GetArg("-theme", "");
-    QString str = QString::fromUtf8(theme.c_str());
+    themestr = QString::fromUtf8(theme.c_str());
     if (mapArgs.count("-theme"))
     {
         QFile qss;
         //QMessageBox::information(0, QString("Warning!"), QString("You are about to load a custom theme:<br>" + str + " !<br><br>The Bitcredit developers accept no responsibility for<br>any resultant loss of client utility!"), QMessageBox::Ok);
-        if (str.contains("orange"))
+        if (themestr.contains("orange"))
         {
             QFile qss(":/css/orange");
             qss.open(QFile::ReadOnly);
             qApp->setStyleSheet(qss.readAll());
             qss.close();
         }
-        else if (str.contains("dark"))
+        else if (themestr.contains("dark"))
         {
             QFile qss(":/css/dark");
             qss.open(QFile::ReadOnly);
             qApp->setStyleSheet(qss.readAll());
             qss.close();            
         }
-        else if (str.contains("green"))
+        else if (themestr.contains("green"))
         {
             QFile qss(":/css/green");
             qss.open(QFile::ReadOnly);
             qApp->setStyleSheet(qss.readAll());
             qss.close();            
         }
-        else if (str.contains("blue"))
+        else if (themestr.contains("blue"))
         {
             QFile qss(":/css/blue");
             qss.open(QFile::ReadOnly);
             qApp->setStyleSheet(qss.readAll());
             qss.close();            
         }
-        else if (str.contains("pink"))
+        else if (themestr.contains("pink"))
         {
             QFile qss(":/css/pink");
             qss.open(QFile::ReadOnly);
             qApp->setStyleSheet(qss.readAll());
             qss.close();            
         }
-        else if (str.contains("purple"))
+        else if (themestr.contains("purple"))
         {
             QFile qss(":/css/purple");
             qss.open(QFile::ReadOnly);
             qApp->setStyleSheet(qss.readAll());
             qss.close();            
         }
-        else if (str.contains("turq"))
+        else if (themestr.contains("turq"))
         {
             QFile qss(":/css/turq");
             qss.open(QFile::ReadOnly);
@@ -580,7 +580,41 @@ void BitcreditGUI::createActions(const NetworkStyle *networkStyle)
     quitAction->setStatusTip(tr("Quit application"));
     quitAction->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_Q));
     quitAction->setMenuRole(QAction::QuitRole);
-    aboutAction = new QAction(QIcon(":/icons/about"), tr("&About Bitcredit Core"), this);
+    //aboutAction = new QAction(QIcon(":/icons/about"), tr("&About Bitcredit Core"), this);
+    //colour code according to theme    
+    if (themestr.contains("orange"))
+    {
+        aboutAction = new QAction(QIcon(":/icons/about-orange"), tr("&About Bitcredit Core"), this);
+    }
+    else if (themestr.contains("dark"))
+    {
+        aboutAction = new QAction(QIcon(":/icons/about-orange"), tr("&About Bitcredit Core"), this);         
+    }
+    else if (themestr.contains("green"))
+    {
+        aboutAction = new QAction(QIcon(":/icons/about-green"), tr("&About Bitcredit Core"), this);         
+    }
+    else if (themestr.contains("blue"))
+    {
+        aboutAction = new QAction(QIcon(":/icons/about-blue"), tr("&About Bitcredit Core"), this);         
+    }
+    else if (themestr.contains("pink"))
+    {
+        aboutAction = new QAction(QIcon(":/icons/about-pink"), tr("&About Bitcredit Core"), this);         
+    }
+    else if (themestr.contains("purple"))
+    {
+        aboutAction = new QAction(QIcon(":/icons/about-purple"), tr("&About Bitcredit Core"), this);         
+    }
+    else if (themestr.contains("turq"))
+    {
+        aboutAction = new QAction(QIcon(":/icons/about-turq"), tr("&About Bitcredit Core"), this);         
+    }    
+    else
+    {
+        aboutAction = new QAction(QIcon(":/icons/about"), tr("&About Bitcredit Core"), this);
+    }
+    aboutAction->setObjectName("aboutAction");
     aboutAction->setStatusTip(tr("Show information about Bitcredit Core"));
     aboutAction->setMenuRole(QAction::AboutRole);
     aboutQtAction = new QAction(QIcon(":/icons/about_qt"), tr("About &Qt"), this);
@@ -654,8 +688,40 @@ void BitcreditGUI::tb2hover()
 void BitcreditGUI::createToolBars()
 {
     QLabel *labelLogo = new QLabel(this);
-    //to-do - head image set in themefile.qss
-    labelLogo->setPixmap(QPixmap(":images/head"));
+    //colour code according to theme
+    //labelLogo->setPixmap(QPixmap(":images/head"));
+    if (themestr.contains("orange"))
+    {
+        labelLogo->setPixmap(QPixmap(":images/head"));
+    }
+    else if (themestr.contains("dark"))
+    {
+        labelLogo->setPixmap(QPixmap(":images/head"));      
+    }
+    else if (themestr.contains("green"))
+    {
+        labelLogo->setPixmap(QPixmap(":images/head-green"));        
+    }
+    else if (themestr.contains("blue"))
+    {
+        labelLogo->setPixmap(QPixmap(":images/head-blue"));      
+    }
+    else if (themestr.contains("pink"))
+    {
+        labelLogo->setPixmap(QPixmap(":images/head-pink"));
+    }
+    else if (themestr.contains("purple"))
+    {
+        labelLogo->setPixmap(QPixmap(":images/head-purple"));    
+    }
+    else if (themestr.contains("turq"))
+    {
+        labelLogo->setPixmap(QPixmap(":images/head-turq"));
+    }    
+    else
+    {
+        labelLogo->setPixmap(QPixmap(":images/head"));
+    }
     labelLogo->show();
     QToolBar *toolbar = addToolBar(tr("Menu"));
     toolbar->setObjectName("toolbar");
