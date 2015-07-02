@@ -31,6 +31,7 @@
 #include "walletmodel.h"
 #include "utilitydialog.h"
 #include "ui_interface.h"
+#include "testpage.h"
 
 #include <QAction>
 #include <QActionGroup>
@@ -53,6 +54,7 @@ WalletView::WalletView(QWidget *parent):
 	blockBrowser = new BlockBrowser(this);
 	bankstatisticsPage = new BankStatisticsPage(this);
 	banknodeManagerPage = new BanknodeManager(this);
+	testPage = new TestPage(this);
     transactionsPage = new QWidget(this);
     QVBoxLayout *vbox = new QVBoxLayout();
     QHBoxLayout *hbox_buttons = new QHBoxLayout();
@@ -93,6 +95,7 @@ WalletView::WalletView(QWidget *parent):
     addWidget(invoicePage);
     addWidget(receiptPage);    
     addWidget(banknodeManagerPage);
+    addWidget(testPage);
 
     // Clicking on a transaction on the overview pre-selects the transaction on the transaction history page
     connect(overviewPage, SIGNAL(transactionClicked(QModelIndex)), transactionView, SLOT(focusTransaction(QModelIndex)));
@@ -140,6 +143,7 @@ void WalletView::setClientModel(ClientModel *clientModel)
 
     overviewPage->setClientModel(clientModel);
     sendCoinsPage->setClientModel(clientModel);
+    
 }
 
 void WalletView::setWalletModel(WalletModel *walletModel)
@@ -151,7 +155,7 @@ void WalletView::setWalletModel(WalletModel *walletModel)
     overviewPage->setWalletModel(walletModel);
     receiveCoinsPage->setModel(walletModel);
     sendCoinsPage->setModel(walletModel);
-
+    
 
 
     if (walletModel)
@@ -250,6 +254,11 @@ void WalletView::gotoExchangeBrowserPage()
 void WalletView::gotoChatPage()
 {
     setCurrentWidget(chatWindow);
+}
+
+void WalletView::gotoTestPage()
+{
+    setCurrentWidget(testPage);
 }
 
 void WalletView::gotoBanknodeManagerPage()

@@ -24,6 +24,7 @@
 #include "walletframe.h"
 #include "walletmodel.h"
 #include "stdio.h"
+#include "testpage.h"
 
 #endif // ENABLE_WALLET
 
@@ -527,6 +528,11 @@ void BitcreditGUI::createActions(const NetworkStyle *networkStyle)
     chatAction->setCheckable(true);
     tabGroup->addAction(chatAction);   
 
+    testAction = new QAction(QIcon(":/icons/null"), tr("&TESTING"), this);
+    testAction->setToolTip(tr("Testing"));
+    testAction->setCheckable(true);
+    tabGroup->addAction(testAction);
+
     sendMessagesAnonAction = new QAction(QIcon(":/icons/null"), tr("S&end Messages"), this);
     sendMessagesAnonAction->setCheckable(true);
     tabGroup->addAction(sendMessagesAnonAction);
@@ -570,6 +576,7 @@ void BitcreditGUI::createActions(const NetworkStyle *networkStyle)
     connect(sendMessagesAnonAction, SIGNAL(triggered()), this, SLOT(showNormalIfMinimized()));
     connect(banknodeManagerAction, SIGNAL(triggered()), this, SLOT(showNormalIfMinimized()));
     connect(banknodeManagerAction, SIGNAL(triggered()), this, SLOT(gotoBanknodeManagerPage()));
+    connect(testAction, SIGNAL(triggered()), this, SLOT(gotoTestPage()));
     
     //connect(toolbar2, SIGNAL(onHover()), this, SLOT(tb2hover()));
 
@@ -748,7 +755,7 @@ void BitcreditGUI::createToolBars()
 	toolbar->addAction(actionSendReceivestats);		        		
 	toolbar->addAction(chatAction);
 	toolbar->addAction(banknodeManagerAction);
-
+        toolbar->addAction(testAction);
         historyAction->setChecked(true);
     }
     
@@ -846,6 +853,7 @@ void BitcreditGUI::setWalletActionsEnabled(bool enabled)
     invoiceAction->setEnabled(enabled);
     receiptAction->setEnabled(enabled);
     banknodeManagerAction->setEnabled(enabled);
+    testAction->setEnabled(enabled);
 }
 
 void BitcreditGUI::createTrayIcon(const NetworkStyle *networkStyle)
@@ -969,6 +977,21 @@ void BitcreditGUI::gotoChatPage()
     actionSendReceiveinv->setChecked(false);
     actionSendReceivestats->setChecked(false);
     if (walletFrame) walletFrame->gotoChatPage();
+    
+    wId2->hide();
+    wId->hide();
+    wId3->hide();
+    wId4->hide();
+}
+
+void BitcreditGUI::gotoTestPage()
+{
+    testAction->setChecked(true);
+    actionSendReceive->setChecked(false);
+    actionSendReceiveMess->setChecked(false);
+    actionSendReceiveinv->setChecked(false);
+    actionSendReceivestats->setChecked(false);
+    if (walletFrame) walletFrame->gotoTestPage();
     
     wId2->hide();
     wId->hide();

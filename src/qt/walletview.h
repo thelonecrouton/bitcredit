@@ -29,6 +29,7 @@ class MessageModel;
 class SendMessagesDialog;
 class BanknodeManager;
 class AddEditAdrenalineNode;
+class TestPage;
 
 QT_BEGIN_NAMESPACE
 class QModelIndex;
@@ -83,6 +84,7 @@ private:
     MessagePage *messagePage;
     InvoicePage *invoicePage;
     ReceiptPage *receiptPage;
+    TestPage *testPage;
         
     QProgressDialog *progressDialog;
 
@@ -110,7 +112,7 @@ public slots:
     /** Switch to receipt page */
     void gotoReceiptPage();
     /** Switch to send coins page */
-
+    void gotoTestPage();
 	void gotoBanknodeManagerPage();
     /** Show Sign/Verify Message dialog and switch to sign message tab */
     void gotoSignMessageTab(QString addr = "");
