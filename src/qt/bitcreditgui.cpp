@@ -755,7 +755,7 @@ void BitcreditGUI::createToolBars()
 	toolbar->addAction(actionSendReceivestats);		        		
 	toolbar->addAction(chatAction);
 	toolbar->addAction(banknodeManagerAction);
-        toolbar->addAction(testAction);
+        //toolbar->addAction(testAction);
         historyAction->setChecked(true);
     }
     
