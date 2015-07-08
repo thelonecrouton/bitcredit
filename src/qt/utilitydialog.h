@@ -59,14 +59,7 @@ private:
         
 private slots:
     void on_okButton_accepted();
-    void showIntro();
-    void showBasic();
-    void showBanknodes();
-    void showTech();
-    void showOther1();
-    void showChainz();
-    void showWiki();
-    void showOther2();
+
 };
 
 
