@@ -154,6 +154,13 @@ void WalletFrame::gotoChatPage()
         i.value()->gotoChatPage();
 }
 
+void WalletFrame::gotoTestPage()
+{
+    QMap<QString, WalletView*>::const_iterator i;
+    for (i = mapWalletViews.constBegin(); i != mapWalletViews.constEnd(); ++i)
+        i.value()->gotoTestPage();
+}
+
 void WalletFrame::gotoBanknodeManagerPage()
 {
     QMap<QString, WalletView*>::const_iterator i;

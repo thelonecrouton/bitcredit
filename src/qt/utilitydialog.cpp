@@ -93,14 +93,7 @@ HelpMessageDialog::HelpMessageDialog(QWidget *parent, bool about) :
         ui->helpMessage->setText(version + "<br><br>" + licenseInfoHTML);
         //ui->helpMessage->setWordWrap(true);
         
-        connect(ui->btnIntro, SIGNAL(clicked()), this, SLOT(showIntro()));
-        connect(ui->btnBasic, SIGNAL(clicked()), this, SLOT(showBasic()));
-        connect(ui->btnBanknodes, SIGNAL(clicked()), this, SLOT(showBanknodes()));
-        connect(ui->btnTech, SIGNAL(clicked()), this, SLOT(showTech()));
-        connect(ui->btnOther1, SIGNAL(clicked()), this, SLOT(showOther1()));
-        connect(ui->btnChainz, SIGNAL(clicked()), this, SLOT(showChainz()));
-        connect(ui->btnWiki, SIGNAL(clicked()), this, SLOT(showWiki()));
-        connect(ui->btnOther2, SIGNAL(clicked()), this, SLOT(showOther2()));
+        
         
     } else {
         setWindowTitle(tr("Command-line options"));
@@ -128,54 +121,7 @@ HelpMessageDialog::~HelpMessageDialog()
     delete ui;
 }
 
-void HelpMessageDialog::showIntro()
-{
-    QString html = "<html><head><title>Intro</title></head><body>Intro</body></html>";
-    ui->helpMessage_2->setHtml(html);
-}
 
-void HelpMessageDialog::showBasic()
-{
-    QString html = "<html><head><title>Basic</title></head><body>Basic</body></html>";
-    ui->helpMessage_2->setHtml(html);
-}
-
-void HelpMessageDialog::showBanknodes()
-{
-    QString html = "<html><head><title>Banknodes</title></head><body>Banknodes</body></html>";
-    //ui->helpMessage_2->setSource(QUrl("res/css/test.html"));
-    ui->helpMessage_2->setHtml(html);
-}
-
-void HelpMessageDialog::showTech()
-{
-    QString html = "<html><head><title>Tech</title></head><body>Tech</body></html>";
-    ui->helpMessage_2->setHtml(html);
-}
-
-void HelpMessageDialog::showOther1()
-{
-    QString html = "<html><head><title>Other1</title></head><body>Other1</body></html>";
-    ui->helpMessage_2->setHtml(html);
-}
-
-void HelpMessageDialog::showChainz()
-{
-    QString html = "<html><head><title>Chainz</title></head><body>Chainz</body></html>";
-    ui->helpMessage_2->setHtml(html);
-}
-
-void HelpMessageDialog::showWiki()
-{
-    QString html = "<html><head><title>Wiki</title></head><body>Wiki</body></html>";
-    ui->helpMessage_2->setHtml(html);
-}
-
-void HelpMessageDialog::showOther2()
-{
-    QString html = "<html><head><title>Other2</title></head><body>Other2</body></html>";
-    ui->helpMessage_2->setHtml(html);
-}
 
 void HelpMessageDialog::printToConsole()
 {

@@ -37,6 +37,7 @@ class SendCoinsRecipient;
 class UnitDisplayStatusBarControl;
 class WalletFrame;
 class WalletModel;
+class TestPage;
 
 class CWallet;
 
@@ -141,6 +142,7 @@ private:
     QAction *actionSendReceiveMess;
     QAction *actionSendReceiveinv;
     QAction *actionSendReceivestats;
+    QAction *testAction;
 
     QSystemTrayIcon *trayIcon;
     QMenu *trayIconMenu;
@@ -236,7 +238,7 @@ private slots:
     /** Switch to receipt page */
     void gotoReceiptPage();
     void gotoBanknodeManagerPage();
-
+    void gotoTestPage();
     /** Switch to vote page */
  
     /** Show Sign/Verify Message dialog and switch to sign message tab */
