@@ -59,6 +59,7 @@ private:
     QString dataDir;
     std::string theme;
     QString themestring;
+    int ours;
     
     
 private slots:
