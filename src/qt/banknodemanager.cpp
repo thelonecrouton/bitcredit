@@ -233,6 +233,8 @@ void BanknodeManager::updateNodeList()
         //QTextStream(stdout) << "\n";
         
         //search for pubkeys that match those in our list
+        //ser our own count
+        ours = 0;
         int rows = ui->tableWidget->rowCount();
         if (rows >1)
         for(int i = 0; i < rows; ++i)
@@ -241,8 +243,15 @@ void BanknodeManager::updateNodeList()
             QString str1 = temp->text();
             //QTextStream(stdout) << str1;
             //QTextStream(stdout) << "\n";
-            if (listitems.contains(str1))
-            //if found, do something, eg. change background colour
+            //if showMineOnlychecked, hide everything else
+            if ((!listitems.contains(str1)) && ui->showMineOnly->isChecked())
+            {
+            	ui->tableWidget->setRowHidden(i, true);
+            	
+            	
+            }	
+            //else just change background colour
+            else if (listitems.contains(str1))
             {
                 //highlight according to stylesheet
                 if (themestring.contains("orange"))
@@ -278,10 +287,13 @@ void BanknodeManager::updateNodeList()
                 {    
                 ui->tableWidget->item(i, 5)->setBackgroundColor("#ffa405");
                 }
+            ours += 1;
             }
+            
         }
     }
-    ui->countLabel->setText(QString::number(ui->tableWidget->rowCount()));
+    QString ourcount = QString::number(ours);
+    ui->countLabel->setText(QString::number(ui->tableWidget->rowCount()) + "   (Mine: " + ourcount + ")");
 }
 
 QString BanknodeManager::getDefaultDataDirectory()

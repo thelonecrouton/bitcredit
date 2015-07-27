@@ -156,6 +156,18 @@
            </property>
            <item>
             <widget class="QLabel" name="label_2">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="maximumSize">
+              <size>
+               <width>120</width>
+               <height>16777215</height>
+              </size>
+             </property>
              <property name="text">
               <string>Bank Node Count:</string>
              </property>
@@ -163,8 +175,46 @@
            </item>
            <item>
             <widget class="QLabel" name="countLabel">
+             <property name="maximumSize">
+              <size>
+               <width>120</width>
+               <height>16777215</height>
+              </size>
+             </property>
              <property name="text">
               <string>0</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <spacer name="horizontalSpacer_6">
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+             <property name="sizeType">
+              <enum>QSizePolicy::Fixed</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>380</width>
+               <height>20</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
+           <item>
+            <widget class="QRadioButton" name="showMineOnly">
+             <property name="maximumSize">
+              <size>
+               <width>220</width>
+               <height>16777215</height>
+              </size>
+             </property>
+             <property name="toolTip">
+              <string>Show only those Banknodes listed by their address in mybanknodes.txt</string>
+             </property>
+             <property name="text">
+              <string>Show only my Banknodes</string>
              </property>
             </widget>
            </item>
