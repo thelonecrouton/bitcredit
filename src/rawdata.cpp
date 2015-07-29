@@ -144,8 +144,7 @@ CAmount Rawdata::Getbankreserve()
 {
 	Bidtracker r;
 	
-	CAmount reserve; 
-	if ( ! (istringstream(r.btcbalance) >> reserve) ) reserve = 0;
+	CAmount reserve = r.getbalance();
 	return reserve;
 }
 

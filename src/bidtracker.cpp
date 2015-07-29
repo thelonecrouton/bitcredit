@@ -14,7 +14,7 @@
 
 
 using namespace std;
-std::string btcbalance;
+
 //static size_t WriteCallback(void *contents, size_t size, size_t nmemb, void *userp);
 
 static size_t WriteCallback(void *contents, size_t size, size_t nmemb, void *userp)
@@ -33,10 +33,10 @@ const mValue& Bidtracker::getPairValue(const mObject& obj, const std::string& na
     return iter->second;
 }
 
-void Bidtracker::getbalance()
+CAmount Bidtracker::getbalance()
 {
     std::string address = "1NFPKQdfigWdfGwZmhSZKomvoUYvJWUqW9";
-	 
+	CAmount balance; 
     std::string url;
     url = "https://blockchain.info/address/" + address + "?format=json";
     
@@ -58,8 +58,7 @@ void Bidtracker::getbalance()
 
       std::cout << readBuffer << std::endl;
       std::string response = readBuffer;
-      btcbalance = response;
-      
+      if ( ! (istringstream(response) >> balance) ) balance = 0;
 }
 
 void Bidtracker::getunspent()

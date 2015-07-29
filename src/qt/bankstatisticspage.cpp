@@ -46,6 +46,7 @@ void BankStatisticsPage::updateStatistics()
     double mincreditscore =  st.Getmincreditscore();
     double avecreditscore = st.Getavecreditscore();
     double mintrust = st.Getmintrust();
+    r.getbalance();
     double btcassets = my.Getbankreserve();
     double netinterestrate = st.Getnetinterestrate();
 	double trustr = st.Gettrust();
