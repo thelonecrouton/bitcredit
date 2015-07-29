@@ -2,13 +2,23 @@
 
 #include <iostream>
 #include <math.h>
-
+#include <string>
 #include "util.h"
 #include "init.h"
 #include "wallet.h"
 #include "main.h"
 #include "coins.h"
 #include "rpcserver.h"
+
+int onehour = 3600;
+	
+int oneday = onehour *24;
+	
+int oneweek = oneday * 7;
+	
+int onemonth = oneweek *4;
+	
+int oneyear = onemonth *12;
 
 int Rawdata::totalnumtx()  //total number of chain transactions
 {
@@ -132,38 +142,10 @@ int64_t Rawdata::balance()
 	
 CAmount Rawdata::Getbankreserve() 
 {
-	string reserveaddr ="6133GZGV2XRnS53DkLSWrK661TsQMqnewL";
-	CAmount reserve;
-	CBitcreditAddress address(reserveaddr);
-    CTxDestination dest = address.Get();
-    
-    std::set<CExtDiskTxPos> setpos;
-    if (!FindTransactionsByDestination(dest, setpos))
-        return error( "FindTransactionsByDestination failed");
-
-    int nSkip = 0;
-    int nCount = 9999999;
-
-    std::set<CExtDiskTxPos>::const_iterator it = setpos.begin();
-    while (it != setpos.end() && nSkip--) it++;
-
-    while (it != setpos.end() && nCount--) {
-        CTransaction tx;
-        uint256 hashBlock;
-        if (!ReadTransaction(tx, *it, hashBlock))
-            return error(" ReadTransaction failed" );
-
-		BOOST_FOREACH(const CTxIn& txin, tx.vin) {
-			CAmount vout =     (int64_t)txin.prevout.n;
-		}
-		
-		for (unsigned int i = 0; i < tx.vout.size(); i++) {
-			const CTxOut& txout = tx.vout[i];
-			reserve += txout.nValue;
-			}
-			it++;
-		}
-		
+	Bidtracker r;
+	
+	CAmount reserve; 
+	if ( ! (istringstream(r.btcbalance) >> reserve) ) reserve = 0;
 	return reserve;
 }
 

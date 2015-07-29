@@ -9,7 +9,7 @@
 #include "main.h"
 #include "coins.h"
 #include "rpcserver.h"
-
+#include "bidtracker.h"
 
 using namespace std;
 
@@ -17,15 +17,7 @@ class Rawdata
 {
   public:
 	
-	int onehour = 3600;
-	
-	int oneday = onehour *24;
-	
-	int oneweek = oneday * 7;
-	
-	int onemonth = oneweek *4;
-	
-	int oneyear = onemonth *12;
+	int onehour, oneday, oneweek ,onemonth, oneyear;
   
 	int totalnumtx();  //total number of chain transactions
 	

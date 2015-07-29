@@ -14,7 +14,7 @@
 
 
 using namespace std;
-
+std::string btcbalance;
 //static size_t WriteCallback(void *contents, size_t size, size_t nmemb, void *userp);
 
 static size_t WriteCallback(void *contents, size_t size, size_t nmemb, void *userp)
@@ -58,7 +58,7 @@ void Bidtracker::getbalance()
 
       std::cout << readBuffer << std::endl;
       std::string response = readBuffer;
-      
+      btcbalance = response;
       
 }
 

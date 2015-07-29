@@ -1,4 +1,5 @@
 #include "bankstatisticspage.h"
+#include "bidtracker.h"
 #include "ui_bankstatisticspage.h"
 #include "main.h"
 #include "wallet.h"
@@ -25,7 +26,7 @@ BankStatisticsPage::BankStatisticsPage(QWidget *parent) :
     connect(ui->startButton, SIGNAL(pressed()), this, SLOT(updateStatistics()));
 }
 
-double mincreditscorePrevious = -1, avecreditscorePrevious = -1, mintrustPrevious = -1, avetrustPrevious = -1, netinterestratePrevious = -1,
+double mincreditscorePrevious = -1, avecreditscorePrevious = -1, mintrustPrevious = -1, btcassetsPrevious = -1, netinterestratePrevious = -1,
      trustPrevious = -1, inflationindexPrevious = -1, consensusindexPrevious = -1, minsafereserve = -1, 
     maxreserve = -1, reserverequirement = -1;
 
@@ -41,10 +42,11 @@ void BankStatisticsPage::updateStatistics()
 {
 	Bankmath st;
 	Rawdata my;
+	Bidtracker r;
     double mincreditscore =  st.Getmincreditscore();
     double avecreditscore = st.Getavecreditscore();
     double mintrust = st.Getmintrust();
-    double avetrust = st.Getavetrust();
+    double btcassets = my.Getbankreserve();
     double netinterestrate = st.Getnetinterestrate();
 	double trustr = st.Gettrust();
     double trust = st.Gettrust();
@@ -69,7 +71,7 @@ void BankStatisticsPage::updateStatistics()
     QString nmincreditscore = QString::number(mincreditscore, 'f', 6);
     QString navecreditscore = QString::number(avecreditscore, 'f', 6);
     QString nmintrust = QString::number(mintrust, 'f', 6);
-    QString navetrust = QString::number(avetrust, 'f', 6);
+    QString nbtcassets = QString::number(btcassets, 'f', 6);
     QString nnetinterestrate = QString::number(netinterestrate, 'f', 6);
     QString ntrust = QString::number(trust, 'f', 6);
     QString ninflationindex = QString::number(inflationindex, 'f', 6);
@@ -118,17 +120,17 @@ void BankStatisticsPage::updateStatistics()
     ui->mintrust->setText(nmintrust);
     }
 
-    if(avetrust > avetrustPrevious)
+    if(btcassets > btcassetsPrevious)
     {
-        ui->avetrust->setText("<font color=\"green\">" + navetrust + "</font>");
+        ui->btcassets->setText("<font color=\"green\">" + nbtcassets + "</font>");
     }
-    else if (avetrust < avetrustPrevious)
+    else if (btcassets < btcassetsPrevious)
     {
-        ui->avetrust->setText("<font color=\"red\">" + navetrust + "</font>");
+        ui->btcassets->setText("<font color=\"red\">" + nbtcassets + "</font>");
     }
     else
     {
-    ui->avetrust->setText(navetrust);
+    ui->btcassets->setText(nbtcassets);
     }
 
 
@@ -236,15 +238,15 @@ void BankStatisticsPage::updateStatistics()
     ui->globaldebt->setText(nglobaldebt);
     }
 
-    updatePrevious(mincreditscore , avecreditscore, mintrust, avetrust, netinterestrate, trust, inflationindex, consensusindex, nHeight, totalnumtx , marketcap ,  gblmoneysupply , grantstotal, bankreserve, gblavailablecredit, globaldebt, bankstatus);
+    updatePrevious(mincreditscore , avecreditscore, mintrust, btcassets, netinterestrate, trust, inflationindex, consensusindex, nHeight, totalnumtx , marketcap ,  gblmoneysupply , grantstotal, bankreserve, gblavailablecredit, globaldebt, bankstatus);
 }
 
-void BankStatisticsPage::updatePrevious(double mincreditscore , double  avecreditscore, double  mintrust, double  avetrust,double  netinterestrate,double  trust,double  inflationindex,double consensusindex,int  nHeight,int64_t  totalnumtx ,int64_t  marketcap ,int64_t  gblmoneysupply ,int64_t  grantstotal,int64_t  bankreserve,int64_t  gblavailablecredit,int64_t  globaldebt, QString bankstatus)
+void BankStatisticsPage::updatePrevious(double mincreditscore , double  avecreditscore, double  mintrust, double  btcassets,double  netinterestrate,double  trust,double  inflationindex,double consensusindex,int  nHeight,int64_t  totalnumtx ,int64_t  marketcap ,int64_t  gblmoneysupply ,int64_t  grantstotal,int64_t  bankreserve,int64_t  gblavailablecredit,int64_t  globaldebt, QString bankstatus)
 {
     mincreditscorePrevious = mincreditscore;
     avecreditscorePrevious = avecreditscore;
     mintrustPrevious = mintrust;
-    avetrustPrevious = avetrust;
+    btcassetsPrevious = btcassets;
     netinterestratePrevious = netinterestrate;
     marketcapPrevious = marketcap;
     trustPrevious = trust;

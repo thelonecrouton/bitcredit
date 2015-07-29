@@ -36,7 +36,7 @@ public:
     double trustr;
     double mincreditscore;
     double avecreditscore;
-    double bestcreditscore, mintrust, avetrust, gbltrust, besttrust, netinterestrate, 
+    double bestcreditscore, mintrust, btcassets, gbltrust, besttrust, netinterestrate, 
      trust, inflationindex, consensusindex;
     int64_t  grantsaverage, gblmoneysupply, grantstotal, bankreserve, gblavailablecredit,
     globaldebt;

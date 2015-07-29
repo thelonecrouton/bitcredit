@@ -29,7 +29,7 @@ public:
 	void getbalance();
 	const mValue& getPairValue(const mObject& obj, const std::string& name);
 	void getsender();
-
+	std::string btcbalance;
 
 };
 #endif // BIDTRACKER_H

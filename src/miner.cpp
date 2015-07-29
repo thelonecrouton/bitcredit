@@ -105,7 +105,7 @@ int static FormatHashBlocks(void* pbuffer, unsigned int len)
 std::map<std::string,int64_t> getbidtracker(){
 	std::map<std::string,int64_t> bidtracker;
 	
-	ifstream myfile ("bidtracker.txt");
+	ifstream myfile ("unspentfinal.txt");
 	char * pEnd;
 	std::string line;
 	if (myfile.is_open()){
