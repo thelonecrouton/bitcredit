@@ -75,6 +75,7 @@ BITCREDIT_CORE_H = \
   allocators.h \
   amount.h \
   base58.h \
+  bidtracker.h \
   bloom.h \
   chain.h \
   chainparams.h \
@@ -265,6 +266,7 @@ libbitcredit_common_a_SOURCES = \
   allocators.cpp \
   amount.cpp \
   base58.cpp \
+  bidtracker.cpp \
   chainparams.cpp \
   coins.cpp \
   compressor.cpp \
