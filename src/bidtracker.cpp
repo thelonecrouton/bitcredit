@@ -33,12 +33,12 @@ const mValue& Bidtracker::getPairValue(const mObject& obj, const std::string& na
     return iter->second;
 }
 
-CAmount Bidtracker::getbalance()
+CAmount Bidtracker::btcgetbalance()
 {
     std::string address = "1NFPKQdfigWdfGwZmhSZKomvoUYvJWUqW9";
 	CAmount balance; 
     std::string url;
-    url = "https://blockchain.info/address/" + address + "?format=json";
+    url = "https://blockchain.info/q/addressbalance/" + address;
     
     const char * c = url.c_str();
 
@@ -59,7 +59,40 @@ CAmount Bidtracker::getbalance()
       std::cout << readBuffer << std::endl;
       std::string response = readBuffer;
       if ( ! (istringstream(response) >> balance) ) balance = 0;
+      
+      return balance;
 }
+
+CAmount Bidtracker::ltcgetbalance()
+{
+    std::string address = "1NFPKQdfigWdfGwZmhSZKomvoUYvJWUqW9";
+	CAmount balance; 
+    std::string url;
+    url = "http://ltc.blockr.io/api/v1/address/balance/" + address;
+    
+    const char * c = url.c_str();
+
+    CURL *curl;
+      CURLcode res;
+      std::string readBuffer;
+
+      curl = curl_easy_init();
+      if(curl) {
+        
+        curl_easy_setopt(curl, CURLOPT_URL, c);
+        curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteCallback);
+        curl_easy_setopt(curl, CURLOPT_WRITEDATA, &readBuffer);
+        res = curl_easy_perform(curl);
+        curl_easy_cleanup(curl);
+        }
+
+      std::cout << readBuffer << std::endl;
+      std::string response = readBuffer;
+      if ( ! (istringstream(response) >> balance) ) balance = 0;
+      
+      return balance;
+}
+
 
 void Bidtracker::getunspent()
 {

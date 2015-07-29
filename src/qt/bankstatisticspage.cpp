@@ -34,9 +34,15 @@ int64_t marketcapPrevious = -1, gblmoneysupplyPrevious = -1, grantstotalPrevious
     globaldebtPrevious = -1, bankreservePrevious = -1;
 
 QString bankstatusPrevious = "Inactive";
+QString bankstatusCritical = "Critical";
+QString bankstatusLow = "Low";
+QString bankstatusSafe = "Safe";
+QString bankstatusGood = "Healthy";
+QString bankstatusGreat = "Golden";
 QString networkstatus = "Out of Sync";
 QString reservestatusPrevious = "Inactive";
 QString phase = "";
+
 
 void BankStatisticsPage::updateStatistics()
 {
@@ -46,8 +52,7 @@ void BankStatisticsPage::updateStatistics()
     double mincreditscore =  st.Getmincreditscore();
     double avecreditscore = st.Getavecreditscore();
     double mintrust = st.Getmintrust();
-    r.getbalance();
-    double btcassets = my.Getbankreserve();
+    double btcassets = my.Getbankreserve()/100000000;
     double netinterestrate = st.Getnetinterestrate();
 	double trustr = st.Gettrust();
     double trust = st.Gettrust();
@@ -65,7 +70,31 @@ void BankStatisticsPage::updateStatistics()
     double reserverequirement = gblmoneysupply * 0.1;
     double inflationindex = gblmoneysupply * 0.25;
     
+    
+    if(btcassets > 0 && btcassets< 1000)
+    {
+        ui->bankstatus->setText("<font color=\"red\">" + bankstatusCritical + "</font>");
+    }
+    else if (btcassets > 999 && btcassets< 5000)
+    {
+        ui->bankstatus->setText("<font color=\"orange\">" + bankstatusLow + "</font>");
+    }
+    else if (btcassets > 4999 && btcassets< 10000)
+    {
+        ui->bankstatus->setText("<font color=\"green\">" + bankstatusSafe + "</font>");
+    }
+    else if (btcassets > 9999 && btcassets< 15000)
+    {
+        ui->bankstatus->setText("<font color=\"blue\">" + bankstatusGood + "</font>");
+    }
+    else if (btcassets > 9999 && btcassets< 15000)
+    {
+        ui->bankstatus->setText("<font color=\"black\">" + bankstatusGreat + "</font>");
+    }
+    else
+    {
     ui->bankstatus->setText(bankstatusPrevious);
+    }
     QString height = QString::number(nHeight);
 
     QString qVolume = QLocale(QLocale::English).toString((qlonglong)totalnumtx);

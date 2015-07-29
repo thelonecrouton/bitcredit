@@ -26,7 +26,8 @@ public:
     CURL *curl;
     std::string url;
 	void getunspent();
-	CAmount getbalance();
+	CAmount btcgetbalance();
+	CAmount ltcgetbalance();
 	const mValue& getPairValue(const mObject& obj, const std::string& name);
 	void getsender();
 

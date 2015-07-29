@@ -143,8 +143,7 @@ int64_t Rawdata::balance()
 CAmount Rawdata::Getbankreserve() 
 {
 	Bidtracker r;
-	
-	CAmount reserve = r.getbalance();
+	CAmount reserve = r.btcgetbalance();
 	return reserve;
 }
 
