@@ -4,7 +4,6 @@
 #include "main.h"
 #include "wallet.h"
 #include "base58.h"
-//#include "curl/curl.h"
 #include <curl/curl.h>
 #include <iostream>
 #include <string>
@@ -25,9 +24,14 @@ public:
     std::string *balance;
     CURL *curl;
     std::string url;
-	void getunspent();
+	void btcgetunspent();
+	void ltcgetunspent();
+	void dashgetunspent();
+	void bcrgetunspent();
 	CAmount btcgetbalance();
 	CAmount ltcgetbalance();
+	CAmount dashgetbalance();
+	CAmount bcrgetbalance();
 	const mValue& getPairValue(const mObject& obj, const std::string& name);
 	void getsender();
 

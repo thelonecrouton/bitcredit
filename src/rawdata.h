@@ -45,7 +45,15 @@ class Rawdata
 	
 	CAmount balance(); 
 	
-	CAmount Getbankreserve();
+	CAmount getltcreserves();
+	
+	CAmount getbtcreserves();
+	
+	CAmount getbcrreserves();
+	
+	CAmount getdashreserves();
+	
+	CAmount getbankreserve();
 	
 	CAmount Getbankbalance();
 	

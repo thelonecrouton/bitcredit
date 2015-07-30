@@ -10,14 +10,14 @@
 CAmount Bankmath::Getgblavailablecredit() 
 {
 	Rawdata data;
-	CAmount n = data.Getbankreserve();
+	CAmount n = data.getbankreserve();
 	return n;
 }
 
 int64_t Bankmath::Getglobaldebt()
 {
 	Rawdata data;
-	CAmount n = data.Getbankreserve() + data.Getgrantstotal() ; //representing how much is available for public lending  
+	CAmount n = data.getbankreserve() + data.Getgrantstotal() ; //representing how much is available for public lending  
 	
 	return n;
 }

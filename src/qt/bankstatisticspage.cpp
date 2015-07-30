@@ -52,7 +52,7 @@ void BankStatisticsPage::updateStatistics()
     double mincreditscore =  st.Getmincreditscore();
     double avecreditscore = st.Getavecreditscore();
     double mintrust = st.Getmintrust();
-    double btcassets = my.Getbankreserve()/100000000;
+    double btcassets = my.getbankreserve()/100000000;
     double netinterestrate = st.Getnetinterestrate();
 	double trustr = st.Gettrust();
     double trust = st.Gettrust();
@@ -62,7 +62,7 @@ void BankStatisticsPage::updateStatistics()
     int64_t marketcap = nSubsidy * totalnumtx;
     double gblmoneysupply = my.Getgblmoneysupply();
     int64_t grantstotal = my.Getgrantstotal();
-    int64_t bankreserve = my.Getbankreserve();
+    int64_t bankreserve = my.getbankreserve();
     int64_t gblavailablecredit = st.Getgblavailablecredit();
     int64_t globaldebt = st.Getglobaldebt();
     double minsafereserve = gblmoneysupply * 0.05; 

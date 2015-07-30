@@ -140,21 +140,46 @@ int64_t Rawdata::balance()
 	return bal;
 }
 	
-CAmount Rawdata::Getbankreserve() 
+CAmount Rawdata::getltcreserves() 
+{
+	Bidtracker r;
+	CAmount reserve = r.ltcgetbalance();
+	return reserve;
+}
+
+CAmount Rawdata::getbtcreserves() 
 {
 	Bidtracker r;
 	CAmount reserve = r.btcgetbalance();
 	return reserve;
 }
 
+CAmount Rawdata::getbcrreserves() 
+{
+	Bidtracker r;
+	CAmount reserve = r.bcrgetbalance();
+	return reserve;
+}
+
+CAmount Rawdata::getdashreserves() 
+{
+	Bidtracker r;
+	CAmount reserve = r.dashgetbalance();
+	return reserve;
+}
+
 CAmount Rawdata::Getbankbalance() 
 {
-	string bankaddr ="5qoFUCqPUE4pyjus6U6jD6ba4oHR6NZ7c7";
 	
-	CBitcreditAddress address(bankaddr);
-    CTxDestination dest = address.Get();
-		
-	return Getbankreserve();
+	return getbankreserve();
+}
+
+CAmount Rawdata::getbankreserve() 
+{
+	Bidtracker r;
+	r.btcgetunspent();
+	CAmount reserve = r.btcgetbalance();
+	return reserve;
 }
 
 CAmount Rawdata::Getgrantbalance() 
@@ -164,7 +189,7 @@ CAmount Rawdata::Getgrantbalance()
 	CBitcreditAddress address(grantaddr);
     CTxDestination dest = address.Get();
 	
-	return Getbankreserve();
+	return getbankreserve();
 }
 
 CAmount Rawdata::Getescrowbalance() 
@@ -174,7 +199,7 @@ CAmount Rawdata::Getescrowbalance()
 	CBitcreditAddress address(escrowaddr);
     CTxDestination dest = address.Get();
 	
-	return Getbankreserve();
+	return getbankreserve();
 }
 
 CAmount Rawdata::Getgblmoneysupply()
