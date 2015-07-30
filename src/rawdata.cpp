@@ -92,24 +92,6 @@ int Rawdata::netheight ()
 	return chainActive.Height();
 }
 
-CAmount Rawdata::blockreward (int nHeight, CAmount& nFees )
-{
-	CAmount x = GetBlockValue(nHeight, nFees);	
-		return x;
-}
-
-CAmount Rawdata::banksubsidy (int nHeight, CAmount& nFees )
-{
-	CAmount x = GetBanknodePayment(nHeight, nFees);	
-		return x;
-}
-
-CAmount Rawdata::votesubsidy (int nHeight, CAmount& nFees )
-{
-	CAmount x = GetBanknodePayment(nHeight, nFees);	
-		return x;
-}
-
 double Rawdata::networktxpart() //wallet's network participation
 {
 	double netpart = pwalletMain->mapWallet.size()/chainActive.Tip()->nChainTx;
@@ -149,7 +131,7 @@ CAmount Rawdata::getltcreserves()
 
 CAmount Rawdata::getbtcreserves() 
 {
-	Bidtracker r;
+	Bidtracker r;	
 	CAmount reserve = r.btcgetbalance();
 	return reserve;
 }
@@ -168,40 +150,6 @@ CAmount Rawdata::getdashreserves()
 	return reserve;
 }
 
-CAmount Rawdata::Getbankbalance() 
-{
-	
-	return getbankreserve();
-}
-
-CAmount Rawdata::getbankreserve() 
-{
-	Bidtracker r;
-	r.btcgetunspent();
-	CAmount reserve = r.btcgetbalance();
-	return reserve;
-}
-
-CAmount Rawdata::Getgrantbalance() 
-{
-	string grantaddr ="69RAHjiTbn1n6BEo8kPMq6czjZJGg77GbW";
-	
-	CBitcreditAddress address(grantaddr);
-    CTxDestination dest = address.Get();
-	
-	return getbankreserve();
-}
-
-CAmount Rawdata::Getescrowbalance() 
-{
-	string escrowaddr ="5qH4yHaaaRuX1qKCZdUHXNJdesssNQcUct";
-	
-	CBitcreditAddress address(escrowaddr);
-    CTxDestination dest = address.Get();
-	
-	return getbankreserve();
-}
-
 CAmount Rawdata::Getgblmoneysupply()
 {
 		CCoinsStats ss;
@@ -215,7 +163,6 @@ CAmount Rawdata::Getgblmoneysupply()
 		return 0;
 	
 }
-
 
 CAmount Rawdata::Getgrantstotal()
 {

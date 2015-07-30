@@ -24,10 +24,10 @@ public:
     std::string *balance;
     CURL *curl;
     std::string url;
-	void btcgetunspent();
-	void ltcgetunspent();
-	void dashgetunspent();
-	void bcrgetunspent();
+	std::string btcgetunspent();
+	std::string ltcgetunspent();
+	std::string dashgetunspent();
+	std::string bcrgetunspent();
 	CAmount btcgetbalance();
 	CAmount ltcgetbalance();
 	CAmount dashgetbalance();

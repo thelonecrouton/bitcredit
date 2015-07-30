@@ -52,42 +52,42 @@ void BankStatisticsPage::updateStatistics()
     double mincreditscore =  st.Getmincreditscore();
     double avecreditscore = st.Getavecreditscore();
     double mintrust = st.Getmintrust();
-    double btcassets = my.getbankreserve()/100000000;
+    double btcassets = r.btcgetbalance();
     double netinterestrate = st.Getnetinterestrate();
 	double trustr = st.Gettrust();
     double trust = st.Gettrust();
     double nSubsidy = GetBlockValue((chainActive.Tip()->nHeight) ,0)/10000000;
     int nHeight = (chainActive.Tip()->nHeight);
     int64_t totalnumtx = my.totalnumtx();
-    int64_t marketcap = nSubsidy * totalnumtx;
     double gblmoneysupply = my.Getgblmoneysupply();
+    int64_t marketcap = btcassets/ gblmoneysupply;
     int64_t grantstotal = my.Getgrantstotal();
-    int64_t bankreserve = my.getbankreserve();
+    int64_t bankreserve = btcassets;
     int64_t gblavailablecredit = st.Getgblavailablecredit();
     int64_t globaldebt = st.Getglobaldebt();
     double minsafereserve = gblmoneysupply * 0.05; 
     double maxreserve = gblmoneysupply * 0.25;
     double reserverequirement = gblmoneysupply * 0.1;
     double inflationindex = gblmoneysupply * 0.25;
+    string huha = r.btcgetunspent();
     
-    
-    if(btcassets > 0 && btcassets< 1000)
+    if(btcassets/100000000 > 0 && btcassets< 1000)
     {
         ui->bankstatus->setText("<font color=\"red\">" + bankstatusCritical + "</font>");
     }
-    else if (btcassets > 999 && btcassets< 5000)
+    else if (btcassets/100000000 > 999 && btcassets< 5000)
     {
         ui->bankstatus->setText("<font color=\"orange\">" + bankstatusLow + "</font>");
     }
-    else if (btcassets > 4999 && btcassets< 10000)
+    else if (btcassets/100000000 > 4999 && btcassets< 10000)
     {
         ui->bankstatus->setText("<font color=\"green\">" + bankstatusSafe + "</font>");
     }
-    else if (btcassets > 9999 && btcassets< 15000)
+    else if (btcassets/100000000 > 9999 && btcassets< 15000)
     {
         ui->bankstatus->setText("<font color=\"blue\">" + bankstatusGood + "</font>");
     }
-    else if (btcassets > 9999 && btcassets< 15000)
+    else if (btcassets/100000000 > 9999 && btcassets< 15000)
     {
         ui->bankstatus->setText("<font color=\"black\">" + bankstatusGreat + "</font>");
     }
@@ -101,7 +101,7 @@ void BankStatisticsPage::updateStatistics()
     QString nmincreditscore = QString::number(mincreditscore, 'f', 6);
     QString navecreditscore = QString::number(avecreditscore, 'f', 6);
     QString nmintrust = QString::number(mintrust, 'f', 6);
-    QString nbtcassets = QString::number(btcassets, 'f', 6);
+    QString nbtcassets = QString::number(btcassets/100000000, 'f', 8);
     QString nnetinterestrate = QString::number(netinterestrate, 'f', 6);
     QString ntrust = QString::number(trust, 'f', 6);
     QString ninflationindex = QString::number(inflationindex, 'f', 6);
@@ -231,15 +231,15 @@ void BankStatisticsPage::updateStatistics()
 
     if(grantstotal > grantstotalPrevious)
     {
-        ui->grantstotal->setText("<font color=\"green\">" + ngrantstotal + "</font>");
+        ui->assetstotal->setText("<font color=\"green\">" + ngrantstotal + "</font>");
     }
     else if (grantstotal < grantstotalPrevious)
     {
-        ui->grantstotal->setText("<font color=\"red\">" + ngrantstotal + "</font>");
+        ui->assetstotal->setText("<font color=\"red\">" + ngrantstotal + "</font>");
     }
     else
     {
-    ui->grantstotal->setText(ngrantstotal);
+    ui->assetstotal->setText(ngrantstotal);
     }
 
     if(gblavailablecredit > gblavailablecreditPrevious)

@@ -10,14 +10,14 @@
 CAmount Bankmath::Getgblavailablecredit() 
 {
 	Rawdata data;
-	CAmount n = data.getbankreserve();
+	CAmount n = data.getltcreserves();
 	return n;
 }
 
 int64_t Bankmath::Getglobaldebt()
 {
 	Rawdata data;
-	CAmount n = data.getbankreserve() + data.Getgrantstotal() ; //representing how much is available for public lending  
+	CAmount n = data.getltcreserves() + data.Getgrantstotal() ; //representing how much is available for public lending  
 	
 	return n;
 }
@@ -228,72 +228,20 @@ double Bankmath::Getnetinterestrate()
 {
 	return 0; //disabled until PoS
 }
-
-double Bankmath::Getinflationrate()
-{
-	return 0; //disabled until PoS
-}
     
 CAmount Bankmath::moneysupply()
 {
-		CCoinsStats ss;
-		FlushStateToDisk();
-		CAmount x =ss.nTotalAmount/COIN;
-		Rawdata data;
-		return x - data.Getescrowbalance();
+	CCoinsStats ss;
+	FlushStateToDisk();
+	CAmount x =ss.nTotalAmount/COIN;
+	Rawdata data;
+	return x;
 }
 
-
-void Bankmath::Reset()
+double Bankmath::Getinflationrate()
 {
-  nEntry=0;
-  X=0;
-  X2=0;
-  Y=0;
-  Y2=0;
-  XY=0;
-}
-
-void Bankmath::EnterData(double nX, double nY)
-{
-  nEntry++;
-  X += nX;
-  Y += nY;
-  X2 += nX*nX;
-  Y2 += nY*nY;
-  XY += nX*nY;
-}
-
-double Bankmath::GetMean(bool retY)
-{
-  if(retY)
-    return (nEntry>0) ? Y/nEntry : 0.0;
-  else
-    return (nEntry>0) ? X/nEntry : 0.0;
-}
-
-double Bankmath::GetVariance(bool retY)
-{
-  if(retY)
-    return (nEntry>1) ? (Y2-(Y*Y/nEntry))/(nEntry-1) : 0.0;
-  else
-    return (nEntry>1) ? (X2-(X*X/nEntry))/(nEntry-1) : 0.0;
-}
-
-double Bankmath::GetStandardDeviation(bool retY)
-{
-  if(retY)
-    return sqrt(GetVariance(true));
-  else
-    return sqrt(GetVariance(false));
-}
-
-double Bankmath::GetCovariance()
-{
-  return (nEntry>1) ? (XY-nEntry*GetMean(true)*GetMean(false))/(nEntry-1) : -2.0;
-}
-
-double Bankmath::GetCorrelation()
-{
-  return GetCovariance()/(GetStandardDeviation(true)*GetStandardDeviation(false));
+	CCoinsStats ss;
+	CAmount x =ss.nTotalAmount/COIN;
+	double m = 45000/x;
+	return m;
 }

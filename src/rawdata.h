@@ -31,12 +31,6 @@ class Rawdata
 	
 	int netheight ();
 	
-	CAmount blockreward (int nHeight, CAmount& nFees );
-	
-	CAmount	banksubsidy (int nHeight, CAmount& nFees );
-	
-	CAmount	votesubsidy (int nHeight, CAmount& nFees );
-	
 	double networktxpart(); //wallet's network participation
 	
 	double lifetime(); //wallet's lifetime
@@ -52,15 +46,9 @@ class Rawdata
 	CAmount getbcrreserves();
 	
 	CAmount getdashreserves();
-	
-	CAmount getbankreserve();
-	
-	CAmount Getbankbalance();
-	
+		
 	CAmount Getgrantbalance();
 	
-	CAmount Getescrowbalance(); 
-
 	CAmount Getgrantstotal();
 
 	CAmount Getgblavailablecredit(); 
