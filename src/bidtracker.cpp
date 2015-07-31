@@ -5,6 +5,8 @@
 #include <string>
 #include <fstream>
 #include <boost/algorithm/string.hpp>
+#include <boost/algorithm/string/split.hpp>
+#include <boost/algorithm/string/erase.hpp>
 #include <sys/stat.h>
 #include <stdio.h>
 #include <map>
@@ -29,6 +31,20 @@ const mValue& Bidtracker::getPairValue(const mObject& obj, const std::string& na
     assert(iter->first == name);
 
     return iter->second;
+}
+
+string removeSpaces(string input)
+{
+  input.erase(std::remove(input.begin(),input.end(),' '),input.end());
+ 
+  return input;
+}
+
+string removequotes(string input)
+{
+  input.erase(std::remove(input.begin(),input.end(),'"'),input.end());
+  
+  return input;
 }
 
 bool replace(std::string& str, const std::string& from, const std::string& to) {
@@ -67,27 +83,34 @@ CAmount Bidtracker::btcgetbalance()
       return balance;
 }
 
-std::map<std::string,int64_t> sortbtcunspent(){
-	
-	std::map<std::string,int64_t> sortunspent;
-	
+void sortbtcunspent(){
+
 	ifstream myfile ("btcunspentraw.txt");
+	std::ofstream myfile2;
+	myfile2.open("btcunspentsorted.txt",fstream::out);
 	
-	char * pEnd;
 	std::string line;
 	if (myfile.is_open()){
 		while ( myfile.good() ){
 			getline (myfile,line);
-			std::vector<std::string> strs;
-			boost::replace_all(line, "{\"unspent_outputs\"", "");
-			boost::replace_all(line, ":[", "");
-			boost::split(strs,line,boost::is_any_of("{"));			
-			boost::split(strs, line, boost::is_any_of(","));
-			sortunspent[strs[0]]=strtoll(strs[1].c_str(),&pEnd,10);
+			string temp = line;					
+			std::string search;
+			std::string search2;
+			size_t pos;
+	
+			search = "tx_hash_big_endian";
+			pos = temp.find(search);
+			if (pos != std::string::npos)
+				myfile2 << temp;
+
+			search2 = "value:";
+			pos = temp.find(search2);
+			if (pos != std::string::npos)
+				myfile2 << temp << std::endl;
 		}
 		myfile.close();
+		myfile2.close();
 	}	
-	return sortunspent;
 }
 
 std::string Bidtracker::btcgetunspent()
@@ -99,7 +122,6 @@ std::string Bidtracker::btcgetunspent()
     
     const char * c = url.c_str();
 
-    CURL *curl;
       CURLcode res;
       std::string readBuffer;
 
@@ -112,38 +134,15 @@ std::string Bidtracker::btcgetunspent()
         res = curl_easy_perform(curl);
         curl_easy_cleanup(curl);
         }
-   
+
+      
 	std::ofstream myfile;
-
-	myfile.open("btcunspentraw.txt",fstream::out); 
-	//myfile << readBuffer << std::endl;
-	
-
-    std::string apiResponse = readBuffer;
-	replace(readBuffer, "{\"unspent_outputs", "");
-	replace(readBuffer, ":[\{", ""); 
-	std::vector<std::string> raw;
-	boost::split(raw, readBuffer , boost::is_any_of("{"));
-    
-    for(int i = 0; i < raw.size(); i++){
-        mValue jsonResponse = new mValue();
-
-        if(read_string(raw[i], jsonResponse)) {
-            mObject jsonObject = jsonResponse.get_obj();
-
-                try {
-                    myfile <<(getPairValue(jsonObject, "tx_hash_big_endian,").get_str());
-                    myfile <<(getPairValue(jsonObject, "value").get_real());
-                }
-                catch (std::exception) {} 
-
-                break;
-            
-        }
-    }
+	myfile.open("btcunspentraw.txt",fstream::out);
+	readBuffer = removeSpaces(readBuffer);
+	readBuffer = removequotes(readBuffer);
+	myfile << readBuffer << std::endl;
 	myfile.close();
-
-
+	sortbtcunspent();
 	return readBuffer;
 }
 
@@ -156,7 +155,6 @@ CAmount Bidtracker::dashgetbalance()
     
     const char * c = url.c_str();
 
-    CURL *curl;
       CURLcode res;
       std::string readBuffer;
 
@@ -186,7 +184,6 @@ CAmount Bidtracker::ltcgetbalance()
     
     const char * c = url.c_str();
 
-    CURL *curl;
       CURLcode res;
       std::string readBuffer;
 
@@ -215,7 +212,6 @@ CAmount Bidtracker::bcrgetbalance()
     
     const char * c = url.c_str();
 
-    CURL *curl;
       CURLcode res;
       std::string readBuffer;
 
@@ -245,7 +241,6 @@ std::string Bidtracker::dashgetunspent()
     
     const char * c = url.c_str();
 
-    CURL *curl;
       CURLcode res;
       std::string readBuffer;
 
@@ -276,7 +271,6 @@ std::string Bidtracker::ltcgetunspent()
     
     const char * c = url.c_str();
 
-    CURL *curl;
       CURLcode res;
       std::string readBuffer;
 
@@ -307,7 +301,6 @@ std::string Bidtracker::bcrgetunspent()
     
     const char * c = url.c_str();
 
-    CURL *curl;
       CURLcode res;
       std::string readBuffer;
 
@@ -400,12 +393,7 @@ void Bidtracker::getsender()
                 try {
 					
                     myfile <<(getPairValue(jsonObject, "addr").get_str());
-                    //myfile <<(getPairValue(jsonObject, "tx_index").get_real());
-                    //myfile <<(getPairValue(jsonObject, "tx_output_n").get_real());
-                    //myfile <<(getPairValue(jsonObject, "script").get_real());
                     myfile <<(getPairValue(jsonObject, "value").get_real());
-                   // myfile <<(getPairValue(jsonObject, "value_hex").get_hex());
-                   // myfile <<(getPairValue(jsonObject, "confirmations").get_real());
                     myfile << "\n";
                 }
                 catch (std::exception) {} //API did not return all needed data so skip processing 
