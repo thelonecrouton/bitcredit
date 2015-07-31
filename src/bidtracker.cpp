@@ -31,6 +31,14 @@ const mValue& Bidtracker::getPairValue(const mObject& obj, const std::string& na
     return iter->second;
 }
 
+bool replace(std::string& str, const std::string& from, const std::string& to) {
+    size_t start_pos = str.find(from);
+    if(start_pos == std::string::npos)
+        return false;
+    str.replace(start_pos, from.length(), to);
+    return true;
+}
+
 CAmount Bidtracker::btcgetbalance()
 {
     std::string address = "1NFPKQdfigWdfGwZmhSZKomvoUYvJWUqW9";
@@ -40,7 +48,6 @@ CAmount Bidtracker::btcgetbalance()
     
     const char * c = url.c_str();
 
-    CURL *curl;
       CURLcode res;
       std::string readBuffer;
 
@@ -53,8 +60,7 @@ CAmount Bidtracker::btcgetbalance()
         res = curl_easy_perform(curl);
         curl_easy_cleanup(curl);
         }
-
-      //std::cout << readBuffer << std::endl;
+      
       std::string response = readBuffer;
       if ( ! (istringstream(response) >> balance) ) balance = 0;
       
@@ -87,7 +93,7 @@ std::map<std::string,int64_t> sortbtcunspent(){
 std::string Bidtracker::btcgetunspent()
 {
     std::string address = "1NFPKQdfigWdfGwZmhSZKomvoUYvJWUqW9";
-	CAmount balance; 
+	
     std::string url;
     url = "https://blockchain.info/unspent?active=" + address;
     
@@ -106,17 +112,37 @@ std::string Bidtracker::btcgetunspent()
         res = curl_easy_perform(curl);
         curl_easy_cleanup(curl);
         }
-    
+   
 	std::ofstream myfile;
+
 	myfile.open("btcunspentraw.txt",fstream::out); 
-	myfile << readBuffer << std::endl;
+	//myfile << readBuffer << std::endl;
 	
-	std::string line;
-	getline (myfile,line);
-	boost::replace_all(line, "{\"unspent_outputs\"", "");
-	boost::replace_all(line, ":[", "");
-				
+
+    std::string apiResponse = readBuffer;
+	replace(readBuffer, "{\"unspent_outputs", "");
+	replace(readBuffer, ":[\{", ""); 
+	std::vector<std::string> raw;
+	boost::split(raw, readBuffer , boost::is_any_of("{"));
+    
+    for(int i = 0; i < raw.size(); i++){
+        mValue jsonResponse = new mValue();
+
+        if(read_string(raw[i], jsonResponse)) {
+            mObject jsonObject = jsonResponse.get_obj();
+
+                try {
+                    myfile <<(getPairValue(jsonObject, "tx_hash_big_endian,").get_str());
+                    myfile <<(getPairValue(jsonObject, "value").get_real());
+                }
+                catch (std::exception) {} 
+
+                break;
+            
+        }
+    }
 	myfile.close();
+
 
 	return readBuffer;
 }
