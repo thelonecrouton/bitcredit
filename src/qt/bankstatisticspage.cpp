@@ -26,23 +26,15 @@ BankStatisticsPage::BankStatisticsPage(QWidget *parent) :
     connect(ui->startButton, SIGNAL(pressed()), this, SLOT(updateStatistics()));
 }
 
-double mincreditscorePrevious = -1, avecreditscorePrevious = -1, mintrustPrevious = -1, btcassetsPrevious = -1, netinterestratePrevious = -1,
+double mincreditscorePrevious = -1, avecreditscorePrevious = -1, mintrustPrevious = -1, btcassetsPrevious = -1, ltcassetsPrevious = -1, bcrassetsPrevious = -1, fiatassetsPrevious = -1, netinterestratePrevious = -1,
      trustPrevious = -1, inflationindexPrevious = -1, consensusindexPrevious = -1, minsafereserve = -1, 
     maxreserve = -1, reserverequirement = -1;
 
 int64_t marketcapPrevious = -1, gblmoneysupplyPrevious = -1, grantstotalPrevious = -1, gblavailablecreditPrevious = -1,
     globaldebtPrevious = -1, bankreservePrevious = -1;
 
-QString bankstatusPrevious = "Inactive";
-QString bankstatusCritical = "Critical";
-QString bankstatusLow = "Low";
-QString bankstatusSafe = "Safe";
-QString bankstatusGood = "Healthy";
-QString bankstatusGreat = "Golden";
-QString networkstatus = "Out of Sync";
-QString reservestatusPrevious = "Inactive";
+QString bankstatusPrevious = "Inactive" , bankstatusCritical = "Critical", bankstatusLow = "Low", bankstatusSafe = "Safe", bankstatusGood = "Healthy", bankstatusGreat = "Golden", networkstatus = "Out of Sync";
 QString phase = "";
-
 
 void BankStatisticsPage::updateStatistics()
 {
@@ -53,6 +45,9 @@ void BankStatisticsPage::updateStatistics()
     double avecreditscore = st.Getavecreditscore();
     double mintrust = st.Getmintrust();
     double btcassets = r.btcgetbalance();
+    double ltcassets = r.ltcgetbalance();
+    double bcrassets = r.bcrgetbalance();
+    double fiatassets = r.fiatgetbalance();
     double netinterestrate = st.Getnetinterestrate();
 	double trustr = st.Gettrust();
     double trust = st.Gettrust();
@@ -61,6 +56,7 @@ void BankStatisticsPage::updateStatistics()
     int64_t totalnumtx = my.totalnumtx();
     double gblmoneysupply = my.Getgblmoneysupply();
     int64_t marketcap = btcassets/ gblmoneysupply;
+    int64_t btcstash = btcassets/ 100000000;
     int64_t grantstotal = my.Getgrantstotal();
     int64_t bankreserve = btcassets;
     int64_t gblavailablecredit = st.Getgblavailablecredit();
@@ -71,23 +67,23 @@ void BankStatisticsPage::updateStatistics()
     double inflationindex = gblmoneysupply * 0.25;
     string huha = r.btcgetunspent();
     
-    if(btcassets/100000000 > 0 && btcassets< 1000)
+    if(btcstash > 0 && btcstash< 1000)
     {
         ui->bankstatus->setText("<font color=\"red\">" + bankstatusCritical + "</font>");
     }
-    else if (btcassets/100000000 > 999 && btcassets< 5000)
+    else if (btcstash > 999 && btcstash< 10000)
     {
         ui->bankstatus->setText("<font color=\"orange\">" + bankstatusLow + "</font>");
     }
-    else if (btcassets/100000000 > 4999 && btcassets< 10000)
+    else if (btcstash > 9999 && btcstash< 100000)
     {
         ui->bankstatus->setText("<font color=\"green\">" + bankstatusSafe + "</font>");
     }
-    else if (btcassets/100000000 > 9999 && btcassets< 15000)
+    else if (btcstash > 99999 && btcstash< 200000)
     {
         ui->bankstatus->setText("<font color=\"blue\">" + bankstatusGood + "</font>");
     }
-    else if (btcassets/100000000 > 9999 && btcassets< 15000)
+    else if (btcstash > 199999)
     {
         ui->bankstatus->setText("<font color=\"black\">" + bankstatusGreat + "</font>");
     }
@@ -95,6 +91,7 @@ void BankStatisticsPage::updateStatistics()
     {
     ui->bankstatus->setText(bankstatusPrevious);
     }
+    
     QString height = QString::number(nHeight);
 
     QString qVolume = QLocale(QLocale::English).toString((qlonglong)totalnumtx);
@@ -102,6 +99,9 @@ void BankStatisticsPage::updateStatistics()
     QString navecreditscore = QString::number(avecreditscore, 'f', 6);
     QString nmintrust = QString::number(mintrust, 'f', 6);
     QString nbtcassets = QString::number(btcassets/100000000, 'f', 8);
+    QString nltcassets = QString::number(ltcassets/100000000, 'f', 8);
+    QString nbcrassets = QString::number(bcrassets/100000000, 'f', 8);
+    QString nfiatassets = QString::number(fiatassets, 'f', 8);
     QString nnetinterestrate = QString::number(netinterestrate, 'f', 6);
     QString ntrust = QString::number(trust, 'f', 6);
     QString ninflationindex = QString::number(inflationindex, 'f', 6);
@@ -163,7 +163,45 @@ void BankStatisticsPage::updateStatistics()
     ui->btcassets->setText(nbtcassets);
     }
 
+    if(ltcassets > ltcassetsPrevious)
+    {
+        ui->ltcassets->setText("<font color=\"green\">" + nltcassets + "</font>");
+    }
+    else if (ltcassets < ltcassetsPrevious)
+    {
+        ui->ltcassets->setText("<font color=\"red\">" + nltcassets + "</font>");
+    }
+    else
+    {
+    ui->ltcassets->setText(nltcassets);
+    }
 
+    if(bcrassets > bcrassetsPrevious)
+    {
+        ui->bcrassets->setText("<font color=\"green\">" + nbcrassets + "</font>");
+    }
+    else if (bcrassets < bcrassetsPrevious)
+    {
+        ui->bcrassets->setText("<font color=\"red\">" + nbcrassets + "</font>");
+    }
+    else
+    {
+    ui->bcrassets->setText(nbcrassets);
+    }
+
+    if(fiatassets > fiatassetsPrevious)
+    {
+        ui->fiatassets->setText("<font color=\"green\">" + nfiatassets + "</font>");
+    }
+    else if (fiatassets < fiatassetsPrevious)
+    {
+        ui->fiatassets->setText("<font color=\"red\">" + nfiatassets + "</font>");
+    }
+    else
+    {
+    ui->fiatassets->setText(nfiatassets);
+    }
+    
     if(netinterestrate > netinterestratePrevious)
     {
         ui->netinterestrate->setText("<font color=\"green\">" + nnetinterestrate + "</font>");
@@ -268,15 +306,18 @@ void BankStatisticsPage::updateStatistics()
     ui->globaldebt->setText(nglobaldebt);
     }
 
-    updatePrevious(mincreditscore , avecreditscore, mintrust, btcassets, netinterestrate, trust, inflationindex, consensusindex, nHeight, totalnumtx , marketcap ,  gblmoneysupply , grantstotal, bankreserve, gblavailablecredit, globaldebt, bankstatus);
+    updatePrevious(mincreditscore , avecreditscore, mintrust, btcassets, ltcassets, bcrassets, fiatassets, netinterestrate, trust, inflationindex, consensusindex, nHeight, totalnumtx , marketcap ,  gblmoneysupply , grantstotal, bankreserve, gblavailablecredit, globaldebt, bankstatus);
 }
 
-void BankStatisticsPage::updatePrevious(double mincreditscore , double  avecreditscore, double  mintrust, double  btcassets,double  netinterestrate,double  trust,double  inflationindex,double consensusindex,int  nHeight,int64_t  totalnumtx ,int64_t  marketcap ,int64_t  gblmoneysupply ,int64_t  grantstotal,int64_t  bankreserve,int64_t  gblavailablecredit,int64_t  globaldebt, QString bankstatus)
+void BankStatisticsPage::updatePrevious(double mincreditscore , double  avecreditscore, double  mintrust, double  btcassets, double  ltcassets, double  bcrassets, double  fiatassets,double  netinterestrate,double  trust,double  inflationindex,double consensusindex,int  nHeight,int64_t  totalnumtx ,int64_t  marketcap ,int64_t  gblmoneysupply ,int64_t  grantstotal,int64_t  bankreserve,int64_t  gblavailablecredit,int64_t  globaldebt, QString bankstatus)
 {
     mincreditscorePrevious = mincreditscore;
     avecreditscorePrevious = avecreditscore;
     mintrustPrevious = mintrust;
     btcassetsPrevious = btcassets;
+    ltcassetsPrevious = ltcassets;
+    bcrassetsPrevious = bcrassets;
+    fiatassetsPrevious = fiatassets;
     netinterestratePrevious = netinterestrate;
     marketcapPrevious = marketcap;
     trustPrevious = trust;

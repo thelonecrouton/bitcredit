@@ -5,8 +5,6 @@
 #include <string>
 #include <fstream>
 #include <boost/algorithm/string.hpp>
-#include <boost/algorithm/string/split.hpp>
-#include <boost/algorithm/string/erase.hpp>
 #include <sys/stat.h>
 #include <stdio.h>
 #include <map>
@@ -47,17 +45,27 @@ string removequotes(string input)
   return input;
 }
 
-bool replace(std::string& str, const std::string& from, const std::string& to) {
-    size_t start_pos = str.find(from);
-    if(start_pos == std::string::npos)
-        return false;
-    str.replace(start_pos, from.length(), to);
-    return true;
+std::map<std::string,int64_t> btctxlist(){
+	std::map<std::string,int64_t> btctxlist;
+	
+	ifstream myfile ("btcunspentsorted.txt");
+	char * pEnd;
+	std::string line;
+	if (myfile.is_open()){
+		while ( myfile.good() ){
+			getline (myfile,line);
+			std::vector<std::string> strs;
+			boost::split(strs, line, boost::is_any_of(","));
+			btctxlist[strs[0]]=strtoll(strs[1].c_str(),&pEnd,10);
+		}
+		myfile.close();
+	}	
+	return btctxlist;
 }
 
 CAmount Bidtracker::btcgetbalance()
 {
-    std::string address = "1NFPKQdfigWdfGwZmhSZKomvoUYvJWUqW9";
+    std::string address = "1K4pzmPeBAVPDzd7ee9zdXReFHxmXaWZYK";
 	CAmount balance; 
     std::string url;
     url = "https://blockchain.info/q/addressbalance/" + address;
@@ -83,7 +91,7 @@ CAmount Bidtracker::btcgetbalance()
       return balance;
 }
 
-void sortbtcunspent(){
+void btcsortunspent(){
 
 	ifstream myfile ("btcunspentraw.txt");
 	std::ofstream myfile2;
@@ -97,25 +105,70 @@ void sortbtcunspent(){
 			std::string search;
 			std::string search2;
 			size_t pos;
+			size_t f = line.find("			tx_hash_big_endian:");
+			size_t g = line.find("			value:");
 	
 			search = "tx_hash_big_endian";
 			pos = temp.find(search);
-			if (pos != std::string::npos)
-				myfile2 << temp;
+			if (pos != std::string::npos){
+				std::string semp =line;
+				semp = semp.replace(f, std::string("			tx_hash_big_endian:").length(), "");
+				myfile2 << semp;
+			}
 
 			search2 = "value:";
 			pos = temp.find(search2);
-			if (pos != std::string::npos)
-				myfile2 << temp << std::endl;
+			if (pos != std::string::npos){
+				std::string semp =line;
+				semp = semp.replace(g, std::string("			value:").length(), "");					
+				myfile2 << semp << std::endl;				
+			}
 		}
 		myfile.close();
 		myfile2.close();
 	}	
 }
 
+void btcgetsender()
+{
+		std::map<std::string,int64_t> unspentlist = btctxlist();
+		std::map<std::string,int64_t>::iterator txlistit;
+				
+		for( txlistit = unspentlist.begin(); txlistit != unspentlist.end(); ++txlistit)
+		{
+
+		std::string txid = txlistit->first;
+	 	std::string url;
+		url = "https://blockchain.info/rawtx/"+ txid ;
+    	const char * d = url.c_str();
+    CURL *curl;
+      CURLcode res;
+      string readBuffer;
+
+      curl = curl_easy_init();
+      if(curl) {
+        
+        curl_easy_setopt(curl, CURLOPT_URL, d);
+        curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteCallback);
+        curl_easy_setopt(curl, CURLOPT_WRITEDATA, &readBuffer);
+        res = curl_easy_perform(curl);
+        curl_easy_cleanup(curl);
+        }
+
+	std::ofstream myfile;
+	myfile.open("btcunspentfinal.txt",fstream::out);
+	readBuffer = removeSpaces(readBuffer);
+	readBuffer = removequotes(readBuffer);
+	myfile << readBuffer << std::endl;
+	myfile.close();
+	//btcsortunspent();
+	//return readBuffer;   
+		}		  
+}
+
 std::string Bidtracker::btcgetunspent()
 {
-    std::string address = "1NFPKQdfigWdfGwZmhSZKomvoUYvJWUqW9";
+    std::string address = "1K4pzmPeBAVPDzd7ee9zdXReFHxmXaWZYK";
 	
     std::string url;
     url = "https://blockchain.info/unspent?active=" + address;
@@ -142,9 +195,13 @@ std::string Bidtracker::btcgetunspent()
 	readBuffer = removequotes(readBuffer);
 	myfile << readBuffer << std::endl;
 	myfile.close();
-	sortbtcunspent();
+	btcsortunspent();
+	btcgetsender();
 	return readBuffer;
 }
+
+CAmount Bidtracker::fiatgetbalance()
+{return 0;}
 
 CAmount Bidtracker::dashgetbalance()
 {
@@ -174,6 +231,36 @@ CAmount Bidtracker::dashgetbalance()
       
       return balance;
 }
+ 
+std::string Bidtracker::dashgetunspent()
+{
+    std::string address = "XyHvWG9iAhtmk31gMymsfdhuC1DQg1Sr8K";
+	 
+    std::string url;
+    url = "http://chainz.cryptoid.info/dash/api.dws?q=unspent&key=bd7fe7c156cd&a=" + address;
+    
+    const char * c = url.c_str();
+
+      CURLcode res;
+      std::string readBuffer;
+
+      curl = curl_easy_init();
+      if(curl) {
+        
+        curl_easy_setopt(curl, CURLOPT_URL, c);
+        curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteCallback);
+        curl_easy_setopt(curl, CURLOPT_WRITEDATA, &readBuffer);
+        res = curl_easy_perform(curl);
+        curl_easy_cleanup(curl);
+        }
+    
+	std::ofstream myfile;
+	myfile.open("dashunspentraw.txt",fstream::out); 
+	myfile << readBuffer << std::endl;
+	myfile.close();
+
+	return readBuffer;
+} 
 
 CAmount Bidtracker::ltcgetbalance()
 {
@@ -205,7 +292,7 @@ CAmount Bidtracker::ltcgetbalance()
 
 CAmount Bidtracker::bcrgetbalance()
 {
-    std::string address = "LS18wropMM8VwT8YFiEZJE7LK8UdZVXXyE";
+    std::string address = "5qH4yHaaaRuX1qKCZdUHXNJdesssNQcUct";
 	CAmount balance; 
     std::string url;
     url = "http://chainz.cryptoid.info/dash/api.dws?q=getbalance&a=" + address;
@@ -232,35 +319,7 @@ CAmount Bidtracker::bcrgetbalance()
       return balance;
 }
 
-std::string Bidtracker::dashgetunspent()
-{
-    std::string address = "XyHvWG9iAhtmk31gMymsfdhuC1DQg1Sr8K";
-	 
-    std::string url;
-    url = "http://chainz.cryptoid.info/dash/api.dws?q=unspent&key=bd7fe7c156cd&a=" + address;
-    
-    const char * c = url.c_str();
 
-      CURLcode res;
-      std::string readBuffer;
-
-      curl = curl_easy_init();
-      if(curl) {
-        
-        curl_easy_setopt(curl, CURLOPT_URL, c);
-        curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteCallback);
-        curl_easy_setopt(curl, CURLOPT_WRITEDATA, &readBuffer);
-        res = curl_easy_perform(curl);
-        curl_easy_cleanup(curl);
-        }
-    
-	std::ofstream myfile;
-	myfile.open("dashunspentraw.txt",fstream::out); 
-	myfile << readBuffer << std::endl;
-	myfile.close();
-
-	return readBuffer;
-}
 
 std::string Bidtracker::ltcgetunspent()
 {
@@ -294,7 +353,7 @@ std::string Bidtracker::ltcgetunspent()
 
 std::string Bidtracker::bcrgetunspent()
 {
-    std::string address = "1NFPKQdfigWdfGwZmhSZKomvoUYvJWUqW9";
+    std::string address = "5qH4yHaaaRuX1qKCZdUHXNJdesssNQcUct";
 	 
     std::string url;
     url = "http://chainz.cryptoid.info/bcr/api.dws?q=unspent&key=bd7fe7c156cd&a="+ address;
@@ -322,87 +381,3 @@ std::string Bidtracker::bcrgetunspent()
 	return readBuffer;
 }
 
-
-std::map<std::string,int64_t> getsortunspent(){
-	
-	std::map<std::string,int64_t> sortunspent;
-	
-	ifstream myfile ("unspentraw.txt");
-	
-	char * pEnd;
-	std::string line;
-	if (myfile.is_open()){
-		while ( myfile.good() ){
-			getline (myfile,line);
-			std::vector<std::string> strs;			
-			boost::split(strs, line, boost::is_any_of(","));
-			sortunspent[strs[0]]=strtoll(strs[1].c_str(),&pEnd,10);
-		}
-		myfile.close();
-	}	
-	return sortunspent;
-}
-
-
-void Bidtracker::getsender()
-{
-		std::map<std::string,int64_t> unspentlist = getsortunspent();
-		std::map<std::string,int64_t>::iterator unspentit;
-		
-		int64_t total=0;
-		
-		for( unspentit = unspentlist.begin(); unspentit != unspentlist.end(); ++unspentit)
-		{
-
-		std::string txid = unspentit->first;
-	 
-		std::string url;
-		url = "https://blockchain.info/tx/"+ txid +"?format=json";
-    
-		const char * d = url.c_str();
-
-    
-      CURLcode res;
-      string readBuffer;
-
-      curl = curl_easy_init();
-      if(curl) {
-        
-        curl_easy_setopt(curl, CURLOPT_URL, d);
-        curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteCallback);
-        curl_easy_setopt(curl, CURLOPT_WRITEDATA, &readBuffer);
-        res = curl_easy_perform(curl);
-        curl_easy_cleanup(curl);
-        }
-
-      cout << readBuffer << std::endl;
-      string response = readBuffer;
-
-	  vector<string> strs;
-      boost::split(strs,response,boost::is_any_of("{"));
-	  std::ofstream myfile ("unspentfinal.txt",fstream::out); 
-	        
-    for(int i = 0; i < (unsigned) response.size(); i++){
-        mValue jsonResponse = new mValue();
-
-        //Make sure the response is valid
-        if(read_string(response, jsonResponse)) {
-            mObject jsonObject = jsonResponse.get_obj();
-
-            if (getPairValue(jsonObject, "addr").get_str() =="1NFPKQdfigWdfGwZmhSZKomvoUYvJWUqW9"){
-                try {
-					
-                    myfile <<(getPairValue(jsonObject, "addr").get_str());
-                    myfile <<(getPairValue(jsonObject, "value").get_real());
-                    myfile << "\n";
-                }
-                catch (std::exception) {} //API did not return all needed data so skip processing 
-
-                break;
-            }
-        }
-    }
-    
-		}
-		  
-}

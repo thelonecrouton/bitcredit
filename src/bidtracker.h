@@ -31,10 +31,10 @@ public:
 	CAmount btcgetbalance();
 	CAmount ltcgetbalance();
 	CAmount dashgetbalance();
+	CAmount fiatgetbalance();
 	CAmount bcrgetbalance();
 	const mValue& getPairValue(const mObject& obj, const std::string& name);
-	void getsender();
-
+	
 
 };
 #endif // BIDTRACKER_H
