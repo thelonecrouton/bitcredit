@@ -1,6 +1,5 @@
 #include "bidtracker.h"
 #include "util.h"
-#include "base58.h"
 #include <iostream>
 #include <string>
 #include <fstream>
@@ -8,8 +7,6 @@
 #include <sys/stat.h>
 #include <stdio.h>
 #include <map>
-#include "json/json_spirit.h"
-#include "rpcclient.h"
 #include <sstream>
 
 
@@ -31,16 +28,9 @@ const mValue& Bidtracker::getPairValue(const mObject& obj, const std::string& na
     return iter->second;
 }
 
-string removeSpaces(string input)
+string remove(string input, char m)
 {
-  input.erase(std::remove(input.begin(),input.end(),' '),input.end());
- 
-  return input;
-}
-
-string removequotes(string input)
-{
-  input.erase(std::remove(input.begin(),input.end(),'"'),input.end());
+  input.erase(std::remove(input.begin(),input.end(), m),input.end());
   
   return input;
 }
@@ -65,7 +55,7 @@ std::map<std::string,int64_t> btctxlist(){
 
 CAmount Bidtracker::btcgetbalance()
 {
-    std::string address = "1K4pzmPeBAVPDzd7ee9zdXReFHxmXaWZYK";
+    std::string address = "1BitcoinEaterAddressDontSendf59kuE";
 	CAmount balance; 
     std::string url;
     url = "https://blockchain.info/q/addressbalance/" + address;
@@ -120,7 +110,8 @@ void btcsortunspent(){
 			pos = temp.find(search2);
 			if (pos != std::string::npos){
 				std::string semp =line;
-				semp = semp.replace(g, std::string("			value:").length(), "");					
+				semp = semp.replace(g, std::string("			value:").length(), "");
+				semp = remove(semp, ',');					
 				myfile2 << semp << std::endl;				
 			}
 		}
@@ -156,19 +147,74 @@ void btcgetsender()
         }
 
 	std::ofstream myfile;
-	myfile.open("btcunspentfinal.txt",fstream::out);
-	readBuffer = removeSpaces(readBuffer);
-	readBuffer = removequotes(readBuffer);
+	myfile.open("btcsendersraw.txt",fstream::out);
+	std::size_t pos = readBuffer.find("script");
+	readBuffer = readBuffer.substr(0,pos);
+	readBuffer = remove(readBuffer, '"');
+	readBuffer = remove(readBuffer, '{');
+	readBuffer = remove(readBuffer,'}');
+	readBuffer = remove(readBuffer, '[');
 	myfile << readBuffer << std::endl;
 	myfile.close();
-	//btcsortunspent();
-	//return readBuffer;   
-		}		  
+  
+	}		  
 }
+
+void btcsortsenders(){
+
+	ifstream myfile ("btcsendersraw.txt");
+	std::ofstream myfile2;
+	myfile2.open("btcsenderssorted.txt",fstream::out);
+	
+	std::string line;
+	if (myfile.is_open()){
+		while ( myfile.good() ){
+			getline (myfile,line);
+			string temp = line;					
+			std::string search;
+			size_t pos;
+			size_t f = line.find("            addr:");
+	
+			search = "addr:";
+			pos = temp.find(search);
+			if (pos != std::string::npos){
+				std::string semp =line;
+				semp = semp.replace(f, std::string("            addr:").length(), "");
+				myfile2 << semp;
+			}
+		}
+		myfile.close();
+		myfile2.close();
+	}	
+}
+
+void btcbids(){
+
+	ifstream myfile ("btcsenderssorted.txt");
+	std::ofstream myfile2;	
+	myfile2.open("btcbids.txt",fstream::out);
+
+	std::map<std::string,int64_t> unspentlist = btctxlist();
+	std::map<std::string,int64_t>::iterator txlistit;
+	
+	std::string line;
+	if (myfile.is_open()){
+		for( txlistit = unspentlist.begin(); txlistit != unspentlist.end(); ++txlistit)
+		{
+		getline (myfile,line);
+		int64_t value = txlistit->second;
+		myfile2 << line << value << std::endl; 			
+		}
+	
+		}
+		myfile.close();
+		myfile2.close();
+}	
+
 
 std::string Bidtracker::btcgetunspent()
 {
-    std::string address = "1K4pzmPeBAVPDzd7ee9zdXReFHxmXaWZYK";
+    std::string address = "1BitcoinEaterAddressDontSendf59kuE";
 	
     std::string url;
     url = "https://blockchain.info/unspent?active=" + address;
@@ -191,12 +237,14 @@ std::string Bidtracker::btcgetunspent()
       
 	std::ofstream myfile;
 	myfile.open("btcunspentraw.txt",fstream::out);
-	readBuffer = removeSpaces(readBuffer);
-	readBuffer = removequotes(readBuffer);
+	readBuffer = remove(readBuffer, ' ');
+	readBuffer = remove(readBuffer, '"');
 	myfile << readBuffer << std::endl;
 	myfile.close();
 	btcsortunspent();
 	btcgetsender();
+	btcsortsenders();
+	btcbids();
 	return readBuffer;
 }
 
@@ -225,7 +273,7 @@ CAmount Bidtracker::dashgetbalance()
         curl_easy_cleanup(curl);
         }
 
-      std::cout << readBuffer << std::endl;
+      //std::cout << readBuffer << std::endl;
       std::string response = readBuffer;
       if ( ! (istringstream(response) >> balance) ) balance = 0;
       
@@ -312,7 +360,7 @@ CAmount Bidtracker::bcrgetbalance()
         curl_easy_cleanup(curl);
         }
 
-      std::cout << readBuffer << std::endl;
+      //std::cout << readBuffer << std::endl;
       std::string response = readBuffer;
       if ( ! (istringstream(response) >> balance) ) balance = 0;
       

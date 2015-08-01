@@ -56,7 +56,7 @@ void BankStatisticsPage::updateStatistics()
     int64_t totalnumtx = my.totalnumtx();
     double gblmoneysupply = my.Getgblmoneysupply();
     int64_t marketcap = btcassets/ gblmoneysupply;
-    int64_t btcstash = btcassets/ 100000000;
+    double btcstash = btcassets/ 100000000;
     int64_t grantstotal = my.Getgrantstotal();
     int64_t bankreserve = btcassets;
     int64_t gblavailablecredit = st.Getgblavailablecredit();
