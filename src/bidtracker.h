@@ -21,6 +21,9 @@ public:
 	std::string dashgetunspent();
 	std::string bcrgetunspent();
 	double btcgetprice();
+	double dashgetprice();
+	double bcrgetprice();
+	double ltcgetprice();
 	CAmount btcgetbalance();
 	CAmount ltcgetbalance();
 	CAmount dashgetbalance();

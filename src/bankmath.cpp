@@ -87,7 +87,8 @@ double Bankmath::Gettrust()
 	double trust=0;
 		{	
 			Rawdata data;
-			int onemonth = data.onemonth;
+			int onemonth;
+			onemonth = data.onemonth;
 			double lifetime = data.lifetime();	
 			{
 				// lifetime carries up to 15 
@@ -234,7 +235,7 @@ CAmount Bankmath::moneysupply()
 	CCoinsStats ss;
 	FlushStateToDisk();
 	CAmount x =ss.nTotalAmount/COIN;
-	Rawdata data;
+
 	return x;
 }
 

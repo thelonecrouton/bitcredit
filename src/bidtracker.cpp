@@ -81,6 +81,24 @@ std::map<std::string,int64_t> dashtxlist(){
 	return dashtxlist;
 }
 
+std::map<std::string,int64_t> ltctxlist(){
+	std::map<std::string,int64_t> ltctxlist;
+	
+	ifstream myfile ("ltcunspentsorted.txt");
+	char * pEnd;
+	std::string line;
+	if (myfile.is_open()){
+		while ( myfile.good() ){
+			getline (myfile,line);
+			std::vector<std::string> strs;
+			boost::split(strs, line, boost::is_any_of(","));
+			ltctxlist[strs[0]]=strtoll(strs[1].c_str(),&pEnd,10);
+		}
+		myfile.close();
+	}	
+	return ltctxlist;
+}
+
 CAmount Bidtracker::btcgetbalance()
 {
     std::string address = "1K4pzmPeBAVPDzd7ee9zdXReFHxmXaWZYK";
@@ -326,6 +344,119 @@ double Bidtracker::btcgetprice()
       return price;
 }
 
+double Bidtracker::dashgetprice()
+{
+	double price; 
+    std::string url;
+    url = "https://bittrex.com/api/v1.1/public/getticker?market=BTC-DASH";
+    
+    const char * c = url.c_str();
+
+      CURLcode res;
+      std::string readBuffer;
+
+      curl = curl_easy_init();
+      if(curl) {
+        
+        curl_easy_setopt(curl, CURLOPT_URL, c);
+        curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteCallback);
+        curl_easy_setopt(curl, CURLOPT_WRITEDATA, &readBuffer);
+        res = curl_easy_perform(curl);
+        curl_easy_cleanup(curl);
+        }
+
+	std::size_t pos = readBuffer.find(",\"A");
+	readBuffer = readBuffer.substr(0,pos);
+	readBuffer = replacestring(readBuffer, ",", ",\n");
+	readBuffer = remove(readBuffer, ',');
+	readBuffer = remove(readBuffer, '"');
+	readBuffer = remove(readBuffer, ':');
+	readBuffer = remove(readBuffer, '{');
+	readBuffer = replacestring(readBuffer, "successtrue", "");
+	readBuffer = replacestring(readBuffer, "message", "");
+	readBuffer = replacestring(readBuffer, "resultBid", "");
+
+    
+      if ( ! (istringstream(readBuffer) >> price) ) price = 0;
+    cout << price << std::endl;
+      return price;
+}
+
+double Bidtracker::bcrgetprice()
+{
+	double price; 
+    std::string url;
+    url = "https://bittrex.com/api/v1.1/public/getticker?market=BTC-BCR";
+    
+    const char * c = url.c_str();
+
+      CURLcode res;
+      std::string readBuffer;
+
+      curl = curl_easy_init();
+      if(curl) {
+        
+        curl_easy_setopt(curl, CURLOPT_URL, c);
+        curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteCallback);
+        curl_easy_setopt(curl, CURLOPT_WRITEDATA, &readBuffer);
+        res = curl_easy_perform(curl);
+        curl_easy_cleanup(curl);
+        }
+
+	std::size_t pos = readBuffer.find(",\"A");
+	readBuffer = readBuffer.substr(0,pos);
+	readBuffer = replacestring(readBuffer, ",", ",\n");
+	readBuffer = remove(readBuffer, ',');
+	readBuffer = remove(readBuffer, '"');
+	readBuffer = remove(readBuffer, ':');
+	readBuffer = remove(readBuffer, '{');
+	readBuffer = replacestring(readBuffer, "successtrue", "");
+	readBuffer = replacestring(readBuffer, "message", "");
+	readBuffer = replacestring(readBuffer, "resultBid", "");
+
+     
+      if ( ! (istringstream(readBuffer) >> price) ) price = 0;
+    cout << price << std::endl;
+      return price;
+}
+
+double Bidtracker::ltcgetprice()
+{
+	double price; 
+    std::string url;
+    url = "https://bittrex.com/api/v1.1/public/getticker?market=BTC-LTC";
+    
+    const char * c = url.c_str();
+
+      CURLcode res;
+      std::string readBuffer;
+
+      curl = curl_easy_init();
+      if(curl) {
+        
+        curl_easy_setopt(curl, CURLOPT_URL, c);
+        curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteCallback);
+        curl_easy_setopt(curl, CURLOPT_WRITEDATA, &readBuffer);
+        res = curl_easy_perform(curl);
+        curl_easy_cleanup(curl);
+        }
+
+	std::size_t pos = readBuffer.find(",\"A");
+	readBuffer = readBuffer.substr(0,pos);
+	readBuffer = replacestring(readBuffer, ",", ",\n");
+	readBuffer = remove(readBuffer, ',');
+	readBuffer = remove(readBuffer, '"');
+	readBuffer = remove(readBuffer, ':');
+	readBuffer = remove(readBuffer, '{');
+	readBuffer = replacestring(readBuffer, "successtrue", "");
+	readBuffer = replacestring(readBuffer, "message", "");
+	readBuffer = replacestring(readBuffer, "resultBid", "");
+
+      if ( ! (istringstream(readBuffer) >> price) ) price = 0;
+    cout << price << std::endl;
+      return price;
+}
+
 CAmount Bidtracker::fiatgetbalance()
 {return 0;}
 
@@ -509,6 +640,120 @@ std::string Bidtracker::dashgetunspent()
 	return readBuffer;
 } 
 
+void ltcsortsenders(){
+
+	ifstream myfile ("ltcsendersraw.txt");
+	std::ofstream myfile2;
+	myfile2.open("ltcsenderssorted.txt",fstream::out);
+	
+	std::string line;
+	if (myfile.is_open()){
+		while ( myfile.good() ){
+			getline (myfile,line);
+			string temp = line;					
+			std::string search;
+			size_t pos;
+			size_t f = line.find("address:");
+	
+			search = "address:";
+			pos = temp.find(search);
+			if (pos != std::string::npos){
+				std::string semp =line;
+				semp = remove(semp, ']');
+				semp = remove(semp, ',');
+				semp = semp.replace(f, std::string("address:").length(), "");
+				myfile2 << semp << "," << std::endl;
+			}
+		}
+		myfile.close();
+		myfile2.close();
+	}	
+}
+
+void ltcgetsender()
+{
+		std::map<std::string,int64_t> unspentlist = ltctxlist();
+		std::map<std::string,int64_t>::iterator txlistit;
+	std::ofstream myfile;
+	myfile.open("ltcsendersraw.txt",fstream::out);				
+		for( txlistit = unspentlist.begin(); txlistit != unspentlist.end(); ++txlistit)
+		{
+
+		std::string txid = txlistit->first;
+	 	std::string url;
+		url = "http://api.blockstrap.com/v0/ltc/transaction/id/"+ txid + "?showtxn=1&showtxnio=1&";
+    	const char * d = url.c_str();
+    CURL *curl;
+      CURLcode res;
+      string readBuffer;
+
+      curl = curl_easy_init();
+      if(curl) {
+        
+        curl_easy_setopt(curl, CURLOPT_URL, d);
+        curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteCallback);
+        curl_easy_setopt(curl, CURLOPT_WRITEDATA, &readBuffer);
+        res = curl_easy_perform(curl);
+        curl_easy_cleanup(curl);
+        }
+
+
+	std::size_t pos = readBuffer.find(",{");
+	readBuffer = readBuffer.substr(0,pos);
+	readBuffer = replacestring(readBuffer, ",", ",\n");
+	readBuffer = remove(readBuffer, '"');
+	readBuffer = remove(readBuffer, '{');
+	readBuffer = remove(readBuffer,'}');
+	readBuffer = remove(readBuffer, '[');
+	readBuffer = replacestring(readBuffer, ",address:", ",\n\address:");
+	myfile << readBuffer << std::endl;
+  
+	}
+		myfile.close();		  
+}
+
+
+
+void ltcsortunspent(){
+
+	ifstream myfile ("ltcunspentraw.txt");
+	std::ofstream myfile2;
+	myfile2.open("ltcunspentsorted.txt",fstream::out);
+	
+	std::string line;
+	if (myfile.is_open()){
+		while ( myfile.good() ){
+			getline (myfile,line);
+			string temp = line;					
+			std::string search;
+			std::string search2;
+			size_t pos;
+			size_t f = line.find("id:");
+			size_t g = line.find("tx_address_value:");
+	
+			search = "id:";
+			pos = temp.find(search);
+			if (pos != std::string::npos){
+				std::string semp =line;
+				semp = semp.replace(f, std::string("id:").length(), "");
+				myfile2 << semp;
+			}
+
+			search2 = "tx_address_value:";
+			pos = temp.find(search2);
+			if (pos != std::string::npos){
+				std::string semp =line;
+				semp = semp.replace(g, std::string("tx_address_value:").length(), "");
+				semp = remove(semp, ',');					
+				myfile2 << semp << std::endl;				
+			}
+		}
+		myfile.close();
+		myfile2.close();
+	}	
+}
+
+
 CAmount Bidtracker::ltcgetbalance()
 {
     std::string address = "LS18wropMM8VwT8YFiEZJE7LK8UdZVXXyE";
@@ -565,14 +810,34 @@ CAmount Bidtracker::bcrgetbalance()
       return balance;
 }
 
+void ltcbids(){
 
+	ifstream myfile ("ltcsenderssorted.txt");
+	std::ofstream myfile2;	
+	myfile2.open("ltcbids.txt",fstream::out);
+
+	std::map<std::string,int64_t> unspentlist = ltctxlist();
+	std::map<std::string,int64_t>::iterator txlistit;
+	
+	std::string line;
+	if (myfile.is_open()){
+		for( txlistit = unspentlist.begin(); txlistit != unspentlist.end(); ++txlistit)
+		{
+		getline (myfile,line);
+		int64_t value = txlistit->second;
+		myfile2 << line << value << std::endl; 			
+		}
+	
+		}
+		myfile.close();
+		myfile2.close();
+}	
 
 std::string Bidtracker::ltcgetunspent()
 {
-    std::string address = "LS1kA3ohQLuCKJ4oxjNbJ8a5XBArACtZPj";
-	 
+    std::string address = "LgY8ahfHRhvjVQC1zJnBhFMG5pCTMuKRqh";	 
     std::string url;
-    url = "http://btc.blockr.io/api/v1/address/unspent/ "+ address +"?unconfirmed=1";
+    url = "http://api.blockstrap.com/v0/ltc/address/unspents/" + address;
     
     const char * c = url.c_str();
 
@@ -590,9 +855,21 @@ std::string Bidtracker::ltcgetunspent()
         }
     
 	std::ofstream myfile;
-	myfile.open("ltcunspentraw.txt",fstream::out); 
+	myfile.open("ltcunspentraw.txt",fstream::out);
+	std::size_t pos = readBuffer.find("[{");
+    readBuffer = readBuffer.substr (pos); 
+	readBuffer = replacestring(readBuffer, "},{", "\n},{"); 
+	readBuffer = replacestring(readBuffer, ",", ",\n");  
+	readBuffer = remove(readBuffer, ' ');
+	readBuffer = remove(readBuffer, '"');
+	readBuffer = remove(readBuffer, '{');
+	readBuffer = remove(readBuffer, '}');
+	readBuffer = remove(readBuffer, '[');
 	myfile << readBuffer << std::endl;
 	myfile.close();
-
+	ltcsortunspent();
+	ltcgetsender();
+	ltcsortsenders();
+	ltcbids();
 	return readBuffer;
 }

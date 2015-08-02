@@ -58,8 +58,9 @@ void BankStatisticsPage::updateStatistics()
     int64_t gblavailablecredit = st.Getgblavailablecredit();
     int64_t globaldebt = st.Getglobaldebt();
     double inflationindex = 45000/my.Getgblmoneysupply();
-    string huha = r.btcgetunspent();
-    string huhe = r.dashgetunspent();
+    double dashprice = r.dashgetprice();
+    double bcrprice = r.bcrgetprice();
+    double ltcprice = r.ltcgetprice();
     
     if(btcstash > 0 && btcstash< 1000)
     {

@@ -30,19 +30,6 @@ int Rawdata::totalnumtx()  //total number of chain transactions
 int Rawdata::incomingtx()  //total number of incoming transactions
 {
 	int ttnmtx = 0;
-	
-        for (map<uint256, CWalletTx>::iterator it = pwalletMain->mapWallet.begin(); it != pwalletMain->mapWallet.end(); ++it)
-        {
-            const CWalletTx& wtx = (*it).second;
-            if (!wtx.IsTrusted() || wtx.GetBlocksToMaturity() > 0)
-                continue;
-
-            CAmount allFee;
-            string strSentAccount;
-            list<COutputEntry> listReceived;
-            list<COutputEntry> listSent;
-         return  listSent.size(); 
-        }
 
 	return ttnmtx;
 } 
@@ -50,25 +37,6 @@ int Rawdata::incomingtx()  //total number of incoming transactions
 int Rawdata::outgoingtx()  //total number of outgoing transactions
 {
 	int ttnmtx = 0;
-	
-        for (map<uint256, CWalletTx>::iterator it = pwalletMain->mapWallet.begin(); it != pwalletMain->mapWallet.end(); ++it)
-        {
-            const CWalletTx& wtx = (*it).second;
-            if (!wtx.IsTrusted() || wtx.GetBlocksToMaturity() > 0)
-                continue;
-
-            CAmount allFee;
-            string strSentAccount;
-            list<COutputEntry> listReceived;
-            list<COutputEntry> listSent;
-            wtx.GetAmounts(listReceived, listSent, allFee, strSentAccount, 0);
-            
-            BOOST_FOREACH(const COutputEntry& s, listSent)
-            {
-                ttnmtx++;
-            return  ttnmtx;
-			}
-        }
 	
 	return ttnmtx;
 } 
@@ -82,7 +50,7 @@ int Rawdata::getNumTransactions() const //number of wallet transactions
 
 bool Rawdata::verifynumtx ()
 {
-	if ((outgoingtx()+ incomingtx())!=getNumTransactions () )
+	
 		return false;
 }
 
