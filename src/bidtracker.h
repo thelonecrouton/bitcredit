@@ -20,6 +20,7 @@ public:
 	std::string ltcgetunspent();
 	std::string dashgetunspent();
 	std::string bcrgetunspent();
+	double btcgetprice();
 	CAmount btcgetbalance();
 	CAmount ltcgetbalance();
 	CAmount dashgetbalance();
@@ -29,4 +30,5 @@ public:
 	
 
 };
+
 #endif // BIDTRACKER_H

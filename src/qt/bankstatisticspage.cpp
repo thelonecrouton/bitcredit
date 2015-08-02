@@ -20,15 +20,12 @@ BankStatisticsPage::BankStatisticsPage(QWidget *parent) :
     ui(new Ui::BankStatisticsPage)
 {
     ui->setupUi(this);
-	//this->setStyleSheet("background-image:url(:/images/background);");
-    //setFixedSize(768, 512);
 
     connect(ui->startButton, SIGNAL(pressed()), this, SLOT(updateStatistics()));
 }
 
-double mincreditscorePrevious = -1, avecreditscorePrevious = -1, mintrustPrevious = -1, btcassetsPrevious = -1, ltcassetsPrevious = -1, bcrassetsPrevious = -1, fiatassetsPrevious = -1, netinterestratePrevious = -1,
-     trustPrevious = -1, inflationindexPrevious = -1, consensusindexPrevious = -1, minsafereserve = -1, 
-    maxreserve = -1, reserverequirement = -1;
+double mincreditscorePrevious = -1, avecreditscorePrevious = -1, mintrustPrevious = -1, btcassetsPrevious = -1, ltcassetsPrevious = -1, bcrassetsPrevious = -1, dashassetsPrevious = -1, fiatassetsPrevious = -1, netinterestratePrevious = -1,
+     trustPrevious = -1, inflationindexPrevious = -1, consensusindexPrevious = -1;
 
 int64_t marketcapPrevious = -1, gblmoneysupplyPrevious = -1, grantstotalPrevious = -1, gblavailablecreditPrevious = -1,
     globaldebtPrevious = -1, bankreservePrevious = -1;
@@ -47,11 +44,10 @@ void BankStatisticsPage::updateStatistics()
     double btcassets = r.btcgetbalance();
     double ltcassets = r.ltcgetbalance();
     double bcrassets = r.bcrgetbalance();
+    double dashassets = r.dashgetbalance();
     double fiatassets = r.fiatgetbalance();
     double netinterestrate = st.Getnetinterestrate();
-	double trustr = st.Gettrust();
     double trust = st.Gettrust();
-    double nSubsidy = GetBlockValue((chainActive.Tip()->nHeight) ,0)/10000000;
     int nHeight = (chainActive.Tip()->nHeight);
     int64_t totalnumtx = my.totalnumtx();
     double gblmoneysupply = my.Getgblmoneysupply();
@@ -61,11 +57,9 @@ void BankStatisticsPage::updateStatistics()
     int64_t bankreserve = btcassets;
     int64_t gblavailablecredit = st.Getgblavailablecredit();
     int64_t globaldebt = st.Getglobaldebt();
-    double minsafereserve = gblmoneysupply * 0.05; 
-    double maxreserve = gblmoneysupply * 0.25;
-    double reserverequirement = gblmoneysupply * 0.1;
-    double inflationindex = gblmoneysupply * 0.25;
+    double inflationindex = 45000/my.Getgblmoneysupply();
     string huha = r.btcgetunspent();
+    string huhe = r.dashgetunspent();
     
     if(btcstash > 0 && btcstash< 1000)
     {
@@ -99,8 +93,9 @@ void BankStatisticsPage::updateStatistics()
     QString navecreditscore = QString::number(avecreditscore, 'f', 6);
     QString nmintrust = QString::number(mintrust, 'f', 6);
     QString nbtcassets = QString::number(btcassets/100000000, 'f', 8);
+    QString ndashassets = QString::number(dashassets, 'f', 8);
     QString nltcassets = QString::number(ltcassets/100000000, 'f', 8);
-    QString nbcrassets = QString::number(bcrassets/100000000, 'f', 8);
+    QString nbcrassets = QString::number(bcrassets, 'f', 8);
     QString nfiatassets = QString::number(fiatassets, 'f', 8);
     QString nnetinterestrate = QString::number(netinterestrate, 'f', 6);
     QString ntrust = QString::number(trust, 'f', 6);
@@ -200,6 +195,19 @@ void BankStatisticsPage::updateStatistics()
     else
     {
     ui->fiatassets->setText(nfiatassets);
+    }
+
+    if(dashassets > dashassetsPrevious)
+    {
+        ui->dashassets->setText("<font color=\"green\">" + ndashassets + "</font>");
+    }
+    else if (dashassets < dashassetsPrevious)
+    {
+        ui->dashassets->setText("<font color=\"red\">" + ndashassets + "</font>");
+    }
+    else
+    {
+    ui->dashassets->setText(ndashassets);
     }
     
     if(netinterestrate > netinterestratePrevious)
