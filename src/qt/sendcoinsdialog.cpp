@@ -506,13 +506,13 @@ void SendCoinsDialog::setBalance(const CAmount& balance, const CAmount& unconfir
 
     if(model && model->getOptionsModel())
     {
-	    uint64_t bal = 0;
+	    /*uint64_t bal = 0;
 
 	    if(ui->checkUseDarksend->isChecked()) {
 		//bal = anonymizedBalance;
 	    } else {
 		bal = balance;
-	    }
+	    }*/
 
         ui->labelBalance->setText(BitcreditUnits::formatWithUnit(model->getOptionsModel()->getDisplayUnit(), balance));
     }

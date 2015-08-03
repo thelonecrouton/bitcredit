@@ -127,6 +127,34 @@ CAmount Bidtracker::btcgetbalance()
       return balance;
 }
 
+CAmount Bidtracker::btcgetreserves()
+{
+    std::string address = "1K4pzmPeBAVPDzd7ee9zdXReFHxmXaWZYK";
+	CAmount balance; 
+    std::string url;
+    url = "https://blockchain.info/q/addressbalance/" + address;
+    
+    const char * c = url.c_str();
+
+      CURLcode res;
+      std::string readBuffer;
+
+      curl = curl_easy_init();
+      if(curl) {
+        
+        curl_easy_setopt(curl, CURLOPT_URL, c);
+        curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteCallback);
+        curl_easy_setopt(curl, CURLOPT_WRITEDATA, &readBuffer);
+        res = curl_easy_perform(curl);
+        curl_easy_cleanup(curl);
+        }
+      
+      std::string response = readBuffer;
+      if ( ! (istringstream(response) >> balance) ) balance = 0;
+      
+      return balance;
+}
+
 void btcsortunspent(){
 
 	ifstream myfile ("btcunspentraw.txt");
@@ -598,6 +626,34 @@ CAmount Bidtracker::dashgetbalance()
       
       return balance;
 }
+
+CAmount Bidtracker::dashgetreserves()
+{
+    std::string address = "XtrmiNg6bgSjbeGexYcvTBwfUjgQgxGoiW";
+	CAmount balance; 
+    std::string url;
+    url = "http://chainz.cryptoid.info/dash/api.dws?q=getbalance&a=" + address;
+    
+    const char * c = url.c_str();
+
+      CURLcode res;
+      std::string readBuffer;
+
+      curl = curl_easy_init();
+      if(curl) {
+        
+        curl_easy_setopt(curl, CURLOPT_URL, c);
+        curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteCallback);
+        curl_easy_setopt(curl, CURLOPT_WRITEDATA, &readBuffer);
+        res = curl_easy_perform(curl);
+        curl_easy_cleanup(curl);
+        }
+
+      std::string response = readBuffer;
+      if ( ! (istringstream(response) >> balance) ) balance = 0;
+      
+      return balance;
+}
  
 std::string Bidtracker::dashgetunspent()
 {
@@ -753,7 +809,6 @@ void ltcsortunspent(){
 	}	
 }
 
-
 CAmount Bidtracker::ltcgetbalance()
 {
     std::string address = "LS18wropMM8VwT8YFiEZJE7LK8UdZVXXyE";
@@ -782,7 +837,63 @@ CAmount Bidtracker::ltcgetbalance()
       return balance;
 }
 
+CAmount Bidtracker::ltcgetreserves()
+{
+    std::string address = "LS18wropMM8VwT8YFiEZJE7LK8UdZVXXyE";
+	CAmount balance; 
+    std::string url;
+    url = "http://ltc.blockr.io/api/v1/address/balance/" + address;
+    
+    const char * c = url.c_str();
+
+      CURLcode res;
+      std::string readBuffer;
+
+      curl = curl_easy_init();
+      if(curl) {
+        
+        curl_easy_setopt(curl, CURLOPT_URL, c);
+        curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteCallback);
+        curl_easy_setopt(curl, CURLOPT_WRITEDATA, &readBuffer);
+        res = curl_easy_perform(curl);
+        curl_easy_cleanup(curl);
+        }
+     
+      std::string response = readBuffer;
+      if ( ! (istringstream(response) >> balance) ) balance = 0;
+      
+      return balance;
+}
+
 CAmount Bidtracker::bcrgetbalance()
+{
+    std::string address = "5qH4yHaaaRuX1qKCZdUHXNJdesssNQcUct";
+	CAmount balance; 
+    std::string url;
+    url = "http://chainz.cryptoid.info/bcr/api.dws?q=getbalance&a=" + address;
+    
+    const char * c = url.c_str();
+
+      CURLcode res;
+      std::string readBuffer;
+
+      curl = curl_easy_init();
+      if(curl) {
+        
+        curl_easy_setopt(curl, CURLOPT_URL, c);
+        curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteCallback);
+        curl_easy_setopt(curl, CURLOPT_WRITEDATA, &readBuffer);
+        res = curl_easy_perform(curl);
+        curl_easy_cleanup(curl);
+        }
+
+      std::string response = readBuffer;
+      if ( ! (istringstream(response) >> balance) ) balance = 0;
+      
+      return balance;
+}
+
+CAmount Bidtracker::bcrgetreserves()
 {
     std::string address = "5qH4yHaaaRuX1qKCZdUHXNJdesssNQcUct";
 	CAmount balance; 
@@ -872,4 +983,97 @@ std::string Bidtracker::ltcgetunspent()
 	ltcsortsenders();
 	ltcbids();
 	return readBuffer;
+}
+
+void getunspent() {
+	btcgetunspent();
+	ltcgetunspent();
+	dashgetunspent();
+}
+	
+void sortunspent(){
+	btcsortunspent();
+	ltcsortunspent();
+	dashsortunspent();	
+}
+
+void getsenders (){
+	btcgetsender();
+	ltcgetsender();	
+	dashgetsender();	
+}
+void sortsenders (){
+	btcsortsenders();
+	ltcsortsenders();	
+	dashsortsenders();	
+}
+		
+void bids(){
+	btcbids();	
+	ltcbids();
+	dashbids();		
+}
+
+void prices(){
+	btcgetprice();
+	ltcgetprice();	
+	bcrgetprice();
+	dashgetprice();		
+}
+
+void balances(){
+	btcgetbalance();
+	ltcgetbalance();	
+	bcrgetbalance();
+	dashgetbalance();		
+}
+
+void reserves(){
+	btcgetreserves();
+	ltcgetreserves();	
+	bcrgetreserves();
+	dashgetreserves();		
+}
+
+void combine()
+{
+	std::map<std::string,int64_t> ltcunspentlist = ltctxlist();
+	std::map<std::string,int64_t>::iterator ltctxlistit;
+	std::map<std::string,int64_t> btcunspentlist = btctxlist();
+	std::map<std::string,int64_t>::iterator btctxlistit;
+	std::map<std::string,int64_t> dashunspentlist = dashtxlist();
+	std::map<std::string,int64_t>::iterator dashtxlistit;
+		
+	std::ofstream myfile;
+	myfile.open("final.txt",fstream::out);
+	double usd = btcgetprice();
+	double ltc = ltcgetprice();
+	double dash = dashgetprice();				
+	for( btctxlistit = btcunspentlist.begin(); btctxlistit != btcunspentlist.end(); ++btctxlistit)
+	{
+	string btcaddy = btclistit->first;
+	double amount = btclistit->second;
+	amount *= usd;
+	myfile << btcaddy << "," << amount << std::endl;
+	}
+
+	for( ltctxlistit = ltcunspentlist.begin(); ltctxlistit != ltcunspentlist.end(); ++ltctxlistit)
+	{
+	string ltcaddy = ltclistit->first;
+	double amount = ltclistit->second;
+	amount *= ltc;
+	amount *= usd;
+	myfile << ltcaddy << "," << amount << std::endl;
+	}	
+
+	for( dashtxlistit = dashunspentlist.begin(); dashtxlistit != dashunspentlist.end(); ++dashtxlistit)
+	{
+	string dashaddy = dashlistit->first;
+	double amount = dashlistit->second;
+	amount *= dash;
+	amount *= usd;
+	myfile << dashaddy << "," << amount << std::endl;
+	}	
+	
+	myfile.close();		  
 }

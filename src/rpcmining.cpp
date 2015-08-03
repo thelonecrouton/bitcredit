@@ -388,15 +388,14 @@ Value getwork(const Array& params, bool fHelp)
         // Save
         mapNewBlock[pblock->hashMerkleRoot] = make_pair(pblock, pblock->vtx[0].vin[0].scriptSig);
         
-		char pmidstate[32];
+		
         char pdata[128];
-        char phash1[64];
+        
         pblock->nBirthdayA = 0;
         pblock->nBirthdayB = 0;
 
         uint256 hashTarget = uint256().SetCompact(pblock->nBits);
-		uint256 initHash = pblock->GetHash();
-
+		
 		memcpy( pdata, (char*)pblock, 88);
 
         Object result;
@@ -424,8 +423,7 @@ Value getwork(const Array& params, bool fHelp)
 
         
 		CBlock* pdata = (CBlock*)vchData.data();//&vchData[0];
-        uint32_t* noncedata = (uint32_t*)pdata;
-
+        
         LogPrintf("Getwork Block Recvd %s\n", HexStr(BEGIN(*pdata), 88+BEGIN(*pdata)));
 
         // Get saved block
@@ -441,8 +439,7 @@ Value getwork(const Array& params, bool fHelp)
         pblock->nTime = pdata->nTime;
         pblock->nNonce = pdata->nNonce;
         pblock->nBirthdayA = pdata->nBirthdayA;
-        pblock->nBirthdayB = pdata->nBirthdayB;
-        //pblock->vtx[0].vin[0].scriptSig == mapNewBlock[pdata->hashMerkleRoot].second;
+        pblock->nBirthdayB = pdata->nBirthdayB;     
         pblock->hashMerkleRoot = pblock->BuildMerkleTree();
 
         LogPrintf("Getwork Block Rebld %s\n", HexStr(BEGIN(*pblock), 88+BEGIN(*pblock)));

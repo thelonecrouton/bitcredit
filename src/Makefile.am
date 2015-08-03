@@ -153,7 +153,6 @@ BITCREDIT_CORE_H = \
   wallet.h \
   wallet_ismine.h \
   walletdb.h \
-  irc.h \
   strlcpy.h \
   compat/sanity.h \
   xxhash/xxhash.h \
@@ -195,7 +194,6 @@ libbitcredit_server_a_SOURCES = \
   net.cpp \
   noui.cpp \
   pow.cpp \
-  irc.cpp \
   rest.cpp \
   rpcblockchain.cpp \
   rpcdarksend.cpp \

@@ -4303,7 +4303,7 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
         CTransaction tx;
 
         //banknode signed transaction
-        bool allowFree = false;
+        //bool allowFree = false;
         CTxIn vin;
         vector<unsigned char> vchSig;
         int64_t sigTime;
@@ -4334,7 +4334,7 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
 
                 LogPrintf("dstx: Got Banknode transaction %s\n", tx.GetHash().ToString().c_str());
 
-                allowFree = true;
+                //allowFree = true;
                 pmn->allowFreeTx = false;
 
                 if(!mapDarksendBroadcastTxes.count(tx.GetHash())){
