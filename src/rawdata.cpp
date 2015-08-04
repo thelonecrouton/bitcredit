@@ -90,34 +90,6 @@ int64_t Rawdata::balance()
 	return bal;
 }
 	
-CAmount Rawdata::getltcreserves() 
-{
-	Bidtracker r;
-	CAmount reserve = r.ltcgetbalance();
-	return reserve;
-}
-
-CAmount Rawdata::getbtcreserves() 
-{
-	Bidtracker r;	
-	CAmount reserve = r.btcgetbalance();
-	return reserve;
-}
-
-CAmount Rawdata::getbcrreserves() 
-{
-	Bidtracker r;
-	CAmount reserve = r.bcrgetbalance();
-	return reserve;
-}
-
-CAmount Rawdata::getdashreserves() 
-{
-	Bidtracker r;
-	CAmount reserve = r.dashgetbalance();
-	return reserve;
-}
-
 CAmount Rawdata::Getgblmoneysupply()
 {
 		CCoinsStats ss;

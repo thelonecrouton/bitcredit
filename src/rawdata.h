@@ -9,7 +9,7 @@
 #include "main.h"
 #include "coins.h"
 #include "rpcserver.h"
-#include "bidtracker.h"
+
 
 using namespace std;
 
@@ -38,22 +38,10 @@ class Rawdata
 	int gbllifetime(); //blockchain lifetime
 	
 	CAmount balance(); 
-	
-	CAmount getltcreserves();
-	
-	CAmount getbtcreserves();
-	
-	CAmount getbcrreserves();
-	
-	CAmount getdashreserves();
 		
 	CAmount Getgrantbalance();
 	
 	CAmount Getgrantstotal();
-
-	CAmount Getgblavailablecredit(); 
-
-	CAmount Getglobaldebt();
 
 	CAmount Getgblmoneysupply();
 

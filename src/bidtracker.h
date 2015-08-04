@@ -9,29 +9,31 @@
 
 using namespace json_spirit;
 
+extern double _btcbids;
+extern double _ltcbids;
+extern double _dashbids;
+extern double _bcrreserves;
+extern double _btcreserves;
+extern double _ltcreserves;
+extern double _dashreserves;
+extern double usdbtc; 
+extern double ltcbtc;
+extern double dashbtc;
+extern double bcrbtc;
+extern double credit(); 
+extern double newcredit;
+extern double totalcredit;
+
 class Bidtracker 
 { 
 public:
 
-    std::string *response;
-    std::string *balance;
     CURL *curl; 
 	std::string btcgetunspent();
 	std::string ltcgetunspent();
 	std::string dashgetunspent();
 	std::string bcrgetunspent();
-	double btcgetprice();
-	double dashgetprice();
-	double bcrgetprice();
-	double ltcgetprice();
-	CAmount btcgetbalance();
-	CAmount ltcgetbalance();
-	CAmount dashgetbalance();
-	CAmount fiatgetbalance();
-	CAmount bcrgetbalance();
-	const mValue& getPairValue(const mObject& obj, const std::string& name);
-	
-
+			
 };
 
 #endif // BIDTRACKER_H

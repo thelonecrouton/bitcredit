@@ -90,11 +90,11 @@ QT_FORMS_UI = \
   qt/forms/receiverequestdialog.ui \
   qt/forms/rpcconsole.ui \
   qt/forms/sendcoinsdialog.ui \
-  qt/forms/sendcoinsentry.ui \  
+  qt/forms/sendcoinsentry.ui \
   qt/forms/signverifymessagedialog.ui \
   qt/forms/transactiondescdialog.ui \
   qt/forms/blockbrowser.ui \
-  qt/forms/bankstatisticspage.ui \ 
+  qt/forms/bankstatisticspage.ui \
   qt/forms/paperwalletdialog.ui \
   qt/forms/exchangebrowser.ui \
   qt/forms/chatwindow.ui \
@@ -142,7 +142,7 @@ QT_MOC_CPP = \
   qt/moc_recentrequeststablemodel.cpp \
   qt/moc_rpcconsole.cpp \
   qt/moc_sendcoinsdialog.cpp \
-  qt/moc_sendcoinsentry.cpp \ 
+  qt/moc_sendcoinsentry.cpp \
   qt/moc_signverifymessagedialog.cpp \
   qt/moc_splashscreen.cpp \
   qt/moc_trafficgraphwidget.cpp \
@@ -232,7 +232,7 @@ BITCREDIT_QT_H = \
   qt/recentrequeststablemodel.h \
   qt/rpcconsole.h \
   qt/sendcoinsdialog.h \
-  qt/sendcoinsentry.h \ 
+  qt/sendcoinsentry.h \
   qt/signverifymessagedialog.h \
   qt/splashscreen.h \
   qt/trafficgraphwidget.h \

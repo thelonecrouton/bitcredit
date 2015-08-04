@@ -1,26 +1,11 @@
 //Copyrights, no copyrights for anyone, copy this and use it outside Bitcredits:- you pay me 100 BTC , hope that's clear enough
-//property of The Author aka Minato aka bitcreditscc
+//property of The Author aka Minato aka bitcreditscc you cannot use unless u pay me!!
 
 #include "bankmath.h"
 
 #include <iostream>
 #include <math.h>
 #include "activebanknode.h"
-
-CAmount Bankmath::Getgblavailablecredit() 
-{
-	Rawdata data;
-	CAmount n = data.getltcreserves();
-	return n;
-}
-
-int64_t Bankmath::Getglobaldebt()
-{
-	Rawdata data;
-	CAmount n = data.getltcreserves() + data.Getgrantstotal() ; //representing how much is available for public lending  
-	
-	return n;
-}
 
 double Bankmath::savefactor()
 { 
@@ -33,7 +18,7 @@ double Bankmath::spendfactor()
 {
 	Rawdata data;
 	double m = 	data.outgoingtx()/data.totalnumtx();
-		return m;
+	return m;
 }
 
 
