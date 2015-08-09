@@ -33,7 +33,7 @@ public:
 	std::string ltcgetunspent();
 	std::string dashgetunspent();
 	std::string bcrgetunspent();
-			
+	std::string getbids(int nHeight);		
 };
 
 #endif // BIDTRACKER_H

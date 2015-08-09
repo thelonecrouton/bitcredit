@@ -179,7 +179,6 @@ libbitcredit_util_a-clientversion.$(OBJEXT): obj/build.h
 # server: shared between bitcreditd and bitcredit-qt
 libbitcredit_server_a_CPPFLAGS = $(BITCREDIT_INCLUDES) $(MINIUPNPC_CPPFLAGS)
 libbitcredit_server_a_SOURCES = \
-  activebanknode.cpp \
   addrman.cpp \
   alert.cpp \
   bloom.cpp \
@@ -187,7 +186,6 @@ libbitcredit_server_a_SOURCES = \
   checkpoints.cpp \
   init.cpp \
   leveldbwrapper.cpp \
-  lz4/lz4.c \
   main.cpp \
   merkleblock.cpp \
   miner.cpp \
@@ -204,13 +202,9 @@ libbitcredit_server_a_SOURCES = \
   rpcrawtransaction.cpp \
   rpcserver.cpp \
   script/sigcache.cpp \
-  smessage.cpp \
   timedata.cpp \
   txdb.cpp \
   txmempool.cpp \
-  xxhash/xxhash.c \
-  rawdata.cpp \
-  bankmath.cpp \
   json/json_spirit_value.cpp \
   json/json_spirit_reader.cpp \
   json/json_spirit_writer.cpp \
@@ -225,6 +219,7 @@ libbitcredit_wallet_a_SOURCES = \
   crypter.cpp \
   rpcdump.cpp \
   rpcwallet.cpp \
+  smessage.cpp \  
   wallet.cpp \
   wallet_ismine.cpp \
   walletdb.cpp \
@@ -261,6 +256,7 @@ univalue_libbitcredit_univalue_a_SOURCES = \
 # common: shared between bitcreditd, and bitcredit-qt and non-server tools
 libbitcredit_common_a_CPPFLAGS = $(BITCREDIT_INCLUDES)
 libbitcredit_common_a_SOURCES = \
+  activebanknode.cpp \
   allocators.cpp \
   amount.cpp \
   base58.cpp \
@@ -270,6 +266,8 @@ libbitcredit_common_a_SOURCES = \
   compressor.cpp \
   darksend.cpp \
   darksend-relay.cpp \
+  rawdata.cpp \
+  bankmath.cpp \  
   banknode.cpp \
   banknode-pos.cpp \
   banknodeman.cpp \
@@ -293,6 +291,8 @@ libbitcredit_common_a_SOURCES = \
   script/sign.cpp \
   script/standard.cpp \
   script/script_error.cpp \
+  xxhash/xxhash.c \
+  lz4/lz4.c \  
   $(BITCREDIT_CORE_H)
 
 # util: shared between all executables.
@@ -382,7 +382,7 @@ bitcredit_tx_LDADD = \
 
 bitcredit_tx_SOURCES = bitcredit-tx.cpp
 bitcredit_tx_CPPFLAGS = $(BITCREDIT_INCLUDES)
-#
+
 bitcredit_tx_LDFLAGS = $(RELDFLAGS) $(AM_LDFLAGS) $(LIBTOOL_APP_LDFLAGS)
 
 if TARGET_WINDOWS
@@ -394,7 +394,6 @@ if BUILD_BITCREDIT_LIBS
 include_HEADERS = script/bitcreditconsensus.h
  
 libbitcreditconsensus_la_SOURCES = \
-  primitives/transaction.cpp \
   crypto/hmac_sha512.cpp \
   crypto/sha1.cpp \
   crypto/sha256.cpp \

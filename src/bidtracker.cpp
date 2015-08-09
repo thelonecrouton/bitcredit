@@ -310,10 +310,7 @@ std::string Bidtracker::btcgetunspent()
 	readBuffer = remove(readBuffer, '"');
 	myfile << readBuffer << std::endl;
 	myfile.close();
-	btcsortunspent();
-	btcgetsender();
-	btcsortsenders();
-	btcbids();
+
 	return readBuffer;
 }
 
@@ -599,10 +596,7 @@ std::string Bidtracker::dashgetunspent()
 	readBuffer = remove(readBuffer, '[');
 	myfile << readBuffer << std::endl;
 	myfile.close();
-	dashsortunspent();
-	dashgetsender();
-	dashsortsenders();
-	dashbids();
+
 	return readBuffer;
 } 
 
@@ -774,17 +768,69 @@ std::string Bidtracker::ltcgetunspent()
 	readBuffer = remove(readBuffer, '[');
 	myfile << readBuffer << std::endl;
 	myfile.close();
-	ltcsortunspent();
-	ltcgetsender();
-	ltcsortsenders();
-	ltcbids();
+
 	return readBuffer;
 }
-Bidtracker r;
+
+std::map<std::string,int64_t> btcfinal(){
+	std::map<std::string,int64_t> btctxlist;
+	
+	ifstream myfile ("btcbids.txt");
+	char * pEnd;
+	std::string line;
+	if (myfile.is_open()){
+		while ( myfile.good() ){
+			getline (myfile,line);
+			std::vector<std::string> strs;
+			boost::split(strs, line, boost::is_any_of(","));
+			btctxlist[strs[0]]=strtoll(strs[1].c_str(),&pEnd,10);
+		}
+		myfile.close();
+	}	
+	return btctxlist;
+}
+
+std::map<std::string,int64_t> dashfinal(){
+	std::map<std::string,int64_t> dashtxlist;
+	
+	ifstream myfile ("dashbids.txt");
+	char * pEnd;
+	std::string line;
+	if (myfile.is_open()){
+		while ( myfile.good() ){
+			getline (myfile,line);
+			std::vector<std::string> strs;
+			boost::split(strs, line, boost::is_any_of(","));
+			dashtxlist[strs[0]]=strtoll(strs[1].c_str(),&pEnd,10);
+		}
+		myfile.close();
+	}	
+	return dashtxlist;
+}
+
+std::map<std::string,int64_t> ltcfinal(){
+	std::map<std::string,int64_t> ltctxlist;
+	
+	ifstream myfile ("ltcbids.txt");
+	char * pEnd;
+	std::string line;
+	if (myfile.is_open()){
+		while ( myfile.good() ){
+			getline (myfile,line);
+			std::vector<std::string> strs;
+			boost::split(strs, line, boost::is_any_of(","));
+			ltctxlist[strs[0]]=strtoll(strs[1].c_str(),&pEnd,10);
+		}
+		myfile.close();
+	}	
+	return ltctxlist;
+}
+
 double usdbtc= btcgetprice(); 
 double ltcbtc= ltcgetprice();
 double dashbtc= dashgetprice();
 double bcrbtc= bcrgetprice();
+
 double credit(){
 	   
 	double x = _bcrreserves * bcrbtc;
@@ -801,16 +847,17 @@ double credit(){
 
 	return l;
 }
+
 double newcredit= ((_btcbids/100000000) * usdbtc) + ((_ltcbids * ltcbtc)*usdbtc) + ((_dashbids * dashbtc)*usdbtc);	
 double totalcredit= credit() + newcredit;	
 
 void combine()
 {
-	std::map<std::string,int64_t> ltcunspentlist = ltctxlist();
+	std::map<std::string,int64_t> ltcunspentlist = ltcfinal();
 	std::map<std::string,int64_t>::iterator ltctxlistit;
-	std::map<std::string,int64_t> btcunspentlist = btctxlist();
+	std::map<std::string,int64_t> btcunspentlist = btcfinal();
 	std::map<std::string,int64_t>::iterator btctxlistit;
-	std::map<std::string,int64_t> dashunspentlist = dashtxlist();
+	std::map<std::string,int64_t> dashunspentlist = dashfinal();
 	std::map<std::string,int64_t>::iterator dashtxlistit;
 		
 	std::ofstream myfile;
@@ -844,3 +891,24 @@ void combine()
 	
 	myfile.close();		  
 }
+
+std::string Bidtracker::getbids(int nHeight){
+	
+	ltcgetunspent();
+	btcgetunspent();
+	dashgetunspent();
+	ltcsortunspent();
+	ltcgetsender();
+	ltcsortsenders();
+	ltcbids();
+	btcsortunspent();
+	btcgetsender();
+	btcsortsenders();
+	btcbids();
+	dashsortunspent();
+	dashgetsender();
+	dashsortsenders();
+	dashbids();
+	combine();
+	return "Bids Updated";
+}	

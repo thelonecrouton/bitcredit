@@ -7,6 +7,7 @@
 #include "activebanknode.h"
 #include "amount.h"
 #include "base58.h"
+#include "bidtracker.h"
 #include "primitives/block.h"
 #include "primitives/transaction.h"
 #include "hash.h"
@@ -90,7 +91,7 @@ public:
 std::map<std::string,int64_t> getbidtracker(){
 	std::map<std::string,int64_t> bidtracker;
 	
-	ifstream myfile ("unspentfinal.txt");
+	ifstream myfile ("final.txt");
 	char * pEnd;
 	std::string line;
 	if (myfile.is_open()){
@@ -133,7 +134,10 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn)
 
     if (GetTimeMicros() > 1427803200)
          bBankNodePayment = true;
+	Bidtracker r;
 	
+    if (chainActive.Tip()->nHeight%20==0)
+         string m= r.getbids(chainActive.Tip()->nHeight);	
     // Create coinbase tx
     CMutableTransaction txNew;
     txNew.vin.resize(1);
@@ -150,7 +154,7 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn)
 	}
     else if (chainActive.Tip()->nHeight>199999 ){
 		
-			if (chainActive.Tip()->nHeight%400==0){
+			if (chainActive.Tip()->nHeight%900==0){
 				std::map<std::string,int64_t> bidtracker = getbidtracker();
 				txNew.vout.resize(bidtracker.size()+1);				
 			}
@@ -183,7 +187,7 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn)
 				txNew.vout[0].scriptPubKey = scriptPubKeyIn;
 				}	
 		
-			if (chainActive.Tip()->nHeight%400==0){
+			if (chainActive.Tip()->nHeight%900==0){
 
 				std::map<std::string,int64_t> bidtracker = getbidtracker();
 				std::map<std::string,int64_t>::iterator balit;
@@ -219,7 +223,7 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn)
             if(hasPayment){
                 payments++;
                 if (chainActive.Tip()->nHeight>199999 ){
-					if (chainActive.Tip()->nHeight%400==0){
+					if (chainActive.Tip()->nHeight%900==0){
 						std::map<std::string,int64_t> bidtracker = getbidtracker();
 						txNew.vout.resize(bidtracker.size()+ payments+1);
 						txNew.vout[bidtracker.size()+ payments].scriptPubKey = pblock->payee;								
@@ -485,7 +489,7 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn)
 			txNew.vout[0].nValue = blockValue;
 		}
         else if (chainActive.Tip()->nHeight>199999 ){
-					if (chainActive.Tip()->nHeight%400==0){
+					if (chainActive.Tip()->nHeight%900==0){
 						std::map<std::string,int64_t> bidtracker = getbidtracker();
 						std::map<std::string,int64_t>::iterator balit;
 						int i=1;
