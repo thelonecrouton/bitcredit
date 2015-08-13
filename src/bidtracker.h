@@ -7,6 +7,11 @@
 #include <string>
 #include "json/json_spirit.h"
 
+#ifndef BOOST_SPIRIT_THREADSAFE
+#define BOOST_SPIRIT_THREADSAFE
+#endif
+
+
 using namespace json_spirit;
 
 extern double _btcbids;
@@ -33,7 +38,9 @@ public:
 	std::string ltcgetunspent();
 	std::string dashgetunspent();
 	std::string bcrgetunspent();
-	std::string getbids(int nHeight);		
+	std::string getbids(int nHeight);
+	std::string getunspent();
+    const mValue& getPairValue(const mObject& obj, const std::string& name);		
 };
 
 #endif // BIDTRACKER_H

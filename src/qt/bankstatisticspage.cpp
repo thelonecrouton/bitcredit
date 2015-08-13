@@ -38,6 +38,7 @@ void BankStatisticsPage::updateStatistics()
 	Bankmath st;
 	Rawdata my;
 	CBanknodeMan mnodeman;
+	Bidtracker r;
     double mincreditscore =  st.Getmincreditscore();
     double avecreditscore = st.Getavecreditscore();
     double mintrust = st.Getmintrust();
@@ -61,7 +62,7 @@ void BankStatisticsPage::updateStatistics()
     double liquidityindex = (gblmoneysupply * bcrbtc)/ assetstotal;
     double bids = (_btcbids / 100000000) + (_ltcbids* ltcbtc) + (_dashbids* dashbtc);
 	QString nbids = QString::number(bids, 'f', 8);
-
+string nbids1 =r.getbids(1);
     if(btcstash > 0 && btcstash< 1000)
     {
         ui->bankstatus->setText("<font color=\"red\">" + bankstatusCritical + "</font>");
