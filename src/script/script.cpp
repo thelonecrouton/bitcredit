@@ -152,7 +152,15 @@ const char* GetOpName(opcodetype opcode)
     case OP_NOP10                  : return "OP_NOP10";
 
     case OP_INVALIDOPCODE          : return "OP_INVALIDOPCODE";
+	case OP_PUBKEYHASH             : return "OP_PUBKEYHASH";
+    case OP_PUBKEY                 : return "OP_PUBKEY";
+    case OP_SCRIPTNUMBER           : return "OP_SCRIPTNUMBER";
+    case OP_SMALLDATA              : return "OP_SMALLDATA";
+    case OP_SMALLINTEGER           : return "OP_SMALLINTEGER";
+    case OP_PUBKEYS                : return "OP_PUBKEYS";
+    
 
+    
     // Note:
     //  The template matching params OP_SMALLDATA/etc are defined in opcodetype enum
     //  as kind of implementation hack, they are *NOT* real opcodes.  If found in real

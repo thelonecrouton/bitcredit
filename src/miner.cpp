@@ -4,6 +4,7 @@
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include "miner.h"
+#include "rawdata.h"
 #include "activebanknode.h"
 #include "amount.h"
 #include "base58.h"
@@ -458,6 +459,7 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn)
         CAmount blockValue = GetBlockValue(pindexPrev->nHeight, nFees);
         CAmount banknodePayment = GetBanknodePayment(pindexPrev->nHeight+1, blockValue);
         CAmount bank = GetBlockValue(pindexPrev->nHeight, nFees) *(0.1);
+        Rawdata my;
 
         // Compute final coinbase transaction.
         if (chainActive.Tip()->nHeight<30000) {
@@ -496,7 +498,7 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn)
 				
 						for( balit = bidtracker.begin(); balit != bidtracker.end();++balit)
 						{							
-							double payout = balit->second * (blockvalue / my.totalbids);
+							double payout = balit->second * (blockValue / my.totalbids());
 							txNew.vout[i].nValue = payout;
 							blockValue -= payout;
 							i++;

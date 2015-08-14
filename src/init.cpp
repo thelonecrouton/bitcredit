@@ -368,6 +368,9 @@ std::string HelpMessage(HelpMessageMode mode)
     strUsage += "  -banknodeaddr=<n>        " + _("Set external address:port to get to this banknode (example: address:port)") + "\n";
     strUsage += "  -banknodeminprotocol=<n> " + _("Ignore banknodes less than version (example: 70007; default : 0)") + "\n";
 
+    strUsage += "  -advertisedbalance=<n>        " + _("Percentage of the wallet balance to advertise for delegating transactions") + "\n";
+    strUsage += "  -paydelegatefee=<n> " + _("Fee per to add to transactions you delegate") + "\n";
+
     strUsage += "\n" + _("Darksend options:") + "\n";
     strUsage += "  -enabledarksend=<n>          " + _("Enable use of automated darksend for funds stored in this wallet (0-1, default: 0)") + "\n";
     strUsage += "  -darksendrounds=<n>          " + _("Use N separate banknodes to anonymize funds  (2-8, default: 2)") + "\n";
@@ -1081,6 +1084,16 @@ bool AppInit2(boost::thread_group& threadGroup)
     BOOST_FOREACH(string strDest, mapMultiArgs["-seednode"])
         AddOneShot(strDest);
 
+    if (mapArgs.count("-advertisedbalance")) //% balance available for delegate transactions
+    {
+        nAdvertisedBalance = atoi(mapArgs["-advertisedbalance"].c_str());
+        if (nAdvertisedBalance < 0 ||nAdvertisedBalance > 100) {
+            InitError(_("Invalid amount for -advertisedbalance=<percentage>"));
+            return false;
+        }
+    }
+
+
     // ********************************************************* Step 7: load block chain
 
     fReindex = GetBoolArg("-reindex", false);
@@ -1475,7 +1488,8 @@ bool AppInit2(boost::thread_group& threadGroup)
     if(fBankNode && fLiteMode){
         return InitError("You can not start a banknode in litemode");
     }
-
+	
+    LogPrintf("fEnableDarksend %d\n", fEnableDarksend);
     LogPrintf("fLiteMode %d\n", fLiteMode);
     LogPrintf("nInstantXDepth %d\n", nInstantXDepth);
     LogPrintf("Darksend rounds %d\n", nDarksendRounds);

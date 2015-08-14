@@ -313,6 +313,10 @@ QString TransactionTableModel::formatTxStatus(const TransactionRecord *wtx) cons
     case TransactionStatus::NotAccepted:
         status = tr("Generated but not accepted");
         break;
+    case TransactionStatus::Escrow:
+    case TransactionStatus::Expiry:
+        status = tr("Unfinalized delegate transaction");
+        break;
     }
 
     return status;
@@ -360,7 +364,10 @@ QString TransactionTableModel::formatTxType(const TransactionRecord *wtx) const
         return tr("Payment to yourself");
     case TransactionRecord::Generated:
         return tr("Mined");
-
+    case TransactionRecord::SendAsDelegate:
+        return tr("Sent as delegate");
+    case TransactionRecord::SendByDelegate:
+        return tr("Sent by delegate");
     case TransactionRecord::DarksendDenominate:
         return tr("Darksend Denominate");
     case TransactionRecord::DarksendCollateralPayment:
@@ -414,6 +421,8 @@ QString TransactionTableModel::formatTxToAddress(const TransactionRecord *wtx, b
     case TransactionRecord::Darksent:
         return lookupAddress(wtx->address, tooltip) + watchAddress;
     case TransactionRecord::SendToOther:
+    case TransactionRecord::SendAsDelegate:
+    case TransactionRecord::SendByDelegate:
         return QString::fromStdString(wtx->address) + watchAddress;
     case TransactionRecord::SendToSelf:
     default:
@@ -429,6 +438,8 @@ QVariant TransactionTableModel::addressColor(const TransactionRecord *wtx) const
     case TransactionRecord::RecvWithAddress:
     case TransactionRecord::SendToAddress:
     case TransactionRecord::Generated:
+    case TransactionRecord::SendAsDelegate:
+    case TransactionRecord::SendByDelegate:
         {
         QString label = walletModel->getAddressTableModel()->labelForAddress(QString::fromStdString(wtx->address));
         if(label.isEmpty())
@@ -459,6 +470,10 @@ QVariant TransactionTableModel::txStatusDecoration(const TransactionRecord *wtx)
 {
     switch(wtx->status.status)
     {
+    case TransactionStatus::Escrow:
+          return QColor(0,192,192);
+    case TransactionStatus::Expiry:
+          return QColor(192,0,192);
     case TransactionStatus::OpenUntilBlock:
     case TransactionStatus::OpenUntilDate:
         return COLOR_TX_STATUS_OPENUNTILDATE;
@@ -567,6 +582,12 @@ QVariant TransactionTableModel::data(const QModelIndex &index, int role) const
         return column_alignments[index.column()];
     case Qt::ForegroundRole:
         // Non-confirmed (but not immature) as transactions are grey
+        if(rec->status.status == TransactionStatus::Escrow) {
+            return COLOR_ESCROW;
+        }
+        if(rec->status.status == TransactionStatus::Expiry) {
+            return COLOR_EXPIRY;
+        }
         if(!rec->status.countsForBalance && rec->status.status != TransactionStatus::Immature)
         {
             return COLOR_UNCONFIRMED;

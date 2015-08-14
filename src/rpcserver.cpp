@@ -384,6 +384,20 @@ static const CRPCCommand vRPCCommands[] =
     { "secureMsg" ,         "smsgoutbox",             &smsgoutbox,             true,      false,	  false},
     { "secureMsg" ,         "smsgbuckets",            &smsgbuckets,            true,      false,	  false},
 
+#ifdef ENABLE_WALLET
+    /* Escrow */    
+    { "escrow",           "sendbydelegate",           &sendbydelegate,         false,     false,      false},
+    { "escrow",           "listadvertisedbalances",   &listadvertisedbalances, true,      false,	  false},
+    { "escrow",           "createtransferexpiry",     &createtransferexpiry,   false,     false,      false},
+    { "escrow",           "createtransferescrow",     &createtransferescrow,   false,     false,      false},
+    { "escrow",           "popoffchain",              &popoffchain,            false,     false,      false},
+    { "escrow",           "pushoffchain",             &pushoffchain,           false,     false,      false},
+    { "escrow",           "retrievedelegatetx",       &retrievedelegatetx,     true,      false,	  false},    
+    { "escrow",           "sendbydelegate",           &sendbydelegate,         false,     false,      false},
+    { "escrow",           "listadvertisedbalances",   &listadvertisedbalances, true,      false,	  false},
+    { "escrow",           "dumpretrievalstrings",     &dumpretrievalstrings,   true,      false,	  false},
+    { "escrow",           "clearretrievalstrings",    &clearretrievalstrings,  false,     false,      false},
+#endif
 };
 
 CRPCTable::CRPCTable()

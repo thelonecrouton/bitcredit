@@ -311,6 +311,7 @@ void OptionsDialog::setMapper()
     mapper->addMapping(ui->bitcreditAtStartup, OptionsModel::StartAtStartup);
     mapper->addMapping(ui->threadsScriptVerif, OptionsModel::ThreadsScriptVerif);
     mapper->addMapping(ui->databaseCache, OptionsModel::DatabaseCache);
+    mapper->addMapping(ui->advertisedBalance, OptionsModel::AdvertisedBalance);
 
     /* Wallet */
     mapper->addMapping(ui->spendZeroConfChange, OptionsModel::SpendZeroConfChange);

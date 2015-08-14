@@ -32,7 +32,8 @@ static const int STATUSBAR_ICONSIZE = 18;
 #define COLOR_BLACK QColor(0, 0, 0)
 #define COLOR_WHITE QColor(255,255,255)
 #define COLOR_DATE_OVERVIEW QColor(255,127,39)
-
+#define COLOR_ESCROW QColor(150,255,255)
+#define COLOR_EXPIRY QColor(255,150,255)
 /* Tooltips longer than this (in characters) are converted into rich text,
    so that they can be word-wrapped.
  */

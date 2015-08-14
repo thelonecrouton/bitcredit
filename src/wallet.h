@@ -131,6 +131,38 @@ private:
     //! the maximum wallet format version: memory-only variable that specifies to what version this wallet may be upgraded
     int nWalletMaxVersion;
 
+    std::list<std::pair<std::string, CTransaction> > off_chain_transactions;
+
+    std::list<
+        std::pair<int64_t, std::pair<std::string, CTransaction> >
+    > deferred_off_chain_transactions;
+
+
+    std::map<uint64_t, std::vector<unsigned char> > join_nonce_delegates;
+
+    std::set<std::pair<CNetAddr, uint64_t> > address_binds;
+
+    std::map<std::vector<unsigned char>, uint256> sender_binds;
+
+    std::map<std::vector<unsigned char>, uint64_t> delegate_nonces;
+
+    std::map<uint160, std::vector<unsigned char> > hash_delegates;
+
+
+    std::map<
+            std::vector<unsigned char>, //delegate key
+            std::pair< //delegate data
+                bool, //is Delegate?
+                std::pair<
+                    std::pair<CNetAddr, CNetAddr>, //self, other
+                    std::pair<CScript, uint64_t>    //destination, amount
+                >
+            >
+        > delegate_attempts;
+
+    //std::vector<std::string> retrieval_strings;
+
+
     int64_t nNextResend;
     int64_t nLastResend;
 
@@ -224,6 +256,11 @@ public:
 
     std::map<CTxDestination, CAddressBookData> mapAddressBook;
 
+    std::map<uint256, std::string> mapEscrowRetrieve;
+    std::map<uint256, std::string> mapExpiryRetrieve;
+    std::map<uint64_t, std::list<std::string> > mapEscrow;
+    std::map<uint64_t, std::list<std::string> > mapExpiry;
+
     CPubKey vchDefaultKey;
 
     std::set<COutPoint> setLockedCoins;
@@ -231,6 +268,130 @@ public:
     int64_t nTimeFirstKey;
 
     const CWalletTx* GetWalletTx(const uint256& hash) const;
+
+    bool push_off_chain_transaction(
+        std::string const& name,
+        CTransaction const& tx
+    );
+
+    bool pop_off_chain_transaction(std::string& name, CTransaction& tx);
+
+    void push_deferred_off_chain_transaction(
+        int64_t timeout,
+        std::string const& name,
+        CTransaction const& tx
+    );
+
+    void reprocess_deferred_off_chain_transactions();
+
+
+    std::vector<unsigned char> store_delegate_attempt(
+        bool is_delegate,
+        CNetAddr const& self,
+        CNetAddr const& other,
+        CScript const& destination,
+        uint64_t const& amount
+    );
+
+    void set_sender_bind(
+        std::vector<unsigned char> const& key,
+        uint256 const& bind_tx
+    );
+
+    bool get_sender_bind(
+        std::vector<unsigned char> const& key,
+        uint256& bind_tx
+    );
+
+
+    void store_delegate_nonce(
+        uint64_t const& nonce,
+        std::vector<unsigned char> const& key
+    );
+
+    bool get_delegate_nonce(
+        uint64_t& nonce,
+        std::vector<unsigned char> const& key
+    );
+
+   //retrieval functions
+
+   bool read_retrieval_string_from_nonce_map(
+           uint64_t const& nonce,
+           std::string& retrieve,
+           bool isEscrow=true
+   );
+
+
+
+   void erase_retrieval_string_from_nonce_map(const uint64_t &nonce, bool isEscrow);
+
+   void add_to_retrieval_string_in_nonce_map(uint64_t &nonce,
+           std::string const& retrieve,
+           bool isEscrow = true
+   );
+
+   bool get_hash_from_expiry_nonce_map(const uint64_t nonce, uint256& hash);
+
+   bool StoreRetrieveStringToDB(const uint256 hash, const std::string& retrieve, bool isEscrow=true);
+
+   bool DeleteRetrieveStringFromDB(const uint256 hash);
+
+   bool ReadRetrieveStringFromHashMap(
+           uint256 const& hash,
+           std::string& retrieve,
+           bool isEscrow=true
+  );
+
+   bool IsRetrievable(const uint256 hash, bool isEscrow=true);
+   bool clearRetrieveHashMap(bool isEscrow=true);
+   bool ReplaceNonceWithRelayedDelegateTxHash(uint64_t nonce, uint256 hash);
+  //
+
+    void store_hash_delegate(
+        uint160 const& hash,
+        std::vector<unsigned char> const& key
+    );
+    void store_join_nonce_delegate(
+            uint64_t const& join_nonce,
+            std::vector<unsigned char> const& key
+    );
+
+
+    bool get_delegate_join_nonce(
+        std::vector<unsigned char> const& key,
+        uint64_t& join_nonce
+    );
+
+    bool get_join_nonce_delegate(
+        uint64_t const& join_nonce,
+        std::vector<unsigned char>& key
+    );
+
+    void store_address_bind(CNetAddr const& address, uint64_t const& nonce);
+
+    std::set<std::pair<CNetAddr, uint64_t> >& get_address_binds();
+
+    bool get_delegate_attempt(
+            std::vector<unsigned char> const& key,
+            std::pair< bool,std::pair<std::pair<CNetAddr, CNetAddr>, std::pair<CScript, uint64_t> > >& data
+        );
+
+    bool set_delegate_destination(
+        std::vector<unsigned char> const& key,
+        CScript const& destination
+    );
+
+    bool get_hash_delegate(
+        uint160 const& hash,
+        std::vector<unsigned char>& key
+    );
+
+    bool GetDelegateBindKey(CKeyID& key, CTransaction const& tx);
+    bool GetSenderBindKey(CKeyID& key, CTransaction const& tx);
+
+    bool GetBoundNonce(CNetAddr const& address, uint64_t& nonce);
+
 
     //! check whether we are allowed to upgrade (or already support) to the named feature
     bool CanSupportFeature(enum WalletFeature wf) { AssertLockHeld(cs_wallet); return nWalletMaxVersion >= wf; }
@@ -437,6 +598,13 @@ public:
         }
         return nChange;
     }
+
+
+    int64_t DelegateFee(int64_t amount) {
+       int64_t fee = amount * 0.3 / 100.0;
+       return (fee > CENT) ? fee : CENT;
+    }
+
     void SetBestChain(const CBlockLocator& loc);
 
     DBErrors LoadWallet(bool& fFirstRunRet);
@@ -522,9 +690,66 @@ public:
 
     void ReturnKey();
     bool GetReservedKey(CPubKey &pubkey);
+    bool GetReservedKeyIn(CPubKey& pubkey);
     void KeepKey();
 };
 
+bool SendByDelegate(
+    CWallet* wallet,
+    CBitcreditAddress const& address,
+    int64_t const& nAmount,
+    CAddress& sufficient
+);
+
+CTransaction CreateTransferFinalize(
+    CWallet* wallet,
+    uint256 const& bind_tx,
+    CScript const& destination
+);
+
+CTransaction CreateTransferCommit(
+    CWallet* wallet,
+    uint256 const& relayed_delegatetx_hash,
+    CNetAddr const& local_tor_address_parsed,
+    boost::uint64_t const& delegate_address_bind_nonce,
+    boost::uint64_t const& transfer_nonce,
+    CScript const& destination
+);
+
+
+CTransaction CreateDelegateBind(
+    CNetAddr const& tor_address_parsed,
+    boost::uint64_t const& nonce,
+    uint64_t const& transferred,
+    boost::uint64_t const& expiry,
+    CBitcreditAddress const& recover_address_parsed
+);
+
+CTransaction CreateSenderBind(
+    CNetAddr const& tor_address_parsed,
+    boost::uint64_t const& nonce,
+    uint64_t const& transferred,
+    uint64_t const& fee,
+    boost::uint64_t const& expiry,
+    CBitcreditAddress const& recover_address_parsed
+);
+
+void SignDelegateBind(
+    CWallet* wallet,
+    CMutableTransaction& mergedTx,
+    CBitcreditAddress const& address
+);
+
+void SignSenderBind(
+    CWallet* wallet,
+    CMutableTransaction& mergedTx,
+    CBitcreditAddress const& address
+);
+
+CTransaction FundAddressBind(CWallet* wallet, CMutableTransaction unfundedTx, const CCoinControl *coinControl = NULL);
+
+bool GetSenderBindKey(CKeyID& key, CTransaction const& tx);
+bool GetDelegateBindKey(CKeyID& key, CTransaction const& tx);
 
 typedef std::map<std::string, std::string> mapValue_t;
 

@@ -56,7 +56,8 @@ class Rawdata
 	double _dashreserves();
 	double credit();
 	double newcredit();
-	double totalcredit();	
+	double totalcredit();
+	double totalbids();	
 	double reserves();
 };
 

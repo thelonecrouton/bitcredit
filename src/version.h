@@ -26,6 +26,8 @@ static const int MIN_POOL_PEER_PROTO_VERSION = 70008;
 
 static const int MIN_MN_PROTO_VERSION = 70008;
 
+static const int CADDR_ADVERTISED_BALANCE_VERSION = 70008;
+
 //! nTime field added to CAddress, starting with this version;
 //! if possible, avoid requesting addresses nodes older than this
 static const int CADDR_TIME_VERSION = 31402;

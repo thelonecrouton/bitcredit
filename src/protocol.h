@@ -74,7 +74,8 @@ enum {
     // collisions and other cases where nodes may be advertising a service they
     // do not actually support. Other service bits should be allocated via the
     // BIP process.
-    SMSG_RELAY          = (1 << 1),
+    SMSG_RELAY  = (1 << 1),
+    NODE_ESCROW = (1 << 2),
 };
 
 /** A CService with information about it as peer */
@@ -99,6 +100,8 @@ public:
             (nVersion >= CADDR_TIME_VERSION && !(nType & SER_GETHASH)))
             READWRITE(nTime);
         READWRITE(nServices);
+        if ((nType & SER_DISK) ||(nVersion >= CADDR_ADVERTISED_BALANCE_VERSION && !(nType & SER_GETHASH)))
+            READWRITE(advertised_balance);
         READWRITE(*(CService*)this);
     }
 
@@ -111,6 +114,8 @@ public:
 
     // memory only
     int64_t nLastTry;
+
+    int64_t advertised_balance;
 };
 
 /** inv message data */

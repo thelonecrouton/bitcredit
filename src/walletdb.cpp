@@ -189,6 +189,26 @@ bool CWalletDB::WriteMinVersion(int nVersion)
     return Write(std::string("minversion"), nVersion);
 }
 
+bool CWalletDB::WriteRetrieveString(const uint256 hash, const std::string& strRetrieve)
+{
+    return Write(std::make_pair(std::string("retrieve"), hash), strRetrieve);
+}
+
+bool CWalletDB::EraseRetrieveString(const uint256 hash)
+{
+    return Erase(std::make_pair(std::string("retrieve"), hash));
+}
+
+bool CWalletDB::WriteExpiryRetrieveString(const uint256 hash, const std::string& strRetrieve)
+{
+    return Write(std::make_pair(std::string("expiryretrieve"), hash), strRetrieve);
+}
+
+bool CWalletDB::EraseExpiryRetrieveString(const uint256 hash)
+{
+    return Erase(std::make_pair(std::string("expiryretrieve"), hash));
+}
+
 bool CWalletDB::ReadAccount(const string& strAccount, CAccount& account)
 {
     account.SetNull();

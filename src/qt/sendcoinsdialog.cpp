@@ -245,6 +245,12 @@ void SendCoinsDialog::on_sendButton_clicked()
         recipients[0].useInstantX = false;
     }
 
+    if(ui->checkESCROW->isChecked()) {
+        recipients[0].sendbydelegate = true;
+        strFunds += " and Escrow";
+    } else {
+        recipients[0].sendbydelegate = false;
+    }
 
     // Format confirmation message
     QStringList formatted;

@@ -8,6 +8,7 @@
 
 #include "amount.h"
 #include "script/script.h"
+#include "script/standard.h"
 #include "serialize.h"
 #include "uint256.h"
 
@@ -272,6 +273,8 @@ public:
     {
         return (vin.size() == 1 && vin[0].prevout.IsNull());
     }
+
+    txnouttype IsEscrow() const;
 
     friend bool operator==(const CTransaction& a, const CTransaction& b)
     {
