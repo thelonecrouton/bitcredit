@@ -9,7 +9,7 @@
 #include "main.h"
 #include "coins.h"
 #include "rpcserver.h"
-
+#include "bidtracker.h"
 
 using namespace std;
 
@@ -44,7 +44,20 @@ class Rawdata
 	CAmount Getgrantstotal();
 
 	CAmount Getgblmoneysupply();
+	
+	
 
+	double _btcbids();
+	double _ltcbids();
+	double _dashbids();
+	double _bcrreserves();
+	double _btcreserves();
+	double _ltcreserves();
+	double _dashreserves();
+	double credit();
+	double newcredit();
+	double totalcredit();	
+	double reserves();
 };
 
 #endif //RAWDATA_H

@@ -9,9 +9,7 @@ using namespace std;
 class Bankmath
 {
 public:
-	
-	CAmount Getgblavailablecredit();
-	
+		
 	CAmount Getglobaldebt();
 	
   	double savefactor();
@@ -51,6 +49,8 @@ public:
 	double Gettrust();
 
 	double Getmintrust();	  
+
+	double gblavailablecredit();
 	
   Bankmath() : nEntry(0), X(0), X2(0), Y(0), Y2(0), XY(0) {}
   void Reset() ;

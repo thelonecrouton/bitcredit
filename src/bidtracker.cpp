@@ -15,14 +15,6 @@
 #include <map>
 #include <sstream>
 
-std::string ltcbidsurl = "http://ltc.blockr.io/api/v1/address/balance/LS18wropMM8VwT8YFiEZJE7LK8UdZVXXyE";
-std::string bcrreservesurl ="http://chainz.cryptoid.info/bcr/api.dws?q=getbalance&a=5qH4yHaaaRuX1qKCZdUHXNJdesssNQcUct";
-std::string btcbidsurl ="https://blockchain.info/q/addressbalance/19CMyEEXUoNrpJEipadqmmpZqznWsRc9RV";
-std::string dashbidsurl ="http://chainz.cryptoid.info/dash/api.dws?q=getbalance&a=Xj4XjWytC6Etax46JDgwJLPxLSA3XdaQ1C";
-std::string ltcreservesurl = "http://ltc.blockr.io/api/v1/address/balance/LS18wropMM8VwT8YFiEZJE7LK8UdZVXXyE";
-std::string btcreservesurl = "https://blockchain.info/q/addressbalance/19CMyEEXUoNrpJEipadqmmpZqznWsRc9RV";
-std::string dashreservesurl = "http://chainz.cryptoid.info/dash/api.dws?q=getbalance&a=Xj4XjWytC6Etax46JDgwJLPxLSA3XdaQ1C"; 
-
 static size_t WriteCallback(void *contents, size_t size, size_t nmemb, void *userp)
 {
     ((std::string*)userp)->append((char*)contents, size * nmemb);
@@ -46,17 +38,7 @@ std::string replacestring(std::string subject, const std::string& search,
     return subject;
 }
 
-const mValue& Bidtracker::getPairValue(const mObject& obj, const std::string& name)
-{
-    mObject::const_iterator iter = obj.find(name);
-
-    assert(iter != obj.end());
-    assert(iter->first == name);
-
-    return iter->second;
-}
-
-double getbalance(std::string url, double balance)
+double Bidtracker::getbalance(std::string url, double balance)
 {
     const char * c = url.c_str();
     CURL *curl; 
@@ -64,8 +46,7 @@ double getbalance(std::string url, double balance)
       std::string readBuffer;
 
       curl = curl_easy_init();
-      if(curl) {
-        
+      if(curl) {        
         curl_easy_setopt(curl, CURLOPT_URL, c);
         curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteCallback);
         curl_easy_setopt(curl, CURLOPT_WRITEDATA, &readBuffer);
@@ -78,14 +59,6 @@ double getbalance(std::string url, double balance)
 	   
       return balance;
 }
-
-double _btcbids= getbalance(btcbidsurl, 0);
-double _ltcbids= getbalance(ltcbidsurl, 0);
-double _dashbids= getbalance(btcbidsurl, 0);
-double _bcrreserves= getbalance(bcrreservesurl, 0);
-double _btcreserves= getbalance(btcreservesurl, 0);
-double _ltcreserves= getbalance(ltcreservesurl, 0);
-double _dashreserves= getbalance(dashreservesurl, 0);
 
 void btcsortunspent(){
 
@@ -103,7 +76,6 @@ void btcsortunspent(){
 			std::string search3;
 			size_t pos;
 			size_t f = line.find("			tx_hash_big_endian:");
-			size_t h = line.find("            ,");
 			size_t g = line.find("			value:");
 	
 			search = "tx_hash_big_endian";
@@ -119,8 +91,7 @@ void btcsortunspent(){
 				CURLcode res;
 				string readBuffer;
 				curl = curl_easy_init();
-				if(curl) {
-        
+				if(curl) {        
 					curl_easy_setopt(curl, CURLOPT_URL, d);
 					curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteCallback);
 					curl_easy_setopt(curl, CURLOPT_WRITEDATA, &readBuffer);
@@ -148,8 +119,10 @@ void btcsortunspent(){
 				std::string semp =line;
 				semp = semp.replace(g, std::string("			value:").length(), "");
 				string value = semp;
-				value = remove(value, ',');	
-				myfile2 << value << std::endl;				
+				value = remove(value, ',');
+				long double amount = atof(value.c_str());
+				amount = amount/COIN;	
+				myfile2 << amount << std::endl;				
 			}
 		}
 		myfile.close();
@@ -170,8 +143,7 @@ std::string Bidtracker::btcgetunspent()
       std::string readBuffer;
 
       curl = curl_easy_init();
-      if(curl) {
-        
+      if(curl) {        
         curl_easy_setopt(curl, CURLOPT_URL, c);
         curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteCallback);
         curl_easy_setopt(curl, CURLOPT_WRITEDATA, &readBuffer);
@@ -202,8 +174,7 @@ double btcgetprice()
       std::string readBuffer;
 
       curl = curl_easy_init();
-      if(curl) {
-        
+      if(curl) {        
         curl_easy_setopt(curl, CURLOPT_URL, c);
         curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteCallback);
         curl_easy_setopt(curl, CURLOPT_WRITEDATA, &readBuffer);
@@ -228,8 +199,7 @@ double dashgetprice()
       std::string readBuffer;
 
       curl = curl_easy_init();
-      if(curl) {
-        
+      if(curl) {        
         curl_easy_setopt(curl, CURLOPT_URL, c);
         curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteCallback);
         curl_easy_setopt(curl, CURLOPT_WRITEDATA, &readBuffer);
@@ -248,7 +218,8 @@ double dashgetprice()
 	readBuffer = replacestring(readBuffer, "message", "");
 	readBuffer = replacestring(readBuffer, "resultBid", "");
 	readBuffer = remove(readBuffer, '\n'); 
-    price = atof(readBuffer.c_str());  
+   // price = atof(readBuffer.c_str());  
+   if ( ! (istringstream(readBuffer) >> price) ) price = 0;
 
     return price;
 }
@@ -265,8 +236,7 @@ double bcrgetprice()
       std::string readBuffer;
 
       curl = curl_easy_init();
-      if(curl) {
-        
+      if(curl) {        
         curl_easy_setopt(curl, CURLOPT_URL, c);
         curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteCallback);
         curl_easy_setopt(curl, CURLOPT_WRITEDATA, &readBuffer);
@@ -285,7 +255,8 @@ double bcrgetprice()
 	readBuffer = replacestring(readBuffer, "message", "");
 	readBuffer = replacestring(readBuffer, "resultBid", "");
 	readBuffer = remove(readBuffer, '\n');
-    price = atof(readBuffer.c_str());  
+    if ( ! (istringstream(readBuffer) >> price) ) price = 0;
+    //price = atof(readBuffer.c_str());  
 
       return price;
 }
@@ -302,8 +273,7 @@ double ltcgetprice()
       std::string readBuffer;
 
       curl = curl_easy_init();
-      if(curl) {
-        
+      if(curl) {        
         curl_easy_setopt(curl, CURLOPT_URL, c);
         curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteCallback);
         curl_easy_setopt(curl, CURLOPT_WRITEDATA, &readBuffer);
@@ -322,7 +292,8 @@ double ltcgetprice()
 	readBuffer = replacestring(readBuffer, "message", "");
 	readBuffer = replacestring(readBuffer, "resultBid", "");
 	readBuffer = remove(readBuffer, '\n');
-    price = atof(readBuffer.c_str());   
+    //price = atof(readBuffer.c_str());   
+	if ( ! (istringstream(readBuffer) >> price) ) price = 0;
 
     return price;
 }
@@ -361,8 +332,7 @@ void dashsortunspent(){
 				string readBuffer;
 
 				curl = curl_easy_init();
-				if(curl) {
-        
+				if(curl) {        
 					curl_easy_setopt(curl, CURLOPT_URL, d);
 					curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteCallback);
 					curl_easy_setopt(curl, CURLOPT_WRITEDATA, &readBuffer);
@@ -377,11 +347,9 @@ void dashsortunspent(){
 
 			string lemp = hemp;
 			std::size_t pos2 = lemp.find("\"}");
-			lemp = lemp.substr(0,pos2);
-			//lemp = remove(lemp, '"');
+			lemp = lemp.substr(0,pos2);			
 			lemp = replacestring(lemp, "\"address\":\"", "");
 			myfile2 << lemp << ",";
-
 			}
 
 			search2 = "\"tx_address_value\":";
@@ -389,8 +357,10 @@ void dashsortunspent(){
 			if (pos != std::string::npos){
 				std::string semp =line;
 				semp = semp.replace(g, std::string("\"tx_address_value\":").length(), "");
-				semp = remove(semp, ',');					
-				myfile2 << semp << std::endl;				
+				semp = remove(semp, ',');
+				long double amount = atof(semp.c_str());
+				amount = amount/COIN;	
+				myfile2 << amount << std::endl;							
 			}
 		}
 		myfile.close();
@@ -411,8 +381,7 @@ std::string Bidtracker::dashgetunspent()
       std::string readBuffer;
 
       curl = curl_easy_init();
-      if(curl) {
-        
+      if(curl) {        
         curl_easy_setopt(curl, CURLOPT_URL, c);
         curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteCallback);
         curl_easy_setopt(curl, CURLOPT_WRITEDATA, &readBuffer);
@@ -426,8 +395,7 @@ std::string Bidtracker::dashgetunspent()
     readBuffer = readBuffer.substr (pos); 
 	readBuffer = replacestring(readBuffer, "},{", "\n},{"); 
 	readBuffer = replacestring(readBuffer, ",", ",\n");  
-	readBuffer = remove(readBuffer, ' ');
-	//readBuffer = remove(readBuffer, '"');
+	readBuffer = remove(readBuffer, ' ');	
 	readBuffer = remove(readBuffer, '{');
 	readBuffer = remove(readBuffer, '}');
 	readBuffer = remove(readBuffer, '[');
@@ -449,8 +417,7 @@ std::string Bidtracker::ltcgetunspent()
       std::string readBuffer;
 
       curl = curl_easy_init();
-      if(curl) {
-        
+      if(curl) {        
         curl_easy_setopt(curl, CURLOPT_URL, c);
         curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteCallback);
         curl_easy_setopt(curl, CURLOPT_WRITEDATA, &readBuffer);
@@ -464,8 +431,7 @@ std::string Bidtracker::ltcgetunspent()
     readBuffer = readBuffer.substr (pos); 
 	readBuffer = replacestring(readBuffer, "},{", "\n},{"); 
 	readBuffer = replacestring(readBuffer, ",", ",\n");  
-	readBuffer = remove(readBuffer, ' ');
-	//readBuffer = remove(readBuffer, '"');
+	readBuffer = remove(readBuffer, ' ');	
 	readBuffer = remove(readBuffer, '{');
 	readBuffer = remove(readBuffer, '}');
 	readBuffer = remove(readBuffer, '[');
@@ -509,8 +475,7 @@ void ltcsortunspent(){
 				string readBuffer;
 
 				curl = curl_easy_init();
-				if(curl) {
-        
+				if(curl) {        
 					curl_easy_setopt(curl, CURLOPT_URL, d);
 					curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteCallback);
 					curl_easy_setopt(curl, CURLOPT_WRITEDATA, &readBuffer);
@@ -526,7 +491,7 @@ void ltcsortunspent(){
 			string lemp = hemp;
 			std::size_t pos2 = lemp.find("\"}");
 			lemp = lemp.substr(0,pos2);
-			//lemp = remove(lemp, '"');
+			
 			lemp = replacestring(lemp, "\"address\":\"", "");
 			myfile2 << lemp << ",";
 
@@ -538,7 +503,9 @@ void ltcsortunspent(){
 				std::string semp =line;
 				semp = semp.replace(g, std::string("\"tx_address_value\":").length(), "");
 				semp = remove(semp, ',');					
-				myfile2 << semp << std::endl;				
+				long double amount = atof(semp.c_str());
+				amount = amount/COIN;	
+				myfile2 << amount << std::endl;					
 			}
 		}
 		myfile.close();
@@ -599,33 +566,32 @@ std::map<std::string,int64_t> ltcfinal(){
 	}	
 	return ltctxlist;
 }
-
-double usdbtc= btcgetprice(); 
-double ltcbtc= ltcgetprice();
-double dashbtc= dashgetprice();
-double bcrbtc= bcrgetprice();
-
-double credit(){
-	   
-	double x = _bcrreserves * bcrbtc;
 	
-	double y = _ltcreserves * ltcbtc;
+double Bidtracker::usdbtc(){
 	
-	double z = _dashreserves * dashbtc;
-		
-	double m =(_btcreserves)/100000000;
+return btcgetprice();	
 
-	double l = x + y + z + m;
+} 
 
-	l*=usdbtc;
+long double Bidtracker::ltcbtc(){
+	
+return ltcgetprice();
 
-	return l;
 }
 
-double newcredit= ((_btcbids/100000000) * usdbtc) + ((_ltcbids * ltcbtc)*usdbtc) + ((_dashbids * dashbtc)*usdbtc);	
-double totalcredit= credit() + newcredit;	
+long double Bidtracker::dashbtc(){
+	
+return dashgetprice();
 
-void combine()
+}
+ 
+long double Bidtracker::bcrbtc(){
+	
+return bcrgetprice();	
+
+} 
+
+void Bidtracker::combine()
 {
 	std::map<std::string,int64_t> ltcunspentlist = ltcfinal();
 	std::map<std::string,int64_t>::iterator ltctxlistit;
@@ -640,26 +606,23 @@ void combine()
 	for( btctxlistit = btcunspentlist.begin(); btctxlistit != btcunspentlist.end(); ++btctxlistit)
 	{
 	string btcaddy = btctxlistit->first;
-	long double amount = btctxlistit->second/100000000;
-	/*amount *= usdbtc;*/
+	long double amount = btctxlistit->second;	
 	myfile << btcaddy << "," << amount << std::endl;
 	}
 
 	for( ltctxlistit = ltcunspentlist.begin(); ltctxlistit != ltcunspentlist.end(); ++ltctxlistit)
 	{
 	string ltcaddy = ltctxlistit->first;
-	long double amount = ltctxlistit->second/100000000;
-	amount *= ltcbtc;
-	//amount *= usdbtc;
+	long double amount = ltctxlistit->second;
+	amount *= ltcbtc();
 	myfile << ltcaddy << "," << amount << std::endl;
 	}	
 
 	for( dashtxlistit = dashunspentlist.begin(); dashtxlistit != dashunspentlist.end(); ++dashtxlistit)
 	{
 	string dashaddy = dashtxlistit->first;
-	long double amount = dashtxlistit->second/100000000;
-	amount *= dashbtc;
-	//amount *= usdbtc;
+	long double amount = dashtxlistit->second;
+	amount *= dashbtc();
 	myfile << dashaddy << "," << amount << std::endl;
 	}	
 	
@@ -667,7 +630,7 @@ void combine()
 }
 
 std::string Bidtracker::getbids(int nHeight){
-	
+
 	ltcgetunspent();
 	btcgetunspent();
 	dashgetunspent();
@@ -678,5 +641,6 @@ std::string Bidtracker::getbids(int nHeight){
 	
 	return "Bids Updated";
 }	
+
 
 

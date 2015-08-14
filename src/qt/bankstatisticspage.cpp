@@ -37,32 +37,39 @@ void BankStatisticsPage::updateStatistics()
 {
 	Bankmath st;
 	Rawdata my;
-	CBanknodeMan mnodeman;
+	
 	Bidtracker r;
     double mincreditscore =  st.Getmincreditscore();
     double avecreditscore = st.Getavecreditscore();
     double mintrust = st.Getmintrust();
-    double btcassets = _btcreserves;
-    double ltcassets = _ltcreserves;
-    double bcrassets = _bcrreserves;
-    double dashassets = _dashreserves;
+    double btcassets = my._btcreserves();
+    double ltcassets = my._ltcreserves();
+    double bcrassets = my._bcrreserves();
+    double dashassets = my._dashreserves();
     double fiatassets = 0.0;
     double netinterestrate = st.Getnetinterestrate();
     double trust = st.Gettrust();
-    double assetstotal = credit();
+    double assetstotal = my.credit();
     int nHeight = (chainActive.Tip()->nHeight);
     int64_t totalnumtx = my.totalnumtx();
+    double bcrprice = r.bcrbtc();
+    double btcprice = r.usdbtc();
+    double ltcprice = r.ltcbtc();
+    double dashprice = r.dashbtc();
     double gblmoneysupply = my.Getgblmoneysupply();
-    double marketcap =  assetstotal - ((bcrbtc*_bcrreserves) *usdbtc);
-    double btcstash = btcassets/ 100000000;
+    double marketcap =  assetstotal - ((bcrprice*my._bcrreserves()) *btcprice);
+    double btcstash = my.reserves();
     int64_t bankreserve = btcassets;
-    double gblavailablecredit = (gblmoneysupply - bcrassets) - (double)(mnodeman.size()*50000);
-    double globaldebt = ((gblmoneysupply * bcrbtc) * usdbtc)- credit() ;
+    double gblavailablecredit = st.gblavailablecredit();
+    double grossmarketcap =  (gblmoneysupply * bcrprice) * btcprice;
     double inflationindex = (45000/gblmoneysupply) *100;
-    double liquidityindex = (gblmoneysupply * bcrbtc)/ assetstotal;
-    double bids = (_btcbids / 100000000) + (_ltcbids* ltcbtc) + (_dashbids* dashbtc);
+    double liquidityindex = ((gblmoneysupply * bcrprice)*btcprice)/ assetstotal;
+    double bids = (my._btcbids() / COIN) + (my._ltcbids()* ltcprice) + (my._dashbids()* dashprice);
 	QString nbids = QString::number(bids, 'f', 8);
-string nbids1 =r.getbids(1);
+	string nbids1 =r.getbids(1);
+	double globaldebt =  grossmarketcap - marketcap;
+
+	
     if(btcstash > 0 && btcstash< 1000)
     {
         ui->bankstatus->setText("<font color=\"red\">" + bankstatusCritical + "</font>");
@@ -119,9 +126,9 @@ string nbids1 =r.getbids(1);
     QString nmincreditscore = QString::number(mincreditscore, 'f', 6);
     QString navecreditscore = QString::number(avecreditscore, 'f', 6);
     QString nmintrust = QString::number(mintrust, 'f', 6);
-    QString nbtcassets = QString::number(btcassets/100000000, 'f', 8);
+    QString nbtcassets = QString::number(btcassets/COIN, 'f', 8);
     QString ndashassets = QString::number(dashassets, 'f', 8);
-    QString nltcassets = QString::number(ltcassets/100000000, 'f', 8);
+    QString nltcassets = QString::number(ltcassets/COIN, 'f', 8);
     QString nbcrassets = QString::number(bcrassets, 'f', 8);
     QString nfiatassets = QString::number(fiatassets, 'f', 8);
     QString nassetstotal = QString::number(assetstotal, 'f', 6);

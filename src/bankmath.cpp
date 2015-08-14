@@ -2,21 +2,22 @@
 //property of The Author aka Minato aka bitcreditscc you cannot use unless u pay me!!
 
 #include "bankmath.h"
-
+#include "banknodeman.h"
 #include <iostream>
 #include <math.h>
 #include "activebanknode.h"
-
+Rawdata data;
+//CBanknodeMan mnodeman;
 double Bankmath::savefactor()
 { 
-	Rawdata data;
+	
 	double m = 	data.incomingtx()/data.totalnumtx();
 		return m;
 }
 
 double Bankmath::spendfactor()
 {
-	Rawdata data;
+	
 	double m = 	data.outgoingtx()/data.totalnumtx();
 	return m;
 }
@@ -24,21 +25,21 @@ double Bankmath::spendfactor()
 
 double Bankmath::txfactor ()
 {
-	Rawdata data;
+	
 	double m = 	data.incomingtx()/data.outgoingtx();
 	return m; 
 }
 
 double  Bankmath::nettxratio ()
 {
-	Rawdata data;
+	
 	double g =data.getNumTransactions()/data.totalnumtx();
 	return g;
 }
 
 CAmount Bankmath::stake()
 {
-	Rawdata data;
+	
 	CAmount d =data.balance()/data.Getgblmoneysupply();
 	return d;
 }
@@ -71,7 +72,7 @@ double Bankmath::Gettrust()
 {
 	double trust=0;
 		{	
-			Rawdata data;
+			
 			int onemonth;
 			onemonth = data.onemonth;
 			double lifetime = data.lifetime();	
@@ -230,4 +231,11 @@ double Bankmath::Getinflationrate()
 	CAmount x =ss.nTotalAmount/COIN;
 	double m = 45000/x;
 	return m;
+}
+
+double Bankmath::gblavailablecredit(){
+
+int e =mnodeman.size() *50000;
+
+return data.Getgblmoneysupply() - data._bcrreserves() - e;
 }

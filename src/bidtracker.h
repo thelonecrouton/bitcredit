@@ -12,22 +12,6 @@
 #endif
 
 
-using namespace json_spirit;
-
-extern double _btcbids;
-extern double _ltcbids;
-extern double _dashbids;
-extern double _bcrreserves;
-extern double _btcreserves;
-extern double _ltcreserves;
-extern double _dashreserves;
-extern double usdbtc; 
-extern double ltcbtc;
-extern double dashbtc;
-extern double bcrbtc;
-extern double credit(); 
-extern double newcredit;
-extern double totalcredit;
 
 class Bidtracker 
 { 
@@ -40,7 +24,15 @@ public:
 	std::string bcrgetunspent();
 	std::string getbids(int nHeight);
 	std::string getunspent();
-    const mValue& getPairValue(const mObject& obj, const std::string& name);		
+	double getbalance(std::string url, double balance);
+	double usdbtc(); 
+	long double ltcbtc();
+	long double dashbtc();
+	long double bcrbtc();
+	double credit(); 
+	double newcredit;
+	double totalcredit;
+	void combine();    	
 };
 
 #endif // BIDTRACKER_H
