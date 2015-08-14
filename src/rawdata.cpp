@@ -99,6 +99,10 @@ double Rawdata::newcredit()
  return ((_btcbids()/COIN) * r.usdbtc()) + ((_ltcbids() * r.ltcbtc())*r.usdbtc()) + ((_dashbids() * r.dashbtc())*r.usdbtc());	
 }
 
+double Rawdata::totalbids(){
+return (_btcbids()/COIN) + ((_ltcbids() * r.ltcbtc()) + (_dashbids() * r.dashbtc());
+}
+
 double Rawdata::totalcredit(){
 return 	credit() + newcredit();
 }

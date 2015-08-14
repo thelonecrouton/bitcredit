@@ -360,6 +360,7 @@ void dashsortunspent(){
 				semp = remove(semp, ',');
 				long double amount = atof(semp.c_str());
 				amount = amount/COIN;	
+				amount = amount * dashgetprice();
 				myfile2 << amount << std::endl;							
 			}
 		}
@@ -504,7 +505,8 @@ void ltcsortunspent(){
 				semp = semp.replace(g, std::string("\"tx_address_value\":").length(), "");
 				semp = remove(semp, ',');					
 				long double amount = atof(semp.c_str());
-				amount = amount/COIN;	
+				amount = amount/COIN;
+				amount = amount *ltcgetprice();	
 				myfile2 << amount << std::endl;					
 			}
 		}
@@ -513,60 +515,6 @@ void ltcsortunspent(){
 	}	
 }
 
-std::map<std::string,int64_t> btcfinal(){
-	std::map<std::string,int64_t> btctxlist;
-	
-	ifstream myfile ("btcbids.txt");
-	char * pEnd;
-	std::string line;
-	if (myfile.is_open()){
-		while ( myfile.good() ){
-			getline (myfile,line);
-			std::vector<std::string> strs;
-			boost::split(strs, line, boost::is_any_of(","));
-			btctxlist[strs[0]]=strtoll(strs[1].c_str(),&pEnd,10);
-		}
-		myfile.close();
-	}	
-	return btctxlist;
-}
-
-std::map<std::string,int64_t> dashfinal(){
-	std::map<std::string,int64_t> dashtxlist;
-	
-	ifstream myfile ("dashbids.txt");
-	char * pEnd;
-	std::string line;
-	if (myfile.is_open()){
-		while ( myfile.good() ){
-			getline (myfile,line);
-			std::vector<std::string> strs;
-			boost::split(strs, line, boost::is_any_of(","));
-			dashtxlist[strs[0]]=strtoll(strs[1].c_str(),&pEnd,10);
-		}
-		myfile.close();
-	}	
-	return dashtxlist;
-}
-
-std::map<std::string,int64_t> ltcfinal(){
-	std::map<std::string,int64_t> ltctxlist;
-	
-	ifstream myfile ("ltcbids.txt");
-	char * pEnd;
-	std::string line;
-	if (myfile.is_open()){
-		while ( myfile.good() ){
-			getline (myfile,line);
-			std::vector<std::string> strs;
-			boost::split(strs, line, boost::is_any_of(","));
-			ltctxlist[strs[0]]=strtoll(strs[1].c_str(),&pEnd,10);
-		}
-		myfile.close();
-	}	
-	return ltctxlist;
-}
-	
 double Bidtracker::usdbtc(){
 	
 return btcgetprice();	
@@ -593,40 +541,42 @@ return bcrgetprice();
 
 void Bidtracker::combine()
 {
-	std::map<std::string,int64_t> ltcunspentlist = ltcfinal();
-	std::map<std::string,int64_t>::iterator ltctxlistit;
-	std::map<std::string,int64_t> btcunspentlist = btcfinal();
-	std::map<std::string,int64_t>::iterator btctxlistit;
-	std::map<std::string,int64_t> dashunspentlist = dashfinal();
-	std::map<std::string,int64_t>::iterator dashtxlistit;
 		
 	std::ofstream myfile;
 	myfile.open("final.txt",fstream::out);
-		
-	for( btctxlistit = btcunspentlist.begin(); btctxlistit != btcunspentlist.end(); ++btctxlistit)
-	{
-	string btcaddy = btctxlistit->first;
-	long double amount = btctxlistit->second;	
-	myfile << btcaddy << "," << amount << std::endl;
-	}
-
-	for( ltctxlistit = ltcunspentlist.begin(); ltctxlistit != ltcunspentlist.end(); ++ltctxlistit)
-	{
-	string ltcaddy = ltctxlistit->first;
-	long double amount = ltctxlistit->second;
-	amount *= ltcbtc();
-	myfile << ltcaddy << "," << amount << std::endl;
-	}	
-
-	for( dashtxlistit = dashunspentlist.begin(); dashtxlistit != dashunspentlist.end(); ++dashtxlistit)
-	{
-	string dashaddy = dashtxlistit->first;
-	long double amount = dashtxlistit->second;
-	amount *= dashbtc();
-	myfile << dashaddy << "," << amount << std::endl;
-	}	
+	ifstream myfile2("btcbids.txt");
+	ifstream myfile3("ltcbids.txt");
+	ifstream myfile4("dashbids.txt");
 	
-	myfile.close();		  
+	if (myfile2.is_open()){
+		std::string line;
+		while ( myfile2.good() ){
+			getline (myfile2,line);	
+	myfile<<line<<endl;
+	}	}
+	if (myfile3.is_open()){
+		std::string line;
+		while ( myfile3.good() ){
+			getline (myfile3,line);	
+	myfile<<line<<endl;
+	}	}
+	if (myfile4.is_open()){
+		std::string line;
+		while ( myfile4.good() ){
+			getline (myfile4,line);	
+	myfile<<line;
+	}	}
+
+	myfile.close();	
+	myfile2.close();	
+	myfile3.close();	
+	myfile4.close();
+	remove("btcbids.txt");
+	remove("ltcbids.txt");
+	remove("dashbids.txt");
+	remove("btcunspentraw.txt");
+	remove("ltcunspentraw.txt");
+	remove("dashunspentraw.txt");			  
 }
 
 std::string Bidtracker::getbids(int nHeight){

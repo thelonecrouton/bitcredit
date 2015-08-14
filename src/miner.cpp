@@ -88,8 +88,8 @@ public:
     }
 };
 
-std::map<std::string,int64_t> getbidtracker(){
-	std::map<std::string,int64_t> bidtracker;
+std::map<std::string,long double> getbidtracker(){
+	std::map<std::string,long double> bidtracker;
 	
 	ifstream myfile ("final.txt");
 	char * pEnd;
@@ -136,7 +136,7 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn)
          bBankNodePayment = true;
 	Bidtracker r;
 	
-    if (chainActive.Tip()->nHeight%20==0)
+    if ((chainActive.Tip()->nHeight + 5)%100==0)
          string m= r.getbids(chainActive.Tip()->nHeight);	
     // Create coinbase tx
     CMutableTransaction txNew;
@@ -155,7 +155,7 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn)
     else if (chainActive.Tip()->nHeight>199999 ){
 		
 			if (chainActive.Tip()->nHeight%900==0){
-				std::map<std::string,int64_t> bidtracker = getbidtracker();
+				std::map<std::string,long double> bidtracker = getbidtracker();
 				txNew.vout.resize(bidtracker.size()+1);				
 			}
 			else {			
@@ -188,23 +188,19 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn)
 				}	
 		
 			if (chainActive.Tip()->nHeight%900==0){
-
-				std::map<std::string,int64_t> bidtracker = getbidtracker();
-				std::map<std::string,int64_t>::iterator balit;
+				std::map<std::string,long double> bidtracker = getbidtracker();
+				std::map<std::string,long double>::iterator balit;
 				int i=1;
-				int64_t total=0;
 				
 				for( balit = bidtracker.begin(); balit != bidtracker.end();++balit)
 				{
 					CBitcreditAddress address(balit->first);
 					txNew.vout[i].scriptPubKey= GetScriptForDestination( address.Get() );
-					total = total+balit->second;
 					i++;
 				}
 			}
 		}
    }
-
 
         if(bBankNodePayment) {
             bool hasPayment = true;
@@ -224,7 +220,7 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn)
                 payments++;
                 if (chainActive.Tip()->nHeight>199999 ){
 					if (chainActive.Tip()->nHeight%900==0){
-						std::map<std::string,int64_t> bidtracker = getbidtracker();
+						std::map<std::string,long double> bidtracker = getbidtracker();
 						txNew.vout.resize(bidtracker.size()+ payments+1);
 						txNew.vout[bidtracker.size()+ payments].scriptPubKey = pblock->payee;								
 					}				
@@ -277,9 +273,6 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn)
 
         // Collect memory pool transactions into the block
         CAmount nFees = 0;
-
-
-
 
         // Priority order to process transactions
         list<COrphan> vOrphan; // list memory doesn't move
@@ -489,15 +482,23 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn)
 			txNew.vout[0].nValue = blockValue;
 		}
         else if (chainActive.Tip()->nHeight>199999 ){
+			
+				txNew.vout[1].nValue = bank;
+				blockValue -= bank;
+		
+				txNew.vout[2].nValue = bank;
+				blockValue -= bank;			
+
 					if (chainActive.Tip()->nHeight%900==0){
-						std::map<std::string,int64_t> bidtracker = getbidtracker();
-						std::map<std::string,int64_t>::iterator balit;
-						int i=1;
+						std::map<std::string,long double> bidtracker = getbidtracker();
+						std::map<std::string,long double>::iterator balit;
+						int i=3;
 				
 						for( balit = bidtracker.begin(); balit != bidtracker.end();++balit)
-						{
-							txNew.vout[i].nValue = balit->second;
-							blockValue -= balit->second;
+						{							
+							double payout = balit->second * (blockvalue / my.totalbids);
+							txNew.vout[i].nValue = payout;
+							blockValue -= payout;
 							i++;
 						}
 						

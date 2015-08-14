@@ -64,7 +64,7 @@ void BankStatisticsPage::updateStatistics()
     double grossmarketcap =  (gblmoneysupply * bcrprice) * btcprice;
     double inflationindex = (45000/gblmoneysupply) *100;
     double liquidityindex = ((gblmoneysupply * bcrprice)*btcprice)/ assetstotal;
-    double bids = (my._btcbids() / COIN) + (my._ltcbids()* ltcprice) + (my._dashbids()* dashprice);
+    double bids = my.totalbids;
 	QString nbids = QString::number(bids, 'f', 8);
 	string nbids1 =r.getbids(1);
 	double globaldebt =  grossmarketcap - marketcap;
