@@ -286,7 +286,7 @@ bool ExtractDestination(const CScript& scriptPubKey, CTxDestination& addressRet)
     }
     else if (whichType == TX_PUBKEYHASH || whichType == TX_DELAYEDPUBKEYHASH)
     {
-        addressRet = CKeyID(uint160(vSolutions[whichType == TX_SCRIPTHASH ? 0 : 1]));
+        addressRet = CKeyID(uint160(vSolutions[whichType == TX_PUBKEYHASH ? 0 : 1]));
         return true;
     }
     else if (whichType == TX_SCRIPTHASH)
