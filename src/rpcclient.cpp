@@ -98,6 +98,8 @@ static const CRPCConvertParam vRPCConvertParams[] =
     { "sendbydelegate", 1 },
     { "createtransferescrow", 3 },
     { "createtransferescrow", 4 },
+
+
 };
 
 class CRPCConvertTable

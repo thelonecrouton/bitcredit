@@ -398,6 +398,9 @@ static const CRPCCommand vRPCCommands[] =
     { "escrow",           "dumpretrievalstrings",     &dumpretrievalstrings,   true,      false,	  false},
     { "escrow",           "clearretrievalstrings",    &clearretrievalstrings,  false,     false,      false},
 #endif
+
+    /*Mega Network */
+
 };
 
 CRPCTable::CRPCTable()

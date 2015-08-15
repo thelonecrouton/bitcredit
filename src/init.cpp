@@ -60,7 +60,7 @@ bool fFeeEstimatesInitialized = false;
 
 #ifdef WIN32
 // Win32 LevelDB doesn't use filedescriptors, and the ones used for
-// accessing block files, don't count towards to fd_set size limit
+// accessing block files don't count towards the fd_set size limit
 // anyway.
 #define MIN_CORE_FILEDESCRIPTORS 0
 #else
@@ -414,9 +414,9 @@ std::string HelpMessage(HelpMessageMode mode)
 std::string LicenseInfo()
 {
     return FormatParagraph(strprintf(_("Copyright (C) 2009-%i The Bitcredit Core Developers"), COPYRIGHT_YEAR)) + "\n" +
-           
+           "\n" +
            FormatParagraph(_("This is experimental software.")) + "\n" +
-           
+           "\n" +
            FormatParagraph(_("Distributed under the MIT software license, see the accompanying file COPYING or <http://www.opensource.org/licenses/mit-license.php>.")) + "\n" +
            "\n" +
            FormatParagraph(_("This product includes software developed by the OpenSSL Project for use in the OpenSSL Toolkit <https://www.openssl.org/> and cryptographic software written by Eric Young and UPnP software written by Thomas Bernard.")) +
@@ -679,6 +679,7 @@ bool AppInit2(boost::thread_group& threadGroup)
     if (nFD - MIN_CORE_FILEDESCRIPTORS < nMaxConnections)
         nMaxConnections = nFD - MIN_CORE_FILEDESCRIPTORS;
 
+
     // ********************************************************* Step 3: parameter-to-internal-flags
 
     fDebug = !mapMultiArgs["-debug"].empty();
@@ -696,6 +697,10 @@ bool AppInit2(boost::thread_group& threadGroup)
     fDebugSmsg = GetBoolArg("-debugsmsg", false);
     
     fNoSmsg = GetBoolArg("-nosmsg", false); 
+
+   /*** MEGANET Services ***/
+    fAssetsEnabled = GetBoolArg("-assets", true);
+    fIbtpEnabled = GetBoolArg("-meganet", true);
 
     // Check for -debugnet
     if (GetBoolArg("-debugnet", false))
@@ -1091,8 +1096,7 @@ bool AppInit2(boost::thread_group& threadGroup)
             InitError(_("Invalid amount for -advertisedbalance=<percentage>"));
             return false;
         }
-    }
-
+    }    
 
     // ********************************************************* Step 7: load block chain
 

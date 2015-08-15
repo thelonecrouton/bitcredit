@@ -16,6 +16,7 @@
 #include "darksend.h"
 #include "wallet.h"
 
+
 #ifdef WIN32
 #include <string.h>
 #else
@@ -71,7 +72,7 @@ namespace {
 //
 bool fDiscover = true;
 bool fListen = true;
-uint64_t nLocalServices = NODE_NETWORK | SMSG_RELAY | NODE_ESCROW;
+uint64_t nLocalServices = NODE_NETWORK | SMSG_RELAY | NODE_ESCROW | NODE_BANK | NODE_BRIDGE | NODE_ASSETS | NODE_IBTP;
 CCriticalSection cs_mapLocalHost;
 map<CNetAddr, LocalServiceInfo> mapLocalHost;
 static bool vfReachable[NET_MAX] = {};
@@ -557,6 +558,8 @@ void CNode::copyStats(CNodeStats &stats)
     X(nSendBytes);
     X(nRecvBytes);
     X(fWhitelisted);
+    X(sBlockchain);
+    X(fForeignNode);
 
     // It is common for nodes with good ping times to suddenly become lagged,
     // due to a new block arriving or other large transfer.
@@ -1432,7 +1435,6 @@ bool OpenNetworkConnection(const CAddress& addrConnect, CSemaphoreGrant *grantOu
     return true;
 }
 
-
 void ThreadMessageHandler()
 {
     SetThreadPriority(THREAD_PRIORITY_BELOW_NORMAL);
@@ -1697,6 +1699,28 @@ void StartNode(boost::thread_group& threadGroup)
            addrman.size(), GetTimeMillis() - nStart);
     fAddressesInitialized = true;
 
+    // Set our local services appropriately
+    nLocalServices = NODE_NETWORK;
+
+    if(activeBanknode.status == BANKNODE_IS_CAPABLE && GetBoolArg("-escrow", true))
+        nLocalServices |= NODE_ESCROW;
+
+    if(GetBoolArg("-assets", true))
+        nLocalServices |= NODE_ASSETS;
+    
+    if(GetBoolArg("-meganet", true))
+        nLocalServices |= NODE_IBTP;
+
+    if(activeBanknode.status == BANKNODE_IS_CAPABLE)
+        nLocalServices |= NODE_BANK;
+
+    if((GetBoolArg("-meganet", true)) && activeBanknode.status == BANKNODE_IS_CAPABLE)
+        nLocalServices |= NODE_BRIDGE;
+
+    //if(GetBoolArg("-smash", true))
+    //    nLocalServices |= NODE_SMASH;
+
+
     if (semOutbound == NULL) {
         // initialize semaphore
         int nMaxOutbound = min(MAX_OUTBOUND_CONNECTIONS, nMaxConnections);
@@ -1734,6 +1758,7 @@ void StartNode(boost::thread_group& threadGroup)
 
     // Dump network addresses
     threadGroup.create_thread(boost::bind(&LoopForever<void (*)()>, "dumpaddr", &DumpAddresses, DUMP_ADDRESSES_INTERVAL * 1000));
+
 }
 
 bool StopNode()
@@ -2049,6 +2074,8 @@ CNode::CNode(SOCKET hSocketIn, CAddress addrIn, std::string addrNameIn, bool fIn
     nPingUsecStart = 0;
     nPingUsecTime = 0;
     fPingQueued = false;
+    sBlockchain = "Bitcredit ";
+    fForeignNode = false;   
 
     {
         LOCK(cs_nLastNodeId);

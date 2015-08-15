@@ -143,6 +143,7 @@ extern bool fLargeWorkForkFound;
 extern CCriticalSection grantdb;
 extern std::map<std::string,int64_t > grantAwards;
 extern std::map<std::string,int64_t>::iterator gait;
+extern bool bPlumeUserEnabled;
 
 /** Best header we've seen so far (used for getheaders queries' starting points). */
 extern CBlockIndex *pindexBestHeader;
@@ -220,8 +221,8 @@ bool GetNodeStateStats(NodeId nodeid, CNodeStateStats &stats);
 void Misbehaving(NodeId nodeid, int howmuch);
 /** Flush all state, indexes and buffers to disk. */
 void FlushStateToDisk();
-
-
+std::string CompressData(std::string uncompressed);
+std::string UncompressData(std::string compressed);
 /** (try to) add transaction to memory pool **/
 bool AcceptToMemoryPool(CTxMemPool& pool, CValidationState &state, const CTransaction &tx, bool fLimitFree,
                         bool* pfMissingInputs, bool fRejectInsaneFee=false);

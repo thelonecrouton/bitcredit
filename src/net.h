@@ -212,6 +212,8 @@ public:
     double dPingTime;
     double dPingWait;
     std::string addrLocal;
+    std::string sBlockchain;
+    bool fForeignNode;    
 };
 
 
@@ -376,7 +378,10 @@ public:
     int64_t nPingUsecTime;
     // Whether a ping is requested.
     bool fPingQueued;
-
+    // Name of the node's blockchain/coin network
+    std::string sBlockchain;
+    // whether this is a foreign ibtp node
+    bool fForeignNode;
     CNode(SOCKET hSocketIn, CAddress addrIn, std::string addrNameIn = "", bool fInboundIn=false);
     ~CNode();
 

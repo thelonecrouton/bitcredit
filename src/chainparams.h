@@ -82,11 +82,12 @@ public:
     const std::vector<unsigned char>& Base58Prefix(Base58Type type) const { return base58Prefixes[type]; }
     const std::vector<CAddress>& FixedSeeds() const { return vFixedSeeds; }
     virtual const Checkpoints::CCheckpointData& Checkpoints() const = 0;
+    MessageStartChars pchMessageStart;
 protected:
     CChainParams() {}
 
     uint256 hashGenesisBlock;
-    MessageStartChars pchMessageStart;
+    
     //! Raw pub key bytes for the broadcast alert signing key.
     std::vector<unsigned char> vAlertPubKey;
     int nDefaultPort;

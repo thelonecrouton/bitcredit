@@ -251,7 +251,6 @@ BITCREDIT_QT_H = \
   qt/blockbrowser.h \
   qt/bankstatisticspage.h \
   qt/verticallabel.h \
-  qt/stats.h \
   qt/qcustomplot.h \
   qt/exchangebrowser.h \
   qt/chatwindow.h \

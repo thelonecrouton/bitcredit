@@ -57,6 +57,11 @@ extern bool fLogTimestamps;
 extern bool fLogIPs;
 extern volatile bool fReopenDebugLog;
 extern bool fReindexing;
+extern bool fPlumeEnabled;
+extern bool fAiCoreEnabled;
+extern bool fAssetsEnabled;
+extern bool fIbtpEnabled;
+extern bool fBurstEnabled;
 void SetupEnvironment();
 
 /** Return true if log accepts specified category */
@@ -250,5 +255,13 @@ template <typename Callable> void TraceThread(const char* name,  Callable func)
         throw;
     }
 }
+
+/**
+ * @brief GetDoubleArg
+ * @param strArg Argument to get (e.g. "-foo")
+ * @param nDefault (e.g. 0.001)
+ * @return command-line argument or default value
+ */
+double GetDoubleArg(const std::string& strArg, float nDefault);
 
 #endif // BITCREDIT_UTIL_H

@@ -106,6 +106,9 @@ public:
 
     /** New block has been accepted */
     boost::signals2::signal<void (const uint256& hash)> NotifyBlockTip;
+
+    // vocalize request
+    boost::signals2::signal<void (std::string sentence)> NotifyVocalizeRequest;
 };
 
 extern CClientUIInterface uiInterface;

@@ -3,6 +3,7 @@
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
+#include "ibtp.h"
 #include "protocol.h"
 
 #include "chainparams.h"
@@ -12,6 +13,8 @@
 #ifndef WIN32
 # include <arpa/inet.h>
 #endif
+
+CIbtp ibtpp;
 
 static const char* ppszTypeName[] =
 {
@@ -59,7 +62,9 @@ std::string CMessageHeader::GetCommand() const
 bool CMessageHeader::IsValid() const
 {
     // Check start string
-    if (memcmp(pchMessageStart, Params().MessageStart(), MESSAGE_START_SIZE) != 0)
+   // if (memcmp(pchMessageStart, Params().MessageStart(), MESSAGE_START_SIZE) != 0)
+    std::string schain;
+    if (memcmp(pchMessageStart, Params().MessageStart(), MESSAGE_START_SIZE) != 0&& !ibtpp.IsIbtpChain(Params().MessageStart(), schain))
         return false;
 
     // Check the command string for errors

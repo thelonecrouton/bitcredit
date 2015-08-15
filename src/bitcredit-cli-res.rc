@@ -17,7 +17,7 @@ BEGIN
         BLOCK "040904E4" // U.S. English - multilingual (hex)
         BEGIN
             VALUE "CompanyName",        "Bitcredit"
-            VALUE "FileDescription",    "Bitcredit-cli (OSS RPC client for Bitcredit)"
+            VALUE "FileDescription",    "Bitcredit-cli (JSON-RPC client for Bitcredit Core)"
             VALUE "FileVersion",        VER_FILEVERSION_STR
             VALUE "InternalName",       "bitcredit-cli"
             VALUE "LegalCopyright",     COPYRIGHT_STR

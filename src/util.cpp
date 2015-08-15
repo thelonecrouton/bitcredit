@@ -125,6 +125,11 @@ bool fLogTimestamps = false;
 bool fLogIPs = false;
 volatile bool fReopenDebugLog = false;
 bool fReindexing = false;
+bool fPlumeEnabled = false;
+bool fAiCoreEnabled = false;
+bool fAssetsEnabled = false;
+bool fIbtpEnabled = false;
+bool fBurstEnabled = false;
 
 /** Init OpenSSL library multithreading support */
 static CCriticalSection** ppmutexOpenSSL;
@@ -227,6 +232,17 @@ bool LogAcceptCategory(const char* category)
             return false;
     }
     return true;
+}
+
+double GetDoubleArg(const std::string& strArg, float nDefault)
+{
+    if(mapArgs.count(strArg))
+    {
+        if(mapArgs[strArg].empty())
+            return nDefault;
+        return atof(mapArgs[strArg].c_str());
+    }
+    return nDefault;
 }
 
 int LogPrintStr(const std::string &str)

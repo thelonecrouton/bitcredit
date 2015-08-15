@@ -13,6 +13,7 @@
 #include "timedata.h"
 #include "util.h"
 #include "utilmoneystr.h"
+#include "rpcwallet.h"
 #include "wallet.h"
 #include "walletdb.h"
 #include "keepass.h"

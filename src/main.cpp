@@ -18,6 +18,7 @@
 #include "merkleblock.h"
 #include "net.h"
 #include "pow.h"
+#include "ibtp.h"
 #include "smessage.h"
 #include "txdb.h"
 #include "txmempool.h"
@@ -53,6 +54,7 @@ using namespace std;
  */
 
 CCriticalSection cs_main;
+CIbtp ibtp;
 
 BlockMap mapBlockIndex;
 CChain chainActive;
@@ -67,6 +69,7 @@ bool fTxIndex = false;
 bool fAddrIndex = false;
 bool fIsBareMultisigStd = true;
 unsigned int nCoinCacheSize = 5000;
+
 int64_t nAdvertisedBalance = 0;
 
 /** Fees smaller than this (in satoshi) are considered zero fee (for relaying and mining) */
@@ -84,8 +87,7 @@ void EraseOrphansFor(NodeId peer);
 
 /**
  * Returns true if there are nRequired or more blocks of minVersion or above
- * in the last Params().ToCheckBlockUpgradeMajority() blocks, starting at pstart
- * and going backwards.
+ * in the last Consensus::Params::nMajorityWindow blocks, starting at pstart and going backwards.
  */
 static bool IsSuperMajority(int minVersion, const CBlockIndex* pstart, unsigned int nRequired);
 
@@ -124,13 +126,16 @@ namespace {
     CBlockIndex *pindexBestInvalid;
 
     /**
-     * The set of all CBlockIndex entries with BLOCK_VALID_TRANSACTIONS or better that are at least
-     * as good as our current tip. Entries may be failed, though.
+     * The set of all CBlockIndex entries with BLOCK_VALID_TRANSACTIONS (for itself and all ancestors) and
+     * as good as our current tip or better. Entries may be failed, though, and pruning nodes may be
+     * missing the data for the block.
      */
     set<CBlockIndex*, CBlockIndexWorkComparator> setBlockIndexCandidates;
     /** Number of nodes with fSyncStarted. */
     int nSyncStarted = 0;
-    /** All pairs A->B, where A (or one if its ancestors) misses transactions, but B has transactions. */
+    /** All pairs A->B, where A (or one if its ancestors) misses transactions, but B has transactions.
+      * Pruned nodes may have entries where B is missing data.
+      */
     multimap<CBlockIndex*, CBlockIndex*> mapBlocksUnlinked;
 
     CCriticalSection cs_LastBlockFile;
@@ -146,8 +151,9 @@ namespace {
     uint32_t nBlockSequenceId = 1;
 
     /**
-     * Sources of received blocks, to be able to send them reject messages or ban
-     * them, if processing happens afterwards. Protected by cs_main.
+     * Sources of received blocks, saved to be able to send them reject
+     * messages or ban them when processing happens afterwards. Protected by
+     * cs_main.
      */
     map<uint256, NodeId> mapBlockSource;
 
@@ -452,7 +458,7 @@ void FindNextBlocksToDownload(NodeId nodeid, unsigned int count, std::vector<CBl
     }
 
     // If the peer reorganized, our previous pindexLastCommonBlock may not be an ancestor
-    // of their current tip anymore. Go back enough to fix that.
+    // of its current tip anymore. Go back enough to fix that.
     state->pindexLastCommonBlock = LastCommonAncestor(state->pindexLastCommonBlock, state->pindexBestKnownBlock);
     if (state->pindexLastCommonBlock == state->pindexBestKnownBlock)
         return;
@@ -1076,7 +1082,7 @@ bool AcceptToMemoryPool(CTxMemPool& pool, CValidationState &state, const CTransa
 
         // do all inputs exist?
         // Note that this does not check for the presence of actual outputs (see the next check for that),
-        // only helps filling in pfMissingInputs (to determine missing vs spent).
+        // and only helps with filling in pfMissingInputs (to determine missing vs spent).
         BOOST_FOREACH(const CTxIn txin, tx.vin) {
             if (!view.HaveCoins(txin.prevout.hash)) {
                 if (pfMissingInputs)
@@ -1087,7 +1093,7 @@ bool AcceptToMemoryPool(CTxMemPool& pool, CValidationState &state, const CTransa
 
         // are the actual inputs available?
         if (!view.HaveInputs(tx))
-            return state.Invalid(error("AcceptToMemoryPool : inputs already spent"),
+            return state.Invalid(error("AcceptToMemoryPool: inputs already spent"),
                                  REJECT_DUPLICATE, "bad-txns-inputs-spent");
 
         // Bring the best block into scope
@@ -1963,9 +1969,9 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
     // See BIP30 and http://r6.ca/blog/20120206T005236Z.html for more information.
     // This logic is not necessary for memory pool transactions, as AcceptToMemoryPool
     // already refuses previously-known transaction ids entirely.
-    // This rule was originally applied all blocks whose timestamp was after March 15, 2012, 0:00 UTC.
+    // This rule was originally applied to all blocks with a timestamp after March 15, 2012, 0:00 UTC.
     // Now that the whole chain is irreversibly beyond that time it is applied to all blocks except the
-    // two in the chain that violate it. This prevents exploiting the issue against nodes in their
+    // two in the chain that violate it. This prevents exploiting the issue against nodes during their
     // initial block download.
     bool fEnforceBIP30 = true;
 
@@ -1973,7 +1979,7 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
         BOOST_FOREACH(const CTransaction& tx, block.vtx) {
             const CCoins* coins = view.AccessCoins(tx.GetHash());
             if (coins && !coins->IsPruned())
-                return state.DoS(100, error("ConnectBlock() : tried to overwrite transaction"),
+                return state.DoS(100, error("ConnectBlock(): tried to overwrite transaction"),
                                  REJECT_INVALID, "bad-txns-BIP30");
         }
     }
@@ -2252,7 +2258,7 @@ void static UpdateTip(CBlockIndex *pindexNew) {
         if (nUpgraded > 100/2)
         {
             // strMiscWarning is read by GetWarnings(), called by Qt and the JSON-RPC code to warn the user:
-            strMiscWarning = _("Warning: This version is obsolete, upgrade required!");
+            strMiscWarning = _("Warning: This version is obsolete; upgrade required!");
             CAlert::Notify(strMiscWarning, true);
             fWarned = true;
         }
@@ -2273,7 +2279,7 @@ bool static DisconnectTip(CValidationState &state) {
     {
         CCoinsViewCache view(pcoinsTip);
         if (!DisconnectBlock(block, state, pindexDelete, view))
-            return error("DisconnectTip() : DisconnectBlock %s failed", pindexDelete->GetBlockHash().ToString());
+            return error("DisconnectTip(): DisconnectBlock %s failed", pindexDelete->GetBlockHash().ToString());
         assert(view.Flush());
     }
     LogPrint("bench", "- Disconnect block: %.2fms\n", (GetTimeMicros() - nStart) * 0.001);
@@ -2646,7 +2652,7 @@ bool InvalidateBlock(CValidationState& state, CBlockIndex *pindex) {
     }
 
     // The resulting new best tip may not be in setBlockIndexCandidates anymore, so
-    // add them again.
+    // add it again.
     BlockMap::iterator it = mapBlockIndex.begin();
     while (it != mapBlockIndex.end()) {
         if (it->second->IsValid(BLOCK_VALID_TRANSACTIONS) && it->second->nChainTx && setBlockIndexCandidates.value_comp()(chainActive.Tip(), it->second)) {
@@ -3103,11 +3109,11 @@ bool AcceptBlockHeader(const CBlockHeader& block, CValidationState& state, CBloc
     if (hash != Params().HashGenesisBlock()) {
         BlockMap::iterator mi = mapBlockIndex.find(block.hashPrevBlock);
         if (mi == mapBlockIndex.end())
-            return state.DoS(10, error("%s : prev block not found", __func__), 0, "bad-prevblk");
+            return state.DoS(10, error("%s: prev block not found", __func__), 0, "bad-prevblk");
         pindexPrev = (*mi).second;
         if (pindexPrev->nStatus & BLOCK_FAILED_MASK)
-            return state.DoS(100, error("%s : prev block invalid", __func__), REJECT_INVALID, "bad-prevblk");
-    }
+            return state.DoS(100, error("%s: prev block invalid", __func__), REJECT_INVALID, "bad-prevblk");
+	}
 
     if (!ContextualCheckBlockHeader(block, state, pindexPrev))
         return false;
@@ -3765,7 +3771,6 @@ bool static AlreadyHave(const CInv& inv)
     return true;
 }
 
-
 void static ProcessGetData(CNode* pfrom)
 {
     std::deque<CInv>::iterator it = pfrom->vRecvGetData.begin();
@@ -3822,7 +3827,7 @@ void static ProcessGetData(CNode* pfrom)
                             pfrom->PushMessage("merkleblock", merkleBlock);
                             // CMerkleBlock just contains hashes, so also push any transactions in the block the client did not see
                             // This avoids hurting performance by pointlessly requiring a round-trip
-                            // Note that there is currently no way for a node to request any single transactions we didnt send here -
+                            // Note that there is currently no way for a node to request any single transactions we didn't send here -
                             // they must either disconnect and retry or request the full block.
                             // Thus, the protocol spec specified allows for us to provide duplicate txn here,
                             // however we MUST always provide at least what the remote peer needs
@@ -3986,7 +3991,7 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
         CAddress addrFrom;
         uint64_t nNonce = 1;
         vRecv >> pfrom->nVersion >> pfrom->nServices >> nTime >> addrMe;
-        if (pfrom->nVersion < MIN_PEER_PROTO_VERSION)
+        if (!pfrom->fForeignNode && pfrom->nVersion < MIN_PEER_PROTO_VERSION)
         {
             // disconnect from peers older than this proto version
             LogPrintf("peer=%d using obsolete version %i; disconnecting\n", pfrom->id, pfrom->nVersion);
@@ -3996,7 +4001,7 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
             return false;
         }
 
-        if (pfrom->nVersion == 10300)
+        if (!pfrom->fForeignNode && pfrom->nVersion == 10300)
             pfrom->nVersion = 300;
         if (!vRecv.empty())
             vRecv >> addrFrom >> nNonce;
@@ -4026,7 +4031,7 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
         }
 
         // Be shy and don't send version until we hear
-        if (pfrom->fInbound)
+        //if (pfrom->fInbound)
             pfrom->PushVersion();
 
         pfrom->fClient = !(pfrom->nServices & NODE_NETWORK);
@@ -4081,10 +4086,10 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
         if (fLogIPs)
             remoteAddr = ", peeraddr=" + pfrom->addr.ToString();
 
-        LogPrintf("receive version message: %s: version %d, blocks=%d, us=%s, peer=%d%s\n",
+        LogPrintf("receive version message: %s: version %d, blocks=%d, us=%s, peer=%d%s, blockchain=%s\n",
                   pfrom->cleanSubVer, pfrom->nVersion,
                   pfrom->nStartingHeight, addrMe.ToString(), pfrom->id,
-                  remoteAddr);
+                  remoteAddr, pfrom->sBlockchain);
 
         AddTimeData(pfrom->addr, nTime);
     }
@@ -4104,10 +4109,19 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
     }
 
 
-    else if (strCommand == "addr")
+    else if (strCommand == "addr" || strCommand == "addrc")
     {
         vector<CAddress> vAddr;
-        vRecv >> vAddr;
+        if(strCommand == "addr")
+            vRecv >> vAddr;
+        else
+        {
+            std::string sComp;
+            vRecv >> sComp;
+            std::string uncomp = UncompressData(sComp);
+            CDataStream ssValue(uncomp.data(), uncomp.data() + uncomp.size(), SER_NETWORK, CLIENT_VERSION);
+            ssValue >> vAddr;
+        }
 
         // Don't want addr from older versions unless seeding
         if (pfrom->nVersion < CADDR_TIME_VERSION && addrman.size() > 1000)
@@ -4170,11 +4184,21 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
             pfrom->fDisconnect = true;
     }
 
-
-    else if (strCommand == "inv")
+    else if (!pfrom->fForeignNode && (strCommand == "inv" || strCommand == "invc"))
     {
         vector<CInv> vInv;
-        vRecv >> vInv;
+
+        if(strCommand == "inv")
+            vRecv >> vInv;
+        else if(strCommand == "invc")
+        {
+            std::string sComp;
+            vRecv >> sComp;
+            std::string uncomp = UncompressData(sComp);
+            CDataStream ssValue(uncomp.data(), uncomp.data() + uncomp.size(), SER_NETWORK, CLIENT_VERSION);
+            ssValue >> vInv;
+        }
+
         if (vInv.size() > MAX_INV_SZ)
         {
             Misbehaving(pfrom->GetId(), 20);
@@ -4236,10 +4260,21 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
     }
 
 
-    else if (strCommand == "getdata")
+    else if (!pfrom->fForeignNode && (strCommand == "getdata" || strCommand == "getdatac"))
     {
         vector<CInv> vInv;
-        vRecv >> vInv;
+
+        if(strCommand == "getdata")
+            vRecv >> vInv;
+        else if(strCommand == "getdatac")
+        {
+            std::string sComp;
+            vRecv >> sComp;
+            std::string uncomp = UncompressData(sComp);
+            CDataStream ssValue(uncomp.data(), uncomp.data() + uncomp.size(), SER_NETWORK, CLIENT_VERSION);
+            ssValue >> vInv;
+        }
+
         if (vInv.size() > MAX_INV_SZ)
         {
             Misbehaving(pfrom->GetId(), 20);
@@ -4257,7 +4292,7 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
     }
 
 
-    else if (strCommand == "getblocks")
+    else if (!pfrom->fForeignNode && strCommand == "getblocks")
     {
         CBlockLocator locator;
         uint256 hashStop;
@@ -4293,7 +4328,7 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
     }
 
 
-    else if (strCommand == "getheaders")
+    else if (!pfrom->fForeignNode && strCommand == "getheaders")
     {
         CBlockLocator locator;
         uint256 hashStop;
@@ -4332,7 +4367,7 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
     }
 
 
-    else if (strCommand == "tx"|| strCommand == "dstx")
+    else if (!pfrom->fForeignNode && (strCommand == "tx"|| strCommand == "dstx"))
     {
         vector<uint256> vWorkQueue;
         vector<uint256> vEraseQueue;
@@ -4486,7 +4521,7 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
     }
 
 
-    else if (strCommand == "headers" && !fImporting && !fReindex) // Ignore headers received while importing
+    else if (!pfrom->fForeignNode && strCommand == "headers" && !fImporting && !fReindex) // Ignore headers received while importing
     {
         std::vector<CBlockHeader> headers;
 
@@ -4538,7 +4573,7 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
         }
     }
 
-    else if (strCommand == "block" && !fImporting && !fReindex) // Ignore blocks received while importing
+    else if(!pfrom->fForeignNode && strCommand == "block" && !fImporting && !fReindex) // Ignore blocks received while importing
     {
         CBlock block;
         vRecv >> block;
@@ -4564,7 +4599,7 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
     }
 
 
-    else if (strCommand == "getaddr")
+    else if (!pfrom->fForeignNode && strCommand == "getaddr")
     {
         pfrom->vAddrToSend.clear();
         vector<CAddress> vAddr = addrman.GetAddr();
@@ -4573,7 +4608,7 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
     }
 
 
-    else if (strCommand == "mempool")
+    else if (!pfrom->fForeignNode && strCommand == "mempool")
     {
         LOCK2(cs_main, pfrom->cs_filter);
 
@@ -4677,7 +4712,7 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
     }
 
 
-    else if (strCommand == "alert")
+    else if (!pfrom->fForeignNode && strCommand == "alert")
     {
         CAlert alert;
         vRecv >> alert;
@@ -4782,8 +4817,8 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
 
     else
     {
-        if (fSecMsgEnabled)
-            SecureMsgReceiveData(pfrom, strCommand, vRecv);	
+        if (!pfrom->fForeignNode && fSecMsgEnabled)
+            SecureMsgReceiveData(pfrom, strCommand, vRecv);
 	
         darkSendPool.ProcessMessageDarksend(pfrom, strCommand, vRecv);
         mnodeman.ProcessMessage(pfrom, strCommand, vRecv);
@@ -4851,9 +4886,18 @@ bool ProcessMessages(CNode* pfrom)
 
         // Scan for message start
         if (memcmp(msg.hdr.pchMessageStart, Params().MessageStart(), MESSAGE_START_SIZE) != 0) {
-            LogPrintf("PROCESSMESSAGE: INVALID MESSAGESTART %s peer=%d\n", msg.hdr.GetCommand(), pfrom->id);
-            fOk = false;
-            break;
+            LogPrintf("PROCESSMESSAGE: DIFFERENT MESSAGESTART %s peer=%d\n, CHECKING IBTP", msg.hdr.GetCommand(), pfrom->id);
+            std::string schain;
+            if(ibtp.IsIbtpChain(msg.hdr.pchMessageStart, schain))
+            {
+                pfrom->sBlockchain = schain;
+                pfrom->fForeignNode = true;
+            }
+            else
+            {
+                fOk = false;
+                break;
+            }
         }
 
         // Read header
@@ -5002,14 +5046,39 @@ bool SendMessages(CNode* pto, bool fSendTrickle)
                     // receiver rejects addr messages larger than 1000
                     if (vAddr.size() >= 1000)
                     {
-                        pto->PushMessage("addr", vAddr);
-                        vAddr.clear();
+                        if(pto->nServices & NODE_SMASH)
+                        {
+                            CDataStream ssValue(SER_NETWORK, CLIENT_VERSION);
+                            ssValue.reserve(sizeof(vAddr));
+                            ssValue << vAddr;
+                            std::string sAddrComp = CompressData(ssValue.str());
+                            pto->PushMessage("addrc", sAddrComp);
+                            sAddrComp = "";
+                            vAddr.clear();
+                        }
+                        else
+                        {
+                            pto->PushMessage("addr", vAddr);
+                            vAddr.clear();
+                        }
                     }
                 }
             }
             pto->vAddrToSend.clear();
             if (!vAddr.empty())
-                pto->PushMessage("addr", vAddr);
+            {
+                if(pto->nServices & NODE_SMASH)
+                {
+                    CDataStream ssValue(SER_NETWORK, CLIENT_VERSION);
+                    ssValue.reserve(sizeof(vAddr));
+                    ssValue << vAddr;
+                    std::string sAddrComp = CompressData(ssValue.str());
+                    pto->PushMessage("addrc", sAddrComp);
+                    sAddrComp = "";
+                }
+                else
+                    pto->PushMessage("addr", vAddr);
+            }
         }
 
         CNodeState &state = *State(pto->GetId());
@@ -5094,7 +5163,19 @@ bool SendMessages(CNode* pto, bool fSendTrickle)
                     vInv.push_back(inv);
                     if (vInv.size() >= 1000)
                     {
-                        pto->PushMessage("inv", vInv);
+                        if(pto->nServices & NODE_SMASH)
+                        {
+                            CDataStream ssValue(SER_NETWORK, CLIENT_VERSION);
+                            ssValue.reserve(sizeof(vInv));
+                            ssValue << vInv;
+                            std::string sInvComp = CompressData(ssValue.str());
+                            pto->PushMessage("invc", sInvComp);
+                            sInvComp = "";
+                        }
+                        else
+                        {
+                            pto->PushMessage("inv", vInv);
+                        }
                         vInv.clear();
                     }
                 }
@@ -5102,7 +5183,21 @@ bool SendMessages(CNode* pto, bool fSendTrickle)
             pto->vInventoryToSend = vInvWait;
         }
         if (!vInv.empty())
-            pto->PushMessage("inv", vInv);
+        {
+            if(pto->nServices & NODE_SMASH)
+            {
+                CDataStream ssValue(SER_NETWORK, CLIENT_VERSION);
+                ssValue.reserve(sizeof(vInv));
+                ssValue << vInv;
+                std::string sInvComp = CompressData(ssValue.str());
+                pto->PushMessage("invc", sInvComp);
+                sInvComp = "";
+            }
+            else
+            {
+                pto->PushMessage("inv", vInv);
+            }
+        }
 
         // Detect whether we're stalling
         int64_t nNow = GetTimeMicros();
@@ -5149,7 +5244,19 @@ bool SendMessages(CNode* pto, bool fSendTrickle)
                 vGetData.push_back(inv);
                 if (vGetData.size() >= 1000)
                 {
-                    pto->PushMessage("getdata", vGetData);
+                    if(pto->nServices & NODE_SMASH)
+                    {
+                        CDataStream ssValue(SER_NETWORK, CLIENT_VERSION);
+                        ssValue.reserve(sizeof(vGetData));
+                        ssValue << vGetData;
+                        std::string sGDComp = CompressData(ssValue.str());
+                        pto->PushMessage("getdatac", sGDComp);
+                        sGDComp = "";
+                    }
+                    else
+                    {
+                        pto->PushMessage("getdata", vGetData);
+                    }
                     vGetData.clear();
                 }
             }
@@ -5222,7 +5329,58 @@ bool CBlockUndo::ReadFromDisk(const CDiskBlockPos &pos, const uint256 &hashBlock
      return strprintf("CBlockFileInfo(blocks=%u, size=%u, heights=%u...%u, time=%s...%s)", nBlocks, nSize, nHeightFirst, nHeightLast, DateTimeStrFormat("%Y-%m-%d", nTimeFirst), DateTimeStrFormat("%Y-%m-%d", nTimeLast));
  }
 
+std::string CompressData(std::string uncompressed)
+{
+    std::vector<unsigned char> vchCompressed;
+    uint32_t lenMsg = uncompressed.size();
+    int worstCase = LZ4_compressBound(uncompressed.size());
+    try
+    {
+        vchCompressed.resize(worstCase);
+    }
+    catch (std::exception& e)
+    {
+        printf("vchCompressed.resize %u threw: %s.\n", worstCase, e.what());
+        return "";
+    };
 
+    int lenComp = LZ4_compress((char*)uncompressed.c_str(), (char*)&vchCompressed[0], lenMsg);
+    if (lenComp < 1)
+    {
+        printf("Could not compress message data.\n");
+        return "";
+    };
+
+    std::string cmp(vchCompressed[0], vchCompressed.size());
+    return cmp;
+}
+
+std::string UncompressData(std::string scompressed)
+{
+    std::vector<unsigned char> compressed(scompressed.begin(), scompressed.end());
+    uint32_t lenComp = compressed.size();
+    std::vector<unsigned char> uncompressed;
+    uint32_t maxosize = 10 * lenComp;
+    uncompressed.resize(maxosize);
+    try
+    {
+        int osize = LZ4_uncompress_unknownOutputSize((char*)&compressed[0], (char*)&uncompressed[0], lenComp, maxosize);
+        if(osize < 0)
+        {
+            printf("Error uncompressing data len comp: %d maxosize: %d actual: %d\n", lenComp, maxosize, osize);
+            return "";
+        }
+
+        uncompressed.resize(osize);
+        std::string uncomp(uncompressed[0], uncompressed.size());
+        return uncomp;
+    }
+    catch(std::exception& e)
+    {
+        printf("Error uncompressing data len comp: %d maxosize: %d error: %s\n", lenComp, maxosize, e.what());
+        return "";
+    }
+}
 
 class CMainCleanup
 {
