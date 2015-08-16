@@ -150,22 +150,16 @@ Value getpeerinfo(const Array& params, bool fHelp)
         if(SMSG_RELAY)
             svcDesc = "MSG RELAY";
 
-        if(NODE_AI)
-            svcDesc += " AI";
-
         if(NODE_ASSETS)
             svcDesc += " ASSETS";
 
-        if(NODE_BURST)
-            svcDesc += " BURST";
+        if(NODE_ESCROW)
+            svcDesc += " ESCROW";
 
         if(NODE_IBTP)
             svcDesc += " IBTP";
 
-        if(NODE_PLUME)
-            svcDesc += " PLUME";
-
-        if(NODE_BANK)
+        if(BANK_NODE)
             svcDesc += " BANK";
 
         if(NODE_BRIDGE)

@@ -5046,39 +5046,14 @@ bool SendMessages(CNode* pto, bool fSendTrickle)
                     // receiver rejects addr messages larger than 1000
                     if (vAddr.size() >= 1000)
                     {
-                        if(pto->nServices & NODE_SMASH)
-                        {
-                            CDataStream ssValue(SER_NETWORK, CLIENT_VERSION);
-                            ssValue.reserve(sizeof(vAddr));
-                            ssValue << vAddr;
-                            std::string sAddrComp = CompressData(ssValue.str());
-                            pto->PushMessage("addrc", sAddrComp);
-                            sAddrComp = "";
-                            vAddr.clear();
-                        }
-                        else
-                        {
-                            pto->PushMessage("addr", vAddr);
-                            vAddr.clear();
-                        }
+                        pto->PushMessage("addr", vAddr);
+                        vAddr.clear();
                     }
                 }
             }
             pto->vAddrToSend.clear();
             if (!vAddr.empty())
-            {
-                if(pto->nServices & NODE_SMASH)
-                {
-                    CDataStream ssValue(SER_NETWORK, CLIENT_VERSION);
-                    ssValue.reserve(sizeof(vAddr));
-                    ssValue << vAddr;
-                    std::string sAddrComp = CompressData(ssValue.str());
-                    pto->PushMessage("addrc", sAddrComp);
-                    sAddrComp = "";
-                }
-                else
-                    pto->PushMessage("addr", vAddr);
-            }
+                pto->PushMessage("addr", vAddr);
         }
 
         CNodeState &state = *State(pto->GetId());
@@ -5163,19 +5138,7 @@ bool SendMessages(CNode* pto, bool fSendTrickle)
                     vInv.push_back(inv);
                     if (vInv.size() >= 1000)
                     {
-                        if(pto->nServices & NODE_SMASH)
-                        {
-                            CDataStream ssValue(SER_NETWORK, CLIENT_VERSION);
-                            ssValue.reserve(sizeof(vInv));
-                            ssValue << vInv;
-                            std::string sInvComp = CompressData(ssValue.str());
-                            pto->PushMessage("invc", sInvComp);
-                            sInvComp = "";
-                        }
-                        else
-                        {
-                            pto->PushMessage("inv", vInv);
-                        }
+                        pto->PushMessage("inv", vInv);
                         vInv.clear();
                     }
                 }
@@ -5183,21 +5146,7 @@ bool SendMessages(CNode* pto, bool fSendTrickle)
             pto->vInventoryToSend = vInvWait;
         }
         if (!vInv.empty())
-        {
-            if(pto->nServices & NODE_SMASH)
-            {
-                CDataStream ssValue(SER_NETWORK, CLIENT_VERSION);
-                ssValue.reserve(sizeof(vInv));
-                ssValue << vInv;
-                std::string sInvComp = CompressData(ssValue.str());
-                pto->PushMessage("invc", sInvComp);
-                sInvComp = "";
-            }
-            else
-            {
-                pto->PushMessage("inv", vInv);
-            }
-        }
+            pto->PushMessage("inv", vInv);
 
         // Detect whether we're stalling
         int64_t nNow = GetTimeMicros();
@@ -5244,19 +5193,7 @@ bool SendMessages(CNode* pto, bool fSendTrickle)
                 vGetData.push_back(inv);
                 if (vGetData.size() >= 1000)
                 {
-                    if(pto->nServices & NODE_SMASH)
-                    {
-                        CDataStream ssValue(SER_NETWORK, CLIENT_VERSION);
-                        ssValue.reserve(sizeof(vGetData));
-                        ssValue << vGetData;
-                        std::string sGDComp = CompressData(ssValue.str());
-                        pto->PushMessage("getdatac", sGDComp);
-                        sGDComp = "";
-                    }
-                    else
-                    {
-                        pto->PushMessage("getdata", vGetData);
-                    }
+                    pto->PushMessage("getdata", vGetData);
                     vGetData.clear();
                 }
             }

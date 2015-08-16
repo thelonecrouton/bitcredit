@@ -125,11 +125,9 @@ bool fLogTimestamps = false;
 bool fLogIPs = false;
 volatile bool fReopenDebugLog = false;
 bool fReindexing = false;
-bool fPlumeEnabled = false;
-bool fAiCoreEnabled = false;
 bool fAssetsEnabled = false;
 bool fIbtpEnabled = false;
-bool fBurstEnabled = false;
+bool fEscrowEnabled = false;
 
 /** Init OpenSSL library multithreading support */
 static CCriticalSection** ppmutexOpenSSL;

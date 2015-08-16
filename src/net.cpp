@@ -72,7 +72,7 @@ namespace {
 //
 bool fDiscover = true;
 bool fListen = true;
-uint64_t nLocalServices = NODE_NETWORK | SMSG_RELAY | NODE_ESCROW | NODE_BANK | NODE_BRIDGE | NODE_ASSETS | NODE_IBTP;
+uint64_t nLocalServices = NODE_NETWORK | SMSG_RELAY | NODE_ESCROW | BANK_NODE | NODE_BRIDGE | NODE_ASSETS | NODE_IBTP;
 CCriticalSection cs_mapLocalHost;
 map<CNetAddr, LocalServiceInfo> mapLocalHost;
 static bool vfReachable[NET_MAX] = {};
@@ -1712,14 +1712,10 @@ void StartNode(boost::thread_group& threadGroup)
         nLocalServices |= NODE_IBTP;
 
     if(activeBanknode.status == BANKNODE_IS_CAPABLE)
-        nLocalServices |= NODE_BANK;
+        nLocalServices |= BANK_NODE;
 
     if((GetBoolArg("-meganet", true)) && activeBanknode.status == BANKNODE_IS_CAPABLE)
         nLocalServices |= NODE_BRIDGE;
-
-    //if(GetBoolArg("-smash", true))
-    //    nLocalServices |= NODE_SMASH;
-
 
     if (semOutbound == NULL) {
         // initialize semaphore

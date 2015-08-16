@@ -57,11 +57,9 @@ extern bool fLogTimestamps;
 extern bool fLogIPs;
 extern volatile bool fReopenDebugLog;
 extern bool fReindexing;
-extern bool fPlumeEnabled;
-extern bool fAiCoreEnabled;
 extern bool fAssetsEnabled;
 extern bool fIbtpEnabled;
-extern bool fBurstEnabled;
+extern bool fEscrowEnabled;
 void SetupEnvironment();
 
 /** Return true if log accepts specified category */

@@ -76,14 +76,10 @@ enum {
     // BIP process.
     SMSG_RELAY  = (1 << 1),
     NODE_ESCROW = (1 << 2),
-    NODE_PLUME  = (1 << 3),
-    NODE_AI     = (1 << 4),
-    NODE_ASSETS = (1 << 5),
-    NODE_IBTP   = (1 << 6),
-    NODE_BURST  = (1 << 7),
-    NODE_SMASH  = (1 << 8),
-    NODE_BANK   = (1 << 9),
-    NODE_BRIDGE = (1 << 10),
+    NODE_ASSETS = (1 << 3),
+    NODE_IBTP   = (1 << 4),
+    BANK_NODE   = (1 << 5),
+    NODE_BRIDGE = (1 << 6),
 };
 
 /** A CService with information about it as peer */

@@ -15,10 +15,11 @@ using namespace std;
 
 void CIbtp::LoadMsgStart()
 {
-    vChains.push_back(SChain("Litecoin ", "LTC", 0xfa, 0xf2, 0xef, 0xb4));
+    vChains.push_back(SChain("Litecoin ", "LTC", 0xfb, 0xc0, 0xb6, 0xdb));
     vChains.push_back(SChain("Bitcoin", "BTC", 0xfa, 0xb2, 0xef, 0xf2));
     vChains.push_back(SChain("Dash", "DSH", 0xbf, 0x0c, 0x6b, 0xbd));
-	vChains.push_back(SChain("Bitcredit", "BCR", 0xbf, 0x0c, 0x6b, 0xbd));
+	vChains.push_back(SChain("Bitcredit", "BCR", 0xf9, 0xbe, 0xb4, 0xd9));
+
 }
 
 bool CIbtp::IsIbtpChain(const unsigned char msgStart[], std::string& chainName)
@@ -28,9 +29,9 @@ bool CIbtp::IsIbtpChain(const unsigned char msgStart[], std::string& chainName)
     BOOST_FOREACH(SChain p, vChains)
     {
         unsigned char pchMsg[4] = { p.pchMessageOne, p.pchMessageTwo, p.pchMessageThree, p.pchMessageFour };
-        if(memcmp(hdr.pchMessageStart, Params().MessageStart(), MESSAGE_START_SIZE))
-        {
-            //if(memcmp(hdr.pchMessageStart, Params().MessageStart(), MESSAGE_START_SIZE) == 0)
+        //if(memcmp(hdr.pchMessageStart, Params().MessageStart(), MESSAGE_START_SIZE))
+		if(memcmp(msgStart, Params().MessageStart(), MESSAGE_START_SIZE !=0))
+        {            
 			if(memcmp(msgStart, pchMsg, sizeof(pchMsg)) == 0)
             {
                 bFound = true;

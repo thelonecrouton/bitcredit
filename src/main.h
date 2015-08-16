@@ -143,8 +143,7 @@ extern bool fLargeWorkForkFound;
 extern CCriticalSection grantdb;
 extern std::map<std::string,int64_t > grantAwards;
 extern std::map<std::string,int64_t>::iterator gait;
-extern bool bPlumeUserEnabled;
-
+extern bool fEscrowEnabled;
 /** Best header we've seen so far (used for getheaders queries' starting points). */
 extern CBlockIndex *pindexBestHeader;
 
