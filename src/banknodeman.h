@@ -26,7 +26,7 @@ class CBanknodeMan;
 extern CBanknodeMan mnodeman;
 void DumpBanknodes();
 
-/** Access to the MN database (mncache.dat)
+/** Access to the MN database (nodecache.dat)
  */
 class CBanknodeDB
 {

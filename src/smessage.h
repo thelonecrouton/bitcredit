@@ -6,7 +6,7 @@
 
 #include <leveldb/db.h>
 #include <leveldb/write_batch.h>
-
+ 
 #include "base58.h"
 #include "net.h"
 #include "db.h"

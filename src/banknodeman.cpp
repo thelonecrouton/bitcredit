@@ -40,7 +40,7 @@ struct CompareValueOnlyMN
 
 CBanknodeDB::CBanknodeDB()
 {
-    pathMN = GetDataDir() / "mncache.dat";
+    pathMN = GetDataDir() / "nodecache.dat";
     strMagicMessage = "BanknodeCache";
 }
 
@@ -72,7 +72,7 @@ bool CBanknodeDB::Write(const CBanknodeMan& mnodemanToSave)
     FileCommit(fileout.Get());
     fileout.fclose();
 
-    LogPrintf("Written info to mncache.dat  %dms\n", GetTimeMillis() - nStart);
+    LogPrintf("Written info to nodecache.dat  %dms\n", GetTimeMillis() - nStart);
     LogPrintf("  %s\n", mnodemanToSave.ToString());
 
     return true;
@@ -154,7 +154,7 @@ CBanknodeDB::ReadResult CBanknodeDB::Read(CBanknodeMan& mnodemanToLoad)
     }
 
     mnodemanToLoad.CheckAndRemove(); // clean out expired
-    LogPrintf("Loaded info from mncache.dat  %dms\n", GetTimeMillis() - nStart);
+    LogPrintf("Loaded info from nodecache.dat  %dms\n", GetTimeMillis() - nStart);
     LogPrintf("  %s\n", mnodemanToLoad.ToString());
 
     return Ok;
@@ -167,14 +167,14 @@ void DumpBanknodes()
     CBanknodeDB mndb;
     CBanknodeMan tempMnodeman;
 
-    LogPrintf("Verifying mncache.dat format...\n");
+    LogPrintf("Verifying nodecache.dat format...\n");
     CBanknodeDB::ReadResult readResult = mndb.Read(tempMnodeman);
     // there was an error and it was not an error on file openning => do not proceed
     if (readResult == CBanknodeDB::FileError)
-        LogPrintf("Missing banknode cache file - mncache.dat, will try to recreate\n");
+        LogPrintf("Missing banknode cache file - nodecache.dat, will try to recreate\n");
     else if (readResult != CBanknodeDB::Ok)
     {
-        LogPrintf("Error reading mncache.dat: ");
+        LogPrintf("Error reading nodecache.dat: ");
         if(readResult == CBanknodeDB::IncorrectFormat)
             LogPrintf("magic is ok but data has invalid format, will try to recreate\n");
         else
@@ -183,7 +183,7 @@ void DumpBanknodes()
             return;
         }
     }
-    LogPrintf("Writting info to mncache.dat...\n");
+    LogPrintf("Writting info to nodecache.dat...\n");
     mndb.Write(mnodeman);
 
     LogPrintf("Banknode dump finished  %dms\n", GetTimeMillis() - nStart);

@@ -57,7 +57,7 @@ using namespace std;
 static int const escrow_expiry = 5;
 
 namespace {
-    const int MAX_OUTBOUND_CONNECTIONS = 64;
+    const int MAX_OUTBOUND_CONNECTIONS = 8;
 
     struct ListenSocket {
         SOCKET socket;
@@ -81,7 +81,7 @@ static CNode* pnodeLocalHost = NULL;
 uint64_t nLocalHostNonce = 0;
 static std::vector<ListenSocket> vhListenSocket;
 CAddrMan addrman;
-int nMaxConnections = 200;
+int nMaxConnections = 125;
 bool fAddressesInitialized = false;
 
 vector<CNode*> vNodes;

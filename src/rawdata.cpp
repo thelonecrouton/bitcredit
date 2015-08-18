@@ -15,7 +15,7 @@ std::string bcrreservesurl ="http://chainz.cryptoid.info/bcr/api.dws?q=getbalanc
 std::string btcbidsurl ="https://blockchain.info/q/addressbalance/19CMyEEXUoNrpJEipadqmmpZqznWsRc9RV";
 std::string dashbidsurl ="http://chainz.cryptoid.info/dash/api.dws?q=getbalance&a=Xj4XjWytC6Etax46JDgwJLPxLSA3XdaQ1C";
 std::string ltcreservesurl = "http://ltc.blockr.io/api/v1/address/balance/LS18wropMM8VwT8YFiEZJE7LK8UdZVXXyE";
-std::string btcreservesurl = "https://blockchain.info/q/addressbalance/19CMyEEXUoNrpJEipadqmmpZqznWsRc9RV";
+std::string btcreservesurl = "https://blockchain.info/q/addressbalance/3AsVTW5W5NL8bx1twwR7TabFAYGKstizjt";
 std::string dashreservesurl = "http://chainz.cryptoid.info/dash/api.dws?q=getbalance&a=Xj4XjWytC6Etax46JDgwJLPxLSA3XdaQ1C"; 
 Bidtracker r;
 

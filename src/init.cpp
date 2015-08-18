@@ -1407,10 +1407,10 @@ bool AppInit2(boost::thread_group& threadGroup)
     CBanknodeDB mndb;
     CBanknodeDB::ReadResult readResult = mndb.Read(mnodeman);
     if (readResult == CBanknodeDB::FileError)
-        LogPrintf("Missing banknode cache file - mncache.dat, will try to recreate\n");
+        LogPrintf("Missing banknode cache file - nodecache.dat, will try to recreate\n");
     else if (readResult != CBanknodeDB::Ok)
     {
-        LogPrintf("Error reading mncache.dat: ");
+        LogPrintf("Error reading nodecache.dat: ");
         if(readResult == CBanknodeDB::IncorrectFormat)
             LogPrintf("magic is ok but data has invalid format, will try to recreate\n");
         else
@@ -1524,11 +1524,11 @@ bool AppInit2(boost::thread_group& threadGroup)
 
     threadGroup.create_thread(boost::bind(&ThreadCheckDarkSendPool));
 
-  //  SecureMsgStart(fNoSmsg, GetBoolArg("-smsgscanchain", false));
+    SecureMsgStart(fNoSmsg, GetBoolArg("-smsgscanchain", false));
 
     if (!CheckDiskSpace())
         return false;
-
+ 
     if (!strErrors.str().empty())
         return InitError(strErrors.str());
 

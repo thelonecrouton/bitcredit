@@ -370,11 +370,11 @@ static const CRPCCommand vRPCCommands[] =
 #endif
 	
     /* Secure Messaging */
-    { "secureMsg",          "smsgenable",             &smsgenable,             true,      false, 	  false},
+    { "secureMsg",          "smsgenable",             &smsgenable,             true,      false, 	  true},
     { "secureMsg" ,         "smsgdisable",            &smsgdisable,            true,      false,	  false},
     { "secureMsg" ,         "smsglocalkeys",          &smsglocalkeys,          true,      false,	  true },
     { "secureMsg" ,         "smsgoptions",            &smsgoptions,            true,      false,	  false},
-    { "secureMsg" ,         "smsgscanchain",          &smsgscanchain,          true,      false,	  false},
+    { "secureMsg" ,         "smsgscanchain",          &smsgscanchain,          true,      false,	  true},
     { "secureMsg" ,         "smsgscanbuckets",        &smsgscanbuckets,        true,      false,	  false},
     { "secureMsg" ,         "smsgaddkey",             &smsgaddkey,             true,      false,	  false},
     { "secureMsg" ,         "smsggetpubkey",          &smsggetpubkey,          true,      false,	  false},

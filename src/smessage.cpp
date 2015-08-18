@@ -5,7 +5,7 @@
 /*
 Notes:
     Running with -debug could leave to and from address hashes and public keys in the log.
-
+ 
 
     parameters:
         -nosmsg             Disable secure messaging (fNoSmsg)
@@ -54,8 +54,8 @@ Notes:
 #include "db.h"
 #include "init.h" // pwalletMain
 #include "rpcprotocol.h"
-#include "txdb-leveldb.h"
-
+//#include "txdb-leveldb.h"
+#include "leveldbwrapper.h"
 #include "lz4/lz4.c"
 #include "xxhash/xxhash.h"
 #include "xxhash/xxhash.c"
