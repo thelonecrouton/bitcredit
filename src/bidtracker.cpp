@@ -9,6 +9,7 @@
 #include <string>
 #include <fstream>
 #include <boost/algorithm/string.hpp>
+#include <boost/filesystem.hpp>
 #include <sys/stat.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -62,10 +63,10 @@ double Bidtracker::getbalance(std::string url, double balance)
 
 void btcsortunspent(){
 
-	ifstream myfile ("btcunspentraw.txt");
+	ifstream myfile ((GetDataDir()/ "bidtracker/btcunspentraw.dat").string().c_str());
 	std::ofstream myfile2;
-	myfile2.open("btcbids.txt",fstream::out);
-	
+	myfile2.open((GetDataDir()/ "bidtracker/btcbids.dat").string().c_str(),fstream::out);
+
 	std::string line, txid, url;
 	if (myfile.is_open()){
 		while ( myfile.good() ){
@@ -122,6 +123,7 @@ void btcsortunspent(){
 				value = remove(value, ',');
 				long double amount = atof(value.c_str());
 				amount = amount/COIN;	
+	myfile2.precision(8);
 				myfile2 << amount << std::endl;				
 			}
 		}
@@ -151,9 +153,18 @@ std::string Bidtracker::btcgetunspent()
         curl_easy_cleanup(curl);
         }
 
-      
+    boost::filesystem::path biddir = GetDataDir() / "bidtracker";
+
+    if(!(boost::filesystem::exists(biddir))){
+        std::cout<<"biddir Doesn't Exists"<<std::endl;
+
+        if (boost::filesystem::create_directory(biddir))
+            std::cout << "....Successfully Created !" << std::endl;
+    }
+
+	const char * d = (GetDataDir().string() + "/bidtracker/btcunspentraw.dat").c_str();
 	std::ofstream myfile;
-	myfile.open("btcunspentraw.txt",fstream::out);
+	myfile.open(d,fstream::out);
 	readBuffer = remove(readBuffer, ' ');
 	readBuffer = remove(readBuffer, '"');
 	myfile << readBuffer << std::endl;
@@ -218,7 +229,6 @@ double dashgetprice()
 	readBuffer = replacestring(readBuffer, "message", "");
 	readBuffer = replacestring(readBuffer, "resultBid", "");
 	readBuffer = remove(readBuffer, '\n'); 
-   // price = atof(readBuffer.c_str());  
    if ( ! (istringstream(readBuffer) >> price) ) price = 0;
 
     return price;
@@ -256,7 +266,6 @@ double bcrgetprice()
 	readBuffer = replacestring(readBuffer, "resultBid", "");
 	readBuffer = remove(readBuffer, '\n');
     if ( ! (istringstream(readBuffer) >> price) ) price = 0;
-    //price = atof(readBuffer.c_str());  
 
       return price;
 }
@@ -292,7 +301,6 @@ double ltcgetprice()
 	readBuffer = replacestring(readBuffer, "message", "");
 	readBuffer = replacestring(readBuffer, "resultBid", "");
 	readBuffer = remove(readBuffer, '\n');
-    //price = atof(readBuffer.c_str());   
 	if ( ! (istringstream(readBuffer) >> price) ) price = 0;
 
     return price;
@@ -300,10 +308,10 @@ double ltcgetprice()
 
 void dashsortunspent(){
 
-	ifstream myfile ("dashunspentraw.txt");
+	ifstream myfile ((GetDataDir() /"bidtracker/dashunspentraw.dat").string().c_str());
 	std::ofstream myfile2;
-	myfile2.open("dashbids.txt",fstream::out);
-	
+	myfile2.open((GetDataDir() /"bidtracker/dashbids.dat").string().c_str(),fstream::out);
+
 	std::string line;
 	if (myfile.is_open()){
 		while ( myfile.good() ){
@@ -321,8 +329,7 @@ void dashsortunspent(){
 				std::string semp =line;
 				semp = semp.replace(f, std::string("\"id\":").length(), "");
 				semp = remove(semp, '"');
-				semp = remove(semp, ',');
-				
+				semp = remove(semp, ',');				
 				string txid = semp;
 				string url;
 				url = "http://api.blockstrap.com/v0/drk/transaction/id/"+ txid + "?showtxn=1&showtxnio=1&";
@@ -343,12 +350,13 @@ void dashsortunspent(){
 			readBuffer = readBuffer.substr(0,pos);
 			string hemp = readBuffer;
 			std::size_t pos1 = hemp.find("\"address\"");
-			hemp = hemp.substr(pos1);			
+			hemp = hemp.substr(pos1);
 
 			string lemp = hemp;
 			std::size_t pos2 = lemp.find("\"}");
 			lemp = lemp.substr(0,pos2);			
 			lemp = replacestring(lemp, "\"address\":\"", "");
+	myfile2.precision(8);
 			myfile2 << lemp << ",";
 			}
 
@@ -368,7 +376,6 @@ void dashsortunspent(){
 		myfile2.close();
 	}	
 }
-
 
 std::string Bidtracker::dashgetunspent()
 {
@@ -391,7 +398,7 @@ std::string Bidtracker::dashgetunspent()
         }
     
 	std::ofstream myfile;
-	myfile.open("dashunspentraw.txt",fstream::out);
+	myfile.open((GetDataDir() /"bidtracker/dashunspentraw.dat").string().c_str(),fstream::out);
 	std::size_t pos = readBuffer.find("[{");
     readBuffer = readBuffer.substr (pos); 
 	readBuffer = replacestring(readBuffer, "},{", "\n},{"); 
@@ -425,9 +432,9 @@ std::string Bidtracker::ltcgetunspent()
         res = curl_easy_perform(curl);
         curl_easy_cleanup(curl);
         }
-    
+
 	std::ofstream myfile;
-	myfile.open("ltcunspentraw.txt",fstream::out);
+	myfile.open((GetDataDir() / "bidtracker/ltcunspentraw.dat").string().c_str(),fstream::out);
 	std::size_t pos = readBuffer.find("[{");
     readBuffer = readBuffer.substr (pos); 
 	readBuffer = replacestring(readBuffer, "},{", "\n},{"); 
@@ -444,10 +451,10 @@ std::string Bidtracker::ltcgetunspent()
 
 void ltcsortunspent(){
 
-	ifstream myfile ("ltcunspentraw.txt");
+	ifstream myfile ((GetDataDir() / "bidtracker/ltcunspentraw.dat").string().c_str());
 	std::ofstream myfile2;
-	myfile2.open("ltcbids.txt",fstream::out);
-	
+	myfile2.open((GetDataDir() / "bidtracker/ltcbids.dat").string().c_str(),fstream::out);
+
 	std::string line;
 	if (myfile.is_open()){
 		while ( myfile.good() ){
@@ -465,8 +472,7 @@ void ltcsortunspent(){
 				std::string semp =line;
 				semp = semp.replace(f, std::string("\"id\":").length(), "");
 				semp = remove(semp, '"');
-				semp = remove(semp, ',');
-				
+				semp = remove(semp, ',');				
 				string txid = semp;
 				string url;
 				url = "http://api.blockstrap.com/v0/ltc/transaction/id/"+ txid + "?showtxn=1&showtxnio=1&";
@@ -494,8 +500,8 @@ void ltcsortunspent(){
 			lemp = lemp.substr(0,pos2);
 			
 			lemp = replacestring(lemp, "\"address\":\"", "");
+	myfile2.precision(8);
 			myfile2 << lemp << ",";
-
 			}
 
 			search2 = "\"tx_address_value\":";
@@ -540,13 +546,12 @@ return bcrgetprice();
 } 
 
 void Bidtracker::combine()
-{
-		
+{		
 	std::ofstream myfile;
-	myfile.open("final.txt",fstream::out);
-	ifstream myfile2("btcbids.txt");
-	ifstream myfile3("ltcbids.txt");
-	ifstream myfile4("dashbids.txt");
+	myfile.open((GetDataDir() /"bidtracker/final.dat").string().c_str(),fstream::out);
+	ifstream myfile2((GetDataDir() /"bidtracker/btcbids.dat").string().c_str());
+	ifstream myfile3((GetDataDir() /"bidtracker/ltcbids.dat").string().c_str());
+	ifstream myfile4((GetDataDir() /"bidtracker/dashbids.dat").string().c_str());
 	
 	if (myfile2.is_open()){
 		std::string line;
@@ -564,25 +569,25 @@ void Bidtracker::combine()
 		std::string line;
 		while ( myfile4.good() ){
 			getline (myfile4,line);	
-	myfile<<line;
+	myfile<<line<<endl;
 	}	}
 
 	myfile.close();	
 	myfile2.close();	
 	myfile3.close();	
 	myfile4.close();
-	remove("btcbids.txt");
-	remove("ltcbids.txt");
-	remove("dashbids.txt");
-	remove("btcunspentraw.txt");
-	remove("ltcunspentraw.txt");
-	remove("dashunspentraw.txt");			  
+	remove((GetDataDir() /"bidtracker/btcbids.dat").string().c_str());
+	remove((GetDataDir() /"bidtracker/ltcbids.dat").string().c_str());
+	remove((GetDataDir() /"bidtracker/dashbids.dat").string().c_str());
+	remove((GetDataDir() /"bidtracker/btcunspentraw.dat").string().c_str());
+	remove((GetDataDir() /"bidtracker/ltcunspentraw.dat").string().c_str());
+	remove((GetDataDir() /"bidtracker/dashunspentraw.dat").string().c_str());			  
 }
 
 std::string Bidtracker::getbids(int nHeight){
 
-	ltcgetunspent();
 	btcgetunspent();
+	ltcgetunspent();
 	dashgetunspent();
 	ltcsortunspent();
 	btcsortunspent();
@@ -591,6 +596,3 @@ std::string Bidtracker::getbids(int nHeight){
 	
 	return "Bids Updated";
 }	
-
-
-

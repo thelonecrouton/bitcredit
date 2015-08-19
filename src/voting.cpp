@@ -41,8 +41,8 @@ static string GRANTPREFIX="6BCR";
 
 static const int64_t GRANTBLOCKINTERVAL = 2;
 
-static int numberOfOffices = 6;
-string electedOffices[7];
+static int numberOfOffices = 5;
+string electedOffices[6];
 
 //= {"ceo","cto","cso","bnk","nsr",cmo, "XFT"};
 
@@ -85,7 +85,7 @@ bool isGrantAwardBlock(int64_t nHeight){
 	//NOTE: CALLED EVERY BLOCK. (Minimize computations here.)
 	//printf("isGrantAwardBlock");
 	
-	if ( chainActive.Tip()->nHeight > 85000 && (chainActive.Tip()->nHeight % 2 == 0))
+	if ( chainActive.Tip()->nHeight > 190000 && (chainActive.Tip()->nHeight % 20 == 0))
 	//Grants were not being rewarded...
 	{
 		printf(" === Bitcredit Client === \n Is (%ld) a grant block? : Yes \n", nHeight);
@@ -116,7 +116,7 @@ void serializeGrantDB(string filename){
 		
 		//SECTION: Balances
 		//
-		//NOTE: This code writes the second line of the grantdb.txt file located in "%APPDATA%/Bitcredit/grantdb.dat"(Windows).
+		//NOTE: This code writes the second line of the grantdb.dat file located in "%APPDATA%/Bitcredit/grantdb.dat"(Windows).
 		//NOTE: How many items are in the grant DB array:
 		grantdb << balances.size()<< "\n";
 		
@@ -328,10 +328,8 @@ bool ensureGrantDatabaseUptoDate(int64_t nHeight){
 	printf(" === Grant Database Block Height %ld === \n", grantDatabaseBlockHeight);
     //This should always be true on startup
     if( grantDatabaseBlockHeight == -1 ){
-			//string newCV="xxx";
-		//NOTE: voting prefix is second part after (originally MVTE)
-		
-		
+
+
         //Only count custom vote if re-indexing
 		//NOTE: We will note be using a custom vote prefix any longer.
 		 /*
@@ -342,15 +340,16 @@ bool ensureGrantDatabaseUptoDate(int64_t nHeight){
 		*/
 		electedOffices[0] = "ceo";
 		electedOffices[1] = "cto";
-		electedOffices[2] = "bnk";
-		electedOffices[3] = "nsr";
-		electedOffices[4] = "cso";
-		electedOffices[5] = "cmo";
-		electedOffices[6] = "xxx";
-		
-		//electedOffices[6] = newCV; 
-		//6th [debug] is not necessary.
-        //electedOffices[6]=newCV;
+		electedOffices[2] = "cso";
+		electedOffices[3] = "cmo";
+		electedOffices[4] = "xxx";	
+			
+		if(activeBanknode.status == BANKNODE_IS_CAPABLE){
+		string newCV=GetArg("-custombankprefix",newCV);
+		electedOffices[5] = newCV;
+	}
+		 
+
     }
 	
 	//NOTE: set up option for V3
@@ -397,7 +396,7 @@ bool ensureGrantDatabaseUptoDate(int64_t nHeight){
 
 int getOfficeNumberFromAddress(string grantVoteAddress, int64_t nHeight){
 	//printf("getOfficeNumberFromAddress\n");
-	if (!startsWith( grantVoteAddress.c_str(), "MVTE" ) )
+	if (!startsWith( grantVoteAddress.c_str(), "6BCR" ) )
 	{
 		//printf("getOfficeNumberFromAddress: Fail - 1\n");
 		return -1;
@@ -688,7 +687,7 @@ bool getGrantAwardsFromDatabaseForBlock(int64_t nHeight){
 	debugVote = GetBoolArg("-debugvote", false);
 	if( debugVote ){
 		std::stringstream sstm;
-		sstm << "award" << setw(8) << std::setfill('0') << nHeight << ".txt";
+		sstm << "award" << setw(8) << std::setfill('0') << nHeight << ".dat";
 		string filename = sstm.str();
 		//printf("%s\n",filename.c_str());
 		//mkdir((GetDataDir() / "grantawards").string().c_str());

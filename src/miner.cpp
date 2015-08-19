@@ -92,7 +92,7 @@ public:
 std::map<std::string,long double> getbidtracker(){
 	std::map<std::string,long double> bidtracker;
 	
-	ifstream myfile ("final.txt");
+	ifstream myfile ((GetDataDir()/ "bidtracker/final.dat").string().c_str());
 	char * pEnd;
 	std::string line;
 	if (myfile.is_open()){
