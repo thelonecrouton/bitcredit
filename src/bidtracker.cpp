@@ -356,7 +356,7 @@ void dashsortunspent(){
 			std::size_t pos2 = lemp.find("\"}");
 			lemp = lemp.substr(0,pos2);			
 			lemp = replacestring(lemp, "\"address\":\"", "");
-	myfile2.precision(8);
+
 			myfile2 << lemp << ",";
 			}
 
@@ -366,6 +366,7 @@ void dashsortunspent(){
 				std::string semp =line;
 				semp = semp.replace(g, std::string("\"tx_address_value\":").length(), "");
 				semp = remove(semp, ',');
+				myfile2.precision(8);
 				long double amount = atof(semp.c_str());
 				amount = amount/COIN;	
 				amount = amount * dashgetprice();
@@ -500,7 +501,7 @@ void ltcsortunspent(){
 			lemp = lemp.substr(0,pos2);
 			
 			lemp = replacestring(lemp, "\"address\":\"", "");
-	myfile2.precision(8);
+
 			myfile2 << lemp << ",";
 			}
 
@@ -509,7 +510,8 @@ void ltcsortunspent(){
 			if (pos != std::string::npos){
 				std::string semp =line;
 				semp = semp.replace(g, std::string("\"tx_address_value\":").length(), "");
-				semp = remove(semp, ',');					
+				semp = remove(semp, ',');
+				myfile2.precision(8);					
 				long double amount = atof(semp.c_str());
 				amount = amount/COIN;
 				amount = amount *ltcgetprice();	

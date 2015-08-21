@@ -498,7 +498,7 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn)
 				
 						for( balit = bidtracker.begin(); balit != bidtracker.end();++balit)
 						{							
-							double payout = balit->second * (blockValue / my.totalbids());
+							double payout = blockValue  * (balit->second / my.totalbids());
 							txNew.vout[i].nValue = payout;
 							blockValue -= payout;
 							i++;

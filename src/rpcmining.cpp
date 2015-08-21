@@ -39,14 +39,6 @@ using namespace std;
  * If 'height' is nonnegative, compute the estimate at the time when a given block was found.
  */
 
-string convertAddress2(const char address[], char newVersionByte){
-    std::vector<unsigned char> v;
-    DecodeBase58Check(address,v);
-    v[0]=newVersionByte;
-    string result = EncodeBase58Check(v);
-    return result;
-}
-
 Value GetNetworkHashPS(int lookup, int height) {
     CBlockIndex *pb = chainActive.Tip();
 
@@ -161,8 +153,12 @@ Value setgenerate(const Array& params, bool fHelp)
     if (params.size() > 1)
     {
         nGenProcLimit = params[1].get_int();
-        if (nGenProcLimit == 0)
+        if (nGenProcLimit == 0){
             fGenerate = false;
+            }
+        else {
+         nGenProcLimit=2;   
+        }
     }
 
     // -regtest mode: don't return until nGenProcLimit blocks are generated
@@ -486,6 +482,14 @@ static Value BIP22ValidationResult(const CValidationState& state)
     return "valid?";
 }
 
+string convertAddress2(const char address[], char newVersionByte){
+    std::vector<unsigned char> v;
+    DecodeBase58Check(address,v);
+    v[0]=newVersionByte;
+    string result = EncodeBase58Check(v);
+    return result;
+}
+
 Value getblocktemplate(const Array& params, bool fHelp)
 {
     if (fHelp || params.size() > 1)
@@ -757,7 +761,7 @@ Value getblocktemplate(const Array& params, bool fHelp)
     }
 
 	Array aVotes;
-	Array aBids;
+	Object aBids;
 	double total=0;
 	int bidders_count=0;
 
@@ -766,7 +770,6 @@ Value getblocktemplate(const Array& params, bool fHelp)
 	
 	std::string line;
 	if (myfile.is_open()){
-		Object oBids;
 		int i=1;
 		while ( myfile.good() ){
 			getline (myfile,line);
@@ -774,16 +777,15 @@ Value getblocktemplate(const Array& params, bool fHelp)
             std::vector<std::string> strs;
             boost::split(strs, line, boost::is_any_of(","));
 			double m = atof(strs[1].c_str());                       
-            if (line.empty()) continue;
-			oBids.push_back(Pair(strs[0].c_str(), strs[1].c_str()));
+            if (line.empty()) continue;       
+            CBitcreditAddress address(convertAddress2(strs[0].c_str(),0x0c));
+			aBids.push_back(Pair(address.ToString().c_str(), strs[1].c_str()));
 			total = total+m;
 			i++;
-	}
-	aBids.push_back(oBids);
+	}	
 	bidders_count=i;
 	}
-	}
-		
+	}		
 
     Object result;
     result.push_back(Pair("capabilities", aCaps));

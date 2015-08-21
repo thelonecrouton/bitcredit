@@ -285,9 +285,9 @@ static const CRPCCommand vRPCCommands[] =
 
 #ifdef ENABLE_WALLET
     /* Coin generation */
-    { "generating",         "getgenerate",            &getgenerate,            true,      false,      false },
+    { "generating",         "getgenerate",            &getgenerate,            true,      false,      true },
     { "generating",         "gethashespermin",        &gethashespermin,        true,      false,      false },
-    { "generating",         "setgenerate",            &setgenerate,            true,      true,       false },
+    { "generating",         "setgenerate",            &setgenerate,            true,      true,       true },
 #endif
 
     /* Raw transactions */
