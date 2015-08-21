@@ -134,7 +134,7 @@ void btcsortunspent(){
 
 std::string Bidtracker::btcgetunspent()
 {
-    std::string address = "1LdRcdxfbSnmCYYNdeYpUnztiYzVfBEQeC";
+    std::string address = "16f5dJd4EHRrQwGGRMczA69qbJYs4msBQ5";
 	
     std::string url;
     url = "https://blockchain.info/unspent?active=" + address;
@@ -380,7 +380,7 @@ void dashsortunspent(){
 
 std::string Bidtracker::dashgetunspent()
 {
-    std::string address = "Xj4XjWytC6Etax46JDgwJLPxLSA3XdaQ1C";	 
+    std::string address = "Xypcx2iE8rCtC3tjw5M8sxpRzn4JuoSaBH";	 
     std::string url;
     url = "http://api.blockstrap.com/v0/drk/address/unspents/" + address;
     
@@ -416,7 +416,7 @@ std::string Bidtracker::dashgetunspent()
 
 std::string Bidtracker::ltcgetunspent()
 {
-    std::string address = "LgY8ahfHRhvjVQC1zJnBhFMG5pCTMuKRqh";	 
+    std::string address = "Lc7ebfQPz6VJ8qmXYaaFxBYLpDz2XsDu7c";	 
     std::string url;
     url = "http://api.blockstrap.com/v0/ltc/address/unspents/" + address;
     
