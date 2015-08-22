@@ -243,7 +243,15 @@ void TransactionRecord::updateStatus(const CWalletTx &wtx)
     status.cur_num_blocks = chainActive.Height();
     status.cur_num_ix_locks = nCompleteTXLocks;
 
-    if (!IsFinalTx(wtx, chainActive.Height() + 1))
+    if (wtx.IsEscrow() == TX_ESCROW ) {
+       status.status = TransactionStatus::Escrow;
+       type = TransactionRecord::SendAsDelegate;
+    } 
+    else if (wtx.IsEscrow() == TX_ESCROW_SENDER) {
+        status.status = TransactionStatus::Expiry;
+        type = TransactionRecord::SendByDelegate;
+    } 
+    else if (!IsFinalTx(wtx, chainActive.Height() + 1))
     {
         if (wtx.nLockTime < LOCKTIME_THRESHOLD)
         {

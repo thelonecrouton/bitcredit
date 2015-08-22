@@ -14,8 +14,13 @@
 #include <string.h>
 #include <string>
 #include <vector>
+#include "pubkey.h"
 
 static const unsigned int MAX_SCRIPT_ELEMENT_SIZE = 520; // bytes
+
+// Threshold for nLockTime: below this value it is interpreted as block number,
+// otherwise as UNIX timestamp.
+static const unsigned int LOCKTIME_THRESHOLD = 500000000; // Tue Nov  5 00:53:20 1985 UTC
 
 template <typename T>
 std::vector<unsigned char> ToByteVector(const T& in)
@@ -149,6 +154,7 @@ enum opcodetype
     // expansion
     OP_NOP1 = 0xb0,
     OP_NOP2 = 0xb1,
+    OP_CHECKLOCKTIMEVERIFY = OP_NOP2,
     OP_NOP3 = 0xb2,
     OP_NOP4 = 0xb3,
     OP_NOP5 = 0xb4,
@@ -158,14 +164,20 @@ enum opcodetype
     OP_NOP9 = 0xb8,
     OP_NOP10 = 0xb9,
 
+    OP_CHECKLOCKTIME = 0xc0,
+    OP_CHECKDATASIG = 0xba,
+    OP_CHECKTRANSFERNONCE = 0xbb,
+    OP_CHECKEXPIRY = 0xbc,
 
     // template matching params
+    OP_SCRIPTNUMBER = 0xf1,
     OP_SMALLDATA = 0xf9,
+    OP_NONCE = 0xf8,
+    OP_NUMERIC = 0xf0,
     OP_SMALLINTEGER = 0xfa,
     OP_PUBKEYS = 0xfb,
     OP_PUBKEYHASH = 0xfd,
     OP_PUBKEY = 0xfe,
-
     OP_INVALIDOPCODE = 0xff,
 };
 
@@ -194,7 +206,10 @@ public:
         m_value = n;
     }
 
-    explicit CScriptNum(const std::vector<unsigned char>& vch, bool fRequireMinimal)
+    static const size_t nDefaultMaxNumSize = 4;
+
+    explicit CScriptNum(const std::vector<unsigned char>& vch, bool fRequireMinimal,
+                        const size_t nMaxNumSize = nDefaultMaxNumSize)
     {
         if (vch.size() > nMaxNumSize) {
             throw scriptnum_error("script number overflow");
@@ -317,7 +332,7 @@ public:
         return result;
     }
 
-    static const size_t nMaxNumSize = 4;
+    
 
 private:
     static int64_t set_vch(const std::vector<unsigned char>& vch)
@@ -391,9 +406,29 @@ public:
     CScript& operator<<(opcodetype opcode)
     {
         if (opcode < 0 || opcode > 0xff)
-            throw std::runtime_error("CScript::operator<<() : invalid opcode");
+            throw std::runtime_error("CScript::operator<<(): invalid opcode");
         insert(end(), (unsigned char)opcode);
         return *this;
+    }
+
+    CScript& operator<<(const uint160& b)
+    {
+        insert(end(), sizeof(b));
+        insert(end(), (unsigned char*)&b, (unsigned char*)&b + sizeof(b));
+        return *this;
+    }
+
+    CScript& operator<<(const uint256& b)
+    {
+        insert(end(), sizeof(b));
+        insert(end(), (unsigned char*)&b, (unsigned char*)&b + sizeof(b));
+        return *this;
+    }
+
+    CScript& operator<<(const CPubKey& key)
+    {
+        std::vector<unsigned char> vchKey = std::vector<unsigned char>(key.begin(), key.end());
+        return (*this) << vchKey;
     }
 
     CScript& operator<<(const CScriptNum& b)

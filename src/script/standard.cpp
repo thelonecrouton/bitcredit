@@ -25,11 +25,19 @@ const char* GetTxnOutputType(txnouttype t)
     switch (t)
     {
     case TX_NONSTANDARD: return "nonstandard";
+    case TX_ESCROW_FEE: return "escrow-fee";
+    case TX_ESCROW_SENDER: return "escrow-sender";
+    case TX_ESCROW: return "escrow";
+    case TX_PUBKEYHASH_NONCED: return "pubkeyhash-nonced";    
     case TX_PUBKEY: return "pubkey";
     case TX_PUBKEYHASH: return "pubkeyhash";
     case TX_SCRIPTHASH: return "scripthash";
     case TX_MULTISIG: return "multisig";
     case TX_NULL_DATA: return "nulldata";
+    case TX_DELAYEDPUBKEY:      return "delayedpubkey";
+    case TX_DELAYEDPUBKEYHASH:  return "delayedpubkeyhash";
+    case TX_DELAYEDSCRIPTHASH:  return "delayedscripthash";
+    case TX_DELAYEDMULTISIG:    return "delayedmultisig";    
     }
     return NULL;
 }
@@ -46,11 +54,32 @@ bool Solver(const CScript& scriptPubKey, txnouttype& typeRet, vector<vector<unsi
         // Standard tx, sender provides pubkey, receiver adds signature
         mTemplates.insert(make_pair(TX_PUBKEY, CScript() << OP_PUBKEY << OP_CHECKSIG));
 
+        // P2SH puts the redemption conditions in the hands of the receiver
+        mTemplates.insert(make_pair(TX_SCRIPTHASH, CScript() << OP_HASH160 << OP_PUBKEYHASH << OP_EQUAL));
+        mTemplates.insert(make_pair(TX_DELAYEDSCRIPTHASH, CScript() << OP_SCRIPTNUMBER << OP_CHECKLOCKTIMEVERIFY << OP_HASH160 << OP_PUBKEYHASH << OP_EQUAL));
+ 
         // Bitcredit address tx, sender provides hash of pubkey, receiver provides signature and pubkey
         mTemplates.insert(make_pair(TX_PUBKEYHASH, CScript() << OP_DUP << OP_HASH160 << OP_PUBKEYHASH << OP_EQUALVERIFY << OP_CHECKSIG));
+        mTemplates.insert(make_pair(TX_DELAYEDPUBKEYHASH, CScript() << OP_SCRIPTNUMBER << OP_CHECKLOCKTIMEVERIFY << OP_DUP << OP_HASH160 << OP_PUBKEYHASH << OP_EQUALVERIFY << OP_CHECKSIG));
+
+        // Old Standard tx, sender provides pubkey, receiver adds signature
+        mTemplates.insert(make_pair(TX_PUBKEY, CScript() << OP_PUBKEY << OP_CHECKSIG));
+        mTemplates.insert(make_pair(TX_DELAYEDPUBKEY, CScript() << OP_SCRIPTNUMBER << OP_CHECKLOCKTIMEVERIFY << OP_PUBKEY << OP_CHECKSIG));
 
         // Sender provides N pubkeys, receivers provides M signatures
         mTemplates.insert(make_pair(TX_MULTISIG, CScript() << OP_SMALLINTEGER << OP_PUBKEYS << OP_SMALLINTEGER << OP_CHECKMULTISIG));
+        mTemplates.insert(make_pair(TX_DELAYEDMULTISIG, CScript() << OP_SCRIPTNUMBER << OP_CHECKLOCKTIMEVERIFY << OP_SMALLINTEGER << OP_PUBKEYS << OP_SMALLINTEGER << OP_CHECKMULTISIG));
+         
+        //Escrow transactions
+        mTemplates.insert(make_pair(TX_ESCROW, CScript() << OP_IF << OP_PUBKEYHASH << OP_DUP << OP_PUBKEY << OP_PUBKEY << OP_CHECKDATASIG << OP_VERIFY << OP_SWAP << OP_HASH160 << OP_EQUAL << OP_VERIFY << OP_PUBKEYHASH << OP_TOALTSTACK << OP_DUP << OP_HASH160 << OP_PUBKEYHASH << OP_EQUALVERIFY << OP_CHECKSIG << OP_ELSE << OP_NUMERIC << OP_CHECKEXPIRY << OP_ENDIF));
+
+        mTemplates.insert(make_pair(TX_ESCROW_SENDER, CScript() << OP_IF << OP_IF << OP_PUBKEYHASH << OP_DUP << OP_PUBKEY << OP_PUBKEY << OP_CHECKDATASIG << OP_VERIFY << OP_SWAP << OP_HASH160 << OP_EQUAL << OP_VERIFY << OP_CHECKTRANSFERNONCE << OP_ELSE << OP_PUBKEYHASH << OP_TOALTSTACK << OP_DUP << OP_HASH160 << OP_PUBKEYHASH << OP_EQUALVERIFY << OP_CHECKSIG << OP_ENDIF << OP_ELSE << OP_NUMERIC << OP_CHECKEXPIRY << OP_ENDIF));
+
+        mTemplates.insert(make_pair(TX_ESCROW_FEE, CScript() << OP_IF << OP_PUBKEYHASH << OP_TOALTSTACK << OP_DUP << OP_HASH160 << OP_PUBKEYHASH << OP_EQUALVERIFY << OP_CHECKSIG << OP_ELSE << OP_NUMERIC << OP_CHECKEXPIRY << OP_ENDIF));
+        
+      // transfer nonce, Bitcoin address tx, sender provides hash of pubkey, receiver provides signature and pubkey
+        mTemplates.insert(make_pair(TX_PUBKEYHASH_NONCED, CScript() << OP_NONCE << OP_TOALTSTACK << OP_DUP << OP_HASH160 << OP_PUBKEYHASH << OP_EQUALVERIFY << OP_CHECKSIG));
+  
 
         // Empty, provably prunable, data-carrying output
         if (GetBoolArg("-datacarrier", true))
@@ -129,6 +158,18 @@ bool Solver(const CScript& scriptPubKey, txnouttype& typeRet, vector<vector<unsi
                     break;
                 vSolutionsRet.push_back(vch1);
             }
+            else if (opcode2 == OP_NONCE)
+            {
+                if (vch1.size() > 9)
+                    break;
+                vSolutionsRet.push_back(vch1);
+            }
+            else if (opcode2 == OP_NUMERIC)
+            {
+                if (vch1.size() > 4)
+                    break;
+                vSolutionsRet.push_back(vch1);
+            }
             else if (opcode2 == OP_SMALLINTEGER)
             {   // Single-byte small integer pushed onto vSolutions
                 if (opcode1 == OP_0 ||
@@ -136,6 +177,16 @@ bool Solver(const CScript& scriptPubKey, txnouttype& typeRet, vector<vector<unsi
                 {
                     char n = (char)CScript::DecodeOP_N(opcode1);
                     vSolutionsRet.push_back(valtype(1, n));
+                }
+                else
+                    break;
+            }
+            else if (opcode2 == OP_SCRIPTNUMBER)
+            {   
+                // Pushing 0 to 5 bytes on, to be interpreted as an unsigned integer
+                if (opcode1 >= 0x00 && opcode1 <= 0x05)
+                {
+                    vSolutionsRet.push_back(vch1);
                 }
                 else
                     break;
@@ -168,7 +219,14 @@ int ScriptSigArgsExpected(txnouttype t, const std::vector<std::vector<unsigned c
         return -1;
     case TX_PUBKEY:
         return 1;
+    case TX_ESCROW_SENDER:
+        return 5;
+    case TX_ESCROW:
+        return 4;
+    case TX_ESCROW_FEE:
+        return 3;    
     case TX_PUBKEYHASH:
+    case TX_PUBKEYHASH_NONCED:
         return 2;
     case TX_MULTISIG:
         if (vSolutions.size() < 1 || vSolutions[0].size() < 1)
@@ -176,6 +234,16 @@ int ScriptSigArgsExpected(txnouttype t, const std::vector<std::vector<unsigned c
         return vSolutions[0][0] + 1;
     case TX_SCRIPTHASH:
         return 1; // doesn't include args needed by the script
+    case TX_DELAYEDPUBKEY:
+        return DELAYED_DELTA + 1;
+    case TX_DELAYEDPUBKEYHASH:        
+        return DELAYED_DELTA + 2;
+    case TX_DELAYEDSCRIPTHASH:        
+        return DELAYED_DELTA + 1;
+    case TX_DELAYEDMULTISIG :        
+        if (vSolutions.size() < 1 || vSolutions[0].size() < 1)
+            return -1;
+        return DELAYED_DELTA + 1 +vSolutions[0][0] + 1;
     }
     return -1;
 }
@@ -207,23 +275,43 @@ bool ExtractDestination(const CScript& scriptPubKey, CTxDestination& addressRet)
     if (!Solver(scriptPubKey, whichType, vSolutions))
         return false;
 
-    if (whichType == TX_PUBKEY)
+    if (whichType == TX_PUBKEY || whichType == TX_DELAYEDPUBKEY)
     {
-        CPubKey pubKey(vSolutions[0]);
+        CPubKey pubKey(vSolutions[whichType == TX_PUBKEY ? 0 : 1]);
         if (!pubKey.IsValid())
             return false;
 
         addressRet = pubKey.GetID();
         return true;
     }
-    else if (whichType == TX_PUBKEYHASH)
+    else if (whichType == TX_PUBKEYHASH || whichType == TX_DELAYEDPUBKEYHASH)
     {
-        addressRet = CKeyID(uint160(vSolutions[0]));
+        addressRet = CKeyID(uint160(vSolutions[whichType == TX_PUBKEYHASH ? 0 : 1]));
         return true;
     }
     else if (whichType == TX_SCRIPTHASH)
     {
         addressRet = CScriptID(uint160(vSolutions[0]));
+        return true;
+    }
+    else if (whichType == TX_ESCROW_FEE)
+    {
+        addressRet = CKeyID(uint160(vSolutions[1]));
+        return true;
+    }
+    else if (whichType == TX_ESCROW_SENDER)
+    {
+        addressRet = CKeyID(uint160(vSolutions[4]));
+        return true;
+    }
+    else if (whichType == TX_ESCROW)
+    {
+        addressRet = CKeyID(uint160(vSolutions[4]));
+        return true;
+    }
+    else if (whichType == TX_PUBKEYHASH_NONCED)
+    {
+        addressRet = CKeyID(uint160(vSolutions[1]));
         return true;
     }
     // Multisig txns have more than one address...
@@ -242,10 +330,10 @@ bool ExtractDestinations(const CScript& scriptPubKey, txnouttype& typeRet, vecto
         return false;
     }
 
-    if (typeRet == TX_MULTISIG)
+    if (typeRet == TX_MULTISIG || typeRet == TX_DELAYEDMULTISIG)
     {
-        nRequiredRet = vSolutions.front()[0];
-        for (unsigned int i = 1; i < vSolutions.size()-1; i++)
+        nRequiredRet = vSolutions.front()[typeRet == TX_MULTISIG ? 0 : 1];
+        for (unsigned int i = (typeRet == TX_MULTISIG ? 1 : 2); i < vSolutions.size()-1; i++)
         {
             CPubKey pubKey(vSolutions[i]);
             if (!pubKey.IsValid())

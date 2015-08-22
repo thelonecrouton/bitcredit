@@ -5,7 +5,7 @@
 #ifndef BANKNODEMAN_H
 #define BANKNODEMAN_H
 
-#include "bignum.h"
+//#include "bignum.h"
 #include "sync.h"
 #include "net.h"
 #include "key.h"
@@ -26,7 +26,7 @@ class CBanknodeMan;
 extern CBanknodeMan mnodeman;
 void DumpBanknodes();
 
-/** Access to the MN database (mncache.dat)
+/** Access to the MN database (nodecache.dat)
  */
 class CBanknodeDB
 {

@@ -13,6 +13,7 @@
 #include "timedata.h"
 #include "util.h"
 #include "utilmoneystr.h"
+#include "rpcwallet.h"
 #include "wallet.h"
 #include "walletdb.h"
 #include "keepass.h"
@@ -309,6 +310,33 @@ Value getaddressesbyaccount(const Array& params, bool fHelp)
             ret.push_back(address.ToString());
     }
     return ret;
+}
+
+Value sendbydelegate(const Array& params, bool fHelp)
+{
+    if (fHelp || params.size() != 2)
+        throw runtime_error(
+            "sendbydelegate <address> <amount>\n"
+            "<amount> is a real and is rounded to the nearest 0.00000001"
+           // + HelpRequiringPassphrase()
+            );
+
+    CBitcreditAddress address(params[0].get_str());
+    if (!address.IsValid())
+        throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid MIL address");
+
+    // Amount
+    uint64_t const nAmount = AmountFromValue(params[1]);
+
+    CAddress sufficient;
+
+    if (!SendByDelegate(pwalletMain, address, nAmount, sufficient)) {
+        throw JSONRPCError(RPC_WALLET_ERROR, "no delegate found to process transaction");
+    }
+
+    return sufficient.ToStringIP();
+
+    return 0;
 }
 
 void SendMoney(const CTxDestination &address, CAmount nValue, CWalletTx& wtxNew)
@@ -2184,4 +2212,63 @@ Value keepass(const Array& params, bool fHelp) {
 
     return "Invalid command";
 
+}
+
+Value retrievedelegatetx(const Array& params, bool fHelp) {
+    if (fHelp || params.size() != 1)
+        throw runtime_error(
+            "retrievedelegatetx <transaction id>\n"
+            "Return a retrieval string to construct retrieval transaction");
+    string retrieve;
+    uint256 hash;
+    hash.SetHex(params[0].get_str());
+    if (pwalletMain->ReadRetrieveStringFromHashMap(hash, retrieve))
+        return retrieve;
+    return "Unable to find retrieval string";
+}
+
+Value dumpretrievalstrings(const Array& params, bool fHelp)
+{
+    if (fHelp || params.size() > 0)
+        throw runtime_error(
+            "dumpretrievalstrings\n"
+            "List all the stored retrieval strings.\n");
+    Object result;
+
+    map<uint256,std::string>::iterator itx = pwalletMain->mapExpiryRetrieve.begin();
+    if (itx != pwalletMain->mapExpiryRetrieve.end()) {
+        std::string retrieval;
+        pwalletMain->ReadRetrieveStringFromHashMap(itx->first,retrieval, false);
+        result.push_back(Pair(itx->first.ToString(), retrieval));
+    }
+    map<uint256,std::string>::iterator it = pwalletMain->mapEscrowRetrieve.begin();
+    if (it != pwalletMain->mapEscrowRetrieve.end()) {
+        std::string retrieval;
+        pwalletMain->ReadRetrieveStringFromHashMap(it->first,retrieval);
+        result.push_back(Pair(it->first.ToString(), retrieval));
+    }
+    return result;
+}
+
+Value clearretrievalstrings(const Array& params, bool fHelp)
+{
+    if (fHelp || params.size() < 1)
+        throw runtime_error(
+            "clearretrievalstrings <mapname> \n"
+            "Clear retrieval data from.\n Use names escrow, expiry \n");
+
+    string mapname = params[0].get_str();
+    if (mapname == "escrow") {
+       if  (!pwalletMain->clearRetrieveHashMap(true)) {
+           return "Failed clearing escrow retrieval map";
+       }
+       return "Cleared escrow retrieval map";
+    }
+    if (mapname == "expiry") {
+        if  (!pwalletMain->clearRetrieveHashMap(false)) {
+            return "Failed clearing expiry retrieval map";
+        }
+        return "Cleared expiry retrieval map";
+    }
+    return "Use names escrow, expiry";
 }

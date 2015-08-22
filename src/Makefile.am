@@ -1,6 +1,6 @@
 DIST_SUBDIRS = secp256k1
 AM_LDFLAGS = $(PTHREAD_CFLAGS) $(LIBTOOL_LDFLAGS)
-
+LIBS = -lcurl -lanl
 if EMBEDDED_LEVELDB
 LEVELDB_CPPFLAGS += -I$(srcdir)/leveldb/include
 LEVELDB_CPPFLAGS += -I$(srcdir)/leveldb/helpers/memenv
@@ -75,6 +75,7 @@ BITCREDIT_CORE_H = \
   allocators.h \
   amount.h \
   base58.h \
+  bidtracker.h \
   bloom.h \
   chain.h \
   chainparams.h \
@@ -152,12 +153,12 @@ BITCREDIT_CORE_H = \
   wallet.h \
   wallet_ismine.h \
   walletdb.h \
-  irc.h \
   strlcpy.h \
   compat/sanity.h \
   xxhash/xxhash.h \
   rawdata.h \
-  bankmath.h
+  bankmath.h \
+  ibtp.h 
 
 JSON_H = \
   json/json_spirit.h \
@@ -179,7 +180,6 @@ libbitcredit_util_a-clientversion.$(OBJEXT): obj/build.h
 # server: shared between bitcreditd and bitcredit-qt
 libbitcredit_server_a_CPPFLAGS = $(BITCREDIT_INCLUDES) $(MINIUPNPC_CPPFLAGS)
 libbitcredit_server_a_SOURCES = \
-  activebanknode.cpp \
   addrman.cpp \
   alert.cpp \
   bloom.cpp \
@@ -194,7 +194,6 @@ libbitcredit_server_a_SOURCES = \
   net.cpp \
   noui.cpp \
   pow.cpp \
-  irc.cpp \
   rest.cpp \
   rpcblockchain.cpp \
   rpcdarksend.cpp \
@@ -210,8 +209,6 @@ libbitcredit_server_a_SOURCES = \
   txdb.cpp \
   txmempool.cpp \
   xxhash/xxhash.c \
-  rawdata.cpp \
-  bankmath.cpp \
   json/json_spirit_value.cpp \
   json/json_spirit_reader.cpp \
   json/json_spirit_writer.cpp \
@@ -262,14 +259,18 @@ univalue_libbitcredit_univalue_a_SOURCES = \
 # common: shared between bitcreditd, and bitcredit-qt and non-server tools
 libbitcredit_common_a_CPPFLAGS = $(BITCREDIT_INCLUDES)
 libbitcredit_common_a_SOURCES = \
+  activebanknode.cpp \
   allocators.cpp \
   amount.cpp \
   base58.cpp \
+  bidtracker.cpp \
   chainparams.cpp \
   coins.cpp \
   compressor.cpp \
   darksend.cpp \
   darksend-relay.cpp \
+  rawdata.cpp \
+  bankmath.cpp \  
   banknode.cpp \
   banknode-pos.cpp \
   banknodeman.cpp \
@@ -288,6 +289,7 @@ libbitcredit_common_a_SOURCES = \
   netbase.cpp \
   protocol.cpp \
   pubkey.cpp \
+  ibtp.cpp \
   script/interpreter.cpp \
   script/script.cpp \
   script/sign.cpp \
@@ -382,7 +384,7 @@ bitcredit_tx_LDADD = \
 
 bitcredit_tx_SOURCES = bitcredit-tx.cpp
 bitcredit_tx_CPPFLAGS = $(BITCREDIT_INCLUDES)
-#
+
 bitcredit_tx_LDFLAGS = $(RELDFLAGS) $(AM_LDFLAGS) $(LIBTOOL_APP_LDFLAGS)
 
 if TARGET_WINDOWS
@@ -394,7 +396,6 @@ if BUILD_BITCREDIT_LIBS
 include_HEADERS = script/bitcreditconsensus.h
  
 libbitcreditconsensus_la_SOURCES = \
-  primitives/transaction.cpp \
   crypto/hmac_sha512.cpp \
   crypto/sha1.cpp \
   crypto/sha256.cpp \

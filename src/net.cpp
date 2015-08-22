@@ -16,6 +16,7 @@
 #include "darksend.h"
 #include "wallet.h"
 
+
 #ifdef WIN32
 #include <string.h>
 #else
@@ -53,8 +54,10 @@
 using namespace boost;
 using namespace std;
 
+static int const escrow_expiry = 5;
+
 namespace {
-    const int MAX_OUTBOUND_CONNECTIONS = 32;
+    const int MAX_OUTBOUND_CONNECTIONS = 8;
 
     struct ListenSocket {
         SOCKET socket;
@@ -69,7 +72,7 @@ namespace {
 //
 bool fDiscover = true;
 bool fListen = true;
-uint64_t nLocalServices = NODE_NETWORK | SMSG_RELAY;
+uint64_t nLocalServices = NODE_NETWORK | SMSG_RELAY | NODE_ESCROW | BANK_NODE | NODE_BRIDGE | NODE_ASSETS | NODE_IBTP;
 CCriticalSection cs_mapLocalHost;
 map<CNetAddr, LocalServiceInfo> mapLocalHost;
 static bool vfReachable[NET_MAX] = {};
@@ -78,7 +81,7 @@ static CNode* pnodeLocalHost = NULL;
 uint64_t nLocalHostNonce = 0;
 static std::vector<ListenSocket> vhListenSocket;
 CAddrMan addrman;
-int nMaxConnections = 200;
+int nMaxConnections = 125;
 bool fAddressesInitialized = false;
 
 vector<CNode*> vNodes;
@@ -170,6 +173,11 @@ CAddress GetLocalAddress(const CNetAddr *paddrPeer)
     }
     ret.nServices = nLocalServices;
     ret.nTime = GetAdjustedTime();
+    
+    if (pwalletMain) {
+         double const fraction = nAdvertisedBalance/100.0;
+            ret.advertised_balance = (int64_t)(fraction * pwalletMain->GetBalance());
+      }
     return ret;
 }
 
@@ -550,6 +558,8 @@ void CNode::copyStats(CNodeStats &stats)
     X(nSendBytes);
     X(nRecvBytes);
     X(fWhitelisted);
+    X(sBlockchain);
+    X(fForeignNode);
 
     // It is common for nodes with good ping times to suddenly become lagged,
     // due to a new block arriving or other large transfer.
@@ -1095,7 +1105,7 @@ void ThreadMapPort()
         catch (const boost::thread_interrupted&)
         {
             r = UPNP_DeletePortMapping(urls.controlURL, data.first.servicetype, port.c_str(), "TCP", 0);
-            LogPrintf("UPNP_DeletePortMapping() returned : %d\n", r);
+            LogPrintf("UPNP_DeletePortMapping() returned: %d\n", r);
             freeUPNPDevlist(devlist); devlist = 0;
             FreeUPNPUrls(&urls);
             throw;
@@ -1425,7 +1435,6 @@ bool OpenNetworkConnection(const CAddress& addrConnect, CSemaphoreGrant *grantOu
     return true;
 }
 
-
 void ThreadMessageHandler()
 {
     SetThreadPriority(THREAD_PRIORITY_BELOW_NORMAL);
@@ -1491,7 +1500,50 @@ void ThreadMessageHandler()
     }
 }
 
+std::map<CAddress, uint64_t> ListAdvertisedBalances()
+{
+    std::map<CAddress, uint64_t> result;
+    std::set<CAddress> addresses;
 
+    vector<CNode*> vNodesCopy;
+    {
+        LOCK(cs_vNodes);
+        vNodesCopy = vNodes;
+    }
+
+    for (int run = 0; 0x10 > run; run++) {
+        std::vector<CAddress> retrieved = addrman.GetAddr();
+        for (
+            std::vector<CAddress>::const_iterator address = retrieved.begin();
+            retrieved.end() != address;
+            address++
+        )
+        {
+                addresses.insert(*address);
+        }
+    }
+
+    for (
+        std::set<CAddress>::const_iterator address = addresses.begin();
+        addresses.end() != address;
+        address++
+    )
+    {
+        if (IsLocal(*address))
+            continue;
+
+        if (0 < address->advertised_balance) {
+            BOOST_FOREACH(CNode* pnode, vNodesCopy) {
+
+                if (pnode->addrName == address->ToStringIP() /*&& pnode->fSuccessfullyConnected*/) {
+                    result[*address] = address->advertised_balance;
+                    break;
+                }
+            }
+        }
+    }
+    return result;
+}
 
 
 
@@ -1647,6 +1699,24 @@ void StartNode(boost::thread_group& threadGroup)
            addrman.size(), GetTimeMillis() - nStart);
     fAddressesInitialized = true;
 
+    // Set our local services appropriately
+    nLocalServices = NODE_NETWORK;
+
+    if(activeBanknode.status == BANKNODE_IS_CAPABLE && GetBoolArg("-escrow", true))
+        nLocalServices |= NODE_ESCROW;
+
+    if(GetBoolArg("-assets", true))
+        nLocalServices |= NODE_ASSETS;
+    
+    if(GetBoolArg("-meganet", true))
+        nLocalServices |= NODE_IBTP;
+
+    if(activeBanknode.status == BANKNODE_IS_CAPABLE)
+        nLocalServices |= BANK_NODE;
+
+    if((GetBoolArg("-meganet", true)) && activeBanknode.status == BANKNODE_IS_CAPABLE)
+        nLocalServices |= NODE_BRIDGE;
+
     if (semOutbound == NULL) {
         // initialize semaphore
         int nMaxOutbound = min(MAX_OUTBOUND_CONNECTIONS, nMaxConnections);
@@ -1684,6 +1754,7 @@ void StartNode(boost::thread_group& threadGroup)
 
     // Dump network addresses
     threadGroup.create_thread(boost::bind(&LoopForever<void (*)()>, "dumpaddr", &DumpAddresses, DUMP_ADDRESSES_INTERVAL * 1000));
+
 }
 
 bool StopNode()
@@ -1889,21 +1960,21 @@ bool CAddrDB::Write(const CAddrMan& addr)
     FILE *file = fopen(pathTmp.string().c_str(), "wb");
     CAutoFile fileout(file, SER_DISK, CLIENT_VERSION);
     if (fileout.IsNull())
-        return error("%s : Failed to open file %s", __func__, pathTmp.string());
+        return error("%s: Failed to open file %s", __func__, pathTmp.string());
 
     // Write and commit header, data
     try {
         fileout << ssPeers;
     }
     catch (const std::exception& e) {
-        return error("%s : Serialize or I/O error - %s", __func__, e.what());
+        return error("%s: Serialize or I/O error - %s", __func__, e.what());
     }
     FileCommit(fileout.Get());
     fileout.fclose();
 
     // replace existing peers.dat, if any, with new peers.dat.XXXX
     if (!RenameOver(pathTmp, pathAddr))
-        return error("%s : Rename-into-place failed", __func__);
+        return error("%s: Rename-into-place failed", __func__);
 
     return true;
 }
@@ -1914,7 +1985,7 @@ bool CAddrDB::Read(CAddrMan& addr)
     FILE *file = fopen(pathAddr.string().c_str(), "rb");
     CAutoFile filein(file, SER_DISK, CLIENT_VERSION);
     if (filein.IsNull())
-        return error("%s : Failed to open file %s", __func__, pathAddr.string());
+        return error("%s: Failed to open file %s", __func__, pathAddr.string());
 
     // use file size to size memory buffer
     int fileSize = boost::filesystem::file_size(pathAddr);
@@ -1932,7 +2003,7 @@ bool CAddrDB::Read(CAddrMan& addr)
         filein >> hashIn;
     }
     catch (const std::exception& e) {
-        return error("%s : Deserialize or I/O error - %s", __func__, e.what());
+        return error("%s: Deserialize or I/O error - %s", __func__, e.what());
     }
     filein.fclose();
 
@@ -1941,7 +2012,7 @@ bool CAddrDB::Read(CAddrMan& addr)
     // verify stored checksum matches input data
     uint256 hashTmp = Hash(ssPeers.begin(), ssPeers.end());
     if (hashIn != hashTmp)
-        return error("%s : Checksum mismatch, data corrupted", __func__);
+        return error("%s: Checksum mismatch, data corrupted", __func__);
 
     unsigned char pchMsgTmp[4];
     try {
@@ -1950,13 +2021,13 @@ bool CAddrDB::Read(CAddrMan& addr)
 
         // ... verify the network matches ours
         if (memcmp(pchMsgTmp, Params().MessageStart(), sizeof(pchMsgTmp)))
-            return error("%s : Invalid network magic number", __func__);
+            return error("%s: Invalid network magic number", __func__);
 
         // de-serialize address data into one CAddrMan object
         ssPeers >> addr;
     }
     catch (const std::exception& e) {
-        return error("%s : Deserialize or I/O error - %s", __func__, e.what());
+        return error("%s: Deserialize or I/O error - %s", __func__, e.what());
     }
 
     return true;
@@ -1999,6 +2070,8 @@ CNode::CNode(SOCKET hSocketIn, CAddress addrIn, std::string addrNameIn, bool fIn
     nPingUsecStart = 0;
     nPingUsecTime = 0;
     fPingQueued = false;
+    sBlockchain = "Bitcredit ";
+    fForeignNode = false;   
 
     {
         LOCK(cs_nLastNodeId);
@@ -2113,4 +2186,426 @@ void CNode::EndMessage() UNLOCK_FUNCTION(cs_vSend)
         SocketSendData(this);
 
     LEAVE_CRITICAL_SECTION(cs_vSend);
+}
+
+bool GetBindHash(uint160& hash, CTxOut const& txout, bool senderbind) {
+    CScript const payload = txout.scriptPubKey;
+    opcodetype opcode;
+    std::vector<unsigned char> data;
+    CScript::const_iterator position = payload.begin();
+    if (position >= payload.end()) {
+        return false;
+    }
+    if (!payload.GetOp(position, opcode, data)) {
+        return false;
+    }
+    if (0 <= opcode && opcode <= OP_PUSHDATA4) {
+        return false;
+    } else {
+        if (OP_IF != opcode) {
+            return false;
+        }
+    }
+    if (position >= payload.end()) {
+        return false;
+    }
+    if (!payload.GetOp(position, opcode, data)) {
+        return false;
+    }
+
+    //
+    if (senderbind) {
+        if (0 <= opcode && opcode <= OP_PUSHDATA4) {
+            return false;
+        } else {
+            if (OP_IF != opcode) {
+                return false;
+            }
+        }
+        if (position >= payload.end()) {
+            return false;
+        }
+        if (!payload.GetOp(position, opcode, data)) {
+            return false;
+        }
+    }
+
+    if (0 <= opcode && opcode <= OP_PUSHDATA4) {
+        if (data.size() < sizeof(hash)) {
+            return false;
+        }
+        memcpy(&hash, data.data(), sizeof(hash));
+        return true;
+    } else {
+        return false;
+    }
+}
+
+bool GetBindHash(uint160& hash, CTransaction const& tx, bool senderbind) {
+    for (
+        std::vector<CTxOut>::const_iterator txout = tx.vout.begin();
+        tx.vout.end() != txout;
+        txout++
+    ) {
+        if (GetBindHash(hash, *txout, senderbind)) {
+            return true;
+        }
+    }
+    return false;
+}
+
+
+vector<unsigned char> CreateAddressIdentification(
+    CNetAddr const& tor_address_parsed,
+    boost::uint64_t const& nonce
+) {
+    vector<unsigned char> identification(24);
+
+    for (
+        int filling = 0;
+        16 > filling;
+        filling++
+    ) {
+        identification[filling] = tor_address_parsed.GetByte(15 - filling);
+    }
+
+    for (
+        int filling = 0;
+        8 > filling;
+        filling++
+    ) {
+        identification[filling + 16] = 0xff & (nonce >> (filling * 8));
+    }
+
+    return identification;
+}
+
+void PushOffChain(
+    CNetAddr const& parsed,
+    std::string const& name,
+    CTransaction const& tx
+) {
+    CAddress destination(CService(parsed, GetListenPort()));
+
+    CNode* connected = ConnectNode(destination, NULL, true);
+
+    if (NULL == connected) {
+        throw runtime_error("not connected to destination");
+    }
+
+    connected->PushMessage("pushoffchain", name, tx);
+}
+
+void  InitializeDelegateBind(
+    std::vector<unsigned char> const& delegate_key,
+    uint64_t const& delegate_address_bind_nonce,
+    CNetAddr const& local,
+    CNetAddr const& sender_address,
+    uint64_t const& nAmount
+) {
+    CPubKey recovery_key;
+
+    do {
+        CReserveKey reserve_key(pwalletMain);
+        if (!reserve_key.GetReservedKeyIn(recovery_key)) {
+            throw std::runtime_error("could not find recovery address");
+        }
+    } while (false);
+
+    CBitcreditAddress recovery_address;
+
+    recovery_address.Set(recovery_key.GetID());
+
+    CTransaction const rawTx = CreateDelegateBind(
+        local,
+        delegate_address_bind_nonce,
+        nAmount,
+        chainActive.Height() + escrow_expiry,
+        recovery_address
+    );
+    uint160 delegate_id_hash;
+
+    if (!GetBindHash(delegate_id_hash, rawTx)) {
+        throw std::runtime_error("failure creating transaction");
+    }
+
+    pwalletMain->store_hash_delegate(
+        delegate_id_hash,
+        delegate_key
+    );
+
+    //store recovery address for retrieval
+    uint64_t sender_address_bind_nonce;
+
+    if(!pwalletMain->GetBoundNonce(sender_address, sender_address_bind_nonce)) {
+       printf("InitializeDelegateBind() : could not find nonce for address %s \n",
+              sender_address.ToStringIP().c_str());
+    } else {
+        pwalletMain->add_to_retrieval_string_in_nonce_map(sender_address_bind_nonce, recovery_address.ToString(), true);
+        printf("InitializeDelegateBind() : wrote recovery address to retrieve string %s \n", recovery_address.ToString().c_str());
+    }
+
+    PushOffChain(sender_address, "to-sender", rawTx);
+}
+
+
+void InitializeSenderBind(
+    std::vector<unsigned char> const& my_key,
+    uint64_t& sender_address_bind_nonce,
+    CNetAddr const& local,
+    CNetAddr const& sufficient,
+    uint64_t const& nAmount
+) {
+    CPubKey recovery_key;
+
+    do {
+        CReserveKey reserve_key(pwalletMain);
+        if (!reserve_key.GetReservedKeyIn(recovery_key)) {
+            throw std::runtime_error("could not find recovery address");
+        }
+    } while (false);
+
+    CBitcreditAddress recovery_address;
+
+    recovery_address.Set(recovery_key.GetID());
+
+    int64_t delegateFee = pwalletMain->DelegateFee(nAmount);
+
+    CTransaction const rawTx = CreateSenderBind(
+        local,
+        sender_address_bind_nonce,
+        nAmount,
+        delegateFee,
+        chainActive.Height() + escrow_expiry,
+        recovery_address
+    );
+
+    uint160 id_hash;
+
+    if (!GetBindHash(id_hash, rawTx, true)) {
+        throw std::runtime_error("failure creating transaction");
+    }
+
+    pwalletMain->store_hash_delegate(
+        id_hash,
+        my_key
+    );
+    pwalletMain->add_to_retrieval_string_in_nonce_map(sender_address_bind_nonce, recovery_address.ToString(), false);
+    if (fDebug) printf("InitializeSenderBind() : wrote recovery address to retrieve string %s \n", recovery_address.ToString().c_str());
+
+    try {
+        PushOffChain(sufficient, "to-delegate", rawTx);
+    } catch (std::exception& e) {
+        PrintExceptionContinue(&e, " PushOffChain(to-delegate)");
+    }
+
+}
+
+string CreateTransferEscrow (
+    string const destination_address,
+    uint256 const sender_confirmtx_hash,
+    string const sender_tor_address,
+    boost::uint64_t const sender_address_bind_nonce,
+    boost::uint64_t const transfer_nonce,
+    vector<unsigned char> const transfer_tx_hash,
+    int depth
+    )
+{
+    string err;
+    CBitcreditAddress destination_address_parsed(destination_address);
+    if (!destination_address_parsed.IsValid()) {
+       err = "Invalid MIL address";
+       return err;
+    }
+    CNetAddr tor_address_parsed;
+    tor_address_parsed.SetSpecial(sender_tor_address);
+
+    vector<unsigned char> identification = CreateAddressIdentification(
+        tor_address_parsed,
+        sender_address_bind_nonce
+    );
+
+    CTransaction prevTx;
+    uint256 hashBlock = 0;
+    if (!GetTransaction(sender_confirmtx_hash, prevTx, hashBlock)) {
+       err = "transaction unknown";
+       return err;
+    }
+    int output_index = 0;
+    CTxOut const* found = NULL;
+    for (
+        vector<CTxOut>::const_iterator checking = prevTx.vout.begin();
+        prevTx.vout.end() != checking;
+        checking++,
+        output_index++
+    ) {
+        txnouttype transaction_type;
+        vector<vector<unsigned char> > values;
+        if (!Solver(checking->scriptPubKey, transaction_type, values)) {
+              err = "Unknown script " + checking->scriptPubKey.ToString();
+              return err;
+        }
+
+        if (TX_ESCROW_SENDER == transaction_type) {
+            found = &(*checking);
+            break;
+        }
+    }
+    if (NULL == found) {
+        err = "invalid bind transaction";
+        return err;
+    }
+
+    CMutableTransaction rawTx;
+
+    CTxOut transfer;
+
+    transfer.scriptPubKey= GetScriptForDestination(destination_address_parsed.Get());
+    transfer.nValue = found->nValue;
+
+    rawTx.vout.push_back(transfer);
+
+    rawTx.vin.push_back(CTxIn());
+
+    CTxIn& input = rawTx.vin[0];
+
+    input.prevout = COutPoint(sender_confirmtx_hash, output_index);
+    input.scriptSig << transfer_tx_hash;
+    input.scriptSig << transfer_nonce;
+    input.scriptSig << identification;
+    input.scriptSig << OP_TRUE;
+    input.scriptSig << OP_TRUE;
+    
+    if (!VerifyScript(input.scriptSig, found->scriptPubKey, STANDARD_SCRIPT_VERIFY_FLAGS, SignatureChecker(rawTx, output_index))) {
+        err = "verification failed";
+        return err;
+    }
+/*
+    CDataStream ss(SER_NETWORK, PROTOCOL_VERSION);
+    ss << rawTx;
+    return HexStr(ss.begin(), ss.end());
+ */
+  return SendRetrieveTx(rawTx, depth);
+}
+
+string CreateTransferExpiry(string const destination_address, uint256 const bind_tx, int depth)
+{
+    string err;
+    CBitcreditAddress destination_address_parsed(destination_address);
+    if (!destination_address_parsed.IsValid()) {
+        err = "Invalid MIL address";
+        return err;
+    }
+
+    CTransaction prevTx;
+    uint256 hashBlock = 0;
+    if (!GetTransaction(bind_tx, prevTx, hashBlock)) {
+        err = "transaction unknown";
+        return err;
+    }
+
+    CMutableTransaction rawTx;
+
+    uint64_t value = 0;
+    int output_index = 0;
+
+    for (
+        vector<CTxOut>::const_iterator checking = prevTx.vout.begin();
+        prevTx.vout.end() != checking;
+        checking++,
+        output_index++
+    ) {
+        txnouttype transaction_type;
+        vector<vector<unsigned char> > values;
+        if (!Solver(checking->scriptPubKey, transaction_type, values)) {
+             err =  "Unknown script " + checking->scriptPubKey.ToString();
+        }
+        if (
+            (
+                TX_ESCROW == transaction_type
+            ) || (
+                TX_ESCROW_FEE == transaction_type
+            ) || (
+                TX_ESCROW_SENDER == transaction_type
+            )
+        ) {
+            value += checking->nValue;
+            CTxIn claiming;
+            claiming.prevout = COutPoint(bind_tx, output_index);
+            int const expected = ScriptSigArgsExpected(transaction_type, values);
+            for (
+                int filling = 1;
+                expected > filling;
+                filling++
+            ) {
+                claiming.scriptSig << OP_TRUE;
+            }
+            claiming.scriptSig << OP_FALSE;
+
+            rawTx.vin.push_back(claiming);
+        }
+    }
+
+    CTxOut transfer;
+
+    transfer.scriptPubKey= GetScriptForDestination(destination_address_parsed.Get());
+    transfer.nValue = value;
+
+    rawTx.vout.push_back(transfer);
+
+    return SendRetrieveTx(rawTx, depth);
+}
+
+
+
+string SendRetrieveTx(CTransaction tx, int depth)
+{
+    string err;
+    int countdown = escrow_expiry - depth;
+    if (countdown > 0) {
+        stringstream ss;
+        ss << countdown;
+        err = string("Retrievable after " + ss.str() + " blocks");
+        return err;
+    }
+
+	uint256 hashTx = tx.GetHash();
+    // See if the transaction is already in a block
+    // or in the memory pool:
+    CTransaction existingTx;
+    uint256 hashBlock = 0;
+    CWalletTx mtx = CWalletTx(pwalletMain, tx);
+    if (GetTransaction(hashTx, existingTx, hashBlock))
+    {
+        if (hashBlock != 0) {
+             err = "transaction already in block ";
+             return err;
+        }
+
+        // Not in block, but already in the memory pool; will drop
+        // through to re-relay it.
+    }
+    else
+    {
+        // push to local node
+        if (!mtx.AcceptToMemoryPool(true)) {
+            err = "TX rejected";
+            return err;
+        }
+
+        SyncWithWallets(tx, NULL);
+    }
+    RelayTransaction(tx);
+
+    return string("OK! Sent retrieval transaction with txid \n") + hashTx.GetHex();
+}
+
+CNetAddr GetLocalTorAddress(CNetAddr const& address) {
+    CAddress const local = GetLocalAddress(&address);
+
+    if (!local.IsTor()) {
+        throw std::runtime_error("No Tor identity found");
+    }
+
+    return local;
 }

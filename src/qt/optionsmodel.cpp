@@ -221,6 +221,8 @@ QVariant OptionsModel::data(const QModelIndex & index, int role) const
         case SpendZeroConfChange:
             return settings.value("bSpendZeroConfChange");
 #endif
+        case AdvertisedBalance:
+            return settings.value("nAdvertisedBalance");
         case DisplayUnit:
             return nDisplayUnit;
         case DisplayAddresses:
@@ -344,6 +346,11 @@ bool OptionsModel::setData(const QModelIndex & index, const QVariant & value, in
             }
             break;
 #endif
+        case AdvertisedBalance:
+            nAdvertisedBalance = value.toInt();
+            settings.setValue("nAdvertisedBalance", (int) nAdvertisedBalance);
+            emit advertisedBalanceChanged(nAdvertisedBalance);
+            break;
         case DisplayUnit:
             setDisplayUnit(value);
             break;
@@ -416,6 +423,11 @@ void OptionsModel::setDisplayUnit(const QVariant &value)
         settings.setValue("nDisplayUnit", nDisplayUnit);
         emit displayUnitChanged(nDisplayUnit);
     }
+}
+
+int OptionsModel::getAdvertisedBalance()
+{
+    return nAdvertisedBalance;
 }
 
 bool OptionsModel::getEnableMessageSendConf()

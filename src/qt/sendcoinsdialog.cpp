@@ -245,6 +245,12 @@ void SendCoinsDialog::on_sendButton_clicked()
         recipients[0].useInstantX = false;
     }
 
+    if(ui->checkESCROW->isChecked()) {
+        recipients[0].sendbydelegate = true;
+        strFunds += " and Escrow";
+    } else {
+        recipients[0].sendbydelegate = false;
+    }
 
     // Format confirmation message
     QStringList formatted;
@@ -506,13 +512,13 @@ void SendCoinsDialog::setBalance(const CAmount& balance, const CAmount& unconfir
 
     if(model && model->getOptionsModel())
     {
-	    uint64_t bal = 0;
+	    /*uint64_t bal = 0;
 
 	    if(ui->checkUseDarksend->isChecked()) {
 		//bal = anonymizedBalance;
 	    } else {
 		bal = balance;
-	    }
+	    }*/
 
         ui->labelBalance->setText(BitcreditUnits::formatWithUnit(model->getOptionsModel()->getDisplayUnit(), balance));
     }

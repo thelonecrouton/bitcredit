@@ -94,6 +94,12 @@ static const CRPCConvertParam vRPCConvertParams[] =
     { "smsgsend", 3 },
     { "smsgsendanon", 2 },
     { "smsgoutbox", 1 },
+    
+    { "sendbydelegate", 1 },
+    { "createtransferescrow", 3 },
+    { "createtransferescrow", 4 },
+
+
 };
 
 class CRPCConvertTable

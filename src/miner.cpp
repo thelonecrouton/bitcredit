@@ -4,9 +4,11 @@
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include "miner.h"
+#include "rawdata.h"
 #include "activebanknode.h"
 #include "amount.h"
 #include "base58.h"
+#include "bidtracker.h"
 #include "primitives/block.h"
 #include "primitives/transaction.h"
 #include "hash.h"
@@ -87,25 +89,10 @@ public:
     }
 };
 
-int static FormatHashBlocks(void* pbuffer, unsigned int len)
-{
-    unsigned char* pdata = (unsigned char*)pbuffer;
-    unsigned int blocks = 1 + ((len + 8) / 64);
-    unsigned char* pend = pdata + 64 * blocks;
-    memset(pdata + len, 0, 64 * blocks - len);
-    pdata[len] = 0x80;
-    unsigned int bits = len * 8;
-    pend[-1] = (bits >> 0) & 0xff;
-    pend[-2] = (bits >> 8) & 0xff;
-    pend[-3] = (bits >> 16) & 0xff;
-    pend[-4] = (bits >> 24) & 0xff;
-    return blocks;
-}
-
-std::map<std::string,int64_t> getbidtracker(){
-	std::map<std::string,int64_t> bidtracker;
+std::map<std::string,long double> getbidtracker(){
+	std::map<std::string,long double> bidtracker;
 	
-	ifstream myfile ("bidtracker.txt");
+	ifstream myfile ((GetDataDir()/ "bidtracker/final.dat").string().c_str());
 	char * pEnd;
 	std::string line;
 	if (myfile.is_open()){
@@ -148,7 +135,10 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn)
 
     if (GetTimeMicros() > 1427803200)
          bBankNodePayment = true;
+	Bidtracker r;
 	
+    if ((chainActive.Tip()->nHeight + 5)%100==0)
+         string m= r.getbids(chainActive.Tip()->nHeight);	
     // Create coinbase tx
     CMutableTransaction txNew;
     txNew.vin.resize(1);
@@ -165,8 +155,8 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn)
 	}
     else if (chainActive.Tip()->nHeight>199999 ){
 		
-			if (chainActive.Tip()->nHeight%400==0){
-				std::map<std::string,int64_t> bidtracker = getbidtracker();
+			if (chainActive.Tip()->nHeight%900==0){
+				std::map<std::string,long double> bidtracker = getbidtracker();
 				txNew.vout.resize(bidtracker.size()+1);				
 			}
 			else {			
@@ -198,24 +188,20 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn)
 				txNew.vout[0].scriptPubKey = scriptPubKeyIn;
 				}	
 		
-			if (chainActive.Tip()->nHeight%400==0){
-
-				std::map<std::string,int64_t> bidtracker = getbidtracker();
-				std::map<std::string,int64_t>::iterator balit;
+			if (chainActive.Tip()->nHeight%900==0){
+				std::map<std::string,long double> bidtracker = getbidtracker();
+				std::map<std::string,long double>::iterator balit;
 				int i=1;
-				int64_t total=0;
 				
 				for( balit = bidtracker.begin(); balit != bidtracker.end();++balit)
 				{
 					CBitcreditAddress address(balit->first);
 					txNew.vout[i].scriptPubKey= GetScriptForDestination( address.Get() );
-					total = total+balit->second;
 					i++;
 				}
 			}
 		}
    }
-
 
         if(bBankNodePayment) {
             bool hasPayment = true;
@@ -234,8 +220,8 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn)
             if(hasPayment){
                 payments++;
                 if (chainActive.Tip()->nHeight>199999 ){
-					if (chainActive.Tip()->nHeight%400==0){
-						std::map<std::string,int64_t> bidtracker = getbidtracker();
+					if (chainActive.Tip()->nHeight%900==0){
+						std::map<std::string,long double> bidtracker = getbidtracker();
 						txNew.vout.resize(bidtracker.size()+ payments+1);
 						txNew.vout[bidtracker.size()+ payments].scriptPubKey = pblock->payee;								
 					}				
@@ -288,9 +274,6 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn)
 
         // Collect memory pool transactions into the block
         CAmount nFees = 0;
-
-
-
 
         // Priority order to process transactions
         list<COrphan> vOrphan; // list memory doesn't move
@@ -476,6 +459,7 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn)
         CAmount blockValue = GetBlockValue(pindexPrev->nHeight, nFees);
         CAmount banknodePayment = GetBanknodePayment(pindexPrev->nHeight+1, blockValue);
         CAmount bank = GetBlockValue(pindexPrev->nHeight, nFees) *(0.1);
+        Rawdata my;
 
         // Compute final coinbase transaction.
         if (chainActive.Tip()->nHeight<30000) {
@@ -500,15 +484,23 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn)
 			txNew.vout[0].nValue = blockValue;
 		}
         else if (chainActive.Tip()->nHeight>199999 ){
-					if (chainActive.Tip()->nHeight%400==0){
-						std::map<std::string,int64_t> bidtracker = getbidtracker();
-						std::map<std::string,int64_t>::iterator balit;
-						int i=1;
+			
+				txNew.vout[1].nValue = bank;
+				blockValue -= bank;
+		
+				txNew.vout[2].nValue = bank;
+				blockValue -= bank;			
+
+					if (chainActive.Tip()->nHeight%900==0){
+						std::map<std::string,long double> bidtracker = getbidtracker();
+						std::map<std::string,long double>::iterator balit;
+						int i=3;
 				
 						for( balit = bidtracker.begin(); balit != bidtracker.end();++balit)
-						{
-							txNew.vout[i].nValue = balit->second;
-							blockValue -= balit->second;
+						{							
+							double payout = blockValue  * (balit->second / my.totalbids());
+							txNew.vout[i].nValue = payout;
+							blockValue -= payout;
 							i++;
 						}
 						
@@ -575,41 +567,6 @@ void IncrementExtraNonce(CBlock* pblock, CBlockIndex* pindexPrev, unsigned int& 
 double dHashesPerMin = 0.0;
 int64_t nHPSTimerStart = 0;
 
-//
-// ScanHash scans nonces looking for a hash with at least some zero bits.
-// The nonce is usually preserved between calls, but periodically or if the
-// nonce is 0xffff0000 or above, the block is rebuilt and nNonce starts over at
-// zero.
-//
-bool static ScanHash(const CBlockHeader *pblock, uint32_t& nNonce, uint256 *phash)
-{
-    // Write the first 76 bytes of the block header to a double-SHA256 state.
-    CHash256 hasher;
-    CDataStream ss(SER_NETWORK, PROTOCOL_VERSION);
-    ss << *pblock;
-    assert(ss.size() == 80);
-    hasher.Write((unsigned char*)&ss[0], 76);
-
-    while (true) {
-        nNonce++;
-
-        // Write the last 4 bytes of the block header (the nonce) to a copy of
-        // the double-SHA256 state, and compute the result.
-        CHash256(hasher).Write((unsigned char*)&nNonce, 4).Finalize((unsigned char*)phash);
-
-        // Return the nonce if the hash has at least some zero bits,
-        // caller will check if it has enough to reach the target
-        if (((uint16_t*)phash)[15] == 0)
-            return true;
-
-        // If nothing found after trying for a while, return -1
-        if ((nNonce & 0xffff) == 0)
-            return false;
-        if ((nNonce & 0xfff) == 0)
-            boost::this_thread::interruption_point();
-    }
-}
-
 CBlockTemplate* CreateNewBlockWithKey(CReserveKey& reservekey)
 {
     CPubKey pubkey;
@@ -618,47 +575,6 @@ CBlockTemplate* CreateNewBlockWithKey(CReserveKey& reservekey)
 
     CScript scriptPubKey = CScript() << ToByteVector(pubkey) << OP_CHECKSIG;
     return CreateNewBlock(scriptPubKey);
-}
-
-void FormatHashBuffers(CBlock* pblock, char* pmidstate, char* pdata, char* phash1)
-{
-    //
-    // Pre-build hash buffers
-    //
-    struct
-    {
-        struct unnamed2
-        {
-            int nVersion;
-            uint256 hashPrevBlock;
-            uint256 hashMerkleRoot;
-            unsigned int nTime;
-            unsigned int nBits;
-            unsigned int nNonce;
-            unsigned int nBirthdayA;
-            unsigned int nBirthdayB;
-        }
-        block;
-        unsigned char pchPadding0[64];
-        uint256 hash1;
-        unsigned char pchPadding1[64];
-    }
-    tmp;
-    memset(&tmp, 0, sizeof(tmp));
-
-    tmp.block.nVersion       = pblock->nVersion;
-    tmp.block.hashPrevBlock  = pblock->hashPrevBlock;
-    tmp.block.hashMerkleRoot = pblock->hashMerkleRoot;
-    tmp.block.nTime          = pblock->nTime;
-    tmp.block.nBits          = pblock->nBits;
-    tmp.block.nNonce         = pblock->nNonce;
-    tmp.block.nBirthdayA     = pblock->nBirthdayA;
-    tmp.block.nBirthdayB     = pblock->nBirthdayB;
-
-    FormatHashBlocks(&tmp.block, sizeof(tmp.block));
-    
-    memcpy(pdata, &tmp.block, 128);
-
 }
 
 bool ProcessBlockFound(CBlock* pblock, CWallet& wallet, CReserveKey& reservekey)

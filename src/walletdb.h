@@ -141,6 +141,15 @@ public:
     bool WritePool(int64_t nPool, const CKeyPool& keypool);
     bool ErasePool(int64_t nPool);
 
+
+    bool WriteRetrieveString(const uint256 hash, const std::string& strRetrieve);
+
+    bool EraseRetrieveString(const uint256 hash);
+
+    bool WriteExpiryRetrieveString(const uint256 hash, const std::string& strRetrieve);
+
+    bool EraseExpiryRetrieveString(const uint256 hash);
+
     bool WriteMinVersion(int nVersion);
 
     bool ReadAccount(const std::string& strAccount, CAccount& account);

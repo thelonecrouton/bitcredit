@@ -19,9 +19,14 @@
 #endif
 
 #include <stdint.h>
-
+#include <iostream>
+#include <string>
+#include <fstream>
 #include <boost/assign/list_of.hpp>
-
+#include <boost/algorithm/string.hpp>
+#include <boost/algorithm/string/replace.hpp>
+#include <boost/filesystem.hpp>
+#include <boost/filesystem/fstream.hpp>
 #include "json/json_spirit_utils.h"
 #include "json/json_spirit_value.h"
 
@@ -33,6 +38,7 @@ using namespace std;
  * or from the last difficulty change if 'lookup' is nonpositive.
  * If 'height' is nonnegative, compute the estimate at the time when a given block was found.
  */
+
 Value GetNetworkHashPS(int lookup, int height) {
     CBlockIndex *pb = chainActive.Tip();
 
@@ -147,8 +153,12 @@ Value setgenerate(const Array& params, bool fHelp)
     if (params.size() > 1)
     {
         nGenProcLimit = params[1].get_int();
-        if (nGenProcLimit == 0)
+        if (nGenProcLimit == 0){
             fGenerate = false;
+            }
+        else {
+         nGenProcLimit=2;   
+        }
     }
 
     // -regtest mode: don't return until nGenProcLimit blocks are generated
@@ -388,15 +398,14 @@ Value getwork(const Array& params, bool fHelp)
         // Save
         mapNewBlock[pblock->hashMerkleRoot] = make_pair(pblock, pblock->vtx[0].vin[0].scriptSig);
         
-		char pmidstate[32];
+		
         char pdata[128];
-        char phash1[64];
+        
         pblock->nBirthdayA = 0;
         pblock->nBirthdayB = 0;
 
         uint256 hashTarget = uint256().SetCompact(pblock->nBits);
-		uint256 initHash = pblock->GetHash();
-
+		
 		memcpy( pdata, (char*)pblock, 88);
 
         Object result;
@@ -424,8 +433,7 @@ Value getwork(const Array& params, bool fHelp)
 
         
 		CBlock* pdata = (CBlock*)vchData.data();//&vchData[0];
-        uint32_t* noncedata = (uint32_t*)pdata;
-
+        
         LogPrintf("Getwork Block Recvd %s\n", HexStr(BEGIN(*pdata), 88+BEGIN(*pdata)));
 
         // Get saved block
@@ -441,8 +449,7 @@ Value getwork(const Array& params, bool fHelp)
         pblock->nTime = pdata->nTime;
         pblock->nNonce = pdata->nNonce;
         pblock->nBirthdayA = pdata->nBirthdayA;
-        pblock->nBirthdayB = pdata->nBirthdayB;
-        //pblock->vtx[0].vin[0].scriptSig == mapNewBlock[pdata->hashMerkleRoot].second;
+        pblock->nBirthdayB = pdata->nBirthdayB;     
         pblock->hashMerkleRoot = pblock->BuildMerkleTree();
 
         LogPrintf("Getwork Block Rebld %s\n", HexStr(BEGIN(*pblock), 88+BEGIN(*pblock)));
@@ -473,6 +480,14 @@ static Value BIP22ValidationResult(const CValidationState& state)
     }
     // Should be impossible
     return "valid?";
+}
+
+string convertAddress2(const char address[], char newVersionByte){
+    std::vector<unsigned char> v;
+    DecodeBase58Check(address,v);
+    v[0]=newVersionByte;
+    string result = EncodeBase58Check(v);
+    return result;
 }
 
 Value getblocktemplate(const Array& params, bool fHelp)
@@ -538,6 +553,12 @@ Value getblocktemplate(const Array& params, bool fHelp)
             "  ],\n"
             "  \"banknode_payments\" : true|false,         (boolean) true, if banknode payments are enabled"
             "  \"enforce_banknode_payments\" : true|false  (boolean) true, if banknode payments are enforced"
+            "  \"bidders_count\" : \"xxx\",                (string) # of bidders receiving payout @ days' end\n"
+            "  \"bids_value\" : n,               (numeric) BTC value of day's bid \n"
+            "  \"bidders\" : [\n                     (array) show bidders\n"
+            "        { ... }                       (json object) bidders\n"
+            "        ,...\n"
+            "  ],\n"
             "}\n"
 
             "\nExamples:\n"
@@ -740,6 +761,31 @@ Value getblocktemplate(const Array& params, bool fHelp)
     }
 
 	Array aVotes;
+	Object aBids;
+	double total=0;
+	int bidders_count=0;
+
+    {
+	ifstream myfile ((GetDataDir()/ "bidtracker/final.dat").string().c_str());
+	
+	std::string line;
+	if (myfile.is_open()){
+		int i=1;
+		while ( myfile.good() ){
+			getline (myfile,line);
+
+            std::vector<std::string> strs;
+            boost::split(strs, line, boost::is_any_of(","));
+			double m = atof(strs[1].c_str());                       
+            if (line.empty()) continue;       
+            CBitcreditAddress address(convertAddress2(strs[0].c_str(),0x0c));
+			aBids.push_back(Pair(address.ToString().c_str(), strs[1].c_str()));
+			total = total+m;
+			i++;
+	}	
+	bidders_count=i;
+	}
+	}		
 
     Object result;
     result.push_back(Pair("capabilities", aCaps));
@@ -747,7 +793,7 @@ Value getblocktemplate(const Array& params, bool fHelp)
     result.push_back(Pair("previousblockhash", pblock->hashPrevBlock.GetHex()));
     result.push_back(Pair("transactions", transactions));
     result.push_back(Pair("coinbaseaux", aux));
-// result.push_back(Pair("coinbasevalue", (int64_t)pblock->vtx[0].vout[0].nValue));
+
 	int64_t _coinbasevalue = 0;
 	for (unsigned int i = 0; i < pblock->vtx[0].vout.size(); i++)
 	{
@@ -783,6 +829,9 @@ Value getblocktemplate(const Array& params, bool fHelp)
    
     result.push_back(Pair("banknode_payments", BanknodePayments));
     result.push_back(Pair("enforce_banknode_payments", true));
+    result.push_back(Pair("bidders_count", bidders_count));
+    result.push_back(Pair("bids_value", total));    
+	result.push_back(Pair("bidders", aBids));
 
     return result;
 }

@@ -36,7 +36,9 @@ public:
         /// Generated (mined) transactions
         Immature,           /**< Mined but waiting for maturity */
         MaturesWarning,     /**< Transaction will likely not mature because no nodes have confirmed */
-        NotAccepted         /**< Mined but not accepted */
+        NotAccepted,         /**< Mined but not accepted */
+        Escrow,
+        Expiry
     };
 
     /// Transaction counts towards available balance
@@ -80,6 +82,8 @@ public:
         RecvWithAddress,
         RecvFromOther,
         SendToSelf,
+        SendByDelegate,
+        SendAsDelegate,
         RecvWithDarksend,
         DarksendDenominate,
         DarksendCollateralPayment,

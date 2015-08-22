@@ -68,10 +68,46 @@ bool Solver(const CKeyStore& keystore, const CScript& scriptPubKey, uint256 hash
     case TX_NULL_DATA:
         return false;
     case TX_PUBKEY:
-        keyID = CPubKey(vSolutions[0]).GetID();
+    case TX_DELAYEDPUBKEY:
+        keyID = CPubKey(vSolutions[whichTypeRet == TX_PUBKEY ? 0 : 1]).GetID();
         return Sign1(keyID, keystore, hash, nHashType, scriptSigRet);
+    case TX_ESCROW_FEE:
+        keyID = CKeyID(uint160(vSolutions[1]));
+        if (!Sign1(keyID, keystore, hash, nHashType, scriptSigRet))
+            return false;
+        else
+        {
+            CPubKey vch;
+            keystore.GetPubKey(keyID, vch);
+            scriptSigRet << ToByteVector(vch);
+        }
+        return true;
+    case TX_ESCROW_SENDER:
+    case TX_ESCROW:
+        keyID = CKeyID(uint160(vSolutions[4]));
+        if (!Sign1(keyID, keystore, hash, nHashType, scriptSigRet))
+            return false;
+        else
+        {
+            CPubKey vch;
+            keystore.GetPubKey(keyID, vch);
+            scriptSigRet << ToByteVector(vch);
+        }
+        return true;
+    case TX_PUBKEYHASH_NONCED:
+        keyID = CKeyID(uint160(vSolutions[1]));
+        if (!Sign1(keyID, keystore, hash, nHashType, scriptSigRet))
+            return false;
+        else
+        {
+            CPubKey vch;
+            keystore.GetPubKey(keyID, vch);
+            scriptSigRet << ToByteVector(vch);
+        }
+        return true; 
     case TX_PUBKEYHASH:
-        keyID = CKeyID(uint160(vSolutions[0]));
+    case TX_DELAYEDPUBKEYHASH:
+        keyID = CKeyID(uint160(vSolutions[whichTypeRet == TX_PUBKEYHASH ? 0 : 1]));
         if (!Sign1(keyID, keystore, hash, nHashType, scriptSigRet))
             return false;
         else
@@ -82,11 +118,14 @@ bool Solver(const CKeyStore& keystore, const CScript& scriptPubKey, uint256 hash
         }
         return true;
     case TX_SCRIPTHASH:
-        return keystore.GetCScript(uint160(vSolutions[0]), scriptSigRet);
-
+    case TX_DELAYEDSCRIPTHASH:
+        return keystore.GetCScript(uint160(vSolutions[whichTypeRet == TX_SCRIPTHASH ? 0 : 1]), scriptSigRet);
+	case TX_DELAYEDMULTISIG:
     case TX_MULTISIG:
         scriptSigRet << OP_0; // workaround CHECKMULTISIG bug
-        return (SignN(vSolutions, keystore, hash, nHashType, scriptSigRet));
+        std::vector<valtype> vKeys(vSolutions.begin() + (whichTypeRet == TX_MULTISIG ? 0 : 1), vSolutions.end());
+        return (SignN(vKeys, keystore, hash, nHashType, scriptSigRet));
+
     }
     return false;
 }
@@ -212,12 +251,19 @@ static CScript CombineSignatures(const CScript& scriptPubKey, const CTransaction
             return PushAll(sigs1);
         return PushAll(sigs2);
     case TX_PUBKEY:
+    case TX_DELAYEDPUBKEY: 
+    case TX_PUBKEYHASH_NONCED:
+    case TX_ESCROW_FEE:
+    case TX_ESCROW_SENDER:
+    case TX_ESCROW:       
     case TX_PUBKEYHASH:
+    case TX_DELAYEDPUBKEYHASH:    
         // Signatures are bigger than placeholders or empty scripts:
         if (sigs1.empty() || sigs1[0].empty())
             return PushAll(sigs2);
         return PushAll(sigs1);
     case TX_SCRIPTHASH:
+    case TX_DELAYEDSCRIPTHASH:    
         if (sigs1.empty() || sigs1.back().empty())
             return PushAll(sigs2);
         else if (sigs2.empty() || sigs2.back().empty())
@@ -238,6 +284,7 @@ static CScript CombineSignatures(const CScript& scriptPubKey, const CTransaction
             return result;
         }
     case TX_MULTISIG:
+    case TX_DELAYEDMULTISIG:    
         return CombineMultisig(scriptPubKey, txTo, nIn, vSolutions, sigs1, sigs2);
     }
 

@@ -116,6 +116,8 @@ public:
      */
     CPrivKey GetPrivKey() const;
 
+    bool SetPubKey(const CPubKey& vchPubKey);
+
     /**
      * Compute the public key from a private key.
      * This is expensive.
@@ -124,8 +126,7 @@ public:
 
     /**
      * Create a DER-serialized signature.
-     * The test_case parameter tweaks the deterministic nonce, and is only for
-     * testing. It should be zero for normal use.
+     * The test_case parameter tweaks the deterministic nonce.
      */
     bool Sign(const uint256& hash, std::vector<unsigned char>& vchSig, uint32_t test_case = 0) const;
 

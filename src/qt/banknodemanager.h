@@ -34,8 +34,7 @@ public:
     
     void setClientModel(ClientModel *clientModel);
     void setWalletModel(WalletModel *walletModel);
-    //void setModel(ClientModel *model);
-
+    int ours;
 
 public slots:
     void updateNodeList();
@@ -59,8 +58,6 @@ private:
     QString dataDir;
     std::string theme;
     QString themestring;
-    int ours;
-    
     
 private slots:
     void on_copyAddressButton_clicked();

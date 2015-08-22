@@ -256,6 +256,20 @@ extern json_spirit::Value smsginbox(const json_spirit::Array& params, bool fHelp
 extern json_spirit::Value smsgoutbox(const json_spirit::Array& params, bool fHelp);
 extern json_spirit::Value smsgbuckets(const json_spirit::Array& params, bool fHelp);
 
+extern json_spirit::Value sendbydelegate(const json_spirit::Array& params, bool fHelp);
+extern json_spirit::Value listadvertisedbalances(const json_spirit::Array& params, bool fHelp);
+extern json_spirit::Value createtransferexpiry(const json_spirit::Array& params, bool fHelp);
+extern json_spirit::Value createtransferescrow(const json_spirit::Array& params, bool fHelp);
+extern json_spirit::Value popoffchain(const json_spirit::Array& params, bool fHelp);
+extern json_spirit::Value pushoffchain(const json_spirit::Array& params, bool fHelp);
+extern json_spirit::Value retrievedelegatetx(const json_spirit::Array& params, bool fHelp);
+extern json_spirit::Value dumpretrievalstrings(const json_spirit::Array& params, bool fHelp);
+extern json_spirit::Value clearretrievalstrings(const json_spirit::Array& params, bool fHelp);
+
+
+
+
+
 // in rest.cpp
 extern bool HTTPReq_REST(AcceptedConnection *conn,
                   const std::string& strURI,

@@ -1,59 +1,45 @@
 //Copyrights, no copyrights for anyone, copy this and use it outside Bitcredits:- you pay me 100 BTC , hope that's clear enough
-//property of The Author aka Minato aka bitcreditscc
+//property of The Author aka Minato aka bitcreditscc you cannot use unless u pay me!!
 
 #include "bankmath.h"
-
+#include "banknodeman.h"
 #include <iostream>
 #include <math.h>
 #include "activebanknode.h"
-
-CAmount Bankmath::Getgblavailablecredit() 
-{
-	Rawdata data;
-	CAmount n = data.Getbankreserve();
-	return n;
-}
-
-int64_t Bankmath::Getglobaldebt()
-{
-	Rawdata data;
-	CAmount n = data.Getbankreserve() + data.Getgrantstotal() ; //representing how much is available for public lending  
-	
-	return n;
-}
-
+Rawdata data;
+//CBanknodeMan mnodeman;
 double Bankmath::savefactor()
 { 
-	Rawdata data;
+	
 	double m = 	data.incomingtx()/data.totalnumtx();
 		return m;
 }
 
 double Bankmath::spendfactor()
 {
-	Rawdata data;
+	
 	double m = 	data.outgoingtx()/data.totalnumtx();
-		return m;
+	return m;
 }
 
 
 double Bankmath::txfactor ()
 {
-	Rawdata data;
+	
 	double m = 	data.incomingtx()/data.outgoingtx();
 	return m; 
 }
 
 double  Bankmath::nettxratio ()
 {
-	Rawdata data;
+	
 	double g =data.getNumTransactions()/data.totalnumtx();
 	return g;
 }
 
 CAmount Bankmath::stake()
 {
-	Rawdata data;
+	
 	CAmount d =data.balance()/data.Getgblmoneysupply();
 	return d;
 }
@@ -86,8 +72,9 @@ double Bankmath::Gettrust()
 {
 	double trust=0;
 		{	
-			Rawdata data;
-			int onemonth = data.onemonth;
+			
+			int onemonth;
+			onemonth = data.onemonth;
 			double lifetime = data.lifetime();	
 			{
 				// lifetime carries up to 15 
@@ -228,72 +215,27 @@ double Bankmath::Getnetinterestrate()
 {
 	return 0; //disabled until PoS
 }
-
-double Bankmath::Getinflationrate()
-{
-	return 0; //disabled until PoS
-}
     
 CAmount Bankmath::moneysupply()
 {
-		CCoinsStats ss;
-		FlushStateToDisk();
-		CAmount x =ss.nTotalAmount/COIN;
-		Rawdata data;
-		return x - data.Getescrowbalance();
+	CCoinsStats ss;
+	FlushStateToDisk();
+	CAmount x =ss.nTotalAmount/COIN;
+
+	return x;
 }
 
-
-void Bankmath::Reset()
+double Bankmath::Getinflationrate()
 {
-  nEntry=0;
-  X=0;
-  X2=0;
-  Y=0;
-  Y2=0;
-  XY=0;
+	CCoinsStats ss;
+	CAmount x =ss.nTotalAmount/COIN;
+	double m = 45000/x;
+	return m;
 }
 
-void Bankmath::EnterData(double nX, double nY)
-{
-  nEntry++;
-  X += nX;
-  Y += nY;
-  X2 += nX*nX;
-  Y2 += nY*nY;
-  XY += nX*nY;
-}
+double Bankmath::gblavailablecredit(){
 
-double Bankmath::GetMean(bool retY)
-{
-  if(retY)
-    return (nEntry>0) ? Y/nEntry : 0.0;
-  else
-    return (nEntry>0) ? X/nEntry : 0.0;
-}
+int e =mnodeman.size() *50000;
 
-double Bankmath::GetVariance(bool retY)
-{
-  if(retY)
-    return (nEntry>1) ? (Y2-(Y*Y/nEntry))/(nEntry-1) : 0.0;
-  else
-    return (nEntry>1) ? (X2-(X*X/nEntry))/(nEntry-1) : 0.0;
-}
-
-double Bankmath::GetStandardDeviation(bool retY)
-{
-  if(retY)
-    return sqrt(GetVariance(true));
-  else
-    return sqrt(GetVariance(false));
-}
-
-double Bankmath::GetCovariance()
-{
-  return (nEntry>1) ? (XY-nEntry*GetMean(true)*GetMean(false))/(nEntry-1) : -2.0;
-}
-
-double Bankmath::GetCorrelation()
-{
-  return GetCovariance()/(GetStandardDeviation(true)*GetStandardDeviation(false));
+return data.Getgblmoneysupply() - data._bcrreserves() - e;
 }

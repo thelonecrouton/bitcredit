@@ -1,4 +1,4 @@
-/// Copyright (c) 2009-2010 Satoshi Nakamoto
+// Copyright (c) 2009-2010 Satoshi Nakamoto
 // Copyright (c) 2009-2015 The Bitcredit Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
@@ -140,7 +140,7 @@ bool CCoinsViewDB::GetStats(CCoinsStats &stats) const {
             }
             pcursor->Next();
         } catch (const std::exception& e) {
-            return error("%s : Deserialize or I/O error - %s", __func__, e.what());
+            return error("%s: Deserialize or I/O error - %s", __func__, e.what());
         }
     }
     stats.nHeight = mapBlockIndex.find(GetBestBlock())->second->nHeight;
@@ -268,14 +268,14 @@ bool CBlockTreeDB::LoadBlockIndexGuts()
                 pindexNew->nTx            = diskindex.nTx;
 
                 if (!CheckProofOfWork(pindexNew->GetBlockHash(), pindexNew->nBits))
-                    return error("LoadBlockIndex() : CheckProofOfWork failed: %s", pindexNew->ToString());
+                    return error("LoadBlockIndex(): CheckProofOfWork failed: %s", pindexNew->ToString());
 
                 pcursor->Next();
             } else {
                 break; // if shutdown requested or finished loading block index
             }
         } catch (const std::exception& e) {
-            return error("%s : Deserialize or I/O error - %s", __func__, e.what());
+            return error("%s: Deserialize or I/O error - %s", __func__, e.what());
         }
     }
 

@@ -143,6 +143,33 @@ Value getpeerinfo(const Array& params, bool fHelp)
         obj.push_back(Pair("startingheight", stats.nStartingHeight));
         if (fStateStats) {
             obj.push_back(Pair("banscore", statestats.nMisbehavior));
+                    std::string svcDesc = "";
+        if(NODE_NETWORK)
+            svcDesc = "NETWORK";
+
+        if(SMSG_RELAY)
+            svcDesc = "MSG RELAY";
+
+        if(NODE_ASSETS)
+            svcDesc += " ASSETS";
+
+        if(NODE_ESCROW)
+            svcDesc += " ESCROW";
+
+        if(NODE_IBTP)
+            svcDesc += " IBTP";
+
+        if(BANK_NODE)
+            svcDesc += " BANK";
+
+        if(NODE_BRIDGE)
+            svcDesc += " BRIDGE";
+
+        obj.push_back(Pair("servicesdesc", svcDesc));
+
+        if(stats.fInbound)
+            obj.push_back(Pair("blockchain", stats.sBlockchain));
+            
             obj.push_back(Pair("synced_headers", statestats.nSyncHeight));
             obj.push_back(Pair("synced_blocks", statestats.nCommonHeight));
             Array heights;

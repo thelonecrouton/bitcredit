@@ -6,10 +6,10 @@
 /**
  * Why base-58 instead of standard base-64 encoding?
  * - Don't want 0OIl characters that look the same in some fonts and
- *      could be used to create visually identical looking account numbers.
- * - A string with non-alphanumeric characters is not as easily accepted as an account number.
+ *      could be used to create visually identical looking data.
+ * - A string with non-alphanumeric characters is not as easily accepted as input.
  * - E-mail usually won't line-break if there's no punctuation to break at.
- * - Double-clicking selects the whole number as one word if it's all alphanumeric.
+ * - Double-clicking selects the whole string as one word if it's all alphanumeric.
  */
 #ifndef BITCREDIT_BASE58_H
 #define BITCREDIT_BASE58_H
@@ -56,13 +56,13 @@ std::string EncodeBase58Check(const std::vector<unsigned char>& vchIn);
  * Decode a base58-encoded string (psz) that includes a checksum into a byte
  * vector (vchRet), return true if decoding is successful
  */
-inline bool DecodeBase58Check(const char* psz, std::vector<unsigned char>& vchRet);
+extern bool DecodeBase58Check(const char* psz, std::vector<unsigned char>& vchRet);
 
 /**
  * Decode a base58-encoded string (str) that includes a checksum into a byte
  * vector (vchRet), return true if decoding is successful
  */
-inline bool DecodeBase58Check(const std::string& str, std::vector<unsigned char>& vchRet);
+extern bool DecodeBase58Check(const std::string& str, std::vector<unsigned char>& vchRet);
 
 /**
  * Base class for all base58-encoded data

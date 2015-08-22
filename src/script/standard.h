@@ -25,7 +25,7 @@ public:
     CScriptID(const uint160& in) : uint160(in) {}
 };
 
-static const unsigned int MAX_OP_RETURN_RELAY = 40;      //! bytes
+static const unsigned int MAX_OP_RETURN_RELAY = 80;      //! bytes
 extern unsigned nMaxDatacarrierBytes;
 
 /**
@@ -37,7 +37,8 @@ extern unsigned nMaxDatacarrierBytes;
  * Failing one of these tests may trigger a DoS ban - see CheckInputs() for
  * details.
  */
-static const unsigned int MANDATORY_SCRIPT_VERIFY_FLAGS = SCRIPT_VERIFY_P2SH;
+static const unsigned int MANDATORY_SCRIPT_VERIFY_FLAGS = SCRIPT_VERIFY_P2SH |
+                                                          SCRIPT_VERIFY_CHECKLOCKTIMEVERIFY;
 
 /**
  * Standard script verification flags that standard transactions will comply
@@ -53,15 +54,25 @@ static const unsigned int STANDARD_SCRIPT_VERIFY_FLAGS = MANDATORY_SCRIPT_VERIFY
 /** For convenience, standard but not mandatory verify flags. */
 static const unsigned int STANDARD_NOT_MANDATORY_VERIFY_FLAGS = STANDARD_SCRIPT_VERIFY_FLAGS & ~MANDATORY_SCRIPT_VERIFY_FLAGS;
 
+const int DELAYED_DELTA = 100;
+
 enum txnouttype
 {
     TX_NONSTANDARD,
     // 'standard' transaction types:
+    TX_ESCROW_FEE,
+    TX_ESCROW_SENDER,
+    TX_ESCROW,
+    TX_PUBKEYHASH_NONCED,
     TX_PUBKEY,
     TX_PUBKEYHASH,
     TX_SCRIPTHASH,
     TX_MULTISIG,
     TX_NULL_DATA,
+    TX_DELAYEDPUBKEY,            
+    TX_DELAYEDPUBKEYHASH,        
+    TX_DELAYEDSCRIPTHASH,       
+    TX_DELAYEDMULTISIG,          
 };
 
 class CNoDestination {

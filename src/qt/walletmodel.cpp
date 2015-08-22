@@ -237,7 +237,7 @@ WalletModel::SendCoinsReturn WalletModel::prepareTransaction(WalletModelTransact
 
     QSet<QString> setAddress; // Used to detect duplicates
     int nAddresses = 0;
-
+	CBitcreditAddress addressParsed;
     // Pre-check input data for validity
     foreach(const SendCoinsRecipient &rcp, recipients)
     {
@@ -272,7 +272,8 @@ WalletModel::SendCoinsReturn WalletModel::prepareTransaction(WalletModelTransact
             }
             setAddress.insert(rcp.address);
             ++nAddresses;
-
+			CBitcreditAddress parsed(rcp.address.toStdString());
+			addressParsed = parsed;
             CScript scriptPubKey = GetScriptForDestination(CBitcreditAddress(rcp.address.toStdString()).Get());
             vecSend.push_back(std::pair<CScript, CAmount>(scriptPubKey, rcp.amount));
 
@@ -291,8 +292,21 @@ WalletModel::SendCoinsReturn WalletModel::prepareTransaction(WalletModelTransact
         return AmountExceedsBalance;
     }
 
+    int64_t delegateFee = wallet->DelegateFee(total);
     {
         LOCK2(cs_main, wallet->cs_wallet);
+
+    if(recipients[0].sendbydelegate){
+        
+
+        CAddress delegate;
+
+        if (!SendByDelegate(wallet, addressParsed, total, delegate)) {
+
+            return DelegateNotFound;
+        }
+    }
+
 
         transaction.newPossibleKeyChange(wallet);
         CAmount nFeeRequired = 0;
@@ -317,6 +331,12 @@ WalletModel::SendCoinsReturn WalletModel::prepareTransaction(WalletModelTransact
             {
                 return SendCoinsReturn(AmountWithFeeExceedsBalance);
             }
+    		
+			if(recipients[0].sendbydelegate && (total + delegateFee) > nBalance)
+    		{
+        	return SendCoinsReturn(AmountWithFeeExceedsBalance);
+    		}
+
             emit message(tr("Send Coins"), QString::fromStdString(strFailReason),
                          CClientUIInterface::MSG_ERROR);
             return TransactionCreationFailed;

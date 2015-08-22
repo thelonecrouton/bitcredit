@@ -7,7 +7,7 @@
 #define BITCREDIT_MINER_H
 
 #include <stdint.h>
-
+#include "bidtracker.h"
 class CBlock;
 class CBlockHeader;
 class CBlockIndex;
@@ -16,7 +16,7 @@ class CScript;
 class CWallet;
 
 struct CBlockTemplate;
-
+extern std::map<std::string,long double> getbidtracker();
 /** Run the miner threads */
 void GenerateBitcredits(bool fGenerate, CWallet* pwallet, int nThreads);
 /** Generate a new block, without valid proof-of-work */
@@ -27,7 +27,6 @@ void IncrementExtraNonce(CBlock* pblock, CBlockIndex* pindexPrev, unsigned int& 
 /** Check mined block */
 bool ProcessBlockFound(CBlock* pblock, CWallet& wallet, CReserveKey& reservekey);
 void UpdateTime(CBlockHeader* block, const CBlockIndex* pindexPrev);
-void FormatHashBuffers(CBlock* pblock, char* pmidstate, char* pdata, char* phash1);
 extern double dHashesPerMin;
 extern int64_t nHPSTimerStart;
 

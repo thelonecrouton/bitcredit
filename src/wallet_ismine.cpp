@@ -51,18 +51,28 @@ isminetype IsMine(const CKeyStore &keystore, const CScript& scriptPubKey)
     case TX_NULL_DATA:
         break;
     case TX_PUBKEY:
-        keyID = CPubKey(vSolutions[0]).GetID();
+    case TX_DELAYEDPUBKEY:
+        keyID = CPubKey(vSolutions[whichType == TX_PUBKEY ? 0 : 1]).GetID();
         if (keystore.HaveKey(keyID))
             return ISMINE_SPENDABLE;
         break;
+    case TX_ESCROW_FEE:
+    case TX_ESCROW_SENDER:
+    case TX_ESCROW:
+        break;
+    case TX_PUBKEYHASH_NONCED:
+        keyID = CKeyID(uint160(vSolutions[1]));
+        return ISMINE_SPENDABLE; 
     case TX_PUBKEYHASH:
-        keyID = CKeyID(uint160(vSolutions[0]));
+    case TX_DELAYEDPUBKEYHASH:
+        keyID = CKeyID(uint160(vSolutions[whichType == TX_PUBKEYHASH ? 0 : 1]));
         if (keystore.HaveKey(keyID))
             return ISMINE_SPENDABLE;
         break;
     case TX_SCRIPTHASH:
+    case TX_DELAYEDSCRIPTHASH:    
     {
-        CScriptID scriptID = CScriptID(uint160(vSolutions[0]));
+        CScriptID scriptID = CScriptID(uint160(vSolutions[whichType == TX_SCRIPTHASH ? 0 : 1]));
         CScript subscript;
         if (keystore.GetCScript(scriptID, subscript)) {
             isminetype ret = IsMine(keystore, subscript);
@@ -72,13 +82,16 @@ isminetype IsMine(const CKeyStore &keystore, const CScript& scriptPubKey)
         break;
     }
     case TX_MULTISIG:
+    case TX_DELAYEDMULTISIG:    
     {
         // Only consider transactions "mine" if we own ALL the
         // keys involved. Multi-signature transactions that are
         // partially owned (somebody else has a key that can spend
         // them) enable spend-out-from-under-you attacks, especially
         // in shared-wallet situations.
-        vector<valtype> keys(vSolutions.begin()+1, vSolutions.begin()+vSolutions.size()-1);
+        // N KEY_A ... KEY_B M
+        // Don't need the N/M
+        vector<valtype> keys(vSolutions.begin()+(whichType == TX_MULTISIG ? 1 : 2), vSolutions.begin()+vSolutions.size()-1);
         if (HaveKeys(keys, keystore) == keys.size())
             return ISMINE_SPENDABLE;
         break;

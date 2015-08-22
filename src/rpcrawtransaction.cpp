@@ -817,3 +817,266 @@ Value sendrawtransaction(const Array& params, bool fHelp)
 
     return hashTx.GetHex();
 }
+
+Value listadvertisedbalances(const Array& params, bool fHelp)
+{
+    if (fHelp || params.size() != 0)
+        throw runtime_error(
+            "listadvertisedbalances\n"
+            "Get Tor addresses with advertised balances.");
+
+    Array result;
+
+    std::map<CAddress, uint64_t> advertised_balances = ListAdvertisedBalances();
+
+
+
+    for (
+        std::map<
+            CAddress,
+            uint64_t
+        >::const_iterator address = advertised_balances.begin();
+        advertised_balances.end() != address;
+        address++
+    ) {
+        Object entry;
+        entry.push_back(Pair("address", address->first.ToStringIP()));
+        entry.push_back(Pair("balance", ValueFromAmount(address->second)));
+        result.push_back(entry);
+    }
+
+    return result;
+}
+
+Value createtransferexpiry(const Array& params, bool fHelp)
+{
+    if (fHelp || params.size() != 2)
+        throw runtime_error(
+            "createtransferexpiry <bind tx> <destination address>\n"
+            "Expire transfer from address bind transaction\n"
+            "Returns hex-encoded raw transaction.\n"
+            "Note that the transaction is not stored in the wallet\n"
+            "or transmitted to the network.");
+
+    RPCTypeCheck(params, list_of(str_type)(str_type));
+
+    uint256 const bind_tx = ParseHashV(params[0], "parameter 1");
+    string const destination_address = params[1].get_str();
+
+    CBitcreditAddress destination_address_parsed(destination_address);
+    if (!destination_address_parsed.IsValid())
+        throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid MIL address");
+
+    CTransaction prevTx;
+    uint256 hashBlock = 0;
+    if (!GetTransaction(bind_tx, prevTx, hashBlock)) {
+        throw runtime_error("transaction unknown");
+    }
+
+    CMutableTransaction rawTx;
+
+    uint64_t value = 0;
+    int output_index = 0;
+
+    for (
+        vector<CTxOut>::const_iterator checking = prevTx.vout.begin();
+        prevTx.vout.end() != checking;
+        checking++,
+        output_index++
+    ) {
+        txnouttype transaction_type;
+        vector<vector<unsigned char> > values;
+        if (!Solver(checking->scriptPubKey, transaction_type, values)) {
+            throw std::runtime_error(
+                "Unknown script " + checking->scriptPubKey.ToString()
+            );
+        }
+        if (
+            (
+                TX_ESCROW == transaction_type
+            ) || (
+                TX_ESCROW_FEE == transaction_type
+            ) || (
+                TX_ESCROW_SENDER == transaction_type
+            )
+        ) {
+            value += checking->nValue;
+            CTxIn claiming;
+            claiming.prevout = COutPoint(bind_tx, output_index);
+            int const expected = ScriptSigArgsExpected(transaction_type, values);
+            for (
+                int filling = 1;
+                expected > filling;
+                filling++
+            ) {
+                claiming.scriptSig << OP_TRUE;
+            }
+            claiming.scriptSig << OP_FALSE;
+
+            rawTx.vin.push_back(claiming);
+        }
+    }
+
+    CTxOut transfer;
+
+    transfer.scriptPubKey= GetScriptForDestination(destination_address_parsed.Get());
+    transfer.nValue = value;
+
+    rawTx.vout.push_back(transfer);
+
+    CDataStream ss(SER_NETWORK, PROTOCOL_VERSION);
+    ss << rawTx;
+    return HexStr(ss.begin(), ss.end());
+}
+
+Value createtransferescrow(const Array& params, bool fHelp)
+{
+    if (fHelp || params.size() != 6)
+        throw runtime_error(
+            "createtransferescrow <destination address> <bind txid> <tor address> <bind nonce> <transfer nonce> <delegate tx_id>\n"
+            "Claim escrow from sender bind transaction\n"
+            "Returns hex-encoded raw transaction.\n"
+            "Note that the transaction is not stored in the wallet\n"
+            "or transmitted to the network.");
+
+    RPCTypeCheck(params, list_of(str_type)(str_type)(str_type)(int_type)(int_type)(str_type));
+    /*
+    uint256 const bind_tx = ParseHashV(params[0], "parameter 1");
+    vector<unsigned char> const delegate_tx = ParseHexV(params[1], "parameter 2");
+    string const tor_address = params[2].get_str();
+    boost::uint64_t const bind_nonce = params[3].get_uint64();
+    boost::uint64_t const transfer_nonce = params[4].get_uint64();
+    string const destination_address = params[5].get_str();
+    */
+    string const destination_address = params[0].get_str();
+    uint256 const sender_confirmtx_hash = ParseHashV(params[1], "bind tx id");
+    string const sender_tor_address = params[2].get_str();
+    boost::uint64_t const sender_address_bind_nonce = params[3].get_uint64();
+    boost::uint64_t const transfer_nonce = params[4].get_uint64();
+    vector<unsigned char> const transfer_tx_hash = ParseHexV(params[5], "transfer tx id");
+
+    CBitcreditAddress destination_address_parsed(destination_address);
+    if (!destination_address_parsed.IsValid())
+        throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid MIL address");
+
+    CNetAddr tor_address_parsed;
+    tor_address_parsed.SetSpecial(sender_tor_address);
+
+    vector<unsigned char> identification = CreateAddressIdentification(
+        tor_address_parsed,
+        sender_address_bind_nonce
+    );
+
+    CTransaction prevTx;
+    uint256 hashBlock = 0;
+    if (!GetTransaction(sender_confirmtx_hash, prevTx, hashBlock)) {
+        throw runtime_error("transaction unknown");
+    }
+    int output_index = 0;
+    CTxOut const* found = NULL;
+    for (
+        vector<CTxOut>::const_iterator checking = prevTx.vout.begin();
+        prevTx.vout.end() != checking;
+        checking++,
+        output_index++
+    ) {
+        txnouttype transaction_type;
+        vector<vector<unsigned char> > values;
+        if (!Solver(checking->scriptPubKey, transaction_type, values)) {
+            throw std::runtime_error(
+                "Unknown script " + checking->scriptPubKey.ToString()
+            );
+        }
+        if (TX_ESCROW_SENDER == transaction_type) {
+            found = &(*checking);
+            break;
+        }
+    }
+    if (NULL == found) {
+        throw std::runtime_error("invalid bind transaction");
+    }
+
+    CMutableTransaction rawTx;
+
+    CTxOut transfer;
+
+    transfer.scriptPubKey= GetScriptForDestination(destination_address_parsed.Get());
+    transfer.nValue = found->nValue;
+
+    rawTx.vout.push_back(transfer);
+
+    rawTx.vin.push_back(CTxIn());
+
+    CTxIn& input = rawTx.vin[0];
+
+    input.prevout = COutPoint(sender_confirmtx_hash, output_index);
+    input.scriptSig << transfer_tx_hash;
+    input.scriptSig << transfer_nonce;
+    input.scriptSig << identification;
+    input.scriptSig << OP_TRUE;
+    input.scriptSig << OP_TRUE;
+    
+    if (!VerifyScript(input.scriptSig, found->scriptPubKey, STANDARD_SCRIPT_VERIFY_FLAGS, SignatureChecker(rawTx, output_index))) {
+
+        throw std::runtime_error("verification failed");
+    }
+
+    CDataStream ss(SER_NETWORK, PROTOCOL_VERSION);
+    ss << rawTx;
+    return HexStr(ss.begin(), ss.end());
+}
+
+Value popoffchain(const Array& params, bool fHelp)
+{
+    if (fHelp || params.size() != 0)
+        throw runtime_error(
+            "popoffchain\n"
+            "Get off-chain transaction pushed by other client, if available.");
+
+    std::string name;
+    CTransaction tx;
+    if (!pwalletMain->pop_off_chain_transaction(name, tx)) {
+        return Array();
+    }
+
+    Object result;
+    result.push_back(Pair("name", name));
+
+    Object converted;
+    TxToJSON(tx, 0, converted);
+    result.push_back(Pair("transaction", converted));
+
+    return result;
+}
+
+Value pushoffchain(const Array& params, bool fHelp)
+{
+    if (fHelp || params.size() != 3)
+        throw runtime_error(
+            "pushoffchain <destination> <name> <transaction>\n"
+            "Push hex-encoded off-chain transaction to other client on\n"
+            "destination Tor address, tagging it with a given name.");
+
+    RPCTypeCheck(params, list_of(str_type)(str_type)(str_type));
+
+    CNetAddr parsed;
+    if (!parsed.SetSpecial(params[0].get_str())) {
+        throw runtime_error("invalid destination address");
+    }
+
+    string name = params[1].get_str();
+
+    vector<unsigned char> txData(ParseHexV(params[2], "argument"));
+    CDataStream ssData(txData, SER_NETWORK, PROTOCOL_VERSION);
+    CTransaction tx;
+    try {
+        ssData >> tx;
+    }
+    catch (std::exception &e) {
+        throw JSONRPCError(RPC_DESERIALIZATION_ERROR, "TX decode failed");
+    }
+
+    PushOffChain(parsed, name, tx);
+
+    return Value::null;
+}

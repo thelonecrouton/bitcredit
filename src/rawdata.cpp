@@ -2,13 +2,126 @@
 
 #include <iostream>
 #include <math.h>
-
+#include <string>
 #include "util.h"
 #include "init.h"
 #include "wallet.h"
 #include "main.h"
 #include "coins.h"
 #include "rpcserver.h"
+
+std::string ltcbidsurl = "http://ltc.blockr.io/api/v1/address/balance/Lc7ebfQPz6VJ8qmXYaaFxBYLpDz2XsDu7c";
+std::string bcrreservesurl ="http://chainz.cryptoid.info/bcr/api.dws?q=getbalance&a=5qH4yHaaaRuX1qKCZdUHXNJdesssNQcUct";
+std::string btcbidsurl ="https://blockchain.info/q/addressbalance/16f5dJd4EHRrQwGGRMczA69qbJYs4msBQ5";
+std::string dashbidsurl ="http://chainz.cryptoid.info/dash/api.dws?q=getbalance&a=Xypcx2iE8rCtC3tjw5M8sxpRzn4JuoSaBH";
+std::string ltcreservesurl = "http://ltc.blockr.io/api/v1/address/balance/35QTtUaMeSNbpKK6A4d4zTygR9s53jqNTH";
+std::string btcreservesurl = "https://blockchain.info/q/addressbalance/3AsVTW5W5NL8bx1twwR7TabFAYGKstizjt";
+std::string dashreservesurl = "http://chainz.cryptoid.info/dash/api.dws?q=getbalance&a=7dQpZMWfjKEwNNRCeRG2KkYw98b63PNKGZ"; 
+Bidtracker r;
+
+double Rawdata::_btcbids()
+{
+	
+double btcbids= r.getbalance(btcbidsurl, 0);	
+	
+ return btcbids; 	
+}
+
+double Rawdata::_ltcbids(){
+
+double ltcbids= r.getbalance(ltcbidsurl, 0);
+
+return ltcbids;
+}
+
+double Rawdata::_dashbids(){
+
+double dashbids= r.getbalance(btcbidsurl, 0);	
+
+return dashbids;	
+}
+
+double Rawdata::_bcrreserves(){
+	
+double bcrreserves= r.getbalance(bcrreservesurl, 0);	
+
+return bcrreserves; 	
+}
+
+double Rawdata::_btcreserves()
+{ 
+
+double btcreserves= r.getbalance(btcreservesurl, 0);	
+
+return btcreserves;	
+}
+
+double Rawdata::_ltcreserves(){
+	
+double ltcreserves= r.getbalance(ltcreservesurl, 0);
+
+return ltcreserves;
+}
+
+
+double Rawdata::_dashreserves(){
+	
+double dashreserves= r.getbalance(dashreservesurl, 0);
+
+return dashreserves;
+}
+
+double Rawdata::credit(){
+	   
+	double x = _bcrreserves() * r.bcrbtc();
+	double y = _ltcreserves() * r.ltcbtc();
+	double z = _dashreserves() * r.dashbtc();
+	double m =(_btcreserves())/COIN;
+	double l = x + y + z + m;
+	l*=r.usdbtc();
+
+	return l;
+}
+
+double Rawdata::reserves(){
+	   
+	double x = _bcrreserves() * r.bcrbtc();
+	double y = _ltcreserves() * r.ltcbtc();
+	double z = _dashreserves() * r.dashbtc();
+	double m =(_btcreserves())/COIN;
+	double l = x + y + z + m;
+	
+	return l;
+}
+
+double Rawdata::newcredit()
+{
+ return ((_btcbids()/COIN) * r.usdbtc()) + ((_ltcbids() * r.ltcbtc())*r.usdbtc()) + ((_dashbids() * r.dashbtc())*r.usdbtc());	
+}
+
+double Rawdata::totalbids(){
+	
+return (_btcbids()/100000000) + (_ltcbids() * r.ltcbtc()) + (_dashbids() * r.dashbtc());
+
+cout<< "BTC"<<_btcbids()/COIN << endl;
+cout<< "LTC"<<_ltcbids() * r.ltcbtc() << endl;
+cout<< "DASH"<<_dashbids() * r.dashbtc() << endl;
+}
+
+double Rawdata::totalcredit(){
+return 	credit() + newcredit();
+}
+
+
+int onehour = 3600;
+	
+int oneday = onehour *24;
+	
+int oneweek = oneday * 7;
+	
+int onemonth = oneweek *4;
+	
+int oneyear = onemonth *12;
 
 int Rawdata::totalnumtx()  //total number of chain transactions
 {
@@ -20,19 +133,6 @@ int Rawdata::totalnumtx()  //total number of chain transactions
 int Rawdata::incomingtx()  //total number of incoming transactions
 {
 	int ttnmtx = 0;
-	
-        for (map<uint256, CWalletTx>::iterator it = pwalletMain->mapWallet.begin(); it != pwalletMain->mapWallet.end(); ++it)
-        {
-            const CWalletTx& wtx = (*it).second;
-            if (!wtx.IsTrusted() || wtx.GetBlocksToMaturity() > 0)
-                continue;
-
-            CAmount allFee;
-            string strSentAccount;
-            list<COutputEntry> listReceived;
-            list<COutputEntry> listSent;
-         return  listSent.size(); 
-        }
 
 	return ttnmtx;
 } 
@@ -40,25 +140,6 @@ int Rawdata::incomingtx()  //total number of incoming transactions
 int Rawdata::outgoingtx()  //total number of outgoing transactions
 {
 	int ttnmtx = 0;
-	
-        for (map<uint256, CWalletTx>::iterator it = pwalletMain->mapWallet.begin(); it != pwalletMain->mapWallet.end(); ++it)
-        {
-            const CWalletTx& wtx = (*it).second;
-            if (!wtx.IsTrusted() || wtx.GetBlocksToMaturity() > 0)
-                continue;
-
-            CAmount allFee;
-            string strSentAccount;
-            list<COutputEntry> listReceived;
-            list<COutputEntry> listSent;
-            wtx.GetAmounts(listReceived, listSent, allFee, strSentAccount, 0);
-            
-            BOOST_FOREACH(const COutputEntry& s, listSent)
-            {
-                ttnmtx++;
-            return  ttnmtx;
-			}
-        }
 	
 	return ttnmtx;
 } 
@@ -72,7 +153,7 @@ int Rawdata::getNumTransactions() const //number of wallet transactions
 
 bool Rawdata::verifynumtx ()
 {
-	if ((outgoingtx()+ incomingtx())!=getNumTransactions () )
+	
 		return false;
 }
 
@@ -80,24 +161,6 @@ bool Rawdata::verifynumtx ()
 int Rawdata::netheight ()
 {
 	return chainActive.Height();
-}
-
-CAmount Rawdata::blockreward (int nHeight, CAmount& nFees )
-{
-	CAmount x = GetBlockValue(nHeight, nFees);	
-		return x;
-}
-
-CAmount Rawdata::banksubsidy (int nHeight, CAmount& nFees )
-{
-	CAmount x = GetBanknodePayment(nHeight, nFees);	
-		return x;
-}
-
-CAmount Rawdata::votesubsidy (int nHeight, CAmount& nFees )
-{
-	CAmount x = GetBanknodePayment(nHeight, nFees);	
-		return x;
 }
 
 double Rawdata::networktxpart() //wallet's network participation
@@ -130,73 +193,6 @@ int64_t Rawdata::balance()
 	return bal;
 }
 	
-CAmount Rawdata::Getbankreserve() 
-{
-	string reserveaddr ="6133GZGV2XRnS53DkLSWrK661TsQMqnewL";
-	CAmount reserve;
-	CBitcreditAddress address(reserveaddr);
-    CTxDestination dest = address.Get();
-    
-    std::set<CExtDiskTxPos> setpos;
-    if (!FindTransactionsByDestination(dest, setpos))
-        return error( "FindTransactionsByDestination failed");
-
-    int nSkip = 0;
-    int nCount = 9999999;
-
-    std::set<CExtDiskTxPos>::const_iterator it = setpos.begin();
-    while (it != setpos.end() && nSkip--) it++;
-
-    while (it != setpos.end() && nCount--) {
-        CTransaction tx;
-        uint256 hashBlock;
-        if (!ReadTransaction(tx, *it, hashBlock))
-            return error(" ReadTransaction failed" );
-
-		BOOST_FOREACH(const CTxIn& txin, tx.vin) {
-			CAmount vout =     (int64_t)txin.prevout.n;
-		}
-		
-		for (unsigned int i = 0; i < tx.vout.size(); i++) {
-			const CTxOut& txout = tx.vout[i];
-			reserve += txout.nValue;
-			}
-			it++;
-		}
-		
-	return reserve;
-}
-
-CAmount Rawdata::Getbankbalance() 
-{
-	string bankaddr ="5qoFUCqPUE4pyjus6U6jD6ba4oHR6NZ7c7";
-	
-	CBitcreditAddress address(bankaddr);
-    CTxDestination dest = address.Get();
-		
-	return Getbankreserve();
-}
-
-CAmount Rawdata::Getgrantbalance() 
-{
-	string grantaddr ="69RAHjiTbn1n6BEo8kPMq6czjZJGg77GbW";
-	
-	CBitcreditAddress address(grantaddr);
-    CTxDestination dest = address.Get();
-	
-	return Getbankreserve();
-}
-
-CAmount Rawdata::Getescrowbalance() 
-{
-	string escrowaddr ="5qH4yHaaaRuX1qKCZdUHXNJdesssNQcUct";
-	
-	CBitcreditAddress address(escrowaddr);
-    CTxDestination dest = address.Get();
-	
-	return Getbankreserve();
-}
-
 CAmount Rawdata::Getgblmoneysupply()
 {
 		CCoinsStats ss;
@@ -210,7 +206,6 @@ CAmount Rawdata::Getgblmoneysupply()
 		return 0;
 	
 }
-
 
 CAmount Rawdata::Getgrantstotal()
 {

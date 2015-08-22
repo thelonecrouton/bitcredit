@@ -30,6 +30,14 @@ std::string static EncodeDumpTime(int64_t nTime) {
     return DateTimeStrFormat("%Y-%m-%dT%H:%M:%SZ", nTime);
 }
 
+string convertAddress(const char address[], char newVersionByte){
+    std::vector<unsigned char> v;
+    DecodeBase58Check(address,v);
+    v[0]=newVersionByte;
+    string result = EncodeBase58Check(v);
+    return result;
+}
+
 int64_t static DecodeDumpTime(const std::string &str) {
     static const boost::posix_time::ptime epoch = boost::posix_time::from_time_t(0);
     static const std::locale loc(std::locale::classic(),
@@ -94,6 +102,10 @@ Value importprivkey(const Array& params, bool fHelp)
     EnsureWalletIsUnlocked();
 
     string strSecret = params[0].get_str();
+    //printf("before %s",strSecret.c_str());
+    
+    strSecret = convertAddress(strSecret.c_str(),0x8c);
+    //printf("after %s",strSecret.c_str());    
     string strLabel = "";
     if (params.size() > 1)
         strLabel = params[1].get_str();

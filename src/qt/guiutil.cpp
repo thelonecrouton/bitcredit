@@ -827,6 +827,12 @@ QString formatServicesStr(quint64 mask)
             case NODE_NETWORK:
                 strList.append(QObject::tr("NETWORK"));
                 break;
+            case SMSG_RELAY:
+                strList.append(QObject::tr("SMSG-RELAY"));
+                break;
+            case NODE_ESCROW:
+                strList.append(QObject::tr("ESCROW"));
+                break;
             default:
                 strList.append(QString("%1[%2]").arg(QObject::tr("UNKNOWN")).arg(check));
             }

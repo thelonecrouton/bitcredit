@@ -2,7 +2,7 @@
 #include "guiconstants.h"
 #include "bitcreditunits.h"
 #include "optionsmodel.h"
-#include "walletmodel.h"
+#include "walletmodel.h" 
 #include "messagemodel.h"
 #include "addresstablemodel.h"
 #include "pubkey.h"

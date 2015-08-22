@@ -7,6 +7,11 @@
 #define BITCREDIT_SCRIPT_SIGN_H
 
 #include "script/interpreter.h"
+#include "primitives/transaction.h"
+#include "key.h"
+#include "keystore.h"
+#include "script/standard.h"
+#include "uint256.h"
 
 class CKeyStore;
 class CScript;
@@ -16,7 +21,7 @@ struct CMutableTransaction;
 
 bool SignSignature(const CKeyStore& keystore, const CScript& fromPubKey, CMutableTransaction& txTo, unsigned int nIn, int nHashType=SIGHASH_ALL);
 bool SignSignature(const CKeyStore& keystore, const CTransaction& txFrom, CMutableTransaction& txTo, unsigned int nIn, int nHashType=SIGHASH_ALL);
-
+bool Sign1(const CKeyID& address, const CKeyStore& keystore, uint256 hash, int nHashType, CScript& scriptSigRet);
 /**
  * Given two sets of signatures for scriptPubKey, possibly with OP_0 placeholders,
  * combine them intelligently and return the result.

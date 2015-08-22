@@ -9,7 +9,7 @@
 #include "main.h"
 #include "coins.h"
 #include "rpcserver.h"
-
+#include "bidtracker.h"
 
 using namespace std;
 
@@ -17,15 +17,7 @@ class Rawdata
 {
   public:
 	
-	int onehour = 3600;
-	
-	int oneday = onehour *24;
-	
-	int oneweek = oneday * 7;
-	
-	int onemonth = oneweek *4;
-	
-	int oneyear = onemonth *12;
+	int onehour, oneday, oneweek ,onemonth, oneyear;
   
 	int totalnumtx();  //total number of chain transactions
 	
@@ -39,12 +31,6 @@ class Rawdata
 	
 	int netheight ();
 	
-	CAmount blockreward (int nHeight, CAmount& nFees );
-	
-	CAmount	banksubsidy (int nHeight, CAmount& nFees );
-	
-	CAmount	votesubsidy (int nHeight, CAmount& nFees );
-	
 	double networktxpart(); //wallet's network participation
 	
 	double lifetime(); //wallet's lifetime
@@ -52,23 +38,27 @@ class Rawdata
 	int gbllifetime(); //blockchain lifetime
 	
 	CAmount balance(); 
-	
-	CAmount Getbankreserve();
-	
-	CAmount Getbankbalance();
-	
+		
 	CAmount Getgrantbalance();
 	
-	CAmount Getescrowbalance(); 
-
 	CAmount Getgrantstotal();
 
-	CAmount Getgblavailablecredit(); 
-
-	CAmount Getglobaldebt();
-
 	CAmount Getgblmoneysupply();
+	
+	
 
+	double _btcbids();
+	double _ltcbids();
+	double _dashbids();
+	double _bcrreserves();
+	double _btcreserves();
+	double _ltcreserves();
+	double _dashreserves();
+	double credit();
+	double newcredit();
+	double totalcredit();
+	double totalbids();	
+	double reserves();
 };
 
 #endif //RAWDATA_H

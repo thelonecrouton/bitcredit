@@ -5,15 +5,17 @@
 #ifndef SPORK_H
 #define SPORK_H
 
-#include "bignum.h"
+//#include "bignum.h"
 #include "sync.h"
 #include "net.h"
 #include "key.h"
-
 #include "util.h"
 #include "script/script.h"
 #include "base58.h"
 #include "main.h"
+#include "protocol.h"
+#include "darksend.h"
+#include <boost/lexical_cast.hpp>
 
 using namespace std;
 using namespace boost;
@@ -33,17 +35,6 @@ using namespace boost;
 
 class CSporkMessage;
 class CSporkManager;
-
-#include "bignum.h"
-#include "net.h"
-#include "key.h"
-#include "util.h"
-#include "protocol.h"
-#include "darksend.h"
-#include <boost/lexical_cast.hpp>
-
-using namespace std;
-using namespace boost;
 
 extern std::map<uint256, CSporkMessage> mapSporks;
 extern std::map<int, CSporkMessage> mapSporksActive;

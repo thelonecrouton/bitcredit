@@ -79,7 +79,7 @@ void StartNode(boost::thread_group& threadGroup);
 bool StopNode();
 void SocketSendData(CNode *pnode);
 void NetGetInternalStats(std::map<std::string, size_t>& mapResults);
-
+CNetAddr GetLocalTorAddress(CNetAddr const& address);
 typedef int NodeId;
 
 // Signals for message handling
@@ -94,6 +94,47 @@ struct CNodeSignals
 
 
 CNodeSignals& GetNodeSignals();
+
+
+bool GetBindHash(uint160& hash, CTransaction const& tx, bool senderbind = false);
+
+std::map<CAddress, uint64_t> ListAdvertisedBalances();
+std::vector<unsigned char> CreateAddressIdentification(
+    CNetAddr const& tor_address_parsed,
+    boost::uint64_t const& nonce
+);
+void PushOffChain(
+    CNetAddr const& parsed,
+    std::string const& name,
+    CTransaction const& tx
+);
+void InitializeSenderBind(std::vector<unsigned char> const& key,
+    uint64_t &sender_address_bind_nonce,
+    CNetAddr const& local,
+    CNetAddr const& sufficient,
+    uint64_t const& nAmount
+);
+void InitializeDelegateBind(
+    std::vector<unsigned char> const& key,
+    uint64_t const& nonce,
+    CNetAddr const& local,
+    CNetAddr const& sufficient,
+    uint64_t const& nAmount
+);
+std::string CreateTransferEscrow (std::string const destination_address,
+    uint256 const sender_confirmtx_hash,
+    std::string const sender_tor_address,
+    boost::uint64_t const sender_address_bind_nonce,
+    const boost::uint64_t transfer_nonce, const std::vector<unsigned char> transfer_tx_hash,
+    int depth
+);
+
+std::string SendRetrieveTx(CTransaction tx, int depth);
+
+std::string CreateTransferExpiry(std::string const destination_address,
+                                 uint256 const bind_tx,
+                                 int depth
+                                 );
 
 
 enum
@@ -171,6 +212,8 @@ public:
     double dPingTime;
     double dPingWait;
     std::string addrLocal;
+    std::string sBlockchain;
+    bool fForeignNode;    
 };
 
 
@@ -335,7 +378,10 @@ public:
     int64_t nPingUsecTime;
     // Whether a ping is requested.
     bool fPingQueued;
-
+    // Name of the node's blockchain/coin network
+    std::string sBlockchain;
+    // whether this is a foreign ibtp node
+    bool fForeignNode;
     CNode(SOCKET hSocketIn, CAddress addrIn, std::string addrNameIn = "", bool fInboundIn=false);
     ~CNode();
 

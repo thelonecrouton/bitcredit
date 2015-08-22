@@ -285,9 +285,9 @@ static const CRPCCommand vRPCCommands[] =
 
 #ifdef ENABLE_WALLET
     /* Coin generation */
-    { "generating",         "getgenerate",            &getgenerate,            true,      false,      false },
+    { "generating",         "getgenerate",            &getgenerate,            true,      false,      true },
     { "generating",         "gethashespermin",        &gethashespermin,        true,      false,      false },
-    { "generating",         "setgenerate",            &setgenerate,            true,      true,       false },
+    { "generating",         "setgenerate",            &setgenerate,            true,      true,       true },
 #endif
 
     /* Raw transactions */
@@ -370,11 +370,11 @@ static const CRPCCommand vRPCCommands[] =
 #endif
 	
     /* Secure Messaging */
-    { "secureMsg",          "smsgenable",             &smsgenable,             true,      false, 	  false},
+    { "secureMsg",          "smsgenable",             &smsgenable,             true,      false, 	  true},
     { "secureMsg" ,         "smsgdisable",            &smsgdisable,            true,      false,	  false},
     { "secureMsg" ,         "smsglocalkeys",          &smsglocalkeys,          true,      false,	  true },
     { "secureMsg" ,         "smsgoptions",            &smsgoptions,            true,      false,	  false},
-    { "secureMsg" ,         "smsgscanchain",          &smsgscanchain,          true,      false,	  false},
+    { "secureMsg" ,         "smsgscanchain",          &smsgscanchain,          true,      false,	  true},
     { "secureMsg" ,         "smsgscanbuckets",        &smsgscanbuckets,        true,      false,	  false},
     { "secureMsg" ,         "smsgaddkey",             &smsgaddkey,             true,      false,	  false},
     { "secureMsg" ,         "smsggetpubkey",          &smsggetpubkey,          true,      false,	  false},
@@ -383,6 +383,23 @@ static const CRPCCommand vRPCCommands[] =
     { "secureMsg" ,         "smsginbox",              &smsginbox,              true,      false,	  true },
     { "secureMsg" ,         "smsgoutbox",             &smsgoutbox,             true,      false,	  false},
     { "secureMsg" ,         "smsgbuckets",            &smsgbuckets,            true,      false,	  false},
+
+#ifdef ENABLE_WALLET
+    /* Escrow */    
+    { "escrow",           "sendbydelegate",           &sendbydelegate,         false,     false,      false},
+    { "escrow",           "listadvertisedbalances",   &listadvertisedbalances, true,      false,	  false},
+    { "escrow",           "createtransferexpiry",     &createtransferexpiry,   false,     false,      false},
+    { "escrow",           "createtransferescrow",     &createtransferescrow,   false,     false,      false},
+    { "escrow",           "popoffchain",              &popoffchain,            false,     false,      false},
+    { "escrow",           "pushoffchain",             &pushoffchain,           false,     false,      false},
+    { "escrow",           "retrievedelegatetx",       &retrievedelegatetx,     true,      false,	  false},    
+    { "escrow",           "sendbydelegate",           &sendbydelegate,         false,     false,      false},
+    { "escrow",           "listadvertisedbalances",   &listadvertisedbalances, true,      false,	  false},
+    { "escrow",           "dumpretrievalstrings",     &dumpretrievalstrings,   true,      false,	  false},
+    { "escrow",           "clearretrievalstrings",    &clearretrievalstrings,  false,     false,      false},
+#endif
+
+    /*Mega Network */
 
 };
 

@@ -19,7 +19,7 @@ unsigned int GetNextWorkRequired(const CBlockIndex* pindexLast, const CBlockHead
     if (pindexLast == NULL)
         return nProofOfWorkLimit;
 
-    // Only change once per interval
+    // Only change once per difficulty adjustment interval
     if ((pindexLast->nHeight+1) <4800){
     if ((pindexLast->nHeight+1) % Params().Interval() != 0)
     {
@@ -131,11 +131,11 @@ bool CheckProofOfWork(uint256 hash, unsigned int nBits)
 
     // Check range
     if (fNegative || bnTarget == 0 || fOverflow || bnTarget > Params().ProofOfWorkLimit())
-        return error("CheckProofOfWork() : nBits below minimum work");
+        return error("CheckProofOfWork(): nBits below minimum work");
 
     // Check proof of work matches claimed amount
     if (hash > bnTarget)
-        return error("CheckProofOfWork() : hash doesn't match nBits");
+        return error("CheckProofOfWork(): hash doesn't match nBits");
 
     return true;
 }
@@ -146,7 +146,7 @@ uint256 GetBlockProof(const CBlockIndex& block)
     bool fNegative;
     bool fOverflow;
     bnTarget.SetCompact(block.nBits, &fNegative, &fOverflow);
-    if (fNegative || fOverflow || bnTarget == 0)
+     if (fNegative || fOverflow || bnTarget == 0)
         return 0;
     // We need to compute 2**256 / (bnTarget+1), but we can't represent 2**256
     // as it's too large for a uint256. However, as 2**256 is at least as large

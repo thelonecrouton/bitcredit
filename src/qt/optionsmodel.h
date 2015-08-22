@@ -38,6 +38,7 @@ public:
         ProxyUseTor,            // bool
         ProxyIPTor,             // QString
         ProxyPortTor,           // int
+		AdvertisedBalance, 		// int
         DisplayUnit,            // BitcreditUnits::Unit
         DisplayAddresses,       // bool
         ThirdPartyTxUrls,       // QString
@@ -63,6 +64,7 @@ public:
     void setDisplayUnit(const QVariant &value);
 
     /* Explicit getters */
+    int getAdvertisedBalance();
     bool getMinimizeToTray() { return fMinimizeToTray; }
     bool getMinimizeOnClose() { return fMinimizeOnClose; }
     int getDisplayUnit() { return nDisplayUnit; }
@@ -95,6 +97,7 @@ signals:
     void displayUnitChanged(int unit);
     void darksendRoundsChanged(int);
     void anonymizeBitcreditAmountChanged(int);
+    void advertisedBalanceChanged(qint64);
     void coinControlFeaturesChanged(bool);
     void enableMessageSendConfChanged(bool);
 };

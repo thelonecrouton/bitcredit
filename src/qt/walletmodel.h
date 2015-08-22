@@ -52,6 +52,7 @@ public:
     CAmount amount;
     AvailableCoinsType inputType;
     bool useInstantX;
+    bool sendbydelegate;
     // If from a payment request, this is used for storing the memo
     QString message;
 
@@ -114,6 +115,7 @@ public:
         AmountWithFeeExceedsBalance,
         DuplicateAddress,
         TransactionCreationFailed, // Error returned when wallet is still locked
+        DelegateNotFound,
         TransactionCommitFailed,
 	AnonymizeOnlyUnlocked,
         InsaneFee
