@@ -149,11 +149,11 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn)
 	{
     txNew.vout.resize(1);
 	}
-	else if (chainActive.Tip()->nHeight>29999 && chainActive.Tip()->nHeight<203999)
+	else if (chainActive.Tip()->nHeight>29999 && chainActive.Tip()->nHeight<200000)
 	{
 	txNew.vout.resize(3);	
 	}
-    else if (chainActive.Tip()->nHeight>204000 ){
+    else if (chainActive.Tip()->nHeight>199999 ){
 		
 			if (chainActive.Tip()->nHeight%900==0){
 				std::map<std::string,long double> bidtracker = getbidtracker();
@@ -170,13 +170,13 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn)
 	{
     txNew.vout[0].scriptPubKey = scriptPubKeyIn;
 	}
-    else if (chainActive.Tip()->nHeight>29999 && chainActive.Tip()->nHeight<203999)
+    else if (chainActive.Tip()->nHeight>29999 && chainActive.Tip()->nHeight<200000)
 	{
     txNew.vout[0].scriptPubKey = scriptPubKeyIn;
     txNew.vout[1].scriptPubKey = BANK_SCRIPT;
     txNew.vout[2].scriptPubKey = RESERVE_SCRIPT;
     } 
-    else if (chainActive.Tip()->nHeight>204000 ){		
+    else if (chainActive.Tip()->nHeight>199999 ){		
 		    if(activeBanknode.status == BANKNODE_IS_CAPABLE){
 				string miningkey = GetArg("-miningkey", "");
 				CBitcreditAddress maddress(miningkey);
@@ -219,7 +219,7 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn)
 
             if(hasPayment){
                 payments++;
-                if (chainActive.Tip()->nHeight>204000 ){
+                if (chainActive.Tip()->nHeight>199999 ){
 					if (chainActive.Tip()->nHeight%900==0){
 						std::map<std::string,long double> bidtracker = getbidtracker();
 						txNew.vout.resize(bidtracker.size()+ payments+1);
@@ -465,7 +465,7 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn)
         if (chainActive.Tip()->nHeight<30000) {
        		txNew.vout[0].nValue = blockValue;
 		}
-		else if (chainActive.Tip()->nHeight>29999 && chainActive.Tip()->nHeight<203999){
+		else if (chainActive.Tip()->nHeight>29999 && chainActive.Tip()->nHeight<200000){
 				if(payments > 0){
 						
 					{ 
@@ -483,7 +483,7 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn)
         
 			txNew.vout[0].nValue = blockValue;
 		}
-        else if (chainActive.Tip()->nHeight>204000 ){
+        else if (chainActive.Tip()->nHeight>199999 ){
 			
 				txNew.vout[1].nValue = bank;
 				blockValue -= bank;
