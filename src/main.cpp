@@ -1487,7 +1487,7 @@ CAmount GetBlockValue(int nHeight, const CAmount& nFees)
 	if (nHeight< 4000){ nSubsidy = 5* COIN;}
 	if (nHeight> 20999 && nHeight <30000 ){ nSubsidy = 25* COIN;}
     // Force block reward to zero when right shift is undefined.
-    if (nHeight> 199999){ 
+    if (nHeight> 204000){ 
 		nSubsidy = 18* COIN;
 		if (nHeight%900==0)
 		{
@@ -1502,7 +1502,7 @@ int64_t GetBanknodePayment(int nHeight, int64_t blockValue)
 {
     int64_t ret = blockValue/5; 
 	//int64_t ret2 = blockValue/2;
-	if(nHeight%900==0 && nHeight >199999) ret+= (blockValue/5);
+	if(nHeight%900==0 && nHeight >204000) ret+= (blockValue/5);
     if(nHeight > 85000)               ret += blockValue / 20;  
     if(nHeight > 85000+((1440*30)* 1)) ret += blockValue / 8; //32.5%
     
