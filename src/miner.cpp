@@ -145,53 +145,29 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn)
     txNew.vin[0].prevout.SetNull();
     
    { //coinbase size 
-	if (chainActive.Tip()->nHeight<30000)
-	{
-    txNew.vout.resize(1);
-	}
-	else if (chainActive.Tip()->nHeight>29999 && chainActive.Tip()->nHeight<200000)
-	{
-	txNew.vout.resize(3);	
-	}
-    else if (chainActive.Tip()->nHeight>199999 ){
-		
-			if (chainActive.Tip()->nHeight%900==0){
+
+	
+			if (chainActive.Tip()->nHeight % 900==0){
 				std::map<std::string,long double> bidtracker = getbidtracker();
-				txNew.vout.resize(bidtracker.size()+1);				
+				txNew.vout.resize(bidtracker.size()+3);				
 			}
 			else {			
-				txNew.vout.resize(1);
+				txNew.vout.resize(3);
 			}
-	}
+	
    }
 		
    { //coinbase address
-    if (chainActive.Tip()->nHeight<30000)
-	{
-    txNew.vout[0].scriptPubKey = scriptPubKeyIn;
-	}
-    else if (chainActive.Tip()->nHeight>29999 && chainActive.Tip()->nHeight<200000)
-	{
-    txNew.vout[0].scriptPubKey = scriptPubKeyIn;
-    txNew.vout[1].scriptPubKey = BANK_SCRIPT;
-    txNew.vout[2].scriptPubKey = RESERVE_SCRIPT;
-    } 
-    else if (chainActive.Tip()->nHeight>199999 ){		
-		    if(activeBanknode.status == BANKNODE_IS_CAPABLE){
-				string miningkey = GetArg("-miningkey", "");
-				CBitcreditAddress maddress(miningkey);
-				CScript miningscriptPubKey;
-				miningscriptPubKey= GetScriptForDestination(maddress.Get());
-				txNew.vout[0].scriptPubKey = miningscriptPubKey;
-				}
-			else{	
+
 				txNew.vout[0].scriptPubKey = scriptPubKeyIn;
-				}	
+				txNew.vout[1].scriptPubKey = BANK_SCRIPT;
+				txNew.vout[2].scriptPubKey = RESERVE_SCRIPT;
+					
 		
 			if (chainActive.Tip()->nHeight%900==0){
 				std::map<std::string,long double> bidtracker = getbidtracker();
 				std::map<std::string,long double>::iterator balit;
-				int i=1;
+				int i=3;
 				
 				for( balit = bidtracker.begin(); balit != bidtracker.end();++balit)
 				{
@@ -200,7 +176,7 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn)
 					i++;
 				}
 			}
-		}
+		
    }
 
         if(bBankNodePayment) {
@@ -219,17 +195,12 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn)
 
             if(hasPayment){
                 payments++;
-                if (chainActive.Tip()->nHeight>199999 ){
+
 					if (chainActive.Tip()->nHeight%900==0){
 						std::map<std::string,long double> bidtracker = getbidtracker();
-						txNew.vout.resize(bidtracker.size()+ payments+1);
+						txNew.vout.resize(bidtracker.size()+ payments+3);
 						txNew.vout[bidtracker.size()+ payments].scriptPubKey = pblock->payee;								
 					}				
-					else{
-						txNew.vout.resize(1+ payments);
-						txNew.vout[payments].scriptPubKey = pblock->payee;							
-					}				
-				}
 				else{
                 txNew.vout.resize(3+ payments);
                 txNew.vout[2+ payments].scriptPubKey = pblock->payee;              
@@ -462,28 +433,7 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn)
         Rawdata my;
 
         // Compute final coinbase transaction.
-        if (chainActive.Tip()->nHeight<30000) {
-       		txNew.vout[0].nValue = blockValue;
-		}
-		else if (chainActive.Tip()->nHeight>29999 && chainActive.Tip()->nHeight<200000){
-				if(payments > 0){
-						
-					{ 
-						txNew.vout[2+ payments].nValue = banknodePayment;
-						blockValue -= banknodePayment;
-					}
-			           
-				}	
-					
-			txNew.vout[1].nValue = bank;
-			blockValue -= bank;
-		
-			txNew.vout[2].nValue = bank;
-			blockValue -= bank;
-        
-			txNew.vout[0].nValue = blockValue;
-		}
-        else if (chainActive.Tip()->nHeight>199999 ){
+		{
 			
 				txNew.vout[1].nValue = bank;
 				blockValue -= bank;
@@ -663,12 +613,12 @@ void static BitcreditMiner(CWallet *pwallet)
             pblock->nNonce=pblock->nNonce+1;
             testHash=pblock->CalculateBestBirthdayHash();
             nHashesDone++;
-            printf("testHash %s\n", testHash.ToString().c_str());
-            printf("Hash Target %s\n", hashTarget.ToString().c_str());
+            LogPrintf("testHash %s\n", testHash.ToString().c_str());
+            LogPrintf("Hash Target %s\n", hashTarget.ToString().c_str());
 
             if(testHash<hashTarget){
                 nNonceFound=pblock->nNonce;
-                printf("Found Hash %s\n", testHash.ToString().c_str());
+                LogPrintf("Found Hash %s\n", testHash.ToString().c_str());
                 break;
             }
         }
@@ -680,8 +630,8 @@ void static BitcreditMiner(CWallet *pwallet)
                 {
                     // Found a solution
 
-                    printf("hash %s\n", testHash.ToString().c_str());
-                    printf("hash2 %s\n", pblock->GetHash().ToString().c_str());
+                    LogPrintf("hash %s\n", testHash.ToString().c_str());
+                    LogPrintf("hash2 %s\n", pblock->GetHash().ToString().c_str());
                     assert(testHash == pblock->GetHash());
 
                     SetThreadPriority(THREAD_PRIORITY_NORMAL);

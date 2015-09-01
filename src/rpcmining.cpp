@@ -156,9 +156,6 @@ Value setgenerate(const Array& params, bool fHelp)
         if (nGenProcLimit == 0){
             fGenerate = false;
             }
-        else {
-         nGenProcLimit=2;   
-        }
     }
 
     // -regtest mode: don't return until nGenProcLimit blocks are generated
@@ -765,7 +762,7 @@ Value getblocktemplate(const Array& params, bool fHelp)
 	double total=0;
 	int bidders_count=0;
 
-    if (chainActive.Tip()->nHeight>199999 && chainActive.Tip()->nHeight%900==0){
+    if (chainActive.Tip()->nHeight%900==0){
 
 		ifstream myfile ((GetDataDir()/ "bidtracker/final.dat").string().c_str());
 	
@@ -831,7 +828,7 @@ Value getblocktemplate(const Array& params, bool fHelp)
     result.push_back(Pair("banknode_payments", BanknodePayments));
     result.push_back(Pair("enforce_banknode_payments", true));
 
-    if (chainActive.Tip()->nHeight>199999 && chainActive.Tip()->nHeight%900==0){
+    if (chainActive.Tip()->nHeight%900==0){
 		result.push_back(Pair("bidders_count", bidders_count));
 		result.push_back(Pair("bids_value", total));    
 		result.push_back(Pair("bidders", aBids));

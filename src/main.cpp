@@ -1502,7 +1502,7 @@ int64_t GetBanknodePayment(int nHeight, int64_t blockValue)
 {
     int64_t ret = blockValue/5; 
 	//int64_t ret2 = blockValue/2;
-	if(nHeight%900==0 && nHeight >199999) ret+= (blockValue/5);
+	if(nHeight >199999 && nHeight%900==0) ret+= (blockValue/5);
     if(nHeight > 85000)               ret += blockValue / 20;  
     if(nHeight > 85000+((1440*30)* 1)) ret += blockValue / 8; //32.5%
     
@@ -5272,14 +5272,14 @@ std::string CompressData(std::string uncompressed)
     }
     catch (std::exception& e)
     {
-        printf("vchCompressed.resize %u threw: %s.\n", worstCase, e.what());
+        LogPrintf("vchCompressed.resize %u threw: %s.\n", worstCase, e.what());
         return "";
     };
 
     int lenComp = LZ4_compress((char*)uncompressed.c_str(), (char*)&vchCompressed[0], lenMsg);
     if (lenComp < 1)
     {
-        printf("Could not compress message data.\n");
+        LogPrintf("Could not compress message data.\n");
         return "";
     };
 
@@ -5299,7 +5299,7 @@ std::string UncompressData(std::string scompressed)
         int osize = LZ4_uncompress_unknownOutputSize((char*)&compressed[0], (char*)&uncompressed[0], lenComp, maxosize);
         if(osize < 0)
         {
-            printf("Error uncompressing data len comp: %d maxosize: %d actual: %d\n", lenComp, maxosize, osize);
+            LogPrintf("Error uncompressing data len comp: %d maxosize: %d actual: %d\n", lenComp, maxosize, osize);
             return "";
         }
 
@@ -5309,7 +5309,7 @@ std::string UncompressData(std::string scompressed)
     }
     catch(std::exception& e)
     {
-        printf("Error uncompressing data len comp: %d maxosize: %d error: %s\n", lenComp, maxosize, e.what());
+        LogPrintf("Error uncompressing data len comp: %d maxosize: %d error: %s\n", lenComp, maxosize, e.what());
         return "";
     }
 }
