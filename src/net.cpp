@@ -1702,19 +1702,19 @@ void StartNode(boost::thread_group& threadGroup)
     // Set our local services appropriately
     nLocalServices = NODE_NETWORK;
 
-    if(activeBanknode.status == BANKNODE_IS_CAPABLE && GetBoolArg("-escrow", true))
+    if(activeBanknode.status == BANKNODE_IS_CAPABLE && GetBoolArg("-escrow", false))
         nLocalServices |= NODE_ESCROW;
 
-    if(GetBoolArg("-assets", true))
+    if(GetBoolArg("-assets", false))
         nLocalServices |= NODE_ASSETS;
     
-    if(GetBoolArg("-meganet", true))
+    if(GetBoolArg("-meganet", false))
         nLocalServices |= NODE_IBTP;
 
     if(activeBanknode.status == BANKNODE_IS_CAPABLE)
         nLocalServices |= BANK_NODE;
 
-    if((GetBoolArg("-meganet", true)) && activeBanknode.status == BANKNODE_IS_CAPABLE)
+    if((GetBoolArg("-meganet", false)) && activeBanknode.status == BANKNODE_IS_CAPABLE)
         nLocalServices |= NODE_BRIDGE;
 
     if (semOutbound == NULL) {
