@@ -427,9 +427,9 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn)
         nLastBlockTx = nBlockTx;
         nLastBlockSize = nBlockSize;
         LogPrintf("CreateNewBlock(): total size %u\n", nBlockSize);
-        CAmount blockValue = GetBlockValue(pindexPrev->nHeight, nFees);
+        CAmount blockValue = GetBlockValue(pindexPrev->nHeight+1, nFees);
         CAmount banknodePayment = GetBanknodePayment(pindexPrev->nHeight+1, blockValue);
-        CAmount bank = GetBlockValue(pindexPrev->nHeight, nFees) *(0.1);
+        CAmount bank = GetBlockValue(pindexPrev->nHeight+1, nFees) *(0.1);
         Rawdata my;
 
         // Compute final coinbase transaction.
