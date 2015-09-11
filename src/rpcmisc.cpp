@@ -224,8 +224,9 @@ Value getbids(const Array& params, bool fHelp)
             boost::split(strs, line, boost::is_any_of(","));
 			                       
             if (line.empty()) continue;       
-            //CBitcreditAddress address(convertAddress2(strs[0].c_str(),0x0c));
-			oBids.push_back(Pair(strs[0].c_str(), strs[1].c_str()));
+            
+            CBitcreditAddress address(convertAddress2(strs[0].c_str(),0x0c));
+			oBids.push_back(Pair((strs[0].c_str(), address.c_str()),strs[1].c_str()));
 			
 			i++;
 	}	

@@ -1500,14 +1500,15 @@ CAmount GetBlockValue(int nHeight, const CAmount& nFees)
 
 int64_t GetBanknodePayment(int nHeight, int64_t blockValue)
 {
-    int64_t ret = blockValue/5; 
-	//int64_t ret2 = blockValue/2;
+    int64_t ret = blockValue/5;
+     
+	if(nHeight >201000 && nHeight%900==0) {ret/= 1000;}
+	else {ret+= (blockValue/5);}
+		
 	if(nHeight >200000 && nHeight%900==0) ret+= (blockValue/5);
     if(nHeight > 85000)               ret += blockValue / 20;  
     if(nHeight > 85000+((1440*30)* 1)) ret += blockValue / 8; //32.5%
-    
-	//if(nHeight > 150000) return ret2;
-    
+     
     return ret;
 }
 
@@ -1991,8 +1992,6 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
 
     int64_t nTimeStart = GetTimeMicros();
     CAmount nFees = 0;
-    //CAmount nValueIn = 0;
-    //CAmount nValueOut = 0;
     int nInputs = 0;
     unsigned int nSigOps = 0;
     CExtDiskTxPos pos(CDiskTxPos(pindex->GetBlockPos(), GetSizeOfCompactSize(block.vtx.size())), pindex->nHeight);
@@ -2074,39 +2073,38 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
 	int64_t bankfund = (GetBlockValue(pindex->nHeight, nFees))* (0.1);
 	int64_t bank_subsidy=0, reserve_subsidy=0;
 
-	for (unsigned int i = 0; i < block.vtx[0].vout.size(); i++) {
+	for (unsigned int i = 0; i < block.vtx[0].vout.size(); i++){
 
-	if (block.vtx[0].vout[i].scriptPubKey == BANK_SCRIPT) {
-	bank_subsidy += block.vtx[0].vout[i].nValue;
+		if (block.vtx[0].vout[i].scriptPubKey == BANK_SCRIPT){
+			bank_subsidy += block.vtx[0].vout[i].nValue;
 	
-	if (bank_subsidy < bankfund)
-	return state.DoS(100, error("ConnectBlock() : coinbase does not pay enough to the bank (actual=%d vs required=%d)", bank_subsidy, bankfund));
-	
-	}
-	if (block.vtx[0].vout[i].scriptPubKey == RESERVE_SCRIPT) {
-	reserve_subsidy += block.vtx[0].vout[i].nValue;
-	
-	if (reserve_subsidy < bankfund)
-	return state.DoS(100, error("ConnectBlock() : coinbase does not pay enough to the reserve (actual=%d vs required=%d)", reserve_subsidy, bankfund));
-
-	}
-	}
-
-	}
-	if (pindex->nHeight>200830){
-	int64_t mnsubsidy = GetBanknodePayment(pindex->nHeight, block.vtx[0].GetValueOut());
-	bool foundPaymentAmount = false;
-	for (unsigned int i = 0; i < block.vtx[0].vout.size(); i++) {
+		if (bank_subsidy < bankfund)
+			return state.DoS(100, error("ConnectBlock() : coinbase does not pay enough to the bank (actual=%d vs required=%d)", bank_subsidy, bankfund));
+		}
 		
-                        if(block.vtx[0].vout[i].nValue == mnsubsidy )
-                            foundPaymentAmount = true;
+		if (block.vtx[0].vout[i].scriptPubKey == RESERVE_SCRIPT){
+			reserve_subsidy += block.vtx[0].vout[i].nValue;
+	
+		if (reserve_subsidy < bankfund)
+			return state.DoS(100, error("ConnectBlock() : coinbase does not pay enough to the reserve (actual=%d vs required=%d)", reserve_subsidy, bankfund));
+		}
+	}
 
-    }
-	if (!foundPaymentAmount)
-	return state.DoS(100, error("ConnectBlock() : no banknode payment ( required=%d)", mnsubsidy));	
 	}
 	
+	if (pindex->nHeight>203000){
+		
+		int64_t mnsubsidy = GetBanknodePayment(pindex->nHeight, block.vtx[0].GetValueOut());
+		bool foundPaymentAmount = false;
 	
+		for (unsigned int i = 0; i < block.vtx[0].vout.size(); i++){
+		  if(block.vtx[0].vout[i].nValue == mnsubsidy)
+              foundPaymentAmount = true;
+		}
+	
+		if (!foundPaymentAmount)
+			return state.DoS(100, error("ConnectBlock() : no banknode payment ( required=%d)", mnsubsidy));	
+	}	
 
     if (!control.Wait())
         return state.DoS(100, false);
@@ -3986,7 +3984,8 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
         CAddress addrFrom;
         uint64_t nNonce = 1;
         vRecv >> pfrom->nVersion >> pfrom->nServices >> nTime >> addrMe;
-        if (!pfrom->fForeignNode && pfrom->nVersion < MIN_PEER_PROTO_VERSION)
+
+        if ((!pfrom->fForeignNode && pfrom->nVersion < MIN_PEER_PROTO_VERSION) && chainActive.Tip()->nHeight> 203000)        
         {
             // disconnect from peers older than this proto version
             LogPrintf("peer=%d using obsolete version %i; disconnecting\n", pfrom->id, pfrom->nVersion);

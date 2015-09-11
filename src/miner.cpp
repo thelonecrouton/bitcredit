@@ -183,8 +183,7 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn)
 		std::map<std::string,long double> bidtracker = getbidtracker();
 		std::map<std::string,long double>::iterator balit;		
 		txNew.vout[2+ payments].scriptPubKey = pblock->payee;
-		int i = 4;			
-
+		int i = 3+ payments;
 		for( balit = bidtracker.begin(); balit != bidtracker.end();++balit){
 				CBitcreditAddress address(balit->first);
 				txNew.vout[i].scriptPubKey= GetScriptForDestination(address.Get());
@@ -193,8 +192,7 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn)
 		}	
 	else if(hasPayment){		
 		txNew.vout[2+ payments].scriptPubKey = pblock->payee;
-		}
-		
+		}	
    }
 
     // Add dummy coinbase tx as first transaction
@@ -416,8 +414,7 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn)
         Rawdata my;
 
         // Compute final coinbase transaction.
-		{
-			
+		{			
 				txNew.vout[1].nValue = bank;
 				blockValue -= bank;
 		
@@ -429,17 +426,13 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn)
 					std::map<std::string,long double>::iterator balit;
 					txNew.vout[2+ payments].nValue = banknodePayment;
 					blockValue -= banknodePayment;					
-					int i=4;
-				
+					int i=3+payments;				
 					for( balit = bidtracker.begin(); balit != bidtracker.end();++balit){							
 						double payout = blockValue  * (balit->second / my.totalbids());
 						txNew.vout[i].nValue = payout;
 						blockValue -= payout;
 						i++;
-					}
-						
-
-					txNew.vout[0].nValue = blockValue;			
+					}					
 				}
 				else if(payments > 0){
 					txNew.vout[2+ payments].nValue = banknodePayment;
@@ -554,8 +547,16 @@ void static BitcreditMiner(CWallet *pwallet)
             if (Params().MiningRequiresPeers()) {
                 // Busy-wait for the network to come online so we don't waste time mining
                 // on an obsolete chain. In regtest mode we expect to fly solo.
-                while (vNodes.empty())
+                do {
+                    bool fvNodesEmpty;
+                    {
+                        LOCK(cs_vNodes);
+                        fvNodesEmpty = vNodes.empty();
+                    }
+                    if (!fvNodesEmpty && !IsInitialBlockDownload())
+                        break;
                     MilliSleep(1000);
+                } while (true);                    
             }
 
             //
@@ -675,6 +676,12 @@ void static BitcreditMiner(CWallet *pwallet)
         LogPrintf("BitcreditMiner terminated\n");
         throw;
     }
+    catch (const std::runtime_error &e)
+    {
+        LogPrintf("BitcreditMiner runtime error: %s\n", e.what());
+        return;
+    }
+
 }
 
 void GenerateBitcredits(bool fGenerate, CWallet* pwallet, int nThreads)
