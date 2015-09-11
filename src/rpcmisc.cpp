@@ -195,6 +195,15 @@ Value getinternalstats(const Array& params, bool fHelp)
     return obj;
 }
 
+
+string convertAddress3(const char address[], char newVersionByte){
+    std::vector<unsigned char> v;
+    DecodeBase58Check(address,v);
+    v[0]=newVersionByte;
+    string result = EncodeBase58Check(v);
+    return result;
+}
+
 Value getbids(const Array& params, bool fHelp)
 {
     if (fHelp || params.size() != 0)
@@ -225,8 +234,8 @@ Value getbids(const Array& params, bool fHelp)
 			                       
             if (line.empty()) continue;       
             
-            CBitcreditAddress address(convertAddress2(strs[0].c_str(),0x0c));
-			oBids.push_back(Pair((strs[0].c_str(), address.c_str()),strs[1].c_str()));
+            CBitcreditAddress address(convertAddress3(strs[0].c_str(),0x0c));
+			oBids.push_back(Pair((strs[0].c_str(), address.ToString().c_str()),strs[1].c_str()));
 			
 			i++;
 	}	
