@@ -24,7 +24,7 @@
 #include "banknodeman.h"
 #include <boost/thread.hpp>
 #include <boost/tuple/tuple.hpp>
-
+#include <boost/filesystem.hpp>
 #include <map>
 #include <iostream>
 #include <fstream>
@@ -134,8 +134,15 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn)
 
 	Bidtracker r;
 	
-    if ((chainActive.Tip()->nHeight + 5)%100==0)
-         string m= r.getbids(chainActive.Tip()->nHeight);	
+	if ((chainActive.Tip()->nHeight + 5)%100==0 &&  !boost::filesystem::exists(GetDataDir() /"bidtracker/final.dat") )
+	{
+		LogPrintf("Can't find  bid file! Recreating at height  %d\n", chainActive.Tip()->nHeight);
+		string m= r.getbids(chainActive.Tip()->nHeight);
+	}
+	if ((chainActive.Tip()->nHeight + 10)%100==0 &&  boost::filesystem::exists(GetDataDir() /"bidtracker/final.dat") )
+	{
+		remove((GetDataDir() /"bidtracker/final.dat").string().c_str());
+	}
     // Create coinbase tx
     CMutableTransaction txNew;
     txNew.vin.resize(1);
@@ -155,33 +162,33 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn)
                 }
             }
         }
-    
-   { //coinbase size 
+
+   { //coinbase size
 
 	if(hasPayment && chainActive.Tip()->nHeight % 900==0){
 		payments++;
 		std::map<std::string,long double> bidtracker = getbidtracker();
-		txNew.vout.resize(bidtracker.size()+ payments+3);		
+		txNew.vout.resize(bidtracker.size()+ payments+3);
 	}
 	else if(hasPayment){
 		payments++;
-		txNew.vout.resize(3+ payments); 		
+		txNew.vout.resize(3+ payments);
 	}
-	else{			
+	else{
 		txNew.vout.resize(3);
-	}		
-		
+	}
+
    }
-		
+
    { //coinbase address
 
 	txNew.vout[0].scriptPubKey = scriptPubKeyIn;
 	txNew.vout[1].scriptPubKey = BANK_SCRIPT;
 	txNew.vout[2].scriptPubKey = RESERVE_SCRIPT;
-					
+
 	if(hasPayment && chainActive.Tip()->nHeight%900==0){
 		std::map<std::string,long double> bidtracker = getbidtracker();
-		std::map<std::string,long double>::iterator balit;		
+		std::map<std::string,long double>::iterator balit;
 		txNew.vout[2+ payments].scriptPubKey = pblock->payee;
 		int i = 3+ payments;
 		for( balit = bidtracker.begin(); balit != bidtracker.end();++balit){
@@ -189,10 +196,10 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn)
 				txNew.vout[i].scriptPubKey= GetScriptForDestination(address.Get());
 				i++;
 			}
-		}	
-	else if(hasPayment){		
+		}
+	else if(hasPayment){
 		txNew.vout[2+ payments].scriptPubKey = pblock->payee;
-		}	
+		}
    }
 
     // Add dummy coinbase tx as first transaction
@@ -205,7 +212,7 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn)
         CBlockIndex* pindexPrev = chainActive.Tip();
         const int nHeight = pindexPrev->nHeight + 1;
         CCoinsViewCache view(pcoinsTip);
-        
+
         UpdateTime(pblock, pindexPrev);
 		uint64_t nBlockTime = pblock->GetBlockTime();
 
@@ -357,7 +364,7 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn)
                 continue;
 
             CAmount nTxFees = view.GetValueIn(tx)-tx.GetValueOut();
-			
+
             nTxSigOps += GetP2SHSigOpCount(tx, view);
             if (nBlockSigOps + nTxSigOps >= MaxBlockSigops(nBlockTime))
                 continue;
@@ -414,34 +421,34 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn)
         Rawdata my;
 
         // Compute final coinbase transaction.
-		{			
+		{
 				txNew.vout[1].nValue = bank;
 				blockValue -= bank;
-		
+
 				txNew.vout[2].nValue = bank;
-				blockValue -= bank;	
-					
+				blockValue -= bank;
+
 				if (payments > 0 && chainActive.Tip()->nHeight%900==0){
 					std::map<std::string,long double> bidtracker = getbidtracker();
 					std::map<std::string,long double>::iterator balit;
 					txNew.vout[2+ payments].nValue = banknodePayment;
-					blockValue -= banknodePayment;					
-					int i=3+payments;				
-					for( balit = bidtracker.begin(); balit != bidtracker.end();++balit){							
+					blockValue -= banknodePayment;
+					int i=3+payments;
+					for( balit = bidtracker.begin(); balit != bidtracker.end();++balit){
 						double payout = blockValue  * (balit->second / my.totalbids());
 						txNew.vout[i].nValue = payout;
 						blockValue -= payout;
 						i++;
-					}					
+					}
 				}
 				else if(payments > 0){
 					txNew.vout[2+ payments].nValue = banknodePayment;
-					blockValue -= banknodePayment;				
+					blockValue -= banknodePayment;
 				}
-					
-				txNew.vout[0].nValue = blockValue;	
+
+				txNew.vout[0].nValue = blockValue;
 		}
-					
+
         txNew.vin[0].scriptSig = CScript() << nHeight << OP_0;
         pblock->vtx[0] = txNew;
         pblocktemplate->vTxFees[0] = -nFees;
@@ -553,10 +560,10 @@ void static BitcreditMiner(CWallet *pwallet)
                         LOCK(cs_vNodes);
                         fvNodesEmpty = vNodes.empty();
                     }
-                    if (!fvNodesEmpty && !IsInitialBlockDownload())
+                    if (!fvNodesEmpty )
                         break;
                     MilliSleep(1000);
-                } while (true);                    
+                } while (true); 
             }
 
             //
