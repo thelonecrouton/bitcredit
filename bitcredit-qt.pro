@@ -1,49 +1,48 @@
 TEMPLATE = app
 TARGET = bitcredit-qt
 VERSION = 0.30.16.7
-INCLUDEPATH += src src/json src/qt src/compat src/crypto src/lz4 src/primitives src/script src/secp256k1 src/univalue src/xxhash
+INCLUDEPATH += src src/json src/qt src/qt/forms src/compat src/crypto src/lz4 src/primitives src/script src/secp256k1/include src/univalue src/xxhash
 DEFINES += ENABLE_WALLET
 DEFINES += QT_GUI BOOST_THREAD_USE_LIB BOOST_SPIRIT_THREADSAFE
 CONFIG += no_include_pwd
 CONFIG += thread static
-QT += core gui network printsupport widgets webkit webkitwidgets
+QT += core gui network printsupport widgets
 
 greaterThan(QT_MAJOR_VERSION, 4) {
     QT += widgets
     DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0
 }
 
-linux {
-    SECP256K1_LIB_PATH = /usr/local/lib
-    SECP256K1_INCLUDE_PATH = /usr/local/include
-}
-
 # Use command line:
 #   qmake xxx.pro RELEASE=1 USE_UPNP=1 -config release QMAKE_LFLAGS+="-static-libgcc -static-libstdc++" BOOST_INCLUDE_PATH=C:/MinGW/msys/1.0/local/include BOOST_LIB_PATH=C:/MinGW/msys/1.0/local/lib BOOST_LIB_SUFFIX=-mgw46-mt-s-1_54
 #   make -f Makefile.Release
 #
-win32 {
-BOOST_LIB_SUFFIX=-mgw49-mt-s-1_55
-BOOST_INCLUDE_PATH=C:/deps/boost_1_55_0
-BOOST_LIB_PATH=C:/deps/boost_1_55_0/stage/lib
-BDB_INCLUDE_PATH=C:/deps/db-4.8.30.NC/build_unix
-BDB_LIB_PATH=C:/deps/db-4.8.30.NC/build_unix
-OPENSSL_INCLUDE_PATH=C:/deps/openssl-1.0.1l/include
-OPENSSL_LIB_PATH=C:/deps/openssl-1.0.1l
-MINIUPNPC_INCLUDE_PATH=C:/deps/
-LIBPNG_INCLUDE_PATH=C:/deps/libpng-1.6.12
-LIBPNG_LIB_PATH=C:/deps/libpng-1.6.12/.libs
-MINIUPNPC_LIB_PATH=C:/deps/miniupnpc
-QRENCODE_INCLUDE_PATH=C:/deps/qrencode-3.4.4
-QRENCODE_LIB_PATH=C:/deps/qrencode-3.4.4/.libs
-PROTOBUF_INCLUDE_PATH=C:/deps/protobuf-2.5.0/src
-PROTOBUF_LIB_PATH=C:/deps/protobuf-2.5.0/src/.libs
+
+BOOST_INCLUDE_PATH= /home/x-102/deps/Boost/boost_1_53_0/include
+BOOST_LIB_PATH= /home/x-102/deps/Boost/boost_1_53_0/armeabi/lib
+BOOST_LIB_SUFFIX=-gcc-mt-1_53
+PROTOBUF_INCLUDE_PATH=/home/x-102/deps/protobuf-2.5.0/src
+PROTOBUF_LIB_PATH=/home/x-102/deps/protobuf-2.5.0/src/.libs
+OPENSSL_INCLUDE_PATH=/home/x-102/deps/openssl/openssl-1.0.2/include
+OPENSSL_LIB_PATH=/home/x-102/deps/openssl/openssl-1.0.2/armeabi-v7a/lib
+LIBS += -lprotobuf -lcurl -lboost_system$$BOOST_LIB_SUFFIX -lboost_filesystem$$BOOST_LIB_SUFFIX -lboost_program_options$$BOOST_LIB_SUFFIX -lboost_thread$$BOOST_LIB_SUFFIX
+CURL_INCLUDE_PATH=/home/x-102/deps/curl/include
+CURL_LIB_PATH=/home/x-102/deps/curl/lib/.libs
+BDB_INCLUDE_PATH=/home/x-102/deps/db-6.1.26.NC/build_unix
+BDB_LIB_PATH=/home/x-102/deps/db-6.1.26.NC/build_unix
+MINIUPNPC_LIB_PATH=/home/x-102/deps/miniupnpc
+MINIUPNPC_INCLUDE_PATH=/home/x-102/deps/
+
+#LIBPNG_INCLUDE_PATH=C:/deps/libpng-1.6.12
+#LIBPNG_LIB_PATH=C:/deps/libpng-1.6.12/.libs
+
+QRENCODE_INCLUDE_PATH=/home/x-102/deps/qrencode-3.4.4
+QRENCODE_LIB_PATH=/home/x-102/deps/qrencode-3.4.4/.libs
+
 SECP256K1_INCLUDE_PATH = src/secp256k1/include
 SECP256K1_LIB_PATH = src/secp256k1/local/.libs
 
-}
 
-LIBS += -lboost_system$$BOOST_LIB_SUFFIX -lboost_filesystem$$BOOST_LIB_SUFFIX -lboost_program_options$$BOOST_LIB_SUFFIX -lboost_thread$$BOOST_LIB_SUFFIX
 
 OBJECTS_DIR = build
 MOC_DIR = build
@@ -102,26 +101,28 @@ contains(USE_UPNP, -) {
 }
 
 # use: qmake "USE_DBUS=1" or qmake "USE_DBUS=0"
-linux:count(USE_DBUS, 0) {
-    USE_DBUS=1
-}
-contains(USE_DBUS, 1) {
-    message(Building with DBUS (Freedesktop notifications) support)
-    DEFINES += USE_DBUS
-    QT += dbus
-}
+#linux:count(USE_DBUS, 0) {
+#    USE_DBUS=1
+#}
+#contains(USE_DBUS, 1) {
+#    message(Building with DBUS (Freedesktop notifications) support)
+#    DEFINES += USE_DBUS
+#    QT += dbus
+#}
 
 {
 PROTOBUF_LIB_PATH=C:/deps/protobuf-2.5.0/src/.libs
 	INCLUDEPATH += $$PROTOBUF_INCLUDE_PATH
     LIBS += $$join(PROTOBUF_INCLUDE_PATH,,-L,) -lprotobuf
 }
+SECP256K1_LIB_PATH = src/secp256k1/.libs
+SECP256K1_INCLUDE_PATH= src/secp256k1/include
+INCLUDEPATH += $$SECP256K1_LIB_PATH
+LIBS += -lsecp256k1
 
-{
-	SECP256K1_INCLUDE_PATH= src/secp256k1/include
-	INCLUDEPATH += $$SECP256K1_LIB_PATH
-    LIBS += $$join(SECP256K1_INCLUDE_PATH,,-L,) -lsecp256k1
-}
+
+include(protobuf.pri)
+PROTOS += src/qt/paymentrequest.proto \
 
 # use: qmake "USE_IPV6=1" ( enabled by default; default)
 #  or: qmake "USE_IPV6=0" (disabled by default)
@@ -201,8 +202,8 @@ HEADERS += src/qt/bitcreditgui.h \
   src/alert.h \
   src/allocators.h \
   src/amount.h \
-  src/bankmath.h \
   src/base58.h \
+  src/bidtracker.h \
   src/bloom.h \
   src/chain.h \
   src/chainparams.h \
@@ -220,6 +221,7 @@ HEADERS += src/qt/bitcreditgui.h \
   src/core_io.h \
   src/crypter.h \
   src/darksend.h \
+  src/darksend-relay.h \
   src/db.h \
   src/eccryptoverify.h \
   src/ecwrapper.h \
@@ -234,6 +236,8 @@ HEADERS += src/qt/bitcreditgui.h \
   src/lz4/lz4.h \
   src/main.h \
   src/banknode.h \
+  src/banknode-pos.h \
+  src/banknodeman.h \
   src/banknodeconfig.h \
   src/merkleblock.h \
   src/miner.h \
@@ -246,7 +250,6 @@ HEADERS += src/qt/bitcreditgui.h \
   src/protocol.h \
   src/pubkey.h \
   src/random.h \
-  src/rawdata.h \
   src/rpcclient.h \
   src/rpcprotocol.h \
   src/rpcserver.h \
@@ -278,10 +281,12 @@ HEADERS += src/qt/bitcreditgui.h \
   src/wallet.h \
   src/wallet_ismine.h \
   src/walletdb.h \
-  src/irc.h \
   src/strlcpy.h \
   src/compat/sanity.h \
   src/xxhash/xxhash.h \
+  src/rawdata.h \
+  src/bankmath.h \
+  src/ibtp.h \
   src/json/json_spirit.h \
   src/json/json_spirit_error_position.h \
   src/json/json_spirit_reader.h \
@@ -296,7 +301,7 @@ HEADERS += src/qt/bitcreditgui.h \
   src/crypto/sha512.h \
   src/crypto/hmac_sha256.h \
   src/crypto/rfc6979_hmac_sha256.h \
-  src/crypto/hmac_sha512.h \ 
+  src/crypto/hmac_sha512.h \
   src/crypto/sha1.h \
   src/crypto/ripemd160.h \
   src/univalue/univalue_escapes.h \
@@ -316,7 +321,6 @@ HEADERS += src/qt/bitcreditgui.h \
   src/qt/guiconstants.h \
   src/qt/guiutil.h \
   src/qt/intro.h \
-  src/qt/macdockiconhandler.h \
   src/qt/macnotificationhandler.h \
   src/qt/networkstyle.h \
   src/qt/ircmodel.h \
@@ -336,7 +340,7 @@ HEADERS += src/qt/bitcreditgui.h \
   src/qt/recentrequeststablemodel.h \
   src/qt/rpcconsole.h \
   src/qt/sendcoinsdialog.h \
-  src/qt/sendcoinsentry.h \ 
+  src/qt/sendcoinsentry.h \
   src/qt/signverifymessagedialog.h \
   src/qt/splashscreen.h \
   src/qt/trafficgraphwidget.h \
@@ -355,10 +359,7 @@ HEADERS += src/qt/bitcreditgui.h \
   src/qt/blockbrowser.h \
   src/qt/bankstatisticspage.h \
   src/qt/verticallabel.h \
-  src/qt/stats.h \
   src/qt/qcustomplot.h \
-  src/qt/votecoinsdialog.h \
-  src/qt/votecoinsentry.h \
   src/qt/exchangebrowser.h \
   src/qt/chatwindow.h \
   src/qt/serveur.h \
@@ -368,9 +369,12 @@ HEADERS += src/qt/bitcreditgui.h \
   src/qt/messagepage.h \
   src/qt/invoicepage.h \
   src/qt/invoiceviewpage.h \
-  src/qt/messagemodel.h  \
-  src/univalue/univalue_escapes.h \
-  src/univalue/univalue.h    
+  src/qt/messagemodel.h \
+  src/qt/banknodemanager.h \
+  src/qt/adrenalinenodeconfigdialog.h \
+  src/qt/testpage.h \
+  src/qt/addeditadrenalinenode.h \
+  src/qt/paymentrequest.pb.h
 
 SOURCES += src/qt/bitcredit.cpp src/qt/bitcreditgui.cpp \
   src/qt/bitcreditaddressvalidator.cpp \
@@ -404,7 +408,10 @@ SOURCES += src/qt/bitcredit.cpp src/qt/bitcreditgui.cpp \
   src/qt/messagemodel.cpp \
   src/qt/addressbookpage.cpp \
   src/qt/addresstablemodel.cpp \
+  src/qt/adrenalinenodeconfigdialog.cpp \
+  src/qt/addeditadrenalinenode.cpp \
   src/qt/askpassphrasedialog.cpp \
+  src/qt/banknodemanager.cpp \
   src/qt/coincontroldialog.cpp \
   src/qt/coincontroltreewidget.cpp \
   src/qt/editaddressdialog.cpp \
@@ -429,15 +436,15 @@ SOURCES += src/qt/bitcredit.cpp src/qt/bitcreditgui.cpp \
   src/qt/walletmodeltransaction.cpp \
   src/qt/walletview.cpp \
   src/qt/verticallabel.cpp \
-  src/qt/votecoinsdialog.cpp \
-  src/qt/votecoinsentry.cpp \
   src/qt/sendmessagesentry.cpp \
   src/qt/sendmessagesdialog.cpp \
   src/qt/receiptpage.cpp \
   src/qt/messagepage.cpp \
   src/qt/invoicepage.cpp \
   src/qt/invoiceviewpage.cpp \
+  src/qt/testpage.cpp \
   src/activebanknode.cpp \
+  src/rpcclient.cpp \
   src/addrman.cpp \
   src/alert.cpp \
   src/bloom.cpp \
@@ -452,7 +459,6 @@ SOURCES += src/qt/bitcredit.cpp src/qt/bitcreditgui.cpp \
   src/net.cpp \
   src/noui.cpp \
   src/pow.cpp \
-  src/irc.cpp \
   src/rest.cpp \
   src/rpcblockchain.cpp \
   src/rpcdarksend.cpp \
@@ -460,6 +466,7 @@ SOURCES += src/qt/bitcredit.cpp src/qt/bitcreditgui.cpp \
   src/rpcmining.cpp \
   src/rpcmisc.cpp \
   src/rpcnet.cpp \
+  src/ibtp.cpp \
   src/rpcrawtransaction.cpp \
   src/rpcserver.cpp \
   src/script/sigcache.cpp \
@@ -470,7 +477,7 @@ SOURCES += src/qt/bitcredit.cpp src/qt/bitcreditgui.cpp \
   src/xxhash/xxhash.c \
   src/json/json_spirit_value.cpp \
   src/json/json_spirit_reader.cpp \
-  src/json/json_spirit_writer.cpp \    
+  src/json/json_spirit_writer.cpp \
   src/db.cpp \
   src/crypter.cpp \
   src/rpcdump.cpp \
@@ -488,16 +495,22 @@ SOURCES += src/qt/bitcredit.cpp src/qt/bitcreditgui.cpp \
   src/crypto/ripemd160.cpp \
   src/univalue/univalue.cpp \
   src/univalue/univalue_read.cpp \
-  src/univalue/univalue_write.cpp \  
+  src/univalue/univalue_write.cpp \
   src/allocators.cpp \
   src/amount.cpp \
   src/base58.cpp \
+  src/rawdata.cpp \
+  src/bankmath.cpp \
+  src/bidtracker.cpp \
   src/chainparams.cpp \
   src/coins.cpp \
   src/compressor.cpp \
   src/darksend.cpp \
+  src/darksend-relay.cpp \
   src/banknode.cpp \
+  src/banknode-pos.cpp \
   src/banknodeconfig.cpp \
+  src/banknodeman.cpp \
   src/instantx.cpp \
   src/momentum.cpp \
   src/primitives/block.cpp \
@@ -523,8 +536,6 @@ SOURCES += src/qt/bitcredit.cpp src/qt/bitcreditgui.cpp \
   src/chainparamsbase.cpp \
   src/clientversion.cpp \
   src/random.cpp \
-  src/bankmath.cpp \
-  src/rawdata.cpp \
   src/rpcprotocol.cpp \
   src/spork.cpp \
   src/sync.cpp \
@@ -532,12 +543,12 @@ SOURCES += src/qt/bitcredit.cpp src/qt/bitcreditgui.cpp \
   src/util.cpp \
   src/utilstrencodings.cpp \
   src/utilmoneystr.cpp \
-  src/utiltime.cpp \ 
-   
+  src/utiltime.cpp \
+
 RESOURCES += \
     src/qt/bitcredit.qrc\
     src/qt/bitcredit_locale.qrc
-	src/qt/res/themes/qdarkstyle/style.qrc
+    src/qt/res/themes/qdarkstyle/style.qrc
 
 FORMS += \
   src/qt/forms/addressbookpage.ui \
@@ -553,14 +564,12 @@ FORMS += \
   src/qt/forms/receiverequestdialog.ui \
   src/qt/forms/rpcconsole.ui \
   src/qt/forms/sendcoinsdialog.ui \
-  src/qt/forms/sendcoinsentry.ui \  
+  src/qt/forms/sendcoinsentry.ui \
   src/qt/forms/signverifymessagedialog.ui \
   src/qt/forms/transactiondescdialog.ui \
   src/qt/forms/blockbrowser.ui \
   src/qt/forms/bankstatisticspage.ui \
   src/qt/forms/paperwalletdialog.ui \
-  src/qt/forms/votecoinsdialog.ui \
-  src/qt/forms/votecoinsentry.ui \
   src/qt/forms/exchangebrowser.ui \
   src/qt/forms/chatwindow.ui \
   src/qt/forms/sendmessagesentry.ui \
@@ -568,7 +577,12 @@ FORMS += \
   src/qt/forms/receiptpage.ui \
   src/qt/forms/messagepage.ui \
   src/qt/forms/invoicepage.ui \
-  src/qt/forms/invoiceviewpage.ui
+  src/qt/forms/invoiceviewpage.ui \
+  src/qt/forms/addeditadrenalinenode.ui \
+  src/qt/forms/adrenalinenodeconfigdialog.ui \
+  src/qt/forms/testpage.ui \
+  src/qt/forms/banknodemanager.ui \
+  src/qt/forms/helpmessagedialog.ui \
 
 CODECFORTR = UTF-8
 
@@ -596,7 +610,7 @@ OTHER_FILES += \
 # platform specific defaults, if not overridden on command line
 isEmpty(BOOST_LIB_SUFFIX) {
     macx:BOOST_LIB_SUFFIX = -mt
-    windows:BOOST_LIB_SUFFIX = -mgw49-mt-s-1_55
+    windows:BOOST_LIB_SUFFIX = -mgw49-mt-s-1_54
 }
 
 isEmpty(BOOST_THREAD_LIB_SUFFIX) {
@@ -649,8 +663,8 @@ macx:QMAKE_CXXFLAGS_THREAD += -pthread
 macx:QMAKE_INFO_PLIST = share/qt/Info.plist
 
 # Set libraries and includes at end, to use platform-defined defaults if not overridden
-INCLUDEPATH += $$SECP256K1_INCLUDE_PATH $$BOOST_INCLUDE_PATH $$BDB_INCLUDE_PATH $$OPENSSL_INCLUDE_PATH $$QRENCODE_INCLUDE_PATH
-LIBS += $$join(SECP256K1_LIB_PATH,,-L,) $$join(BOOST_LIB_PATH,,-L,) $$join(BDB_LIB_PATH,,-L,) $$join(OPENSSL_LIB_PATH,,-L,) $$join(QRENCODE_LIB_PATH,,-L,)
+INCLUDEPATH += $$SECP256K1_INCLUDE_PATH $$BOOST_INCLUDE_PATH $$BDB_INCLUDE_PATH $$OPENSSL_INCLUDE_PATH $$QRENCODE_INCLUDE_PATH $$CURL_INCLUDE_PATH
+LIBS += $$join(SECP256K1_LIB_PATH,,-L,) $$join(BOOST_LIB_PATH,,-L,) $$join(BDB_LIB_PATH,,-L,) $$join(OPENSSL_LIB_PATH,,-L,) $$join(QRENCODE_LIB_PATH,,-L,) $$join(CURL_LIB_PATH,,-L,)
 LIBS += -lssl -lcrypto -ldb_cxx$$BDB_LIB_SUFFIX
 # -lgdi32 has to happen after -lcrypto (see  #681)
 windows:LIBS += -lws2_32 -lshlwapi -lmswsock -lole32 -loleaut32 -luuid -lgdi32 -lpthread -static
@@ -669,5 +683,5 @@ contains(RELEASE, 1) {
     DEFINES += LINUX
     LIBS += -lrt -ldl
 }
-
+#QMAKE_EXTRA_COMPILERS += protobuf_cc
 system($$QMAKE_LRELEASE -silent $$_PRO_FILE_)
