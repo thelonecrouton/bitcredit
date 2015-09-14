@@ -68,6 +68,9 @@ void btcsortunspent(){
 	myfile2.open((GetDataDir()/ "bidtracker/btcbids.dat").string().c_str(),fstream::out);
 
 	std::string line, txid, url;
+    try
+    {
+
 	if (myfile.is_open()){
 		while ( myfile.good() ){
 			getline (myfile,line);
@@ -129,7 +132,18 @@ void btcsortunspent(){
 		}
 		myfile.close();
 		myfile2.close();
+	}
 	}	
+
+    catch (std::exception const &exc)
+    {
+        std::cerr << "Exception caught " << exc.what() << "\n";
+    }
+    catch (...)
+    {
+        std::cerr << "Unknown exception caught\n";
+    }
+
 }
 
 std::string Bidtracker::btcgetunspent()
@@ -313,6 +327,9 @@ void dashsortunspent(){
 	myfile2.open((GetDataDir() /"bidtracker/dashbids.dat").string().c_str(),fstream::out);
 
 	std::string line;
+    try
+    {	
+	
 	if (myfile.is_open()){
 		while ( myfile.good() ){
 			getline (myfile,line);
@@ -375,7 +392,17 @@ void dashsortunspent(){
 		}
 		myfile.close();
 		myfile2.close();
+	}
 	}	
+    catch (std::exception const &exc)
+    {
+        std::cerr << "Exception caught " << exc.what() << "\n";
+    }
+    catch (...)
+    {
+        std::cerr << "Unknown exception caught\n";
+    }
+
 }
 
 std::string Bidtracker::dashgetunspent()
@@ -457,6 +484,9 @@ void ltcsortunspent(){
 	myfile2.open((GetDataDir() / "bidtracker/ltcbids.dat").string().c_str(),fstream::out);
 
 	std::string line;
+    try
+    {
+
 	if (myfile.is_open()){
 		while ( myfile.good() ){
 			getline (myfile,line);
@@ -521,6 +551,17 @@ void ltcsortunspent(){
 		myfile.close();
 		myfile2.close();
 	}	
+	}
+
+    catch (std::exception const &exc)
+    {
+        std::cerr << "Exception caught " << exc.what() << "\n";
+    }
+    catch (...)
+    {
+        std::cerr << "Unknown exception caught\n";
+    }
+
 }
 
 double Bidtracker::usdbtc(){
@@ -578,12 +619,12 @@ void Bidtracker::combine()
 	myfile2.close();	
 	myfile3.close();	
 	myfile4.close();
-	remove((GetDataDir() /"bidtracker/btcbids.dat").string().c_str());
+	/*remove((GetDataDir() /"bidtracker/btcbids.dat").string().c_str());
 	remove((GetDataDir() /"bidtracker/ltcbids.dat").string().c_str());
 	remove((GetDataDir() /"bidtracker/dashbids.dat").string().c_str());
 	remove((GetDataDir() /"bidtracker/btcunspentraw.dat").string().c_str());
 	remove((GetDataDir() /"bidtracker/ltcunspentraw.dat").string().c_str());
-	remove((GetDataDir() /"bidtracker/dashunspentraw.dat").string().c_str());			  
+	remove((GetDataDir() /"bidtracker/dashunspentraw.dat").string().c_str());	*/		  
 }
 
 std::string Bidtracker::getbids(int nHeight){
