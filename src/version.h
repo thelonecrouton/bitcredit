@@ -30,6 +30,8 @@ static const int MIN_SMSG_PROTO_VERSION = 70010;
 
 static const int MIN_IBTP_PROTO_VERSION = 70010;
 
+static const int MIN_VOTE_PROTO_VERSION = 70010;
+
 static const int CADDR_ADVERTISED_BALANCE_VERSION = 70010;
 
 //! nTime field added to CAddress, starting with this version;

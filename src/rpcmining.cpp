@@ -774,8 +774,7 @@ Value getblocktemplate(const Array& params, bool fHelp)
 
 				std::vector<std::string> strs;
 				boost::split(strs, line, boost::is_any_of(","));
-				double m = atof(strs[1].c_str());                       
-				if (line.empty()) continue;       
+				double m = atof(strs[1].c_str());                             
 				CBitcreditAddress address(convertAddress2(strs[0].c_str(),0x0c));
 				aBids.push_back(Pair(address.ToString().c_str(), strs[1].c_str()));
 				total = total+m;

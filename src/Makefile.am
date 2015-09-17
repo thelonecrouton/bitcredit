@@ -158,7 +158,8 @@ BITCREDIT_CORE_H = \
   xxhash/xxhash.h \
   rawdata.h \
   bankmath.h \
-  ibtp.h 
+  ibtp.h \
+  voting.h
 
 JSON_H = \
   json/json_spirit.h \
@@ -223,6 +224,7 @@ libbitcredit_wallet_a_SOURCES = \
   crypter.cpp \
   rpcdump.cpp \
   rpcwallet.cpp \
+  voting.cpp \
   wallet.cpp \
   wallet_ismine.cpp \
   walletdb.cpp \

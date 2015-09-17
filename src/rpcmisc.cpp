@@ -218,8 +218,7 @@ Value getbids(const Array& params, bool fHelp)
             + HelpExampleCli("getbids", "")
             + HelpExampleRpc("getbids", "")
         );
-	Bidtracker r;
-	string m= r.getbids(chainActive.Tip()->nHeight);
+
 	Object oBids;
 	ifstream myfile ((GetDataDir()/ "bidtracker/final.dat").string().c_str());
 	
@@ -230,17 +229,13 @@ Value getbids(const Array& params, bool fHelp)
 			getline (myfile,line);
 
             std::vector<std::string> strs;
-            boost::split(strs, line, boost::is_any_of(","));
-			                       
-            if (line.empty()) continue;       
-            
-            CBitcreditAddress address(convertAddress3(strs[0].c_str(),0x0c));
+            boost::split(strs, line, boost::is_any_of(","));         
 			oBids.push_back(Pair((strs[0].c_str(), address.ToString().c_str()),strs[1].c_str()));
 			
 			i++;
 	}	
 	}
-
+	myfile.close();
     return oBids;
 }
 

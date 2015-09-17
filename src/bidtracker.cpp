@@ -125,9 +125,7 @@ void btcsortunspent(){
 				string value = semp;
 				value = remove(value, ',');
 				long double amount = atof(value.c_str());
-				amount = amount/COIN;	
-	myfile2.precision(8);
-				myfile2 << amount << std::endl;				
+				myfile2 << std::fixed <<  amount << std::endl;				
 			}
 		}
 		myfile.close();
@@ -170,10 +168,10 @@ std::string Bidtracker::btcgetunspent()
     boost::filesystem::path biddir = GetDataDir() / "bidtracker";
 
     if(!(boost::filesystem::exists(biddir))){
-        std::cout<<"biddir Doesn't Exists"<<std::endl;
+        if(fDebug)LogPrintf("Biddir Doesn't Exists\n");
 
         if (boost::filesystem::create_directory(biddir))
-            std::cout << "....Successfully Created !" << std::endl;
+            if(fDebug)LogPrintf("Biddir....Successfully Created !\n");
     }
 
 	const char * d = (GetDataDir().string() + "/bidtracker/btcunspentraw.dat").c_str();
@@ -183,7 +181,6 @@ std::string Bidtracker::btcgetunspent()
 	readBuffer = remove(readBuffer, '"');
 	myfile << readBuffer << std::endl;
 	myfile.close();
-
 	return readBuffer;
 }
 
@@ -382,12 +379,10 @@ void dashsortunspent(){
 			if (pos != std::string::npos){
 				std::string semp =line;
 				semp = semp.replace(g, std::string("\"tx_address_value\":").length(), "");
-				semp = remove(semp, ',');
-				myfile2.precision(8);
-				long double amount = atof(semp.c_str());
-				amount = amount/COIN;	
+				semp = remove(semp, ',');				
+				long double amount = atof(semp.c_str());	
 				amount = amount * dashgetprice();
-				myfile2 << amount << std::endl;							
+				myfile2 << std::fixed << amount << std::endl;							
 			}
 		}
 		myfile.close();
@@ -540,12 +535,10 @@ void ltcsortunspent(){
 			if (pos != std::string::npos){
 				std::string semp =line;
 				semp = semp.replace(g, std::string("\"tx_address_value\":").length(), "");
-				semp = remove(semp, ',');
-				myfile2.precision(8);					
+				semp = remove(semp, ',');		
 				long double amount = atof(semp.c_str());
-				amount = amount/COIN;
 				amount = amount *ltcgetprice();	
-				myfile2 << amount << std::endl;					
+				myfile2 << std::fixed << amount << std::endl;					
 			}
 		}
 		myfile.close();
@@ -591,7 +584,7 @@ return bcrgetprice();
 void Bidtracker::combine()
 {		
 	std::ofstream myfile;
-	myfile.open((GetDataDir() /"bidtracker/final.dat").string().c_str(),fstream::out);
+	myfile.open((GetDataDir() /"bidtracker/prefinal.dat").string().c_str(),fstream::out);
 	ifstream myfile2((GetDataDir() /"bidtracker/btcbids.dat").string().c_str());
 	ifstream myfile3((GetDataDir() /"bidtracker/ltcbids.dat").string().c_str());
 	ifstream myfile4((GetDataDir() /"bidtracker/dashbids.dat").string().c_str());
@@ -619,23 +612,45 @@ void Bidtracker::combine()
 	myfile2.close();	
 	myfile3.close();	
 	myfile4.close();
-	/*remove((GetDataDir() /"bidtracker/btcbids.dat").string().c_str());
+	remove((GetDataDir() /"bidtracker/btcbids.dat").string().c_str());
 	remove((GetDataDir() /"bidtracker/ltcbids.dat").string().c_str());
 	remove((GetDataDir() /"bidtracker/dashbids.dat").string().c_str());
 	remove((GetDataDir() /"bidtracker/btcunspentraw.dat").string().c_str());
 	remove((GetDataDir() /"bidtracker/ltcunspentraw.dat").string().c_str());
-	remove((GetDataDir() /"bidtracker/dashunspentraw.dat").string().c_str());	*/		  
+	remove((GetDataDir() /"bidtracker/dashunspentraw.dat").string().c_str());		  
 }
 
-std::string Bidtracker::getbids(int nHeight){
+void cleanfile()
+{
+	std::ofstream myfile;
+	myfile.open((GetDataDir() /"bidtracker/final.dat").string().c_str(),fstream::out);
+	ifstream myfile2((GetDataDir() /"bidtracker/prefinal.dat").string().c_str());
 
-	btcgetunspent();
-	ltcgetunspent();
-	dashgetunspent();
+	std::string line;
+	while ( getline( myfile2, line ) ) {
+    if ( ! line.empty() ) {
+        myfile << line << '\n';
+    }
+	}
+
+	myfile.close();
+	myfile2.close();
+	remove((GetDataDir() /"bidtracker/prefinal.dat").string().c_str());
+}
+
+void getbids(){
+
+	int64_t nStart = GetTimeMillis();
+
+	Bidtracker h;
+	h.btcgetunspent();
+	h.ltcgetunspent();
+	h.dashgetunspent();
 	ltcsortunspent();
 	btcsortunspent();
 	dashsortunspent();
-	combine();
+	h.combine();
+	cleanfile();
 	
-	return "Bids Updated";
+	if(fDebug)LogPrintf("Bids dump finished  %dms\n", GetTimeMillis() - nStart);
 }	

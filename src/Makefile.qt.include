@@ -107,7 +107,9 @@ QT_FORMS_UI = \
   qt/forms/addeditadrenalinenode.ui \
   qt/forms/adrenalinenodeconfigdialog.ui \
   qt/forms/testpage.ui \
-  qt/forms/banknodemanager.ui 
+  qt/forms/banknodemanager.ui \
+  qt/forms/votecoinsdialog.ui \
+  qt/forms/votecoinsentry.ui
 
 QT_MOC_CPP = \
   qt/moc_addressbookpage.cpp \

@@ -11,7 +11,7 @@
 #define BOOST_SPIRIT_THREADSAFE
 #endif
 
-
+void getbids();
 
 class Bidtracker 
 { 
@@ -22,7 +22,6 @@ public:
 	std::string ltcgetunspent();
 	std::string dashgetunspent();
 	std::string bcrgetunspent();
-	std::string getbids(int nHeight);
 	std::string getunspent();
 	double getbalance(std::string url, double balance);
 	double usdbtc(); 

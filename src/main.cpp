@@ -1483,7 +1483,7 @@ bool ReadBlockFromDisk(CBlock& block, const CBlockIndex* pindex)
 CAmount GetBlockValue(int nHeight, const CAmount& nFees)
 {
     CAmount nSubsidy = 50 * COIN;
-    int halvings = nHeight / Params().SubsidyHalvingInterval();
+    //int halvings = nHeight / Params().SubsidyHalvingInterval();
 	if (nHeight< 4000){ nSubsidy = 5* COIN;}
 	if (nHeight> 20999 && nHeight <30000 ){ nSubsidy = 25* COIN;}
     // Force block reward to zero when right shift is undefined.
@@ -1498,7 +1498,7 @@ CAmount GetBlockValue(int nHeight, const CAmount& nFees)
     return nSubsidy + nFees;
 }
 
-int64_t GetBanknodePayment(int nHeight, int64_t blockValue)
+CAmount GetBanknodePayment(int nHeight, int64_t blockValue)
 {
     int64_t ret = blockValue/5;
      
@@ -2923,7 +2923,7 @@ bool CheckBlock(const CBlock& block, CValidationState& state, bool fCheckPOW, bo
             }
         }
     } else {
-        LogPrintf("CheckBlock() : skipping transaction locking checks\n");
+       if(fDebug) LogPrintf("CheckBlock() : skipping transaction locking checks\n");
     }
 
 
@@ -2980,19 +2980,19 @@ bool CheckBlock(const CBlock& block, CValidationState& state, bool fCheckPOW, bo
                         LogPrintf("CheckBlock() : Couldn't find banknode payment(%d|%d) or payee(%d|%s) nHeight %d. \n", foundPaymentAmount, banknodePaymentAmount, foundPayee, address2.ToString().c_str(), chainActive.Tip()->nHeight+1);
                         return state.DoS(100, error("CheckBlock() : Couldn't find banknode payment or payee"));
                     } else {
-                        LogPrintf("CheckBlock() : Found banknode payment %d\n", chainActive.Tip()->nHeight+1);
+                        if(fDebug)LogPrintf("CheckBlock() : Found banknode payment %d\n", chainActive.Tip()->nHeight+1);
                     }
                 } else {
-                    LogPrintf("CheckBlock() : Is initial download, skipping banknode payment check %d\n", chainActive.Tip()->nHeight+1);
+                    if(fDebug)LogPrintf("CheckBlock() : Is initial download, skipping banknode payment check %d\n", chainActive.Tip()->nHeight+1);
                 }
             } else {
-                LogPrintf("CheckBlock() : Skipping banknode payment check - nHeight %d Hash %s\n", chainActive.Tip()->nHeight+1, block.GetHash().ToString().c_str());
+               if(fDebug) LogPrintf("CheckBlock() : Skipping banknode payment check - nHeight %d Hash %s\n", chainActive.Tip()->nHeight+1, block.GetHash().ToString().c_str());
             }
         } else {
-            LogPrintf("CheckBlock() : pindex is null, skipping banknode payment check\n");
+            if(fDebug)LogPrintf("CheckBlock() : pindex is null, skipping banknode payment check\n");
         }
     } else {
-        LogPrintf("CheckBlock() : skipping banknode payment checks\n");
+       if(fDebug) LogPrintf("CheckBlock() : skipping banknode payment checks\n");
     }
 
     // Check transactions

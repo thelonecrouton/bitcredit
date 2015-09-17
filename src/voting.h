@@ -20,7 +20,6 @@ using namespace std;
 extern CCriticalSection grantdb;
 extern std::map<std::string,int64_t > grantAwards;
 extern std::map<std::string,int64_t>::iterator gait;
-CAmount GetGrantValue(int nHeight, int64_t nFees);
 bool isGrantAwardBlock(int64_t nHeight);
 bool getGrantAwards(int64_t nHeight);
 int64_t getGrantDatabaseBlockHeight();

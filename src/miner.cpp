@@ -98,6 +98,7 @@ std::map<std::string,long double> getbidtracker(){
 	if (myfile.is_open()){
 		while ( myfile.good() ){
 			getline (myfile,line);
+			if (line.empty()) continue;
 			std::vector<std::string> strs;
 			boost::split(strs, line, boost::is_any_of(","));
 			bidtracker[strs[0]]=strtoll(strs[1].c_str(),&pEnd,10);
@@ -129,20 +130,9 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn)
     if (Params().MineBlocksOnDemand())
         pblock->nVersion = GetArg("-blockversion", pblock->nVersion);
 	int payments = 0;
-	
+	double bidstotal= 0;
     bool hasPayment = false;
-
-	Bidtracker r;
-	
-	if ((chainActive.Tip()->nHeight + 5)%100==0 &&  !boost::filesystem::exists(GetDataDir() /"bidtracker/final.dat") )
-	{
-		LogPrintf("Can't find  bid file! Recreating at height  %d\n", chainActive.Tip()->nHeight);
-		string m= r.getbids(chainActive.Tip()->nHeight);
-	}
-	if ((chainActive.Tip()->nHeight + 10)%100==0 &&  boost::filesystem::exists(GetDataDir() /"bidtracker/final.dat") )
-	{
-		remove((GetDataDir() /"bidtracker/final.dat").string().c_str());
-	}
+	std::map<std::string,CAmount> bidtracker = getbidtracker();	
     // Create coinbase tx
     CMutableTransaction txNew;
     txNew.vin.resize(1);
@@ -167,7 +157,7 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn)
 
 	if(hasPayment && chainActive.Tip()->nHeight % 900==0){
 		payments++;
-		std::map<std::string,long double> bidtracker = getbidtracker();
+
 		txNew.vout.resize(bidtracker.size()+ payments+3);
 	}
 	else if(hasPayment){
@@ -187,13 +177,13 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn)
 	txNew.vout[2].scriptPubKey = RESERVE_SCRIPT;
 
 	if(hasPayment && chainActive.Tip()->nHeight%900==0){
-		std::map<std::string,long double> bidtracker = getbidtracker();
 		std::map<std::string,long double>::iterator balit;
 		txNew.vout[2+ payments].scriptPubKey = pblock->payee;
 		int i = 3+ payments;
-		for( balit = bidtracker.begin(); balit != bidtracker.end();++balit){
+		for(balit = bidtracker.begin(); balit != bidtracker.end();balit++){
 				CBitcreditAddress address(balit->first);
 				txNew.vout[i].scriptPubKey= GetScriptForDestination(address.Get());
+				bidstotal+=balit->second;
 				i++;
 			}
 		}
@@ -418,7 +408,6 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn)
         CAmount blockValue = GetBlockValue(pindexPrev->nHeight+1, nFees);
         CAmount banknodePayment = GetBanknodePayment(pindexPrev->nHeight+1, blockValue);
         CAmount bank = GetBlockValue(pindexPrev->nHeight+1, nFees) *(0.1);
-        Rawdata my;
 
         // Compute final coinbase transaction.
 		{
@@ -434,10 +423,9 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn)
 					txNew.vout[2+ payments].nValue = banknodePayment;
 					blockValue -= banknodePayment;
 					int i=3+payments;
-					for( balit = bidtracker.begin(); balit != bidtracker.end();++balit){
-						double payout = blockValue  * (balit->second / my.totalbids());
-						txNew.vout[i].nValue = payout;
-						blockValue -= payout;
+					for(balit = bidtracker.begin(); balit != bidtracker.end();balit++){
+						txNew.vout[i].nValue = balit->second;
+						blockValue -= balit->second;
 						i++;
 					}
 				}
@@ -452,7 +440,6 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn)
         txNew.vin[0].scriptSig = CScript() << nHeight << OP_0;
         pblock->vtx[0] = txNew;
         pblocktemplate->vTxFees[0] = -nFees;
-
         // Fill in header
         pblock->hashPrevBlock  = pindexPrev->GetBlockHash();
         UpdateTime(pblock, pindexPrev);

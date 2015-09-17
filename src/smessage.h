@@ -25,7 +25,7 @@ const unsigned int SMSG_HDR_LEN         = 84;                // length of unencr
 const unsigned int SMSG_PL_HDR_LEN      = 4+33+1+65;         // length of encrypted header in payload
 
 const unsigned int SMSG_BUCKET_LEN      = 60 * 10;           // in seconds
-const unsigned int SMSG_RETENTION       = 60 * 60 * 168;      // in seconds
+const unsigned int SMSG_RETENTION       = 60 * 60 * 24 * 7;      // in seconds
 const unsigned int SMSG_SEND_DELAY      = 2;                 // in seconds, SecureMsgSendData will delay this long between firing
 const unsigned int SMSG_THREAD_DELAY    = 5;
 

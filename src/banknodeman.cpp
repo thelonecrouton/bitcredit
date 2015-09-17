@@ -72,8 +72,8 @@ bool CBanknodeDB::Write(const CBanknodeMan& mnodemanToSave)
     FileCommit(fileout.Get());
     fileout.fclose();
 
-    LogPrintf("Written info to nodecache.dat  %dms\n", GetTimeMillis() - nStart);
-    LogPrintf("  %s\n", mnodemanToSave.ToString());
+    if(fDebug)LogPrintf("Written info to nodecache.dat  %dms\n", GetTimeMillis() - nStart);
+    if(fDebug)LogPrintf("  %s\n", mnodemanToSave.ToString());
 
     return true;
 }
@@ -154,8 +154,8 @@ CBanknodeDB::ReadResult CBanknodeDB::Read(CBanknodeMan& mnodemanToLoad)
     }
 
     mnodemanToLoad.CheckAndRemove(); // clean out expired
-    LogPrintf("Loaded info from nodecache.dat  %dms\n", GetTimeMillis() - nStart);
-    LogPrintf("  %s\n", mnodemanToLoad.ToString());
+    if(fDebug)LogPrintf("Loaded info from nodecache.dat  %dms\n", GetTimeMillis() - nStart);
+    if(fDebug)LogPrintf("  %s\n", mnodemanToLoad.ToString());
 
     return Ok;
 }
@@ -167,7 +167,7 @@ void DumpBanknodes()
     CBanknodeDB mndb;
     CBanknodeMan tempMnodeman;
 
-    LogPrintf("Verifying nodecache.dat format...\n");
+    if(fDebug)LogPrintf("Verifying nodecache.dat format...\n");
     CBanknodeDB::ReadResult readResult = mndb.Read(tempMnodeman);
     // there was an error and it was not an error on file openning => do not proceed
     if (readResult == CBanknodeDB::FileError)
@@ -183,10 +183,10 @@ void DumpBanknodes()
             return;
         }
     }
-    LogPrintf("Writting info to nodecache.dat...\n");
+    if(fDebug)LogPrintf("Writting info to nodecache.dat...\n");
     mndb.Write(mnodeman);
 
-    LogPrintf("Banknode dump finished  %dms\n", GetTimeMillis() - nStart);
+    if(fDebug)LogPrintf("Banknode dump finished  %dms\n", GetTimeMillis() - nStart);
 }
 
 CBanknodeMan::CBanknodeMan() {
