@@ -54,8 +54,6 @@ void BankStatisticsPage::updateStatistics()
     int64_t totalnumtx = my.totalnumtx();
     double bcrprice = r.bcrbtc();
     double btcprice = r.usdbtc();
-    //double ltcprice = r.ltcbtc();
-    //double dashprice = r.dashbtc();
     double gblmoneysupply = my.Getgblmoneysupply();
     double marketcap =  assetstotal - ((bcrprice*my._bcrreserves()) *btcprice);
     double btcstash = my.reserves();
@@ -66,7 +64,6 @@ void BankStatisticsPage::updateStatistics()
     double liquidityindex = ((gblmoneysupply * bcrprice)*btcprice)/ assetstotal;
     double bids = my.totalbids();
 	QString nbids = QString::number(bids, 'f', 8);
-	string nbids1 =r.getbids(1);
 	double globaldebt =  grossmarketcap - marketcap;
 
 	

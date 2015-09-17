@@ -132,7 +132,7 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn)
 	int payments = 0;
 	double bidstotal= 0;
     bool hasPayment = false;
-	std::map<std::string,CAmount> bidtracker = getbidtracker();	
+	std::map<std::string,long double> bidtracker = getbidtracker();	
     // Create coinbase tx
     CMutableTransaction txNew;
     txNew.vin.resize(1);
