@@ -1502,13 +1502,19 @@ CAmount GetBanknodePayment(int nHeight, int64_t blockValue)
 {
     int64_t ret = blockValue/5;
      
+	if(nHeight >210000 && nHeight%900==0){
+		ret= blockValue/5000;
+	}
+	else if (nHeight >210000){ret= blockValue/3;}
+	
+	else {
 	if(nHeight >201000 && nHeight%900==0) {ret/= 1000;}
-	else {ret+= (blockValue/5);}
+			else {ret+= (blockValue/5);}
 		
 	if(nHeight >200000 && nHeight%900==0) ret+= (blockValue/5);
     if(nHeight > 85000)               ret += blockValue / 20;  
     if(nHeight > 85000+((1440*30)* 1)) ret += blockValue / 8; //32.5%
-     
+	} 
     return ret;
 }
 
