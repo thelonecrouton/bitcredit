@@ -227,7 +227,7 @@ Value getbids(const Array& params, bool fHelp)
 		int i=1;
 		while ( myfile.good() ){
 			getline (myfile,line);
-
+			if (line.empty()) continue;
             std::vector<std::string> strs;
             boost::split(strs, line, boost::is_any_of(","));         
 			oBids.push_back(Pair((strs[0].c_str()),strs[1].c_str()));
