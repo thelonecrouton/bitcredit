@@ -160,9 +160,9 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn)
 		ispayoutblock=true;
 		}
 
-	if(isGrantAwardBlock(chainActive.Tip()->nHeight + 1))
+	if(isGrantAwardBlock(chainActive.Tip()->nHeight))
 		{
-			if( !getGrantAwards( chainActive.Tip()->nHeight + 1 ) ){
+			if( !getGrantAwards( chainActive.Tip()->nHeight) ){
 				throw std::runtime_error( "ConnectBlock() : Connect Block grant awards error.\n" );
 			}
 			isgrantblock = true;

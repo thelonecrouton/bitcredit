@@ -2121,7 +2121,7 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
 			return state.DoS(100, error("ConnectBlock() : no banknode payment ( required=%d)", mnsubsidy));	
 	}	
 
-	if (pindex->nHeight>203800){	
+	if (pindex->nHeight>210000){	
 		LOCK(grantdb);		
 		int64_t grantAward = 0;
 		if( isGrantAwardBlock( pindex->nHeight ) ){

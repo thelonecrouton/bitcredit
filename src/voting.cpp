@@ -267,11 +267,9 @@ bool ensureGrantDatabaseUptoDate(int64_t nHeight){
 		electedOffices[2] = "sof";
 		electedOffices[3] = "mof";
 		electedOffices[4] = "bnk";	
-			
-		if(activeBanknode.status == BANKNODE_IS_CAPABLE){
 		string newCV=GetArg("-custombankprefix",newCV);
 		electedOffices[5] = newCV;
-	}
+
     }
     //NOTE: nHeight is the current block height
     //NOTE: requiredgrantdatabaseheight is 5 less than the current block
