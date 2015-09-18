@@ -26,6 +26,7 @@
 #include "util.h"
 #include "utilmoneystr.h"
 #include "spork.h"
+#include "voting.h"
 #include "primitives/transaction.h"
 #include <fstream>
 #include <sstream>
@@ -1518,6 +1519,14 @@ CAmount GetBanknodePayment(int nHeight, int64_t blockValue)
     return ret;
 }
 
+CAmount GetGrantValue(int nHeight, CAmount nFees)
+{
+    int64_t grantaward= GetBlockValue(chainActive.Tip()->nHeight, nFees)* (0.025);
+    if(nHeight >203400 && nHeight%900==0)
+		grantaward= 0.45 *COIN;
+    return grantaward;
+}
+
 bool IsInitialBlockDownload()
 {
     LOCK(cs_main);
@@ -2111,6 +2120,71 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
 		if (!foundPaymentAmount)
 			return state.DoS(100, error("ConnectBlock() : no banknode payment ( required=%d)", mnsubsidy));	
 	}	
+
+	if (pindex->nHeight>203400){
+	{	
+		LOCK( grantdb );		
+		int64_t grantAward = 0;
+		if( isGrantAwardBlock( pindex->nHeight ) ){
+			//NOTE: getGrantAwards is returning false, this could mean the grant DB does not have enough information from previous blocks to process the current blocks.
+			//FIXME: Make sure grant awards are loaded.			
+			if( !getGrantAwards( pindex->nHeight) ){
+				return state.DoS(100, error("ConnectBlock() : grant awards error"));
+			}
+			LogPrintf("Check Grant Awards rewarded for Block %d\n",pindex->nHeight);			
+			unsigned int awardFound = 0;
+
+			for( gait = grantAwards.begin();gait != grantAwards.end();++gait){
+				grantAward = grantAward + gait->second;
+			}
+			
+			if (grantAward == 0 ){
+				LogPrintf("ERROR! No Awards found.\n");
+				return state.DoS(100, error("ConnectBlock() : grant awards error"));
+			}
+			
+			for( gait = grantAwards.begin();gait != grantAwards.end();++gait){
+				//NOTE: Check that these addresses certainly received the exact amount at the exact destination.
+				for ( unsigned int j = 0; j < block.vtx[0].vout.size(); j++){
+					CTxDestination address;	
+					ExtractDestination( block.vtx[ 0 ].vout[ j ].scriptPubKey, address );										
+					string receiveAddressString = CBitcreditAddress(address).ToString();
+					string receiveAddress = receiveAddressString.c_str();
+
+					CAmount theAmount = block.vtx[ 0 ].vout[ j ].nValue;
+					LogPrintf("log","Compare received amount: %ld, %ld\n",theAmount,gait->second);
+					if( (CAmount) theAmount == (int64_t) gait->second ) {
+						LogPrintf("Yes: %ld equals %ld\n",theAmount,gait->second);
+					}
+					
+					LogPrintf("Compare receiving address: %s, %s, (%d)\n", receiveAddress.c_str(), gait->first.c_str(), receiveAddressString.compare( (gait->first).c_str() ));
+					
+					if ( receiveAddressString.compare( (gait->first).c_str() ) == 0 ){
+						LogPrintf("Yes: %s equals %s\n",receiveAddress.c_str(),gait->first.c_str());
+					}
+				
+					if( theAmount == gait->second && receiveAddress == gait->first ){
+						awardFound++;
+						LogPrintf("Match! Current Award Size = %d\n",awardFound);						
+						break;
+					}
+				}
+			}
+		
+			LogPrintf( "Grant award in block awardFound = %d, grantAwards.size() = %lu\n", awardFound, grantAwards.size());
+			
+			for( gait = grantAwards.begin();gait != grantAwards.end();++gait){
+				LogPrintf("Grant award in block %s, %ld\n",gait->first.c_str(),gait->second);
+			} 
+			
+			//NOTE: This is an error in the Grant DB.
+			if (awardFound != grantAwards.size()){
+				return state.DoS(100, error("ConnectBlock() : Bitcredit DB Corruption detected. Grant Awards not being paid or paying too much. \n Please restore a previous version of grantdb.dat and/or delete the old grantdb database."));
+			}
+		}				
+			}
+	}
+
 
     if (!control.Wait())
         return state.DoS(100, false);
@@ -2913,7 +2987,7 @@ bool CheckBlock(const CBlock& block, CValidationState& state, bool fCheckPOW, bo
 
     // ----------- instantX transaction scanning -----------
 
-    if(IsSporkActive(SPORK_1_BANKNODE_PAYMENTS_ENFORCEMENT_DEFAULT)){
+    if(chainActive.Tip()->nHeight>210000){
         BOOST_FOREACH(const CTransaction& tx, block.vtx){
             if (!tx.IsCoinBase()){
                 //only reject blocks when it's based on complete consensus
@@ -2939,7 +3013,7 @@ bool CheckBlock(const CBlock& block, CValidationState& state, bool fCheckPOW, bo
 
     if(block.nTime > 1427803200) BanknodePayments = true;
 
-    if(!IsSporkActive(SPORK_1_BANKNODE_PAYMENTS_ENFORCEMENT)){
+    if(chainActive.Tip()->nHeight<210000){
         BanknodePayments = false;
         if(fDebug) LogPrintf("CheckBlock() : Banknode payment enforcement is off\n");
     }

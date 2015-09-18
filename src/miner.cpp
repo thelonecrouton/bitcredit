@@ -18,6 +18,7 @@
 #include "timedata.h"
 #include "util.h"
 #include "utilmoneystr.h"
+#include "voting.h"
 #ifdef ENABLE_WALLET
 #include "wallet.h"
 #endif
@@ -132,17 +133,18 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn)
 	int payments = 0;
 	double bidstotal= 0;
     bool hasPayment = false;
-	std::map<std::string,long double> bidtracker = getbidtracker();	
+    bool isgrantblock = false;
+    bool ispayoutblock = false;
+	std::map<std::string,long double> bidtracker = getbidtracker();
+	std::map<std::string,long double>::iterator balit;	
     // Create coinbase tx
     CMutableTransaction txNew;
     txNew.vin.resize(1);
     txNew.vin[0].prevout.SetNull();
 
     if(GetTimeMicros() > 1427803200) {
-            hasPayment = true;
-            
+            hasPayment = true;            
             if(!banknodePayments.GetBlockPayee(chainActive.Tip()->nHeight+1, pblock->payee)){
-                //no banknode detected
                 CBanknode* winningNode = mnodeman.GetCurrentBankNode(1);
                 if(winningNode){
                     pblock->payee =GetScriptForDestination(winningNode->pubkey.GetID());
@@ -153,21 +155,51 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn)
             }
         }
 
+	if(chainActive.Tip()->nHeight % 900==0)
+		{
+		ispayoutblock=true;
+		}
+
+	if(isGrantAwardBlock(chainActive.Tip()->nHeight + 1))
+		{
+			if( !getGrantAwards( chainActive.Tip()->nHeight + 1 ) ){
+				throw std::runtime_error( "ConnectBlock() : Connect Block grant awards error.\n" );
+			}
+			isgrantblock = true;
+			if(fDebug)LogPrintf("Retrieved Grant Rewards, Add to Block %d \n", chainActive.Tip()->nHeight+1);
+		}
+
    { //coinbase size
-
-	if(hasPayment && chainActive.Tip()->nHeight % 900==0){
-		payments++;
-
-		txNew.vout.resize(bidtracker.size()+ payments+3);
-	}
-	else if(hasPayment){
-		payments++;
-		txNew.vout.resize(3+ payments);
-	}
-	else{
-		txNew.vout.resize(3);
-	}
-
+	    LOCK(grantdb);
+		if(hasPayment && ispayoutblock && isgrantblock){
+			payments++;			
+			txNew.vout.resize(bidtracker.size()+ payments+ 3 + grantAwards.size());		
+		}
+		else if(hasPayment && ispayoutblock){
+			payments++;			
+			txNew.vout.resize(bidtracker.size()+ payments+ 3 );		
+		}	
+		else if(hasPayment && isgrantblock){
+			payments++;			
+			txNew.vout.resize(payments+ 3 + grantAwards.size());		
+		}	
+		else if(ispayoutblock && isgrantblock){
+			txNew.vout.resize(3+ bidtracker.size() + grantAwards.size());
+		}
+		else if(ispayoutblock){
+			txNew.vout.resize(3+ bidtracker.size());
+		}
+		else if(isgrantblock){
+			txNew.vout.resize(3+ grantAwards.size());
+		}
+		else if(hasPayment){
+			payments++;
+			txNew.vout.resize(3+ payments);			
+		}
+		else{
+			txNew.vout.resize(3);
+		}
+		if(fDebug)printf("Coinbase size %d \n", (int)txNew.vout.size());	
    }
 
    { //coinbase address
@@ -176,8 +208,7 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn)
 	txNew.vout[1].scriptPubKey = BANK_SCRIPT;
 	txNew.vout[2].scriptPubKey = RESERVE_SCRIPT;
 
-	if(hasPayment && chainActive.Tip()->nHeight%900==0){
-		std::map<std::string,long double>::iterator balit;
+	if(hasPayment && ispayoutblock && isgrantblock){
 		txNew.vout[2+ payments].scriptPubKey = pblock->payee;
 		int i = 3+ payments;
 		for(balit = bidtracker.begin(); balit != bidtracker.end();balit++){
@@ -186,6 +217,63 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn)
 				bidstotal+=balit->second;
 				i++;
 			}
+		int j = 3+ payments + bidtracker.size();
+		for(gait = grantAwards.begin(); gait != grantAwards.end();gait++){			
+				CBitcreditAddress address(gait->first);
+				txNew.vout[j].scriptPubKey= GetScriptForDestination(address.Get());				
+				j++;		
+			}		
+		}
+	else if(hasPayment && ispayoutblock){
+		txNew.vout[2+ payments].scriptPubKey = pblock->payee;
+		int i = 3+ payments;
+		for(balit = bidtracker.begin(); balit != bidtracker.end();balit++){
+				CBitcreditAddress address(balit->first);
+				txNew.vout[i].scriptPubKey= GetScriptForDestination(address.Get());
+				bidstotal+=balit->second;
+				i++;				
+			}		
+		}
+	else if(hasPayment && isgrantblock){
+		txNew.vout[2+ payments].scriptPubKey = pblock->payee;
+		int i = 3+ payments;
+		for(gait = grantAwards.begin(); gait != grantAwards.end();gait++){			
+				CBitcreditAddress address(gait->first);
+				txNew.vout[i].scriptPubKey= GetScriptForDestination(address.Get());				
+				i++;		
+			}		
+		}
+	if(ispayoutblock && isgrantblock){
+		int i = 3;
+		for(balit = bidtracker.begin(); balit != bidtracker.end();balit++){
+				CBitcreditAddress address(balit->first);
+				txNew.vout[i].scriptPubKey= GetScriptForDestination(address.Get());
+				bidstotal+=balit->second;
+				i++;				
+			}
+		int j = 3+ bidtracker.size();
+		for(gait = grantAwards.begin(); gait != grantAwards.end();gait++){			
+				CBitcreditAddress address(gait->first);
+				txNew.vout[j].scriptPubKey= GetScriptForDestination(address.Get());				
+				j++;		
+			}		
+		}
+	else if(ispayoutblock){
+		int i = 3;
+		for(balit = bidtracker.begin(); balit != bidtracker.end();balit++){
+				CBitcreditAddress address(balit->first);
+				txNew.vout[i].scriptPubKey= GetScriptForDestination(address.Get());
+				bidstotal+=balit->second;
+				i++;				
+			}		
+		}
+	else if(isgrantblock){
+		int i = 3;
+		for(gait = grantAwards.begin(); gait != grantAwards.end();gait++){			
+				CBitcreditAddress address(gait->first);
+				txNew.vout[i].scriptPubKey= GetScriptForDestination(address.Get());				
+				i++;		
+			}		
 		}
 	else if(hasPayment){
 		txNew.vout[2+ payments].scriptPubKey = pblock->payee;
@@ -417,9 +505,23 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn)
 				txNew.vout[2].nValue = bank;
 				blockValue -= bank;
 
-				if (payments > 0 && chainActive.Tip()->nHeight%900==0){
-					std::map<std::string,long double> bidtracker = getbidtracker();
-					std::map<std::string,long double>::iterator balit;
+				if (payments > 0 && ispayoutblock && isgrantblock){
+					txNew.vout[2+ payments].nValue = banknodePayment;
+					blockValue -= banknodePayment;
+					int i=3+payments;
+					for(balit = bidtracker.begin(); balit != bidtracker.end();balit++){
+						txNew.vout[i].nValue = balit->second;
+						blockValue -= balit->second;
+						i++;
+					}
+					int j = 3+ payments + bidtracker.size();					
+					for(gait = grantAwards.begin(); gait != grantAwards.end();gait++){			
+						txNew.vout[j].nValue= grant;
+						blockValue -= grant;				
+						j++;		
+					}						
+				}
+				else if (payments > 0 && ispayoutblock){
 					txNew.vout[2+ payments].nValue = banknodePayment;
 					blockValue -= banknodePayment;
 					int i=3+payments;
@@ -429,11 +531,36 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn)
 						i++;
 					}
 				}
+				else if (payments > 0 && isgrantblock){
+					txNew.vout[2+ payments].nValue = banknodePayment;
+					blockValue -= banknodePayment;
+					int i = 3+ payments;					
+					for(gait = grantAwards.begin(); gait != grantAwards.end();gait++){			
+						txNew.vout[i].nValue= grant;
+						blockValue -= grant;				
+						i++;		
+					}
+				}
+				else if (ispayoutblock){
+					int i=3;
+					for(balit = bidtracker.begin(); balit != bidtracker.end();balit++){
+						txNew.vout[i].nValue = balit->second;
+						blockValue -= balit->second;
+						i++;
+					}
+				}
+				else if (isgrantblock){
+					int i=3;
+					for(gait = grantAwards.begin(); gait != grantAwards.end();gait++){			
+						txNew.vout[i].nValue= grant;
+						blockValue -= grant;				
+						i++;		
+					}
+				}
 				else if(payments > 0){
 					txNew.vout[2+ payments].nValue = banknodePayment;
 					blockValue -= banknodePayment;
 				}
-
 				txNew.vout[0].nValue = blockValue;
 		}
 
