@@ -9,30 +9,30 @@
  * network protocol versioning
  */
 
-static const int PROTOCOL_VERSION = 70010;
+static const int PROTOCOL_VERSION = 70011;
 
 //! initial proto version, to be increased after version/verack negotiation
-static const int INIT_PROTO_VERSION = 212;
+static const int INIT_PROTO_VERSION = 70010;
 
 //! In this version, 'getheaders' was introduced.
 static const int GETHEADERS_VERSION = 31811;
 
 //! disconnect from peers older than this proto version
-static const int MIN_PEER_PROTO_VERSION = 70010;
+static const int MIN_PEER_PROTO_VERSION = 70011;
 
-static const int MIN_INSTANTX_PROTO_VERSION = 70010;
+static const int MIN_INSTANTX_PROTO_VERSION = 70011;
 
-static const int MIN_POOL_PEER_PROTO_VERSION = 70010;
+static const int MIN_POOL_PEER_PROTO_VERSION = 70011;
 
-static const int MIN_MN_PROTO_VERSION = 70010;
+static const int MIN_MN_PROTO_VERSION = 70011;
 
-static const int MIN_SMSG_PROTO_VERSION = 70010;
+static const int MIN_SMSG_PROTO_VERSION = 70011;
 
-static const int MIN_IBTP_PROTO_VERSION = 70010;
+static const int MIN_IBTP_PROTO_VERSION = 70011;
 
-static const int MIN_VOTE_PROTO_VERSION = 70010;
+static const int MIN_VOTE_PROTO_VERSION = 70011;
 
-static const int CADDR_ADVERTISED_BALANCE_VERSION = 70010;
+static const int CADDR_ADVERTISED_BALANCE_VERSION = 70011;
 
 //! nTime field added to CAddress, starting with this version;
 //! if possible, avoid requesting addresses nodes older than this

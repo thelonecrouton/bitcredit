@@ -380,7 +380,7 @@ void dashsortunspent(){
 				std::string semp =line;
 				semp = semp.replace(g, std::string("\"tx_address_value\":").length(), "");
 				semp = remove(semp, ',');				
-				long double amount = atof(semp.c_str());	
+				long double amount = atof(semp.c_str());
 				amount = amount * dashgetprice();
 				myfile2 << std::fixed << amount << std::endl;							
 			}
@@ -432,7 +432,6 @@ std::string Bidtracker::dashgetunspent()
 	readBuffer = remove(readBuffer, '[');
 	myfile << readBuffer << std::endl;
 	myfile.close();
-
 	return readBuffer;
 } 
 
@@ -468,7 +467,6 @@ std::string Bidtracker::ltcgetunspent()
 	readBuffer = remove(readBuffer, '[');
 	myfile << readBuffer << std::endl;
 	myfile.close();
-
 	return readBuffer;
 } 
 

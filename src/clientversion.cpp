@@ -13,12 +13,12 @@
  * for both bitcreditd and bitcredit-core, to make it harder for attackers to
  * target servers or GUI users specifically.
  */
-const std::string CLIENT_NAME("Section 32");
+const std::string CLIENT_NAME("Section-32");
 
 /**
  * Client version number
  */
-#define CLIENT_VERSION_SUFFIX "Alpha"
+#define CLIENT_VERSION_SUFFIX ""
 
 
 /**
@@ -46,7 +46,7 @@ const std::string CLIENT_NAME("Section 32");
 #define GIT_ARCHIVE 1
 #ifdef GIT_ARCHIVE
 #define GIT_COMMIT_ID ""
-#define GIT_COMMIT_DATE "Mon, 22 Jun 2015 01:50:38 +0200"
+#define GIT_COMMIT_DATE "Fri, 18 Sep 2015 07:32:38 +0200"
 #endif
 
 #define BUILD_DESC_WITH_SUFFIX(maj, min, rev, build, suffix) \
