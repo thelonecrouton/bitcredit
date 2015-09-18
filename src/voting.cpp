@@ -28,11 +28,8 @@ std::map<std::string,int64_t > grantAwards;
 std::map<std::string,int64_t>::iterator gait;
 
 //SECTION: GrantPrefixes and Grant Block Intervals
-
 static string GRANTPREFIX="6BCR";
-
 static const int64_t GRANTBLOCKINTERVAL = 5;
-
 static int numberOfOffices = 5;
 string electedOffices[6];
 
@@ -42,39 +39,31 @@ string electedOffices[6];
 
 int64_t grantDatabaseBlockHeight=-1; //How many blocks processed for grant allocation purposes
 
-
 std::map<std::string,int64_t> balances; //Balances as at grant allocation block point
-
 std::map<std::string,std::map<int64_t,std::string> > votingPreferences[7]; //Voting prefs as at grant allocation block point
-
-//These do not need to persist. They are necessarily rebuilt when required
 CBlockIndex* gdBlockPointer = NULL;
 std::map<std::string,std::map<int64_t, std::string> >::iterator ballotit;
 std::map<std::string,std::map<int64_t, std::string> > ballots;
-//std::map<std::string,std::map<int64_t, std::string> > newBallotObject;
 std::map<std::string,int64_t > ballotBalances;
 std::map<std::string,double > ballotWeights;
 std::map<int64_t, std::string>::iterator svpit;
 ofstream grantAwardsOutput;
 bool debugVote = false;
 bool debugVoteExtra = false;
+std::map<int64_t, std::string>::iterator svpit2;
 std::map<std::string, int64_t>::iterator svpit3;
 std::map<int64_t, std::string>::iterator svpit4;
 std::map<std::string,int64_t>::iterator it;
 std::map<int64_t,std::string>::iterator it2;
-
 std::map<std::string,std::map<int64_t,std::string> >::iterator vpit;
-
 std::map<std::string,int64_t > wastedVotes; //Report on Votes that were wasted
-
 std::map<std::string,std::map<int64_t,std::string> > electedVotes; //Report on where votes went
-
 std::map<std::string,std::map<int64_t,std::string> > supportVotes; //Report on support for candidates
 
 bool isGrantAwardBlock(int64_t nHeight){
 	//NOTE: CALLED EVERY BLOCK. (Minimize computations here.)
 		
-	if (chainActive.Tip()->nHeight > 204000 && (chainActive.Tip()->nHeight % 5 == 0))
+	if (chainActive.Tip()->nHeight > 210000 && (chainActive.Tip()->nHeight % 5 == 0))
 	//Grants were not being rewarded...
 	{
 		if(fDebug)LogPrintf("  Is (%ld) a grant block? : Yes \n", nHeight);
@@ -106,22 +95,19 @@ void serializeGrantDB(string filename){
 		//NOTE: Loop that writes all the balances, including the key and the value
 		//NOTE: Address,(skip line) amount of coins "detected" at address.
 		//TODO: These databases are written in order -- and alphabetically organized but optimized in any fashion.
-		for( it = balances.begin();it != balances.end();++it)
-		{
+		for( it = balances.begin();it != balances.end();++it){
 			grantdb << it->first << "\n" << it->second<< "\n";
 		}
 		
 		//NOTE: Loop that first writes the size of the Voting Preference database for the line - Per round, for how many offices there are.
-        for( int i = 0;i < numberOfOffices;i++)
-		{
+        for( int i = 0;i < numberOfOffices;i++){
 			//NOTE: Unusually small, there are a limited amount of voters in Bitcredit.
 			//DESIGN?: Voting function isn't used by the general public, mostly by VIP and Shareholders who want to carry an opinion in the block-chain.
             grantdb << votingPreferences[i].size()<< "\n";
 			
 			//NOTE: votingPreferences is a large array.
 			//
-            for( vpit = votingPreferences[i].begin();vpit != votingPreferences[i].end();++vpit)
-			{
+            for( vpit = votingPreferences[i].begin();vpit != votingPreferences[i].end();++vpit){
 				//NOTE: Address voted from: (key)
                 grantdb << (vpit->first) << "\n";
 				
@@ -129,8 +115,7 @@ void serializeGrantDB(string filename){
                 grantdb << vpit->second.size() << "\n";
 				
 				//NOTE: If there are any other votes in the respective voting preference database, also list them here.
-                for( it2 = vpit->second.begin();it2 != vpit->second.end();++it2 )
-				{
+                for( it2 = vpit->second.begin();it2 != vpit->second.end();++it2 )				{
 					//NOTE: List the preference first, and then the office voted for.
                     grantdb << it2->first << "\n" << it2->second<< "\n";
                 }
@@ -141,8 +126,6 @@ void serializeGrantDB(string filename){
 		grantdb.close();
 }
 
-//SECTION - Deserialize the Grant DB.
-//
 bool deSerializeGrantDB( string filename, int64_t maxWanted ){
 	//NOTE: This takes a while to load Grant DB.
 	//TODO: Disable debug information.
@@ -155,15 +138,10 @@ bool deSerializeGrantDB( string filename, int64_t maxWanted ){
 	//NOTE: Open the file using ifstream object.
 	myfile.open (filename.c_str());	
 	
-	//ifstream myfile ("grantsdb.dat");
-	//NOTE: above line is commented out because of extra check to make sure grantDB can be opened.
-	
 	//NOTE: Rare error... only happens if client has a corrupt grantDB or does not exist.
 	//NOTE: Cannot open file. Looks like we have to start all over again.
-	if ( !myfile.is_open() ){
-	
-		LogPrintf("Could not load Grant Info Database from %s, Max Wanted: %ld\n",filename.c_str(), maxWanted);
-		
+	if ( !myfile.is_open() ){	
+		LogPrintf("Could not load Grant Info Database from %s, Max Wanted: %ld\n",filename.c_str(), maxWanted);		
 		return false;
 	
 	}else if (myfile.is_open()){
@@ -176,19 +154,16 @@ bool deSerializeGrantDB( string filename, int64_t maxWanted ){
 		//TODO: Remove debug information.
 		LogPrintf("Deserialize Grant Info Database Found.\n Height %ld, Max Wanted %ld\n",grantDatabaseBlockHeight, maxWanted);
 		
-		//NOTE: This condition disables the deserialization of the Grant DB.
-		//NOTE: maxWanted is an int64_t passed to this function.
+		//NOTE: This condition disables the deserialization of the Grant DB, maxWanted is an int64_t passed to this function.
 		//NOTE: Only reads the first line before reading any more. Decreases load on non-grant blocks.
         if( grantDatabaseBlockHeight > maxWanted ){
             //NOTE: Don't load and reset grantDatabaseBlockHeight variable.
 			//NOTE: The block-chain was cleared out and not the grant database. Re-do Everything.
             grantDatabaseBlockHeight=-1;
-            myfile.close();
-			
+            myfile.close();			
             return false;
         }
-		//SECTION: Load Balances from file.
-		//
+
 		//NOTE: This line completely clears out the balances array.
 		//TODO: SERVER LOAD?!
 		balances.clear();
@@ -201,20 +176,16 @@ bool deSerializeGrantDB( string filename, int64_t maxWanted ){
 		int64_t balancesSize = atoi64( line.c_str() );
 		
 		//NOTE: This loop reads the third and fourth line.
-		for( int i = 0;	i < balancesSize;i++)
-		{
+		for( int i = 0;	i < balancesSize;i++){
 			getline( myfile, line );
 			getline( myfile, line2 );
 			//NOTE: Set balances[1st line] to the 2nd read line.
 			balances[ line ] = atoi64( line2.c_str() );
 		}
 		
-		//SECTION: Voting Preferences
-		//
 		//NOTE: Loop through all the offices that are currently active.
 		//TODO: If new officers are added, there could be an issue.
-        for( int i = 0;	i < numberOfOffices;i++)
-		{
+        for( int i = 0;	i < numberOfOffices;i++){
 			//NOTE: Working with a clear slate.
             votingPreferences[ i ].clear();
 			//NOTE: Starts at the balancesSize*2 + 3 in the grantdb.dat file.
@@ -223,8 +194,7 @@ bool deSerializeGrantDB( string filename, int64_t maxWanted ){
             int64_t votingPreferencesSize = atoi64( line.c_str() );
             
 			//NOTE: Good enough loop.
-			for( int k = 0;	k < votingPreferencesSize;	k++)
-			{
+			for( int k = 0;	k < votingPreferencesSize;	k++){
 				//NOTE: line is the wallet address that voted for a specific candidate.
                 getline( myfile, line );
                 std::string vpAddress = line;
@@ -233,14 +203,11 @@ bool deSerializeGrantDB( string filename, int64_t maxWanted ){
                 int64_t vpAddressSize = atoi64( line.c_str() );
 				
 				//NOTE: loop through data in address' preference 'array'.
-                for( int j = 0;	j < vpAddressSize;j++)
-				{
+                for( int j = 0;	j < vpAddressSize;j++)				{
 					//NOTE: Retrieve vote preference.
-                    getline( myfile, line );
-					
+                    getline( myfile, line );					
 					//NOTE: Retrieve voting address associated with preference.
-                    getline( myfile, line2 );
-                    
+                    getline( myfile, line2 );                    
 					//NOTE: Associate this data with the votingPreferences Array.
 					votingPreferences[ i ][ vpAddress ][ atoi64( line.c_str() ) ] = line2;
                 }		
@@ -254,18 +221,14 @@ bool deSerializeGrantDB( string filename, int64_t maxWanted ){
 		//NOTE: First sets the gdBlockPointer variable to the genesis (1) block.
 		//NOTE: If pindexGenesisBlock is not set after declaration, gdBlockPointer will be NULL.
 		gdBlockPointer = chainActive.Genesis();
-		CBlockIndex* pindex = chainActive.Tip();
-		CBlockIndex* pindexFailure = NULL;
 		//NOTE: This loop checks if the blocks are valid and the next one is available.
-		for( int i = 0;	i < grantDatabaseBlockHeight;i++)
-		{
+		for( int i = 0;	i < grantDatabaseBlockHeight;i++)		{
 			//NOTE: Check if gdBlockPointer is defined and not NULL.
-            if( gdBlockPointer == pindexFailure ){
+            if( gdBlockPointer == NULL ){
 				LogPrintf("Insufficent number of blocks loaded %s\n", filename.c_str() );
 				return false;
-			}
-			
-			gdBlockPointer = chainActive.Next(pindex);
+			}			
+			gdBlockPointer = chainActive.Tip();
 		}
 		//NOTE: Everything worked out fine. database has been opened, all data has been loaded, closed, and the next block is available.
 	
@@ -312,72 +275,55 @@ bool ensureGrantDatabaseUptoDate(int64_t nHeight){
     }
     //NOTE: nHeight is the current block height
     //NOTE: requiredgrantdatabaseheight is 5 less than the current block
-
 	int64_t requiredGrantDatabaseHeight =nHeight-GRANTBLOCKINTERVAL;	
 	
  	LogPrintf("Checking Grant Database is updated. ===\n=== Required Height : %ld, requested from: %ld ===\n",requiredGrantDatabaseHeight, nHeight);
     //Maybe we don't have to count votes from the start - let's check if there's a recent vote database stored
     if( grantDatabaseBlockHeight == -1){
 			deSerializeGrantDB( ( GetDataDir() / "ratings/grantdb.dat" ).string().c_str(), requiredGrantDatabaseHeight );
-	}
- 
+	} 
  
  //NOTE: This has been removed... why?
  /*
     if( grantDatabaseBlockHeight > requiredGrantDatabaseHeight ){
-        LogPrintf("Grant database has processed too many blocks. Needs to be rebuilt. %lld", nHeight );
-        
-		balances.clear();
-        
-		for( int i = 0;
-			i < numberOfOffices + 1;
-			i++)
-		{
+        LogPrintf("Grant database has processed too many blocks. Needs to be rebuilt. %lld", nHeight );        
+		balances.clear();        
+		for(int i = 0;i < numberOfOffices + 1;i++){
             votingPreferences[ i ].clear();
         }
         gdBlockPointer = pindexGenesisBlock;
-        grantDatabaseBlockHeight = -1;
-		
+        grantDatabaseBlockHeight = -1;		
 	}
 */	
-    while( grantDatabaseBlockHeight < requiredGrantDatabaseHeight ){
+    while(grantDatabaseBlockHeight < requiredGrantDatabaseHeight ){
         processNextBlockIntoGrantDatabase();
 	}
 	
-    return true;
-		
+    return true;		
 }
 
 int getOfficeNumberFromAddress(string grantVoteAddress, int64_t nHeight){
-	//LogPrintf("getOfficeNumberFromAddress\n");
-	if (!startsWith( grantVoteAddress.c_str(), "6BCR" ) )
-	{
-		//LogPrintf("getOfficeNumberFromAddress: Fail - 1\n");
+
+	if (!startsWith( grantVoteAddress.c_str(), "6BCR" ) ){
 		return -1;
 	}
 	
 	//NOTE: this loop is horrible
 	//TODO: CASE SYSTEM
-	for( int i = 0;	i < numberOfOffices + 1;i++)
-	{
-	//LogPrintf("substring %s\n",grantVoteAddress.substr(4,3).c_str());
+	for( int i = 0;	i < numberOfOffices + 1;i++){
 	//NOTE: Not changing prefix.
-		if ( grantVoteAddress.substr(4,3) == electedOffices[i] )
-		{
-			//LogPrintf("getOfficeNumberFromAddress: Pass\n");
+		if ( grantVoteAddress.substr(4,3) == electedOffices[i]){
 			return i;
 		}
 	}
-	//NOTE: Negative
-	//LogPrintf("getOfficeNumberFromAddress: Fail2\n");
 	return -1;
 }
 
 void printVotingPrefs(std::string address){
 
     //I don't know why, this is compiling, but crashing
-    /*std::map<int64_t, std::string> thisBallot=ballots.find(address)->second;
-    if(thisBallot.begin()==thisBallot.end()){
+    std::map<int64_t, std::string> thisBallot=ballots.find(address)->second;
+    /*if(thisBallot.begin()==thisBallot.end()){
         LogPrintf("No Voting Preferences\n");
         return;
     }
@@ -389,14 +335,11 @@ void printVotingPrefs(std::string address){
 
     //This is slow and iterates too much, but on the plus side it doesn't crash the program.
     //This crash probably caused by eliminate candidate corrupting the ballot structure.
-    //Should be safe to use more efficient code after fork
 	
     int pref = 1;
     for( ballotit = ballots.begin(); ballotit != ballots.end();	++ballotit){
-	if( address == ballotit->first )
-		{
-           for( svpit4 = ballotit->second.begin();	svpit4 != ballotit->second.end();++svpit4)
-			{
+	if( address == ballotit->first ){
+           for( svpit4 = ballotit->second.begin();	svpit4 != ballotit->second.end();++svpit4){
 				grantAwardsOutput<<"--Preference "<<pref<<" "<<svpit4->first<<" "<<svpit4->second.c_str()<<" \n";
 				pref++;
 			}
@@ -411,22 +354,19 @@ void processNextBlockIntoGrantDatabase(){
 	
 	//NOTE: Process the latest block.
 	CBlock block;
-	CBlockUndo undo;
-	CDiskBlockPos pos = gdBlockPointer->GetUndoPos();
 	//If it's the first block, we'll start with the Genesis Block
-	if( gdBlockPointer != NULL ){
-		gdBlockPointer = gdBlockPointer->pskip;
+
+	if(gdBlockPointer != NULL){
+		gdBlockPointer = chainActive.Tip();
 	}else{
 		gdBlockPointer = chainActive.Genesis();
 	}
-	
-	!undo.ReadFromDisk(pos, gdBlockPointer->pprev->GetBlockHash());
-	//ReadBlockFromDisk(block, gdBlockPointer);
+
+	ReadBlockFromDisk(block, gdBlockPointer);
     //block.ReadFromDisk(gdBlockPointer,true); //Litecoin codebase method
 	//Look at all transactions in the block to update balances and see if they contain voting preferences
 
-	for (unsigned int i = 0; i < block.vtx.size(); 	i++)
-	{
+	for (unsigned int i = 0; i < block.vtx.size(); 	i++)	{
 		std::map<std::string,int64_t > votes;
 		std::map<std::string,int64_t >::iterator votesit;
 		
@@ -436,14 +376,10 @@ void processNextBlockIntoGrantDatabase(){
 			CTxDestination address;
 			ExtractDestination( block.vtx[ i ].vout[ j ].scriptPubKey, address );
 			string receiveAddress = CBitcreditAddress( address ).ToString().c_str();
-
-			int64_t theAmount = block.vtx[ i ].vout[ j ].nValue;
-			
+			int64_t theAmount = block.vtx[ i ].vout[ j ].nValue;			
 			//Update balance - if no previous balance, should start at 0
 			balances[ receiveAddress ] = balances[ receiveAddress ] + theAmount;				
-			
 			//Note any voting preferences made in the outputs
-
 			if(	theAmount < 10 && theAmount > 0	&& 	startsWith( receiveAddress.c_str(), "6BCR" ) )//NOTE: Easiest checks first. Is the amount between 1 and 9 satoshi's ??
 			{
 				LogPrintf("Found a vote!: Candidate: %s, Preference: %ld\n",receiveAddress.c_str() , theAmount);
@@ -452,24 +388,17 @@ void processNextBlockIntoGrantDatabase(){
 		}
 		
 		//Deal with the inputs - reduce balances AND apply voting preferences noted in the outputs.
-
 		for ( unsigned int j = 0; j < block.vtx[ i ].vin.size();j++ )
 		{
 			if( !(block.vtx[ i ].IsCoinBase() ) )
 			{
-				//NOTE: No input to reduce if it is a coinbase transaction.
-				
+				//NOTE: No input to reduce if it is a coinbase transaction.	
 				CTransaction txPrev;
 				uint256 hashBlock;
-				
 				GetTransaction( block.vtx[ i ].vin[ j ].prevout.hash, txPrev, hashBlock );
-				
 				CTxDestination source;
-				
 				ExtractDestination( txPrev.vout[ block.vtx[ i ].vin[ j ].prevout.n ].scriptPubKey, source );
-				
 				string spendAddress = CBitcreditAddress( source ).ToString().c_str();
-				
 				int64_t theAmount = txPrev.vout[ block.vtx[ i ].vin[ j ].prevout.n ].nValue;
 				
 				//Reduce balance
@@ -488,31 +417,35 @@ void processNextBlockIntoGrantDatabase(){
 					if( electedOfficeNumber > -1 ){
 						//NOTE: running the grant database is memory intensive and can cause an issue of taking up too much memory on the node.
 						//TODO: There may be a better way to set this database up.
-                        //LogPrintf("Vote added: %d %s, %llu\n",electedOfficeNumber,votesit->first.c_str(),votesit->second);
                         votingPreferences[ electedOfficeNumber ][ spendAddress ][ votesit->second ] = grantVoteAddress;
-						
-                        //LogPrintf("Voting Preference Size: %d \n",votingPreferences[electedOfficeNumber].size());
                     }					
 				}				
 			}			
 		}		
 	}
-	//SECTION: processNextBlockIntoGrantDatabase function
-	//	
+
 	//NOTE: INCREASE THE GRANTDATABASEBLOCK HEIGHT
 	//NOTE: Run after the above loop scans through the size of the block for every transaction.
 	grantDatabaseBlockHeight++;
 	
 	LogPrintf("Block has been processed. Grant Database Block Height is now updated to Block # %ld\n", grantDatabaseBlockHeight);
-	if ( isGrantAwardBlock( grantDatabaseBlockHeight + GRANTBLOCKINTERVAL ) ) 
-	{
+	if ( isGrantAwardBlock( grantDatabaseBlockHeight + GRANTBLOCKINTERVAL )) {
 		getGrantAwardsFromDatabaseForBlock( grantDatabaseBlockHeight + GRANTBLOCKINTERVAL );
 		
 	}	
 	//NOTE: This is always serialized or saved at the end.
+
+    boost::filesystem::path biddir = GetDataDir() / "ratings";
+
+    if(!(boost::filesystem::exists(biddir))){
+        if(fDebug)LogPrintf("Grants dir Doesn't Exists\n");
+
+        if (boost::filesystem::create_directory(biddir))
+            if(fDebug)LogPrintf("Grants dir....Successfully Created !\n");
+    }
+
 	serializeGrantDB( (GetDataDir() / "ratings/grantdb.dat" ).string().c_str() );
 }
-
 
 void printCandidateSupport(){
 	std::map<int64_t,std::string>::reverse_iterator itpv2;
@@ -538,14 +471,11 @@ void printBalances( int64_t howMany, bool printVoting, bool printWasted ){
 	
 	for(itpv=balances.begin();	itpv!=balances.end();++itpv)
 	{
-		//int amt=(it->second)/COIN;
-		//sortByBalance[it->second]=it->first;
 		if( itpv->second > COIN ){
 			sortByBalance.insert( pair<int64_t, std::string>( itpv->second, itpv->first ) );
 		}
 	}
 	
-	//LogPrintf("%d addresses with balances. Printing Top %d\n",balances.size(),howMany);
 	std::multimap<int64_t, std::string >::reverse_iterator sbbit;
 	int64_t count = 0;
 	for (sbbit =  sortByBalance.rbegin();	sbbit !=  sortByBalance.rend();	++sbbit)
@@ -580,7 +510,6 @@ void printBalances( int64_t howMany, bool printVoting, bool printWasted ){
 	grantAwardsOutput<<"---End Balances------\n";
 }
 
-
 bool getGrantAwardsFromDatabaseForBlock(int64_t nHeight){
 	
     LogPrintf( "getGrantAwardsFromDatabaseForBlock %ld\n", nHeight );
@@ -596,8 +525,6 @@ bool getGrantAwardsFromDatabaseForBlock(int64_t nHeight){
 		std::stringstream sstm;
 		sstm << "award" << setw(8) << std::setfill('0') << nHeight << ".dat";
 		string filename = sstm.str();
-		//LogPrintf("%s\n",filename.c_str());
-		//mkdir((GetDataDir() / "grantawards").string().c_str());
 		mkdir((GetDataDir() / "grantawards").string().c_str()
 #ifndef _WIN32
 		,S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH
@@ -625,8 +552,7 @@ bool getGrantAwardsFromDatabaseForBlock(int64_t nHeight){
 		supportVotes.clear();
 		
 		//Iterate through every vote
-		for( vpit = votingPreferences[i].begin();vpit != votingPreferences[i].end();++vpit)
-		{
+		for( vpit = votingPreferences[i].begin();vpit != votingPreferences[i].end();++vpit)	{
 			int64_t voterBalance = balances[ vpit->first ];
 			//Ignore balances of 0 - they play no part.
 			if( voterBalance > 0 ){
@@ -634,8 +560,7 @@ bool getGrantAwardsFromDatabaseForBlock(int64_t nHeight){
 				ballotWeights[ vpit->first ] = 1.0;
 				
 				//Order preferences by coins sent - lowest number of coins has top preference
-				for( it2 = vpit->second.begin();it2 != vpit->second.end();	++it2)
-				{
+				for( it2 = vpit->second.begin();it2 != vpit->second.end();	++it2){
 					//Where a voter has voted for more than one preference with the same amount, only the last one (alphabetically) will be valid. The others are discarded.
 					ballots[ vpit->first ][ it2->first ] = it2->second;
 				}
@@ -644,9 +569,7 @@ bool getGrantAwardsFromDatabaseForBlock(int64_t nHeight){
 		//if(debugVote)printBalances(100,true,false);
 		//TODO: decrease intensity of this function.
 		getWinnersFromBallots( nHeight, i );
-
 		//At this point, we know the vote winners - now to see if grants are to be awarded
-		//nheight is the current blockheight
 		if( i < numberOfOffices ){
 			for(int i=0;i<1;i++){
 				grantAwards[ awardWinners[ i ] ] = grantAwards[ awardWinners[ i ] ] + GetGrantValue( nHeight, 0 );
@@ -661,7 +584,6 @@ bool getGrantAwardsFromDatabaseForBlock(int64_t nHeight){
 			printCandidateSupport();
 		}
 	}	
-	//if(debugVote)printBalances(100,false,true);
 	if( debugVote ){
 		grantAwardsOutput.close();
 	}
@@ -690,8 +612,7 @@ void getWinnersFromBallots( int64_t nHeight, int officeNumber ){
 	//Calculate Total of balances of voters
 	int64_t totalOfVoterBalances=0;
 	
-	for( it = ballotBalances.begin();it != ballotBalances.end();++it)
-	{
+	for( it = ballotBalances.begin();it != ballotBalances.end();++it)	{
 		totalOfVoterBalances = totalOfVoterBalances + it->second;
 	}
 	
@@ -704,33 +625,25 @@ void getWinnersFromBallots( int64_t nHeight, int officeNumber ){
 	}
 	//Calculate Droop Quota
 	int64_t droopQuota = (totalOfVoterBalances/2) + 1;
-	//int64_t droopQuota = ( totalOfVoterBalances / ( 1 ) ) + 1;
 	if( debugVote ){
 		grantAwardsOutput <<"Droop Quota: "<<droopQuota/COIN<<"\n";
 	}
 	//Conduct voting rounds until all grants are awarded
-	for(int i = 1;i > 0;i--)
-	{
-		string electedCandidate;
-		
+	for(int i = 1;i > 0;i--){
+		string electedCandidate;		
 		int voteRoundNumber = 0;
 		if( debugVote ){
 			grantAwardsOutput <<"-------------:\nRound:"<<1-i<<"\n";
-		}
-		
+		}		
 		if( debugVoteExtra ){
 			printBallots();
-		}
-		
+		}		
 		do{
-			//if(debugVote)grantAwardsOutput <<"-------------:\nElimination Round:%d\n",voteRoundNumber);
 			electedCandidate = electOrEliminate( droopQuota, i );
 			voteRoundNumber++;
 		}while( electedCandidate == "" );		
 		awardWinners[ ( i - 1 ) *- 1 ] = electedCandidate;
 	}
-	//if(debugVote)grantAwardsOutput <<"--------End Grant Voting--------\n";
-	
 }
 
 //Sum total of first preferences
@@ -739,61 +652,46 @@ int64_t numberCandidatesEliminated = 0;
 		
 string electOrEliminate( int64_t droopQuota, unsigned int requiredCandidates ){
 
-	std::map<std::string,int64_t >::iterator tpcit;
-	
+	std::map<std::string,int64_t >::iterator tpcit;	
 	//Recalculate the preferences each time as winners and losers are removed from ballots.
-	preferenceCount.clear();
-	
+	preferenceCount.clear();	
 	//Calculate support for each candidate. The balance X the weighting for each voter is applied to the total for the candidate currently at the top of the voter's ballot  
 	for( ballotit = ballots.begin();ballotit != ballots.end();++ballotit)
 	{
 		//Check: Multiplying int64_t by double here, and representing answer as int64_t.
 		preferenceCount[ ballotit->second.begin()->second ] += ( ballotBalances[ ballotit->first ] * ballotWeights[ ballotit->first ] );
 	}
-	
-	//if(debugVote)grantAwardsOutput <<"Number of Remaining Candidates: %d\n",preferenceCount.size());
-	
+		
 	//Find out which remaining candidate has the greatest and least support
 	string topOfThePoll;
 	int64_t topOfThePollAmount = 0;	
 	string bottomOfThePoll;
 	int64_t bottomOfThePollAmount = 9223372036854775807;
-
 		
-	for( tpcit = preferenceCount.begin();tpcit != preferenceCount.end();++tpcit)
-	{
+	for( tpcit = preferenceCount.begin();tpcit != preferenceCount.end();++tpcit){
 		//Check:When competing candidates have equal votes, the first (sorted by Map) will be chosen for top and bottom of the poll.
 		if( tpcit->second > topOfThePollAmount ){
 			topOfThePollAmount = tpcit->second;
 			topOfThePoll = tpcit->first;
-		}
-		
+		}		
 		if( tpcit->second < bottomOfThePollAmount ){
 			bottomOfThePollAmount = tpcit->second;
 			bottomOfThePoll = tpcit->first;
 		}
-		//if(tpcit->second>droopQuota/10){
-		//	if(debugVote)grantAwardsOutput <<"Support: "<<tpcit->first<<"("<<tpcit->second/COIN<<")\n";
-		//}
 	}
 	
 	//Purely for debugging/information
-	if( topOfThePollAmount >= droopQuota ||	requiredCandidates >= preferenceCount.size() ||	bottomOfThePollAmount > droopQuota / 10)
-	{
+	if( topOfThePollAmount >= droopQuota ||	requiredCandidates >= preferenceCount.size() ||	bottomOfThePollAmount > droopQuota / 10){
 		if( debugVote ){
 			grantAwardsOutput <<"Candidates with votes equalling more than 10% of Droop quota\n";
-		}
-		
-		for( tpcit = preferenceCount.begin();tpcit != preferenceCount.end();++tpcit)
-		{
+		}		
+		for( tpcit = preferenceCount.begin();tpcit != preferenceCount.end();++tpcit){
 			if( tpcit->second > droopQuota / 10 ){
-				if( debugVote ){
-					grantAwardsOutput <<"Support: "<<tpcit->first<<" ("<<tpcit->second/COIN<<")\n";
-				}
+				if(debugVote)
+				grantAwardsOutput <<"Support: "<<tpcit->first<<" ("<<tpcit->second/COIN<<")\n";
 			}
 		}
 	}
-	//if(debugVote)grantAwardsOutput <<"Bottom Preference Votes: %s %llu\n",bottomOfThePoll.c_str(),bottomOfThePollAmount/COIN);
 	
 	if( topOfThePollAmount == 0 ){
 		//No ballots left -end - 
@@ -804,11 +702,7 @@ string electOrEliminate( int64_t droopQuota, unsigned int requiredCandidates ){
 		return "6BCRBKZLmq2JwWLWDtJZL26ao4uHhqG6mH";
 	}
 	
-	if( topOfThePollAmount >= droopQuota
-	|| 
-		requiredCandidates >= preferenceCount.size() )
-	{
-		
+	if( topOfThePollAmount >= droopQuota|| 	requiredCandidates >= preferenceCount.size()){		
 		//Note: This is a simplified Gregory Transfer Value - ignoring ballots where there are no other hopefuls.
 		double gregorySurplusTransferValue = ( (double)topOfThePollAmount - (double)droopQuota ) / (double)topOfThePollAmount;
 		
@@ -818,8 +712,7 @@ string electOrEliminate( int64_t droopQuota, unsigned int requiredCandidates ){
 		}
 		
 		electCandidate( topOfThePoll, gregorySurplusTransferValue, (requiredCandidates == 1) );
-		
-		//if(debugVote)grantAwardsOutput <<"Top Preference Votes: %s %llu\n",topOfThePoll.c_str(),topOfThePollAmount/COIN);	
+
 		if( debugVote ){
 			if( numberCandidatesEliminated > 0 ){
 				grantAwardsOutput <<"Candidates Eliminated ("<<numberCandidatesEliminated<<")\n\n";
@@ -837,8 +730,7 @@ string electOrEliminate( int64_t droopQuota, unsigned int requiredCandidates ){
 				if( numberCandidatesEliminated > 0 ){
 					grantAwardsOutput <<"Candidates Eliminated ("<<numberCandidatesEliminated<<")\n";
 					numberCandidatesEliminated = 0;
-				}
-				
+				}				
 				grantAwardsOutput <<"Candidate Eliminated: "<<bottomOfThePoll.c_str()<<" ("<<bottomOfThePollAmount/COIN<<")\n\n";
 			}else{
 				numberCandidatesEliminated++;
@@ -848,27 +740,19 @@ string electOrEliminate( int64_t droopQuota, unsigned int requiredCandidates ){
 	}	
 }
 
-std::map<int64_t, std::string>::iterator svpit2;
-
-void electCandidate( string topOfThePoll, double gregorySurplusTransferValue,bool isLastCandidate )
-{
-	
+void electCandidate( string topOfThePoll, double gregorySurplusTransferValue,bool isLastCandidate ){	
 	//Apply fraction to weights where the candidate was top of the preference list
-	for( ballotit = ballots.begin();ballotit != ballots.end();++ballotit)
-	{
+	for( ballotit = ballots.begin();ballotit != ballots.end();++ballotit){
 		svpit2 = ballotit->second.begin();
 		if( svpit2->second == topOfThePoll ){
 			//Record how many votes went towards electing this candidate for each user
 			electedVotes[ ballotit->first ][ balances[ ballotit->first ]*( ballotWeights[ ballotit->first ] * ( 1 - gregorySurplusTransferValue ) ) ] = svpit2->second;
 			//Record the support for each candidate elected
 			supportVotes[ topOfThePoll ][ balances[ ballotit->first ] * ( ballotWeights[ ballotit->first ] * ( 1 - gregorySurplusTransferValue ) ) ] = ballotit->first;
-			
 			//This voter had the elected candidate at the top of the ballot. Adjust weight for future preferences.
 			ballotWeights[ballotit->first]=ballotWeights[ballotit->first]*gregorySurplusTransferValue;
 		}
-	}
-	
-	//Remove candidate from all ballots - this includes where he may be far down the list of preferences
+	}	
 	eliminateCandidate( topOfThePoll, isLastCandidate );
 }
 
@@ -876,16 +760,11 @@ void eliminateCandidate( string removeid, bool isLastCandidate ){
 
 	std::map<std::string, int64_t> ballotsToRemove;
 	std::map<std::string, int64_t>::iterator btrit;
-	
-	//Remove candidate from all ballots - note the candidate may be way down the preference list
-	for( ballotit = ballots.begin();ballotit != ballots.end();++ballotit)
-	{
-		int64_t markForRemoval = 0;
-			
-		for( svpit2 = ballotit->second.begin();	svpit2 != ballotit->second.end();++svpit2)
-		{
+
+	for( ballotit = ballots.begin();ballotit != ballots.end();++ballotit){
+		int64_t markForRemoval = 0;			
+		for(svpit2 = ballotit->second.begin();svpit2 != ballotit->second.end();++svpit2){
 			if( svpit2->second == removeid ){
-				//if(debugVote)grantAwardsOutput <<"1. Mark for Removal From Ballot: %s %d \n",removeid.c_str(),svpit2->first);
 				markForRemoval = svpit2->first;
 			}
 		}
@@ -894,7 +773,6 @@ void eliminateCandidate( string removeid, bool isLastCandidate ){
 			ballotit->second.erase( markForRemoval );
 		}
 		
-		//Make a note of ballot to remove
 		if( ballotit->second.size() == 0 ){
 			if( !isLastCandidate ){
 				wastedVotes[ ballotit->first ] = ( ballotBalances[ ballotit->first ] * ballotWeights[ ballotit->first ] );
@@ -903,38 +781,22 @@ void eliminateCandidate( string removeid, bool isLastCandidate ){
 		}
 	}	
 	
-	for( btrit = ballotsToRemove.begin();btrit != ballotsToRemove.end();++btrit)
-	{
+	for( btrit = ballotsToRemove.begin();btrit != ballotsToRemove.end();++btrit){
 		ballots.erase( btrit->first );
-	}
-	
+	}	
 }
 
 void printBallots(){
 	LogPrintf("Current Ballot State\n");
 	int cutOff = 0;
-	for( ballotit = ballots.begin();ballotit != ballots.end();++ballotit)
-	{
-		//if(cutOff<10){
-			LogPrintf("Voter: %s Balance: %ld Weight: %f Total: %f\n",
-				ballotit->first.c_str(),
-				ballotBalances[ ballotit->first ] / COIN,
-				ballotWeights[ ballotit->first ],
-				( ballotBalances[ ballotit->first ] / COIN ) * ballotWeights[ ballotit->first ] 
-				);
+	for( ballotit = ballots.begin();ballotit != ballots.end();++ballotit){
+			LogPrintf("Voter: %s Balance: %ld Weight: %f Total: %f\n",ballotit->first.c_str(),ballotBalances[ ballotit->first ] / COIN,ballotWeights[ ballotit->first ],
+				(ballotBalances[ ballotit->first ] / COIN ) * ballotWeights[ ballotit->first ]);
 			int cutOff2 = 0;
-			//if(cutOff2<5){
-				for( svpit2 = ballotit->second.begin();	svpit2 != ballotit->second.end();++svpit2)
-				{
-					LogPrintf( "Preference: (%d) %ld %s \n",
-						cutOff2,
-						svpit2->first,
-						svpit2->second.c_str()
-						);
+				for( svpit2 = ballotit->second.begin();	svpit2 != ballotit->second.end();++svpit2){
+					LogPrintf( "Preference: (%d) %ld %s \n",cutOff2,svpit2->first,svpit2->second.c_str());
 				}
-			/* }*/
 			cutOff2++;
-		/* }*/
 		cutOff++;
 	}
 }

@@ -496,7 +496,7 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn)
         CAmount blockValue = GetBlockValue(pindexPrev->nHeight+1, nFees);
         CAmount banknodePayment = GetBanknodePayment(pindexPrev->nHeight+1, blockValue);
         CAmount bank = GetBlockValue(pindexPrev->nHeight+1, nFees) *(0.1);
-
+		CAmount grant = GetGrantValue(pindexPrev->nHeight+1, nFees);
         // Compute final coinbase transaction.
 		{
 				txNew.vout[1].nValue = bank;

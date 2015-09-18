@@ -2121,68 +2121,66 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
 			return state.DoS(100, error("ConnectBlock() : no banknode payment ( required=%d)", mnsubsidy));	
 	}	
 
-	if (pindex->nHeight>203400){
-	{	
-		LOCK( grantdb );		
+	if (pindex->nHeight>203800){	
+		LOCK(grantdb);		
 		int64_t grantAward = 0;
 		if( isGrantAwardBlock( pindex->nHeight ) ){
 			//NOTE: getGrantAwards is returning false, this could mean the grant DB does not have enough information from previous blocks to process the current blocks.
 			//FIXME: Make sure grant awards are loaded.			
 			if( !getGrantAwards( pindex->nHeight) ){
-				return state.DoS(100, error("ConnectBlock() : grant awards error"));
+				return state.DoS(100, error("ConnectBlock() : grant awards error ( block=%d)",pindex->nHeight));
 			}
 			LogPrintf("Check Grant Awards rewarded for Block %d\n",pindex->nHeight);			
 			unsigned int awardFound = 0;
 
-			for( gait = grantAwards.begin();gait != grantAwards.end();++gait){
+			for(gait = grantAwards.begin();gait != grantAwards.end();++gait){
 				grantAward = grantAward + gait->second;
 			}
-			
+						
 			if (grantAward == 0 ){
 				LogPrintf("ERROR! No Awards found.\n");
-				return state.DoS(100, error("ConnectBlock() : grant awards error"));
+				return state.DoS(100, error("ConnectBlock() : grant awards error( grantAward=%d)",grantAward));
 			}
 			
 			for( gait = grantAwards.begin();gait != grantAwards.end();++gait){
 				//NOTE: Check that these addresses certainly received the exact amount at the exact destination.
 				for ( unsigned int j = 0; j < block.vtx[0].vout.size(); j++){
 					CTxDestination address;	
-					ExtractDestination( block.vtx[ 0 ].vout[ j ].scriptPubKey, address );										
+					ExtractDestination(block.vtx[0].vout[j].scriptPubKey, address );										
 					string receiveAddressString = CBitcreditAddress(address).ToString();
 					string receiveAddress = receiveAddressString.c_str();
 
-					CAmount theAmount = block.vtx[ 0 ].vout[ j ].nValue;
-					LogPrintf("log","Compare received amount: %ld, %ld\n",theAmount,gait->second);
+					CAmount theAmount = block.vtx[0].vout[j].nValue;
+					if(fDebug)LogPrintf("Compare received amount: %ld, %ld\n",theAmount,gait->second);
 					if( (CAmount) theAmount == (int64_t) gait->second ) {
 						LogPrintf("Yes: %ld equals %ld\n",theAmount,gait->second);
 					}
 					
-					LogPrintf("Compare receiving address: %s, %s, (%d)\n", receiveAddress.c_str(), gait->first.c_str(), receiveAddressString.compare( (gait->first).c_str() ));
+					if(fDebug)LogPrintf("Compare receiving address: %s, %s, (%d)\n", receiveAddress.c_str(), gait->first.c_str(), receiveAddressString.compare( (gait->first).c_str() ));
 					
 					if ( receiveAddressString.compare( (gait->first).c_str() ) == 0 ){
-						LogPrintf("Yes: %s equals %s\n",receiveAddress.c_str(),gait->first.c_str());
+						if(fDebug)LogPrintf("Yes: %s equals %s\n",receiveAddress.c_str(),gait->first.c_str());
 					}
 				
 					if( theAmount == gait->second && receiveAddress == gait->first ){
 						awardFound++;
-						LogPrintf("Match! Current Award Size = %d\n",awardFound);						
+						if(fDebug)LogPrintf("Match! Current Award Size = %d\n",awardFound);						
 						break;
 					}
 				}
 			}
 		
-			LogPrintf( "Grant award in block awardFound = %d, grantAwards.size() = %lu\n", awardFound, grantAwards.size());
+			if(fDebug)LogPrintf( "Grant award in block awardFound = %d, grantAwards.size() = %lu\n", awardFound, grantAwards.size());
 			
 			for( gait = grantAwards.begin();gait != grantAwards.end();++gait){
-				LogPrintf("Grant award in block %s, %ld\n",gait->first.c_str(),gait->second);
+				if(fDebug)LogPrintf("Grant award in block %s, %ld\n",gait->first.c_str(),gait->second);
 			} 
 			
 			//NOTE: This is an error in the Grant DB.
 			if (awardFound != grantAwards.size()){
 				return state.DoS(100, error("ConnectBlock() : Bitcredit DB Corruption detected. Grant Awards not being paid or paying too much. \n Please restore a previous version of grantdb.dat and/or delete the old grantdb database."));
 			}
-		}				
-			}
+		}
 	}
 
 
@@ -4065,7 +4063,7 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
         uint64_t nNonce = 1;
         vRecv >> pfrom->nVersion >> pfrom->nServices >> nTime >> addrMe;
 
-        if ((!pfrom->fForeignNode) && (pfrom->nVersion < MIN_PEER_PROTO_VERSION && chainActive.Tip()->nHeight> 203000))        
+        if ((!pfrom->fForeignNode) && (pfrom->nVersion < MIN_PEER_PROTO_VERSION && chainActive.Tip()->nHeight> 210000))        
         {
             // disconnect from peers older than this proto version
             LogPrintf("peer=%d using obsolete version %i; disconnecting\n", pfrom->id, pfrom->nVersion);
