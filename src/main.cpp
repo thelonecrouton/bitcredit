@@ -1522,7 +1522,7 @@ CAmount GetBanknodePayment(int nHeight, int64_t blockValue)
 CAmount GetGrantValue(int nHeight, CAmount nFees)
 {
     int64_t grantaward= GetBlockValue(chainActive.Tip()->nHeight, nFees)* (0.025);
-    if(nHeight >203400 && nHeight%900==0)
+    if(nHeight%900==0)
 		grantaward= 0.45 *COIN;
     return grantaward;
 }
