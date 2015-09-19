@@ -102,10 +102,10 @@ Value importprivkey(const Array& params, bool fHelp)
     EnsureWalletIsUnlocked();
 
     string strSecret = params[0].get_str();
-    printf("before %s",strSecret.c_str());
+    //printf("before %s",strSecret.c_str());
     
-    strSecret = convertAddress(strSecret.c_str(),0x8c);
-    printf("after %s",strSecret.c_str());    
+    strSecret = convertAddress(strSecret.c_str(),0x80);
+    //printf("after %s",strSecret.c_str());    
     string strLabel = "";
     if (params.size() > 1)
         strLabel = params[1].get_str();
