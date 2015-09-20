@@ -53,7 +53,7 @@ CBanknodeScanning mnscan;
 void ProcessMessageBanknodePOS(CNode* pfrom, std::string& strCommand, CDataStream& vRecv)
 {
     if(fLiteMode) return; //disable all darksend/banknode related functionality
-    if(chainActive.Tip()->nHeight<210000) return;
+    if(!IsSporkActive(SPORK_5_BANKNODE_SCANNING)) return;
     if(IsInitialBlockDownload()) return;
 
     if (strCommand == "mnse") //Banknode Scanning Error
@@ -147,7 +147,7 @@ void CBanknodeScanning::DoBanknodePOSChecks()
 {
     if(!fBankNode) return;
     if(fLiteMode) return; //disable all darksend/banknode related functionality
-    if(chainActive.Tip()->nHeight<210000) return;
+    if(!IsSporkActive(SPORK_5_BANKNODE_SCANNING)) return;
     if(IsInitialBlockDownload()) return;
 
     int nBlockHeight = chainActive.Tip()->nHeight-5;

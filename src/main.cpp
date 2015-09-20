@@ -2993,7 +2993,7 @@ bool CheckBlock(const CBlock& block, CValidationState& state, bool fCheckPOW, bo
 
     // ----------- instantX transaction scanning -----------
 
-    if(BanknodePayments){
+    if(IsSporkActive(SPORK_1_BANKNODE_PAYMENTS_ENFORCEMENT_DEFAULT)){
         BOOST_FOREACH(const CTransaction& tx, block.vtx){
             if (!tx.IsCoinBase()){
                 //only reject blocks when it's based on complete consensus
