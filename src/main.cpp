@@ -1503,10 +1503,10 @@ CAmount GetBanknodePayment(int nHeight, int64_t blockValue)
 {
     int64_t ret = blockValue/5;
      
-	if(nHeight >210000 && nHeight%900==0){
+	if(nHeight >207000 && nHeight%900==0){
 		ret= blockValue/5000;
 	}
-	else if (nHeight >210000){ret= blockValue/3;}
+	else if (nHeight >207000){ret= blockValue/3;}
 	
 	else {
 	if(nHeight >201000 && nHeight%900==0) {ret/= 1000;}
@@ -2107,9 +2107,13 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
 		}
 	}
 
+		if (pindex->nHeight>207000 && (reserve_subsidy > 2*COIN || bank_subsidy > 2 * COIN)){
+
+			return state.DoS(100, error("ConnectBlock() : coinbase error,  are you processing payouts correctly?", reserve_subsidy));
+		}	
 	}
 	
-	if (pindex->nHeight>203000){
+	if (pindex->nHeight>207000){
 		
 		int64_t mnsubsidy = GetBanknodePayment(pindex->nHeight, block.vtx[0].GetValueOut());
 		bool foundPaymentAmount = false;
@@ -2123,7 +2127,7 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
 			return state.DoS(100, error("ConnectBlock() : no banknode payment ( required=%d)", mnsubsidy));	
 	}	
 
-	if (pindex->nHeight>210000){	
+	if (pindex->nHeight>207000){	
 		LOCK(grantdb);		
 		int64_t grantAward = 0;
 		if( isGrantAwardBlock( pindex->nHeight ) ){
@@ -4059,7 +4063,7 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
         uint64_t nNonce = 1;
         vRecv >> pfrom->nVersion >> pfrom->nServices >> nTime >> addrMe;
 
-        if ((!pfrom->fForeignNode) && (pfrom->nVersion < MIN_PEER_PROTO_VERSION && chainActive.Tip()->nHeight> 210000))        
+        if ((!pfrom->fForeignNode) && (pfrom->nVersion < MIN_PEER_PROTO_VERSION && chainActive.Tip()->nHeight> 207000))        
         {
             // disconnect from peers older than this proto version
             LogPrintf("peer=%d using obsolete version %i; disconnecting\n", pfrom->id, pfrom->nVersion);
