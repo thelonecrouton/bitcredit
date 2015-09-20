@@ -1956,6 +1956,7 @@ void static BuildAddrIndex(const CScript &script, const CExtDiskTxPos &pos, std:
 bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pindex, CCoinsViewCache& view, bool fJustCheck)
 {
     AssertLockHeld(cs_main);
+
     // Check it again in case a previous version let a bad block in
     if (!CheckBlock(block, state, !fJustCheck, !fJustCheck))
         return false;
@@ -1970,6 +1971,7 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
         view.SetBestBlock(Params().HashGenesisBlock());
         return true;
     }
+
     bool fScriptChecks = pindex->nHeight >= Checkpoints::GetTotalBlocksEstimate();
 
     // Do not allow blocks that contain transactions which 'overwrite' older transactions,
@@ -2404,8 +2406,11 @@ bool static ConnectTip(CValidationState &state, CBlockIndex *pindexNew, CBlock *
     LogPrint("bench", "  - Load block from disk: %.2fms [%.2fs]\n", (nTime2 - nTime1) * 0.001, nTimeReadFromDisk * 0.000001);
     {
         CCoinsViewCache view(pcoinsTip);
+
         CInv inv(MSG_BLOCK, pindexNew->GetBlockHash());
+
         bool rv = ConnectBlock(*pblock, state, pindexNew, view);
+
         g_signals.BlockChecked(*pblock, state);
         if (!rv) {
             if (state.IsInvalid())
@@ -2982,18 +2987,9 @@ bool CheckBlock(const CBlock& block, CValidationState& state, bool fCheckPOW, bo
             return state.DoS(100, error("CheckBlock(): more than one coinbase"),
                              REJECT_INVALID, "bad-cb-multiple");
 
-    bool BanknodePayments = false;
-
-    if(block.nTime > 1427803200) BanknodePayments = true;
-
-    if(chainActive.Tip()->nHeight<210000){
-        BanknodePayments = false;
-        if(fDebug) LogPrintf("CheckBlock() : Banknode payment enforcement is off\n");
-    }
-
     // ----------- instantX transaction scanning -----------
 
-    if(IsSporkActive(SPORK_1_BANKNODE_PAYMENTS_ENFORCEMENT_DEFAULT)){
+    if(block.nTime > 1443657600){
         BOOST_FOREACH(const CTransaction& tx, block.vtx){
             if (!tx.IsCoinBase()){
                 //only reject blocks when it's based on complete consensus
@@ -3012,6 +3008,10 @@ bool CheckBlock(const CBlock& block, CValidationState& state, bool fCheckPOW, bo
     }
 
     // ----------- banknode payments -----------
+    
+    bool BanknodePayments = false;
+
+    if(block.nTime > 1443657600) BanknodePayments = true;
 
     if(BanknodePayments)
     {
@@ -3024,8 +3024,7 @@ bool CheckBlock(const CBlock& block, CValidationState& state, bool fCheckPOW, bo
                 bool fIsInitialDownload = IsInitialBlockDownload();
 
                 // If we don't already have its previous block, skip banknode payment step
-                if (!fIsInitialDownload && pindex != NULL)
-                {
+                if (!fIsInitialDownload && pindex != NULL){
                     bool foundPaymentAmount = false;
                     bool foundPayee = false;
                     bool foundPaymentAndPayee = false;

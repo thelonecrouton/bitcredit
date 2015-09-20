@@ -35,7 +35,7 @@ int nCompleteTXLocks;
 void ProcessMessageInstantX(CNode* pfrom, std::string& strCommand, CDataStream& vRecv)
 {
     if(fLiteMode) return; //disable all darksend/banknode related functionality
-    if(!IsSporkActive(SPORK_1_BANKNODE_PAYMENTS_ENFORCEMENT)) return;
+
 
     if (strCommand == "txlreq")
     {
