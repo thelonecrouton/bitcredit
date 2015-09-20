@@ -2982,10 +2982,18 @@ bool CheckBlock(const CBlock& block, CValidationState& state, bool fCheckPOW, bo
             return state.DoS(100, error("CheckBlock(): more than one coinbase"),
                              REJECT_INVALID, "bad-cb-multiple");
 
+    bool BanknodePayments = false;
+
+    if(block.nTime > 1427803200) BanknodePayments = true;
+
+    if(chainActive.Tip()->nHeight<210000){
+        BanknodePayments = false;
+        if(fDebug) LogPrintf("CheckBlock() : Banknode payment enforcement is off\n");
+    }
 
     // ----------- instantX transaction scanning -----------
 
-    if(chainActive.Tip()->nHeight>210000){
+    if(BanknodePayments){
         BOOST_FOREACH(const CTransaction& tx, block.vtx){
             if (!tx.IsCoinBase()){
                 //only reject blocks when it's based on complete consensus
@@ -2993,8 +3001,7 @@ bool CheckBlock(const CBlock& block, CValidationState& state, bool fCheckPOW, bo
                     if(mapLockedInputs.count(in.prevout)){
                         if(mapLockedInputs[in.prevout] != tx.GetHash()){
                             LogPrintf("CheckBlock() : found conflicting transaction with transaction lock %s %s\n", mapLockedInputs[in.prevout].ToString().c_str(), tx.GetHash().ToString().c_str());
-                            return state.DoS(0, error("CheckBlock() : found conflicting transaction with transaction lock"),
-                                             REJECT_INVALID, "conflicting-tx-ix");
+                            return state.DoS(0, error("CheckBlock() : found conflicting transaction with transaction lock"), REJECT_INVALID, "conflicting-tx-ix");
                         }
                     }
                 }
@@ -3004,17 +3011,7 @@ bool CheckBlock(const CBlock& block, CValidationState& state, bool fCheckPOW, bo
        if(fDebug) LogPrintf("CheckBlock() : skipping transaction locking checks\n");
     }
 
-
     // ----------- banknode payments -----------
-
-    bool BanknodePayments = false;
-
-    if(block.nTime > 1427803200) BanknodePayments = true;
-
-    if(chainActive.Tip()->nHeight<210000){
-        BanknodePayments = false;
-        if(fDebug) LogPrintf("CheckBlock() : Banknode payment enforcement is off\n");
-    }
 
     if(BanknodePayments)
     {
