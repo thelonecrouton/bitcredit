@@ -291,9 +291,13 @@ void BanknodeManager::updateNodeList()
             }
             
         }
+        QString ourcount = QString::number(ours);
+        ui->countLabel->setText(QString::number(ui->tableWidget->rowCount()) + "   (Mine: " + ourcount + ")");    
     }
-    QString ourcount = QString::number(ours);
-    ui->countLabel->setText(QString::number(ui->tableWidget->rowCount()) + "   (Mine: " + ourcount + ")");
+    else
+    {
+         ui->countLabel->setText(QString::number(ui->tableWidget->rowCount()));
+    }
 }
 
 QString BanknodeManager::getDefaultDataDirectory()

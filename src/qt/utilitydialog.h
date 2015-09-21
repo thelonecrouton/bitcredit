@@ -59,6 +59,10 @@ private:
         
 private slots:
     void on_okButton_accepted();
+    void BCT();
+    void Forum();
+    void Wiki();
+    void Explorer();
 
 };
 

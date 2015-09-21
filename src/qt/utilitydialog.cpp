@@ -35,6 +35,7 @@
 #include <QRegExp>
 #include <QVBoxLayout>
 #include <QUrl>
+#include <QDesktopServices>
 
 #ifdef USE_QRCODE
 #include <qrencode.h>
@@ -93,6 +94,12 @@ HelpMessageDialog::HelpMessageDialog(QWidget *parent, bool about) :
         ui->helpMessage->setText(version + "<br><br>" + licenseInfoHTML);
         //ui->helpMessage->setWordWrap(true);
         
+        connect(ui->pushButtonBCT, SIGNAL(clicked()), this, SLOT(BCT()));
+        connect(ui->pushButtonForum, SIGNAL(clicked()), this, SLOT(Forum()));
+        connect(ui->pushButtonWiki, SIGNAL(clicked()), this, SLOT(Wiki()));
+        connect(ui->pushButtonExplorer, SIGNAL(clicked()), this, SLOT(Explorer()));
+       
+        
         
         
     } else {
@@ -121,7 +128,25 @@ HelpMessageDialog::~HelpMessageDialog()
     delete ui;
 }
 
+void HelpMessageDialog::BCT()
+{
+    QDesktopServices::openUrl(QUrl("https://bitcointalk.org/index.php?topic=896133.0", QUrl::TolerantMode));
+}
 
+void HelpMessageDialog::Forum()
+{
+    QDesktopServices::openUrl(QUrl("http://bitcredits.pw/", QUrl::TolerantMode));
+}
+
+void HelpMessageDialog::Wiki()
+{
+    QDesktopServices::openUrl(QUrl("http://bitcredit.wikia.com/wiki/Bitcredit", QUrl::TolerantMode));
+}
+
+void HelpMessageDialog::Explorer()
+{
+    QDesktopServices::openUrl(QUrl("https://chainz.cryptoid.info/bcr/", QUrl::TolerantMode));
+}
 
 void HelpMessageDialog::printToConsole()
 {

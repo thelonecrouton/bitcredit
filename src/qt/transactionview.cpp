@@ -140,7 +140,7 @@ TransactionView::TransactionView(QWidget *parent) :
     // labels
     availablebalancelabel = new QLabel(bframe);
     availablebalancelabel->move(20, 20);
-    availablebalancelabel->setFixedWidth(200);
+    availablebalancelabel->setFixedWidth(220);
     availablebalancelabel->setText("Available Balance:");
     availablebalancelabel->setObjectName("availablebalancelabel");
     //availablebalancelabel->setStyleSheet("border: none; font: 18pt;");

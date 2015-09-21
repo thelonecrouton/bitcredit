@@ -58,6 +58,7 @@ private:
     QString dataDir;
     std::string theme;
     QString themestring;
+    QString ourcount;
     
 private slots:
     void on_copyAddressButton_clicked();

@@ -510,7 +510,7 @@ void BitcreditGUI::createActions(const NetworkStyle *networkStyle)
     toolbarrecinv->addAction(invoiceAction);
     tabGroup->addAction(invoiceAction);
 
-    receiptAction = new QAction(QIcon(":/icons/null"), tr("Re&ceipts"), this);
+    receiptAction = new QAction(QIcon(":/icons/null"), tr("&Receipts"), this);
     receiptAction->setCheckable(true);
     toolbarrecinv2->addAction(receiptAction);
     tabGroup->addAction(receiptAction);
@@ -528,7 +528,7 @@ void BitcreditGUI::createActions(const NetworkStyle *networkStyle)
     chatAction->setCheckable(true);
     tabGroup->addAction(chatAction);   
 
-    testAction = new QAction(QIcon(":/icons/null"), tr("&TESTING"), this);
+    testAction = new QAction(QIcon(":/icons/null"), ("&BID + BACK!"), this);
     testAction->setToolTip(tr("Testing"));
     testAction->setCheckable(true);
     tabGroup->addAction(testAction);
@@ -755,7 +755,7 @@ void BitcreditGUI::createToolBars()
 	toolbar->addAction(actionSendReceivestats);		        		
 	toolbar->addAction(chatAction);
 	toolbar->addAction(banknodeManagerAction);
-        //toolbar->addAction(testAction);
+        toolbar->addAction(testAction);
         historyAction->setChecked(true);
     }
     

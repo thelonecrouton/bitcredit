@@ -3273,7 +3273,7 @@ int CMerkleTx::GetDepthInMainChain(const CBlockIndex* &pindexRet) const
 int CMerkleTx::GetTransactionLockSignatures() const
 {
     if(fLargeWorkForkFound || fLargeWorkInvalidChainFound) return -2;
-    if(!IsSporkActive(SPORK_1_BANKNODE_PAYMENTS_ENFORCEMENT)) return -3;
+    
     if(nInstantXDepth == 0) return -1;
 
     //compile consessus vote

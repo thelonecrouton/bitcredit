@@ -13,440 +13,653 @@
   <property name="windowTitle">
    <string>Form</string>
   </property>
-  <widget class="QLabel" name="labeltotalassets">
+  <widget class="QLabel" name="labelNext">
    <property name="geometry">
     <rect>
-     <x>70</x>
-     <y>50</y>
-     <width>241</width>
-     <height>17</height>
+     <x>20</x>
+     <y>55</y>
+     <width>150</width>
+     <height>21</height>
     </rect>
    </property>
    <property name="font">
     <font>
-     <pointsize>18</pointsize>
+     <pointsize>12</pointsize>
+     <weight>50</weight>
+     <bold>false</bold>
     </font>
    </property>
    <property name="text">
-    <string>Total Network Assets:</string>
+    <string>Next Superblock in:</string>
    </property>
   </widget>
-  <widget class="QLabel" name="label">
+  <widget class="QLabel" name="labelNumber">
    <property name="geometry">
     <rect>
-     <x>390</x>
-     <y>46</y>
-     <width>241</width>
-     <height>29</height>
+     <x>180</x>
+     <y>55</y>
+     <width>41</width>
+     <height>21</height>
     </rect>
+   </property>
+   <property name="palette">
+    <palette>
+     <active/>
+     <inactive/>
+     <disabled/>
+    </palette>
    </property>
    <property name="font">
     <font>
-     <pointsize>22</pointsize>
+     <pointsize>12</pointsize>
      <weight>75</weight>
      <bold>true</bold>
     </font>
    </property>
    <property name="styleSheet">
-    <string notr="true">color: #ff03a3;
-</string>
+    <string notr="true"/>
    </property>
    <property name="text">
-    <string>321457.54</string>
+    <string> ...</string>
    </property>
   </widget>
-  <widget class="QComboBox" name="comboBox">
+  <widget class="QLabel" name="labelCurrentbids">
    <property name="geometry">
     <rect>
-     <x>340</x>
-     <y>46</y>
-     <width>41</width>
-     <height>27</height>
+     <x>20</x>
+     <y>90</y>
+     <width>111</width>
+     <height>17</height>
     </rect>
    </property>
    <property name="font">
     <font>
-     <pointsize>18</pointsize>
+     <pointsize>12</pointsize>
+     <weight>75</weight>
+     <bold>true</bold>
     </font>
    </property>
-   <item>
-    <property name="text">
-     <string>$</string>
-    </property>
-   </item>
-   <item>
-    <property name="text">
-     <string>£</string>
-    </property>
-   </item>
-   <item>
-    <property name="text">
-     <string>Euro</string>
-    </property>
-   </item>
-   <item>
-    <property name="text">
-     <string>Yuan</string>
-    </property>
-   </item>
+   <property name="text">
+    <string>Current Bids:</string>
+   </property>
   </widget>
-  <widget class="QLabel" name="labelbreakdown">
+  <widget class="QLabel" name="labelBTC">
    <property name="geometry">
     <rect>
-     <x>70</x>
-     <y>90</y>
+     <x>20</x>
+     <y>120</y>
+     <width>41</width>
+     <height>17</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <pointsize>10</pointsize>
+     <weight>50</weight>
+     <bold>false</bold>
+    </font>
+   </property>
+   <property name="text">
+    <string>BTC:</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="labelLTC">
+   <property name="geometry">
+    <rect>
+     <x>20</x>
+     <y>150</y>
+     <width>41</width>
+     <height>17</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <pointsize>10</pointsize>
+     <weight>50</weight>
+     <bold>false</bold>
+    </font>
+   </property>
+   <property name="text">
+    <string>LTC:</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="labelDASH">
+   <property name="geometry">
+    <rect>
+     <x>20</x>
+     <y>180</y>
+     <width>51</width>
+     <height>17</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <pointsize>10</pointsize>
+     <weight>50</weight>
+     <bold>false</bold>
+    </font>
+   </property>
+   <property name="text">
+    <string>DASH:</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="labelTotal">
+   <property name="geometry">
+    <rect>
+     <x>20</x>
+     <y>220</y>
      <width>131</width>
      <height>17</height>
     </rect>
    </property>
    <property name="font">
     <font>
-     <weight>75</weight>
-     <bold>true</bold>
+     <pointsize>12</pointsize>
+     <weight>50</weight>
+     <bold>false</bold>
     </font>
    </property>
    <property name="text">
-    <string>Asset breakdown:</string>
+    <string>Total Bids (BTC):</string>
    </property>
   </widget>
-  <widget class="QLabel" name="labelbitcoin">
-   <property name="geometry">
-    <rect>
-     <x>120</x>
-     <y>130</y>
-     <width>58</width>
-     <height>17</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>Bitcoin:</string>
-   </property>
-  </widget>
-  <widget class="QLabel" name="labelusd">
-   <property name="geometry">
-    <rect>
-     <x>120</x>
-     <y>160</y>
-     <width>58</width>
-     <height>17</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>US $:</string>
-   </property>
-  </widget>
-  <widget class="QLabel" name="labelpounds">
-   <property name="geometry">
-    <rect>
-     <x>120</x>
-     <y>190</y>
-     <width>58</width>
-     <height>17</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>UK £:</string>
-   </property>
-  </widget>
-  <widget class="QLabel" name="labelyuan">
-   <property name="geometry">
-    <rect>
-     <x>120</x>
-     <y>220</y>
-     <width>58</width>
-     <height>17</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>Euro:</string>
-   </property>
-  </widget>
-  <widget class="QLabel" name="labeleuro">
-   <property name="geometry">
-    <rect>
-     <x>120</x>
-     <y>250</y>
-     <width>58</width>
-     <height>17</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>CNY:</string>
-   </property>
-  </widget>
-  <widget class="QLabel" name="labelau">
-   <property name="geometry">
-    <rect>
-     <x>120</x>
-     <y>280</y>
-     <width>58</width>
-     <height>17</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>Gold:</string>
-   </property>
-  </widget>
-  <widget class="QLabel" name="labelag">
-   <property name="geometry">
-    <rect>
-     <x>120</x>
-     <y>310</y>
-     <width>58</width>
-     <height>17</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>Silver:</string>
-   </property>
-  </widget>
-  <widget class="QLabel" name="labelbtcamount">
-   <property name="geometry">
-    <rect>
-     <x>220</x>
-     <y>130</y>
-     <width>58</width>
-     <height>17</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>201</string>
-   </property>
-  </widget>
-  <widget class="QLabel" name="labeldollaramount">
-   <property name="geometry">
-    <rect>
-     <x>220</x>
-     <y>160</y>
-     <width>58</width>
-     <height>17</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>12456</string>
-   </property>
-  </widget>
-  <widget class="QLabel" name="labelpoundamount">
-   <property name="geometry">
-    <rect>
-     <x>220</x>
-     <y>190</y>
-     <width>58</width>
-     <height>17</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>6098</string>
-   </property>
-  </widget>
-  <widget class="QLabel" name="labeleuroamount">
-   <property name="geometry">
-    <rect>
-     <x>220</x>
-     <y>220</y>
-     <width>58</width>
-     <height>17</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>14542</string>
-   </property>
-  </widget>
-  <widget class="QLabel" name="labelyuanamount">
-   <property name="geometry">
-    <rect>
-     <x>220</x>
-     <y>250</y>
-     <width>58</width>
-     <height>17</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>876246</string>
-   </property>
-  </widget>
-  <widget class="QLabel" name="labelauamount">
-   <property name="geometry">
-    <rect>
-     <x>220</x>
-     <y>280</y>
-     <width>58</width>
-     <height>17</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>78.45 oz</string>
-   </property>
-  </widget>
-  <widget class="QLabel" name="labelagamount">
-   <property name="geometry">
-    <rect>
-     <x>220</x>
-     <y>310</y>
-     <width>58</width>
-     <height>17</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>602 oz</string>
-   </property>
-  </widget>
-  <widget class="QLabel" name="labelheldat">
-   <property name="geometry">
-    <rect>
-     <x>350</x>
-     <y>90</y>
-     <width>81</width>
-     <height>17</height>
-    </rect>
-   </property>
-   <property name="font">
-    <font>
-     <weight>75</weight>
-     <bold>true</bold>
-    </font>
-   </property>
-   <property name="text">
-    <string>Held at:</string>
-   </property>
-  </widget>
-  <widget class="QLabel" name="dollarloc">
-   <property name="geometry">
-    <rect>
-     <x>400</x>
-     <y>160</y>
-     <width>241</width>
-     <height>17</height>
-    </rect>
-   </property>
-   <property name="frameShape">
-    <enum>QFrame::NoFrame</enum>
-   </property>
-   <property name="text">
-    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;a href=&quot;https://github.com/bitcreditscc/bicreditsnew&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;www.bank-of-no-treaties-with-usa.com&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-   </property>
-   <property name="textFormat">
-    <enum>Qt::RichText</enum>
-   </property>
-  </widget>
-  <widget class="QLabel" name="bitcoinloc">
-   <property name="geometry">
-    <rect>
-     <x>400</x>
-     <y>130</y>
-     <width>261</width>
-     <height>17</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;a href=&quot;https://chainz.cryptoid.info/bcr/&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;Decentralised Banknode Escrow&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-   </property>
-   <property name="textFormat">
-    <enum>Qt::RichText</enum>
-   </property>
-  </widget>
-  <widget class="QLabel" name="poundloc">
-   <property name="geometry">
-    <rect>
-     <x>400</x>
-     <y>190</y>
-     <width>351</width>
-     <height>17</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;a href=&quot;https://github.com/bitcreditscc/bicreditsnew&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;www.bank-of-wherever-the-queen-hides-her-money.com&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-   </property>
-   <property name="textFormat">
-    <enum>Qt::RichText</enum>
-   </property>
-  </widget>
-  <widget class="QLabel" name="euroloc">
-   <property name="geometry">
-    <rect>
-     <x>400</x>
-     <y>220</y>
-     <width>341</width>
-     <height>17</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;a href=&quot;https://github.com/bitcreditscc/bicreditsnew&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;Bank of Good Enough for The Company's European Ops&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-   </property>
-   <property name="textFormat">
-    <enum>Qt::RichText</enum>
-   </property>
-  </widget>
-  <widget class="QLabel" name="yuanloc">
-   <property name="geometry">
-    <rect>
-     <x>400</x>
-     <y>250</y>
-     <width>221</width>
-     <height>17</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;a href=&quot;https://github.com/bitcreditscc/bicreditsnew&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;Sub Bank of AIIB&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-   </property>
-   <property name="textFormat">
-    <enum>Qt::RichText</enum>
-   </property>
-  </widget>
-  <widget class="QLabel" name="auloc">
-   <property name="geometry">
-    <rect>
-     <x>400</x>
-     <y>280</y>
-     <width>341</width>
-     <height>17</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;a href=&quot;https://github.com/bitcreditscc/bicreditsnew&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;Texas Bullion Depository&lt;/span&gt;&lt;/a&gt; (34 oz) / &lt;a href=&quot;https://github.com/bitcreditscc/bicreditsnew&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;Swiss Vault&lt;/span&gt;&lt;/a&gt; (41.45 oz)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-   </property>
-   <property name="textFormat">
-    <enum>Qt::RichText</enum>
-   </property>
-  </widget>
-  <widget class="QLabel" name="agloc">
-   <property name="geometry">
-    <rect>
-     <x>400</x>
-     <y>310</y>
-     <width>221</width>
-     <height>17</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;a href=&quot;https://github.com/bitcreditscc/bicreditsnew&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;Swiss Vault #2&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-   </property>
-   <property name="textFormat">
-    <enum>Qt::RichText</enum>
-   </property>
-  </widget>
-  <widget class="QLabel" name="label_2">
+  <widget class="QLabel" name="labelEstprice">
    <property name="geometry">
     <rect>
      <x>20</x>
-     <y>357</y>
-     <width>741</width>
+     <y>250</y>
+     <width>331</width>
      <height>17</height>
     </rect>
    </property>
    <property name="font">
     <font>
-     <pointsize>8</pointsize>
+     <pointsize>12</pointsize>
+     <weight>50</weight>
+     <bold>false</bold>
     </font>
    </property>
    <property name="text">
-    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;All assets auditable by arrangement and subject to applicable administration charge(s) - please contact &lt;a href=&quot;https://github.com/bitcreditscc/bicreditsnew&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;The Bitcredit Developers&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+    <string>Estimated BCR price for this superblock:</string>
    </property>
-   <property name="textFormat">
-    <enum>Qt::RichText</enum>
+  </widget>
+  <widget class="QLabel" name="labelBTC_2">
+   <property name="geometry">
+    <rect>
+     <x>80</x>
+     <y>118</y>
+     <width>121</width>
+     <height>20</height>
+    </rect>
    </property>
-   <property name="alignment">
-    <set>Qt::AlignCenter</set>
+   <property name="font">
+    <font>
+     <pointsize>10</pointsize>
+     <weight>50</weight>
+     <bold>false</bold>
+    </font>
+   </property>
+   <property name="toolTip">
+    <string>Current total BTC bids</string>
+   </property>
+   <property name="text">
+    <string>0.00000000</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="labelLTC_2">
+   <property name="geometry">
+    <rect>
+     <x>80</x>
+     <y>148</y>
+     <width>121</width>
+     <height>20</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <pointsize>10</pointsize>
+     <weight>50</weight>
+     <bold>false</bold>
+    </font>
+   </property>
+   <property name="toolTip">
+    <string>Current total LTC bids (in BTC)</string>
+   </property>
+   <property name="text">
+    <string>0.00000000</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="labelDASH_2">
+   <property name="geometry">
+    <rect>
+     <x>80</x>
+     <y>178</y>
+     <width>121</width>
+     <height>20</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <pointsize>10</pointsize>
+     <weight>50</weight>
+     <bold>false</bold>
+    </font>
+   </property>
+   <property name="toolTip">
+    <string>Current total DASH bids (in BTC)</string>
+   </property>
+   <property name="text">
+    <string>0.00000000</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="labelTotal_2">
+   <property name="geometry">
+    <rect>
+     <x>160</x>
+     <y>220</y>
+     <width>101</width>
+     <height>17</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <pointsize>12</pointsize>
+     <weight>75</weight>
+     <bold>true</bold>
+    </font>
+   </property>
+   <property name="text">
+    <string>0.00000000</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="labelEstprice_2">
+   <property name="geometry">
+    <rect>
+     <x>370</x>
+     <y>250</y>
+     <width>111</width>
+     <height>17</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <pointsize>12</pointsize>
+     <weight>75</weight>
+     <bold>true</bold>
+    </font>
+   </property>
+   <property name="text">
+    <string>0.00000000</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_3">
+   <property name="geometry">
+    <rect>
+     <x>20</x>
+     <y>275</y>
+     <width>751</width>
+     <height>20</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Bids are updated every 5 minutes, you can click the addresses to view their balances in real time via online block explorer&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="pushButtonBTC">
+   <property name="geometry">
+    <rect>
+     <x>550</x>
+     <y>115</y>
+     <width>120</width>
+     <height>27</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <weight>50</weight>
+     <bold>false</bold>
+    </font>
+   </property>
+   <property name="toolTip">
+    <string>Launch bitcoin-qt (if installed)</string>
+   </property>
+   <property name="text">
+    <string>Bid with BTC</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="pushButtonLTC">
+   <property name="geometry">
+    <rect>
+     <x>550</x>
+     <y>145</y>
+     <width>120</width>
+     <height>27</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <weight>50</weight>
+     <bold>false</bold>
+    </font>
+   </property>
+   <property name="toolTip">
+    <string>Launch litecoin-qt (if installed)</string>
+   </property>
+   <property name="text">
+    <string>Bid with LTC</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="pushButtonDASH">
+   <property name="geometry">
+    <rect>
+     <x>550</x>
+     <y>175</y>
+     <width>120</width>
+     <height>27</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <weight>50</weight>
+     <bold>false</bold>
+    </font>
+   </property>
+   <property name="toolTip">
+    <string>Launch dash-qt (if installed)</string>
+   </property>
+   <property name="text">
+    <string>Bid with DASH</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="labelRedeem">
+   <property name="geometry">
+    <rect>
+     <x>20</x>
+     <y>400</y>
+     <width>141</width>
+     <height>17</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <pointsize>12</pointsize>
+     <weight>75</weight>
+     <bold>true</bold>
+    </font>
+   </property>
+   <property name="text">
+    <string>Redeem won BCR</string>
+   </property>
+  </widget>
+  <widget class="QLineEdit" name="lineEditPrivkey">
+   <property name="geometry">
+    <rect>
+     <x>210</x>
+     <y>423</y>
+     <width>541</width>
+     <height>29</height>
+    </rect>
+   </property>
+   <property name="toolTip">
+    <string>Paste the privkey of the address you sent your bid from here</string>
+   </property>
+   <property name="text">
+    <string/>
+   </property>
+  </widget>
+  <widget class="QLabel" name="labelRedeem_2">
+   <property name="geometry">
+    <rect>
+     <x>20</x>
+     <y>430</y>
+     <width>181</width>
+     <height>17</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <pointsize>10</pointsize>
+     <weight>50</weight>
+     <bold>false</bold>
+    </font>
+   </property>
+   <property name="text">
+    <string>Privkey of address bid from:</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="pushButtonImport">
+   <property name="geometry">
+    <rect>
+     <x>20</x>
+     <y>460</y>
+     <width>91</width>
+     <height>27</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <weight>50</weight>
+     <bold>false</bold>
+    </font>
+   </property>
+   <property name="toolTip">
+    <string>Get your new BCR!</string>
+   </property>
+   <property name="text">
+    <string>Import</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="labelCalc">
+   <property name="geometry">
+    <rect>
+     <x>20</x>
+     <y>320</y>
+     <width>111</width>
+     <height>17</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <pointsize>12</pointsize>
+     <weight>75</weight>
+     <bold>true</bold>
+    </font>
+   </property>
+   <property name="text">
+    <string>Bid calculator</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_4">
+   <property name="geometry">
+    <rect>
+     <x>155</x>
+     <y>350</y>
+     <width>401</width>
+     <height>17</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>BTC bid, given the other currently existing bids, would yield appx. </string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="labelBCR">
+   <property name="geometry">
+    <rect>
+     <x>570</x>
+     <y>350</y>
+     <width>181</width>
+     <height>17</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <pointsize>12</pointsize>
+    </font>
+   </property>
+   <property name="text">
+    <string>...?</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_7">
+   <property name="geometry">
+    <rect>
+     <x>20</x>
+     <y>350</y>
+     <width>16</width>
+     <height>17</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>A</string>
+   </property>
+  </widget>
+  <widget class="QLineEdit" name="lineEditBid">
+   <property name="geometry">
+    <rect>
+     <x>35</x>
+     <y>344</y>
+     <width>113</width>
+     <height>29</height>
+    </rect>
+   </property>
+   <property name="toolTip">
+    <string>Enter a BTC amount and press Enter to calculate</string>
+   </property>
+   <property name="text">
+    <string>0.00000000</string>
+   </property>
+  </widget>
+  <widget class="Line" name="line">
+   <property name="geometry">
+    <rect>
+     <x>20</x>
+     <y>390</y>
+     <width>731</width>
+     <height>10</height>
+    </rect>
+   </property>
+   <property name="orientation">
+    <enum>Qt::Horizontal</enum>
+   </property>
+  </widget>
+  <widget class="Line" name="line_2">
+   <property name="geometry">
+    <rect>
+     <x>20</x>
+     <y>310</y>
+     <width>731</width>
+     <height>10</height>
+    </rect>
+   </property>
+   <property name="orientation">
+    <enum>Qt::Horizontal</enum>
+   </property>
+  </widget>
+  <widget class="Line" name="line_3">
+   <property name="geometry">
+    <rect>
+     <x>20</x>
+     <y>80</y>
+     <width>731</width>
+     <height>10</height>
+    </rect>
+   </property>
+   <property name="orientation">
+    <enum>Qt::Horizontal</enum>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="pushButtonBTCExplorer">
+   <property name="geometry">
+    <rect>
+     <x>210</x>
+     <y>115</y>
+     <width>280</width>
+     <height>27</height>
+    </rect>
+   </property>
+   <property name="toolTip">
+    <string>View address on blockr.io</string>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">border = 0px;</string>
+   </property>
+   <property name="text">
+    <string>16f5dJd4EHRrQwGGRMczA69qbJYs4msBQ5</string>
+   </property>
+   <property name="flat">
+    <bool>true</bool>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="pushButtonLTCExplorer">
+   <property name="geometry">
+    <rect>
+     <x>210</x>
+     <y>145</y>
+     <width>280</width>
+     <height>27</height>
+    </rect>
+   </property>
+   <property name="toolTip">
+    <string>View address on blockr.io</string>
+   </property>
+   <property name="text">
+    <string>Lc7ebfQPz6VJ8qmXYaaFxBYLpDz2XsDu7c</string>
+   </property>
+   <property name="flat">
+    <bool>true</bool>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="pushButtonDASHExplorer">
+   <property name="geometry">
+    <rect>
+     <x>210</x>
+     <y>175</y>
+     <width>280</width>
+     <height>27</height>
+    </rect>
+   </property>
+   <property name="toolTip">
+    <string>View address on dashpay.io</string>
+   </property>
+   <property name="text">
+    <string>Xypcx2iE8rCtC3tjw5M8sxpRzn4JuoSaBH</string>
+   </property>
+   <property name="flat">
+    <bool>true</bool>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="pushButtonRefresh">
+   <property name="geometry">
+    <rect>
+     <x>550</x>
+     <y>52</y>
+     <width>120</width>
+     <height>27</height>
+    </rect>
+   </property>
+   <property name="toolTip">
+    <string>Load current bids in bidtracker directory</string>
+   </property>
+   <property name="text">
+    <string>Update</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label">
+   <property name="geometry">
+    <rect>
+     <x>220</x>
+     <y>55</y>
+     <width>58</width>
+     <height>21</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <pointsize>12</pointsize>
+    </font>
+   </property>
+   <property name="text">
+    <string>blocks</string>
    </property>
   </widget>
  </widget>
