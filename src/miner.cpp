@@ -243,7 +243,7 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn)
 				i++;		
 			}		
 		}
-	if(ispayoutblock && isgrantblock){
+	else if(ispayoutblock && isgrantblock){
 		int i = 3;
 		for(balit = bidtracker.begin(); balit != bidtracker.end();balit++){
 				CBitcreditAddress address(balit->first);

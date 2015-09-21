@@ -2106,11 +2106,7 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
 			return state.DoS(100, error("ConnectBlock() : coinbase does not pay enough to the reserve (actual=%d vs required=%d)", reserve_subsidy, bankfund));
 		}
 	}
-
-		if (pindex->nHeight>207000 && (reserve_subsidy > 2*COIN || bank_subsidy > 2 * COIN)){
-
-			return state.DoS(100, error("ConnectBlock() : coinbase error,  are you processing payouts correctly?", reserve_subsidy));
-		}	
+	
 	}
 	
 	if (pindex->nHeight>207000){
