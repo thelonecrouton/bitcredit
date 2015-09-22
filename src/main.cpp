@@ -2107,6 +2107,11 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
 		}
 	}
 	
+	if (pindex->nHeight>206999 && chainActive.Tip()->nHeight +1 % 900==0){
+		
+		if (block.vtx[0].vout.size()<5)
+			return state.DoS(100, error("ConnectBlock() : coinbase does not have enough outputs....super block issues? %d)", block.vtx[0].vout.size()));
+		}	
 	}
 	
 	if (pindex->nHeight>207000){
