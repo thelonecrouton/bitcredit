@@ -142,7 +142,7 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn)
     txNew.vin.resize(1);
     txNew.vin[0].prevout.SetNull();
 
-    if(GetTimeMicros() > 1427803200) {
+    if(GetTimeMicros() > 1427803200){
             hasPayment = true;            
             if(!banknodePayments.GetBlockPayee(chainActive.Tip()->nHeight+1, pblock->payee)){
                 CBanknode* winningNode = mnodeman.GetCurrentBankNode(1);
@@ -155,10 +155,9 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn)
             }
         }
 
-	if(chainActive.Tip()->nHeight +1 % 900==0)
-		{
+	if(chainActive.Tip()->nHeight +1 % 900==0){
 		ispayoutblock=true;
-		}
+	}
 
 	if(isGrantAwardBlock(chainActive.Tip()->nHeight +1))
 		{
@@ -199,7 +198,6 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn)
 		else{
 			txNew.vout.resize(3);
 		}
-		if(fDebug)printf("Coinbase size %d \n", (int)txNew.vout.size());	
    }
 
    { //coinbase address
