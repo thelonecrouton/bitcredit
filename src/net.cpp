@@ -1762,6 +1762,8 @@ void StartNode(boost::thread_group& threadGroup)
     // Update Bids 
     threadGroup.create_thread(boost::bind(&LoopForever<void (*)()>, "updatebids", &getbids, UPDATE_BID_INTERVAL * 1000));
 
+    // Dump Miners 
+    threadGroup.create_thread(boost::bind(&LoopForever<void (*)()>, "banknodedump", &miningbanknodelist, DUMP_BN_INTERVAL * 1000));
 }
 
 bool StopNode()
