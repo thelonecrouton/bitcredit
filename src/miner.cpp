@@ -834,21 +834,3 @@ void GenerateBitcredits(bool fGenerate, CWallet* pwallet, int nThreads)
 
 #endif // ENABLE_WALLET
 
-void miningbanknodelist()
-{
-	std::ofstream myfile;
-	myfile.open((GetDataDir()/ "bnlist.dat").string().c_str(),fstream::out);
-
-    std::vector<CBanknode> vBanknodes = mnodeman.GetFullBanknodeVector();
-    BOOST_FOREACH(CBanknode& mn, vBanknodes) {
-       std::string strAddr = mn.addr.ToString();
-       CScript pubkey;
-       pubkey=GetScriptForDestination(mn.pubkey.GetID());
-       CTxDestination address1;
-       ExtractDestination(pubkey, address1);
-       CBitcreditAddress address2(address1);
-       myfile << strAddr<< ","<<address2.ToString().c_str()<< endl;
-    } 
-    
-    myfile.close();      
-}

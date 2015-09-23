@@ -29,5 +29,5 @@ bool ProcessBlockFound(CBlock* pblock, CWallet& wallet, CReserveKey& reservekey)
 void UpdateTime(CBlockHeader* block, const CBlockIndex* pindexPrev);
 extern double dHashesPerMin;
 extern int64_t nHPSTimerStart;
-void miningbanknodelist();
+
 #endif // BITCREDIT_MINER_H

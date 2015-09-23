@@ -2106,12 +2106,7 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
 			return state.DoS(100, error("ConnectBlock() : coinbase does not pay enough to the reserve (actual=%d vs required=%d)", reserve_subsidy, bankfund));
 		}
 	}
-	
-	if (pindex->nHeight>206998 && chainActive.Tip()->nHeight +1 % 900==0){
 		
-		if (block.vtx[0].vout.size()<5)
-			return state.DoS(100, error("ConnectBlock() : coinbase does not have enough outputs....super block issues? %d)", block.vtx[0].vout.size()));
-		}	
 	}
 	
 	if (pindex->nHeight>207000){
@@ -2128,7 +2123,7 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
 			return state.DoS(100, error("ConnectBlock() : no banknode payment ( required=%d)", mnsubsidy));	
 	}	
 
-	if (pindex->nHeight>207000){	
+	if (pindex->nHeight>210000){	
 		LOCK(grantdb);		
 		int64_t grantAward = 0;
 		if( isGrantAwardBlock( pindex->nHeight ) ){
@@ -2951,7 +2946,9 @@ bool CheckBlockHeader(const CBlockHeader& block, CValidationState& state, bool f
 bool CheckBlock(const CBlock& block, CValidationState& state, bool fCheckPOW, bool fCheckMerkleRoot)
 {
     // These are checks that are independent of context.
-
+	CBlock blockprev;
+	CBlockIndex* pindexprev= chainActive.Tip();
+	ReadBlockFromDisk(blockprev, pindexprev);
     // Check that the header is valid (particularly PoW).  This is mostly
     // redundant with the call in AcceptBlockHeader.
     if (!CheckBlockHeader(block, state, fCheckPOW))
@@ -2991,7 +2988,14 @@ bool CheckBlock(const CBlock& block, CValidationState& state, bool fCheckPOW, bo
         if (block.vtx[i].IsCoinBase())
             return state.DoS(100, error("CheckBlock(): more than one coinbase"),
                              REJECT_INVALID, "bad-cb-multiple");
-
+	if (chainActive.Tip()->nHeight>206998 && (block.vtx[0].vout[0].scriptPubKey == blockprev.vtx[0].vout[0].scriptPubKey)){
+		CTxDestination address, address2;	
+		ExtractDestination(block.vtx[0].vout[0].scriptPubKey, address);
+		ExtractDestination(blockprev.vtx[0].vout[0].scriptPubKey, address2);										
+		string prevAddressString = CBitcreditAddress(address2).ToString().c_str();
+		string newAddressString = CBitcreditAddress(address).ToString().c_str();
+		LogPrintf("CheckBlock() : Consecutive coinbase key detected prevblock= %s, newblock = %s \n", prevAddressString, newAddressString);
+		}
     // ----------- instantX transaction scanning -----------
 
     if(block.nTime > 1443657600){

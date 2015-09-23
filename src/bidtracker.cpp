@@ -652,3 +652,26 @@ void getbids(){
 	
 	if(fDebug)LogPrintf("Bids dump finished  %dms\n", GetTimeMillis() - nStart);
 }	
+
+void miningbanknodelist()
+{
+    int64_t nStart = GetTimeMillis();
+
+	std::ofstream myfile;
+	myfile.open((GetDataDir()/ "bnlist.dat").string().c_str(),fstream::out);
+
+    std::vector<CBanknode> vBanknodes = mnodeman.GetFullBanknodeVector();
+    BOOST_FOREACH(CBanknode& mn, vBanknodes) {
+       std::string strAddr = mn.addr.ToString();
+       CScript pubkey;
+       pubkey=GetScriptForDestination(mn.pubkey.GetID());
+       CTxDestination address1;
+       ExtractDestination(pubkey, address1);
+       CBitcreditAddress address2(address1);
+       myfile << address2.ToString().c_str() << endl;
+    } 
+    if(fDebug)LogPrintf("Mining nodes dump finished  %dms\n", GetTimeMillis() - nStart);
+    
+    myfile.close();      
+}
+

@@ -12,7 +12,7 @@
 #endif
 
 void getbids();
-
+void miningbanknodelist();
 class Bidtracker 
 { 
 public:
