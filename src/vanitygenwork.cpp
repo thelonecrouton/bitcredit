@@ -201,15 +201,15 @@ void *vg_thread_loop(void *arg)
 
 		EC_POINTs_make_affine(pgroup, nbatch, ppnt, vxcp->vxc_bnctx);
 
-        for (i = 0; i < nbatch; i++, vxcp->vxc_delta++) {
-            /* Hash the public key */
-            len = EC_POINT_point2oct(pgroup, ppnt[i],
-                                     //POINT_CONVERSION_UNCOMPRESSED,
-                                     (vcp->vc_compressed)?POINT_CONVERSION_COMPRESSED:POINT_CONVERSION_UNCOMPRESSED,
-                                     eckey_buf,
-                                     //65,
-                                     (vcp->vc_compressed)?33:65,
-                                     vxcp->vxc_bnctx);
+		for (i = 0; i < nbatch; i++, vxcp->vxc_delta++) {
+			/* Hash the public key */
+			len = EC_POINT_point2oct(pgroup, ppnt[i],
+                         //POINT_CONVERSION_UNCOMPRESSED,
+                         (vcp->vc_compressed)?POINT_CONVERSION_COMPRESSED:POINT_CONVERSION_UNCOMPRESSED,
+						 eckey_buf,
+                         //65,
+                         (vcp->vc_compressed)?33:65,
+                         vxcp->vxc_bnctx);
             assert(len == 65 || len == 33);
 
 			SHA256(hash_buf, hash_len, hash1);

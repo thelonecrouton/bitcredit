@@ -33,14 +33,12 @@ extern void fdumpbn(FILE *fp, const BIGNUM *bn);
 extern void dumphex(const unsigned char *src, size_t len);
 extern void dumpbn(const BIGNUM *bn);
 
-
 extern void vg_b58_encode_check(void *buf, size_t len, char *result);
 extern int vg_b58_decode_check(const char *input, void *buf, size_t len);
 
 extern void vg_encode_address(const EC_POINT *ppoint, const EC_GROUP *pgroup,
 			      int addrtype, char *result);
-extern void vg_encode_address_compressed(const EC_POINT *ppoint, const EC_GROUP *pgroup,
-                  int addrtype, char *result);
+extern void vg_encode_address_compressed(const EC_POINT *ppoint, const EC_GROUP *pgroup, int addrtype, char *result);
 extern void vg_encode_script_address(const EC_POINT *ppoint,
 				     const EC_GROUP *pgroup,
 				     int addrtype, char *result);

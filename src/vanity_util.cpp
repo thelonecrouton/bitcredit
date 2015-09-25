@@ -259,8 +259,7 @@ vg_encode_address(const EC_POINT *ppoint, const EC_GROUP *pgroup,
 	vg_b58_encode_check(binres, sizeof(binres), result);
 }
 
-void vg_encode_address_compressed(const EC_POINT *ppoint, const EC_GROUP *pgroup,
-                             int addrtype, char *result)
+void vg_encode_address_compressed(const EC_POINT *ppoint, const EC_GROUP *pgroup, int addrtype, char *result)
 {
 
     unsigned char eckey_buf[128], *pend;
