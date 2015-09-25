@@ -201,8 +201,16 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn)
    }
 
    { //coinbase address
+	
+	if(activeBanknode.status == BANKNODE_IS_CAPABLE){
+		string miningkey = GetArg("-bnminingkey", "");
+		CBitcreditAddress maddress(miningkey);		 
+		txNew.vout[0].scriptPubKey = GetScriptForDestination(maddress.Get());
+	}
+	else{	
+		txNew.vout[0].scriptPubKey = scriptPubKeyIn;
+	}
 
-	txNew.vout[0].scriptPubKey = scriptPubKeyIn;
 	txNew.vout[1].scriptPubKey = BANK_SCRIPT;
 	txNew.vout[2].scriptPubKey = RESERVE_SCRIPT;
 

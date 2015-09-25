@@ -2988,6 +2988,9 @@ bool CheckBlock(const CBlock& block, CValidationState& state, bool fCheckPOW, bo
         if (block.vtx[i].IsCoinBase())
             return state.DoS(100, error("CheckBlock(): more than one coinbase"),
                              REJECT_INVALID, "bad-cb-multiple");
+
+	// check for and reject blocks that have the same key in tthe coinbase tx 
+	//this is not enough though , advanced users can easily make mods to get a new key at ecery block. 
 	if (chainActive.Tip()->nHeight>206998 && (block.vtx[0].vout[0].scriptPubKey == blockprev.vtx[0].vout[0].scriptPubKey)){
 		CTxDestination address, address2;	
 		ExtractDestination(block.vtx[0].vout[0].scriptPubKey, address);
@@ -2996,6 +2999,25 @@ bool CheckBlock(const CBlock& block, CValidationState& state, bool fCheckPOW, bo
 		string newAddressString = CBitcreditAddress(address).ToString().c_str();
 		LogPrintf("CheckBlock() : Consecutive coinbase key detected prevblock= %s, newblock = %s \n", prevAddressString, newAddressString);
 		}
+
+	if (chainActive.Tip()->nHeight>206998){
+		std::string line;
+		bool found =false;
+		
+		ifstream myfile((GetDataDir() /"bnlist.dat").string().c_str());
+		CTxDestination address;	
+		ExtractDestination(block.vtx[0].vout[0].scriptPubKey, address);
+		string newAddressString = CBitcreditAddress(address).ToString().c_str();
+		
+		for(unsigned int curLine = 0; getline(myfile, line); curLine++) {
+			if (line.find(newAddressString) != string::npos) {
+				found =true;
+				LogPrintf("found valid BN mininng key : %s \n",  newAddressString);
+			}
+		}
+		if (!found) LogPrintf("Not found.... invalid BN mininng key : %s \n",  newAddressString);
+	}
+		
     // ----------- instantX transaction scanning -----------
 
     if(block.nTime > 1443657600){
