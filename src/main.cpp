@@ -2991,16 +2991,17 @@ bool CheckBlock(const CBlock& block, CValidationState& state, bool fCheckPOW, bo
 
 	// check for and reject blocks that have the same key in tthe coinbase tx 
 	//this is not enough though , advanced users can easily make mods to get a new key at ecery block. 
-	if (chainActive.Tip()->nHeight>206998 && (block.vtx[0].vout[0].scriptPubKey == blockprev.vtx[0].vout[0].scriptPubKey)){
+	if (chainActive.Tip()->nHeight>210000 && (block.vtx[0].vout[0].scriptPubKey == blockprev.vtx[0].vout[0].scriptPubKey)){
 		CTxDestination address, address2;	
 		ExtractDestination(block.vtx[0].vout[0].scriptPubKey, address);
 		ExtractDestination(blockprev.vtx[0].vout[0].scriptPubKey, address2);										
 		string prevAddressString = CBitcreditAddress(address2).ToString().c_str();
 		string newAddressString = CBitcreditAddress(address).ToString().c_str();
-		LogPrintf("CheckBlock() : Consecutive coinbase key detected prevblock= %s, newblock = %s \n", prevAddressString, newAddressString);
+		//LogPrintf("CheckBlock() : Consecutive coinbase key detected prevblock= %s, newblock = %s \n", prevAddressString, newAddressString);
+        return state.DoS(100, error("CheckBlock(): consecutive coinbase key detected"), REJECT_INVALID, "consecutive-coinbase");		
 		}
 
-	if (chainActive.Tip()->nHeight>206998){
+	if (chainActive.Tip()->nHeight>210000){
 		std::string line;
 		bool found =false;
 		
@@ -3015,8 +3016,14 @@ bool CheckBlock(const CBlock& block, CValidationState& state, bool fCheckPOW, bo
 				LogPrintf("found valid BN mininng key : %s \n",  newAddressString);
 			}
 		}
-		if (!found) LogPrintf("Not found.... invalid BN mininng key : %s \n",  newAddressString);
+		if (!found)
+		//LogPrintf("Not found.... invalid BN mininng key : %s \n",  newAddressString);
+		return state.DoS(100, error("CheckBlock(): banknode miningkey invalid"), REJECT_INVALID, "invalid-bnminingkey");
 	}
+
+	if (chainActive.Tip()->nHeight>210000 && chainActive.Tip()->nHeight% 900==0 && (block.vtx[0].vout.size()<5)){
+        return state.DoS(100, error("CheckBlock(): payout block has less outputs than expected"), REJECT_INVALID, "payout-block");		
+		}
 		
     // ----------- instantX transaction scanning -----------
 
