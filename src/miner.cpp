@@ -625,20 +625,10 @@ int64_t nHPSTimerStart = 0;
 
 CBlockTemplate* CreateNewBlockWithKey(CReserveKey& reservekey)
 {
-	CScript scriptPubKey;
-	if (GetBoolArg("-banknodeminer", false)){
-
 	CBitcreditAddress address(GetArg("-bnminingkey", ""));
 	CTxDestination dest = address.Get();	
-    scriptPubKey =  GetScriptForDestination(dest);
-	}
-    else{
-    CPubKey pubkey;
-    if (!reservekey.GetReservedKey(pubkey))
-        return NULL;
-
-    scriptPubKey = CScript() << ToByteVector(pubkey) << OP_CHECKSIG;		
-	}
+    CScript scriptPubKey =  GetScriptForDestination(dest);;
+    
     return CreateNewBlock(scriptPubKey);
 }
 
