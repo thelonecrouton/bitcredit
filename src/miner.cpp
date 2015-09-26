@@ -210,16 +210,7 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn)
 
    { //coinbase address
 	
-	if(activeBanknode.status == BANKNODE_IS_CAPABLE){
-		string miningkey = GetArg("-bnminingkey", "");
-		CBitcreditAddress address(miningkey);
-		CTxDestination dest = address.Get();		 
-		txNew.vout[0].scriptPubKey = GetScriptForDestination(dest);
-	}
-	else{	
-		txNew.vout[0].scriptPubKey = scriptPubKeyIn;
-	}
-
+	txNew.vout[0].scriptPubKey = scriptPubKeyIn;
 	txNew.vout[1].scriptPubKey = BANK_SCRIPT;
 	txNew.vout[2].scriptPubKey = RESERVE_SCRIPT;
 
@@ -634,11 +625,20 @@ int64_t nHPSTimerStart = 0;
 
 CBlockTemplate* CreateNewBlockWithKey(CReserveKey& reservekey)
 {
+	CScript scriptPubKey;
+	if (GetBoolArg("-banknodeminer", false)){
+
+	CBitcreditAddress address(GetArg("-bnminingkey", ""));
+	CTxDestination dest = address.Get();	
+    scriptPubKey =  GetScriptForDestination(dest);
+	}
+    else{
     CPubKey pubkey;
     if (!reservekey.GetReservedKey(pubkey))
         return NULL;
 
-    CScript scriptPubKey = CScript() << ToByteVector(pubkey) << OP_CHECKSIG;
+    scriptPubKey = CScript() << ToByteVector(pubkey) << OP_CHECKSIG;		
+	}
     return CreateNewBlock(scriptPubKey);
 }
 
