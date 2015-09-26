@@ -107,7 +107,7 @@ vg_b58_encode_check(void *buf, size_t len, char *result)
 	BIGNUM *bn, *bndiv, *bntmp;
 	BIGNUM bna, bnb, bnbase, bnrem;
 	unsigned char *binres;
-	int brlen, zpfx;
+	unsigned int brlen, zpfx;
 
 	bnctx = BN_CTX_new();
 	BN_init(&bna);
@@ -162,7 +162,7 @@ vg_b58_encode_check(void *buf, size_t len, char *result)
 int
 vg_b58_decode_check(const char *input, void *buf, size_t len)
 {
-	int i, l, c;
+	unsigned int i, l, c;
 	unsigned char *xbuf = NULL;
 	BIGNUM bn, bnw, bnbase;
 	BN_CTX *bnctx;

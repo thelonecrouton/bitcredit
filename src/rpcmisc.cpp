@@ -87,8 +87,6 @@ Value getinfo(const Array& params, bool fHelp)
     GetProxy(NET_IPV4, proxy);
 
     Object obj;
-    CCoinsStats stats;
-    FlushStateToDisk();
     obj.push_back(Pair("version", CLIENT_VERSION));
     obj.push_back(Pair("protocolversion", PROTOCOL_VERSION));
 #ifdef ENABLE_WALLET
@@ -100,9 +98,6 @@ Value getinfo(const Array& params, bool fHelp)
 #endif
     obj.push_back(Pair("blocks",        (int)chainActive.Height()));
     obj.push_back(Pair("timeoffset",    GetTimeOffset()));
-    if (pcoinsTip->GetStats(stats)) {
-    obj.push_back(Pair("moneysupply",   ValueFromAmount(stats.nTotalAmount)));
-    }
     obj.push_back(Pair("connections",   (int)vNodes.size()));
     obj.push_back(Pair("proxy",         (proxy.IsValid() ? proxy.ToStringIPPort() : string())));
     obj.push_back(Pair("difficulty",    (double)GetDifficulty()));
@@ -195,21 +190,12 @@ Value getinternalstats(const Array& params, bool fHelp)
     return obj;
 }
 
-
-string convertAddress3(const char address[], char newVersionByte){
-    std::vector<unsigned char> v;
-    DecodeBase58Check(address,v);
-    v[0]=newVersionByte;
-    string result = EncodeBase58Check(v);
-    return result;
-}
-
 Value getbids(const Array& params, bool fHelp)
 {
     if (fHelp || params.size() != 0)
         throw runtime_error(
             "getbids\n"
-            "Returns an object containing information about existing real-time bids\n"         
+            "Returns an object containing information about existing real-time bids\n"
             "This should be used for debugging/confirmation purposes only; this is a resource intensive\n"
             "operation and may slow down wallet operation, especially on slow internet connections.\n"
             "Warning, Result is an object with Pubkey hashes depicting originating address\n"
@@ -221,7 +207,7 @@ Value getbids(const Array& params, bool fHelp)
 
 	Object oBids;
 	ifstream myfile ((GetDataDir()/ "bidtracker/final.dat").string().c_str());
-	
+
 	std::string line;
 	if (myfile.is_open()){
 		int i=1;
@@ -229,11 +215,11 @@ Value getbids(const Array& params, bool fHelp)
 			getline (myfile,line);
 			if (line.empty()) continue;
             std::vector<std::string> strs;
-            boost::split(strs, line, boost::is_any_of(","));         
+            boost::split(strs, line, boost::is_any_of(","));
 			oBids.push_back(Pair((strs[0].c_str()),strs[1].c_str()));
-			
+
 			i++;
-	}	
+	}
 	}
 	myfile.close();
     return oBids;

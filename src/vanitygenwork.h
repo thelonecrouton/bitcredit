@@ -1,9 +1,9 @@
 #ifndef VANITYGENWORK_H
 #define VANITYGENWORK_H
 
-#include "vanity_pattern.h"
+#include "pattern.h"
 #include "vanity_util.h"
-
+#include "util.h"
 static vg_context_t *vcp = NULL;
 
 extern double VanityGenHashrate;
@@ -26,7 +26,7 @@ struct VanGenStruct{
     int notification;
 };
 
-extern QList<VanGenStruct> VanityGenWorkList;
+extern std::deque<VanGenStruct> VanityGenWorkList;
 
 extern bool VanityGenRunning;
 
@@ -34,21 +34,14 @@ extern std::string VanityGenPassphrase;
 
 extern bool AddressIsMine;
 
-class VanityGenWork : public QObject
+class VanityGenWork
 {
-    Q_OBJECT
-public:
-    explicit VanityGenWork(QObject *parent = 0);
 
-    void vanityGenSetup(QThread *cThread);
+public:
 
     char **pattern;
     int threads;
     int caseInsensitive;
-
-signals:
-
-public slots:
 
     int setup();
     void doVanityGenWork();

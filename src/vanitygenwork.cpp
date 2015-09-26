@@ -4,7 +4,7 @@
 #include <string.h>
 #include <math.h>
 #include <assert.h>
-
+#include <deque>
 #include <pthread.h>
 
 #include <openssl/sha.h>
@@ -25,7 +25,7 @@ double VanityGenKeysChecked;
 int VanityGenNThreads;
 int VanityGenMatchCase;
 
-QList<VanGenStruct> VanityGenWorkList;
+std::deque<VanGenStruct> VanityGenWorkList;
 
 bool VanityGenRunning;
 
@@ -47,7 +47,7 @@ void *vg_thread_loop(void *arg)
 	unsigned char *eckey_buf;
 	unsigned char hash1[32];
 
-	int i, c, len, output_interval;
+	unsigned int i, c, len, output_interval;
 	int hash_len;
 
 	const BN_ULONG rekey_max = 10000000;
@@ -312,22 +312,22 @@ int VanityGenWork::setup(){
     //M->JKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz
     //k->123456789ABCDEFGHJKLMNPQRSTUVWXYZabcd
 
-    int next = 0;
+    unsigned int next = 0;
 
-    for(int i = 0; i<VanityGenWorkList.length();i++){
+    for(unsigned int i = 0; i<VanityGenWorkList.size();i++){
         if(VanityGenWorkList[i].state <= 1 && VanityGenWorkList[i].privkey == "" && VanityGenWorkList[i].pattern != ""){
             next++;
         }
     }
 
-    int npatterns = next;//VanityGenWorkList.length();
+    unsigned int npatterns = next;//VanityGenWorkList.length();
 
     std::string *ar = new std::string[npatterns];
 
     next = 0;
-    for(int i = 0; i<VanityGenWorkList.length();i++){
+    for(unsigned int i = 0; i<VanityGenWorkList.size();i++){
         if(VanityGenWorkList[i].state <= 1 && VanityGenWorkList[i].privkey == "" && VanityGenWorkList[i].pattern != ""){
-            ar[next] = (std::string) VanityGenWorkList[i].pattern.toLocal8Bit().constData();
+            ar[next] = VanityGenWorkList[i].pattern;
             next++;
         }
     }
@@ -336,7 +336,7 @@ int VanityGenWork::setup(){
 
     const char *vgenpat[npatterns];
 
-    for(int i=0;i<npatterns;i++){
+    for(unsigned int i=0;i<npatterns;i++){
         vgenpat[i] = ar[i].c_str();
     }
 
@@ -349,19 +349,6 @@ int VanityGenWork::setup(){
     if (!start_threads(vcp, VanityGenNThreads))
         return 1;
 
-}
-
-
-
-VanityGenWork::VanityGenWork(QObject *parent) :
-    QObject(parent)
-{
-
-}
-
-void VanityGenWork::vanityGenSetup(QThread *cThread)
-{
-    connect(cThread, SIGNAL(started()), this, SLOT(doVanityGenWork()));
 }
 
 void VanityGenWork::doVanityGenWork()

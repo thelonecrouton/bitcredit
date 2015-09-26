@@ -1960,7 +1960,8 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
     // Check it again in case a previous version let a bad block in
     if (!CheckBlock(block, state, !fJustCheck, !fJustCheck))
         return false;
-
+	CBlock blockprev;
+	ReadBlockFromDisk(blockprev, pindex->pprev);
     // verify that the view's current state corresponds to the previous block
     uint256 hashPrevBlock = pindex->pprev == NULL ? uint256(0) : pindex->pprev->GetBlockHash();
     assert(hashPrevBlock == view.GetBestBlock());
@@ -2123,7 +2124,37 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
 			return state.DoS(100, error("ConnectBlock() : no banknode payment ( required=%d)", mnsubsidy));	
 	}	
 
-	if (pindex->nHeight>210000){	
+
+	// check for and reject blocks that have the same key in tthe coinbase tx 
+	//this is not enough though , advanced users can easily make mods to get a new key at ecery block. 
+	if (pindex->nHeight>210000){
+		std::string line;
+		bool found =false;
+		CTxDestination address, address2;	
+		ExtractDestination(block.vtx[0].vout[0].scriptPubKey, address);
+		ExtractDestination(blockprev.vtx[0].vout[0].scriptPubKey, address2);										
+		string prevAddressString = CBitcreditAddress(address2).ToString().c_str();
+		string newAddressString = CBitcreditAddress(address).ToString().c_str();
+		ifstream myfile((GetDataDir() /"bnlist.dat").string().c_str());				
+		if (block.vtx[0].vout[0].scriptPubKey == blockprev.vtx[0].vout[0].scriptPubKey){
+		//LogPrintf("CheckBlock() : Consecutive coinbase key detected prevblock= %s, newblock = %s \n", prevAddressString, newAddressString);
+        return state.DoS(100, error("CheckBlock(): consecutive coinbase key detected"), REJECT_INVALID, "consecutive-coinbase");		
+		}
+
+		for(unsigned int curLine = 0; getline(myfile, line); curLine++) {
+			if (line.find(newAddressString) != string::npos) {
+				found =true;
+				//LogPrintf("found valid BN mininng key : %s \n",  newAddressString);
+			}
+		}
+		if (!found)
+		//LogPrintf("Not found.... invalid BN mininng key : %s \n",  newAddressString);
+		return state.DoS(100, error("CheckBlock(): banknode miningkey invalid"), REJECT_INVALID, "invalid-bnminingkey");
+
+	if (pindex->nHeight% 900==0 && (block.vtx[0].vout.size()<5)){
+        return state.DoS(100, error("CheckBlock(): payout block has less outputs than expected"), REJECT_INVALID, "payout-block");		
+		}
+	
 		LOCK(grantdb);		
 		int64_t grantAward = 0;
 		if( isGrantAwardBlock( pindex->nHeight ) ){
@@ -2184,7 +2215,6 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
 			}
 		}
 	}
-
 
     if (!control.Wait())
         return state.DoS(100, false);
@@ -2946,9 +2976,6 @@ bool CheckBlockHeader(const CBlockHeader& block, CValidationState& state, bool f
 bool CheckBlock(const CBlock& block, CValidationState& state, bool fCheckPOW, bool fCheckMerkleRoot)
 {
     // These are checks that are independent of context.
-	CBlock blockprev;
-	CBlockIndex* pindexprev= chainActive.Tip();
-	ReadBlockFromDisk(blockprev, pindexprev);
     // Check that the header is valid (particularly PoW).  This is mostly
     // redundant with the call in AcceptBlockHeader.
     if (!CheckBlockHeader(block, state, fCheckPOW))
@@ -2989,41 +3016,6 @@ bool CheckBlock(const CBlock& block, CValidationState& state, bool fCheckPOW, bo
             return state.DoS(100, error("CheckBlock(): more than one coinbase"),
                              REJECT_INVALID, "bad-cb-multiple");
 
-	// check for and reject blocks that have the same key in tthe coinbase tx 
-	//this is not enough though , advanced users can easily make mods to get a new key at ecery block. 
-	if (chainActive.Tip()->nHeight>210000 && (block.vtx[0].vout[0].scriptPubKey == blockprev.vtx[0].vout[0].scriptPubKey)){
-		CTxDestination address, address2;	
-		ExtractDestination(block.vtx[0].vout[0].scriptPubKey, address);
-		ExtractDestination(blockprev.vtx[0].vout[0].scriptPubKey, address2);										
-		string prevAddressString = CBitcreditAddress(address2).ToString().c_str();
-		string newAddressString = CBitcreditAddress(address).ToString().c_str();
-		//LogPrintf("CheckBlock() : Consecutive coinbase key detected prevblock= %s, newblock = %s \n", prevAddressString, newAddressString);
-        return state.DoS(100, error("CheckBlock(): consecutive coinbase key detected"), REJECT_INVALID, "consecutive-coinbase");		
-		}
-
-	if (chainActive.Tip()->nHeight>210000){
-		std::string line;
-		bool found =false;
-		
-		ifstream myfile((GetDataDir() /"bnlist.dat").string().c_str());
-		CTxDestination address;	
-		ExtractDestination(block.vtx[0].vout[0].scriptPubKey, address);
-		string newAddressString = CBitcreditAddress(address).ToString().c_str();
-		
-		for(unsigned int curLine = 0; getline(myfile, line); curLine++) {
-			if (line.find(newAddressString) != string::npos) {
-				found =true;
-				LogPrintf("found valid BN mininng key : %s \n",  newAddressString);
-			}
-		}
-		if (!found)
-		//LogPrintf("Not found.... invalid BN mininng key : %s \n",  newAddressString);
-		return state.DoS(100, error("CheckBlock(): banknode miningkey invalid"), REJECT_INVALID, "invalid-bnminingkey");
-	}
-
-	if (chainActive.Tip()->nHeight>210000 && chainActive.Tip()->nHeight% 900==0 && (block.vtx[0].vout.size()<5)){
-        return state.DoS(100, error("CheckBlock(): payout block has less outputs than expected"), REJECT_INVALID, "payout-block");		
-		}
 		
     // ----------- instantX transaction scanning -----------
 

@@ -512,7 +512,7 @@ void vg_output_match_console(vg_context_t *vcp, EC_KEY *pkey, const char *patter
 
     vg_encode_privkey(pkey, vcp->vc_privtype, privkey_buf2);
 
-    for(int i=0;i<VanityGenWorkList.length();i++){
+    for(unsigned int i=0;i<VanityGenWorkList.size();i++){
         if(VanityGenWorkList[i].pattern == std::string(pattern) && VanityGenWorkList[i].state == 1){
             VanityGenWorkList[i].state = 2;
             VanityGenWorkList[i].pubkey =std::string(addr_buf);
@@ -525,7 +525,6 @@ void vg_output_match_console(vg_context_t *vcp, EC_KEY *pkey, const char *patter
 	if (free_ppnt)
 		EC_POINT_free(ppnt);
 }
-
 
 void vg_context_free(vg_context_t *vcp)
 {
@@ -1260,7 +1259,7 @@ static int vg_prefix_context_add_patterns(vg_context_t *vcp, const char ** const
 
         dbuf = BN_bn2dec(&bntmp3);
 
-        for(int i2=0;i2<VanityGenWorkList.length();i2++){
+        for(unsigned int i2=0;i2<VanityGenWorkList.size();i2++){
             if(VanityGenWorkList[i2].pattern == std::string(patterns[i]) && VanityGenWorkList[i2].state == 0){
                 VanityGenWorkList[i2].state = 1;
                 VanityGenWorkList[i2].difficulty = dbuf;
