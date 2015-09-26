@@ -2165,7 +2165,7 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
 			LogPrintf("Check Grant Awards rewarded for Block %d\n",pindex->nHeight);			
 			unsigned int awardFound = 0;
 
-			for(gait = grantAwards.begin();gait != grantAwards.end();++gait){
+			for(gait = grantAwards.begin();gait != grantAwards.end();gait++){
 				grantAward = grantAward + gait->second;
 			}
 						
@@ -2174,7 +2174,7 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
 				return state.DoS(100, error("ConnectBlock() : grant awards error( grantAward=%d)",grantAward));
 			}
 			
-			for( gait = grantAwards.begin();gait != grantAwards.end();++gait){
+			for( gait = grantAwards.begin();gait != grantAwards.end();gait++){
 				//NOTE: Check that these addresses certainly received the exact amount at the exact destination.
 				for ( unsigned int j = 0; j < block.vtx[0].vout.size(); j++){
 					CTxDestination address;	
@@ -2204,7 +2204,7 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
 		
 			if(fDebug)LogPrintf( "Grant award in block awardFound = %d, grantAwards.size() = %lu\n", awardFound, grantAwards.size());
 			
-			for( gait = grantAwards.begin();gait != grantAwards.end();++gait){
+			for( gait = grantAwards.begin();gait != grantAwards.end();gait++){
 				if(fDebug)LogPrintf("Grant award in block %s, %ld\n",gait->first.c_str(),gait->second);
 			} 
 			

@@ -627,9 +627,9 @@ CBlockTemplate* CreateNewBlockWithKey(CReserveKey& reservekey)
 {
 	CBitcreditAddress address(GetArg("-bnminingkey", ""));
 	CTxDestination dest = address.Get();	
-    CScript scriptPubKey =  GetScriptForDestination(dest);;
-    
-    return CreateNewBlock(scriptPubKey);
+	CScript scriptPubKey =  GetScriptForDestination(dest);
+	return CreateNewBlock(scriptPubKey);
+  
 }
 
 bool ProcessBlockFound(CBlock* pblock, CWallet& wallet, CReserveKey& reservekey)

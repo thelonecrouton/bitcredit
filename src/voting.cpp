@@ -363,7 +363,7 @@ void processNextBlockIntoGrantDatabase(){
 			//Update balance - if no previous balance, should start at 0
 			balances[ receiveAddress ] = balances[ receiveAddress ] + theAmount;				
 			//Note any voting preferences made in the outputs
-			if(	theAmount < 10 && theAmount > 0	&& 	startsWith( receiveAddress.c_str(), "6BCR" ) ){//NOTE: Easiest checks first. Is the amount between 1 and 9 satoshi's ??
+			if(theAmount == 1000 &&	startsWith(receiveAddress.c_str(), "6BCR")){//NOTE: Easiest checks first. Is the amount between 1 and 9 satoshi's ??
 				if(fDebug)LogPrintf("Found a vote!: Candidate: %s, Preference: %ld\n",receiveAddress.c_str() , theAmount);
 				votes[ receiveAddress ] = theAmount;
 			}
