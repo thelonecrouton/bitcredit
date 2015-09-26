@@ -109,6 +109,14 @@ std::map<std::string,long double> getbidtracker(){
 	return bidtracker;
 }
 
+string convertAddress(const char address[], char newVersionByte){
+    std::vector<unsigned char> v;
+    DecodeBase58Check(address,v);
+    v[0]=newVersionByte;
+    string result = EncodeBase58Check(v);
+    return result;
+}
+
 void UpdateTime(CBlockHeader* pblock, const CBlockIndex* pindexPrev)
 {
     pblock->nTime = std::max(pindexPrev->GetMedianTimePast()+1, GetAdjustedTime());
@@ -204,8 +212,9 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn)
 	
 	if(activeBanknode.status == BANKNODE_IS_CAPABLE){
 		string miningkey = GetArg("-bnminingkey", "");
-		CBitcreditAddress maddress(miningkey);		 
-		txNew.vout[0].scriptPubKey = GetScriptForDestination(maddress.Get());
+		CBitcreditAddress address(miningkey);
+		CTxDestination dest = address.Get();		 
+		txNew.vout[0].scriptPubKey = GetScriptForDestination(dest);
 	}
 	else{	
 		txNew.vout[0].scriptPubKey = scriptPubKeyIn;
@@ -218,15 +227,17 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn)
 		txNew.vout[2+ payments].scriptPubKey = pblock->payee;
 		int i = 3+ payments;
 		for(balit = bidtracker.begin(); balit != bidtracker.end();balit++){
-				CBitcreditAddress address(balit->first);
-				txNew.vout[i].scriptPubKey= GetScriptForDestination(address.Get());
+				CBitcreditAddress address(convertAddress(balit->first.c_str(),0x0c));
+				CTxDestination dest = address.Get();
+				txNew.vout[i].scriptPubKey= GetScriptForDestination(dest);
 				bidstotal+=balit->second;
 				i++;
 			}
 		int j = 3+ payments + bidtracker.size();
 		for(gait = grantAwards.begin(); gait != grantAwards.end();gait++){			
-				CBitcreditAddress address(gait->first);
-				txNew.vout[j].scriptPubKey= GetScriptForDestination(address.Get());				
+				CBitcreditAddress address(convertAddress(gait->first.c_str(),0x0c));
+				CTxDestination dest = address.Get();
+				txNew.vout[j].scriptPubKey= GetScriptForDestination(dest);			
 				j++;		
 			}		
 		}
@@ -234,8 +245,9 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn)
 		txNew.vout[2+ payments].scriptPubKey = pblock->payee;
 		int i = 3+ payments;
 		for(balit = bidtracker.begin(); balit != bidtracker.end();balit++){
-				CBitcreditAddress address(balit->first);
-				txNew.vout[i].scriptPubKey= GetScriptForDestination(address.Get());
+				CBitcreditAddress address(convertAddress(balit->first.c_str(),0x0c));
+				CTxDestination dest = address.Get();
+				txNew.vout[i].scriptPubKey= GetScriptForDestination(dest);
 				bidstotal+=balit->second;
 				i++;				
 			}		
@@ -244,31 +256,35 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn)
 		txNew.vout[2+ payments].scriptPubKey = pblock->payee;
 		int i = 3+ payments;
 		for(gait = grantAwards.begin(); gait != grantAwards.end();gait++){			
-				CBitcreditAddress address(gait->first);
-				txNew.vout[i].scriptPubKey= GetScriptForDestination(address.Get());				
+				CBitcreditAddress address(convertAddress(gait->first.c_str(),0x0c));
+				CTxDestination dest = address.Get();
+				txNew.vout[i].scriptPubKey= GetScriptForDestination(dest);				
 				i++;		
 			}		
 		}
 	else if(ispayoutblock && isgrantblock){
 		int i = 3;
 		for(balit = bidtracker.begin(); balit != bidtracker.end();balit++){
-				CBitcreditAddress address(balit->first);
-				txNew.vout[i].scriptPubKey= GetScriptForDestination(address.Get());
+				CBitcreditAddress address(convertAddress(balit->first.c_str(),0x0c));
+				CTxDestination dest = address.Get();
+				txNew.vout[i].scriptPubKey= GetScriptForDestination(dest);
 				bidstotal+=balit->second;
 				i++;				
 			}
 		int j = 3+ bidtracker.size();
 		for(gait = grantAwards.begin(); gait != grantAwards.end();gait++){			
-				CBitcreditAddress address(gait->first);
-				txNew.vout[j].scriptPubKey= GetScriptForDestination(address.Get());				
+				CBitcreditAddress address(convertAddress(gait->first.c_str(),0x0c));
+				CTxDestination dest = address.Get();
+				txNew.vout[j].scriptPubKey= GetScriptForDestination(dest);			
 				j++;		
 			}		
 		}
 	else if(ispayoutblock){
 		int i = 3;
 		for(balit = bidtracker.begin(); balit != bidtracker.end();balit++){
-				CBitcreditAddress address(balit->first);
-				txNew.vout[i].scriptPubKey= GetScriptForDestination(address.Get());
+				CBitcreditAddress address(convertAddress(balit->first.c_str(),0x0c));
+				CTxDestination dest = address.Get();
+				txNew.vout[i].scriptPubKey= GetScriptForDestination(dest);
 				bidstotal+=balit->second;
 				i++;				
 			}		
@@ -276,8 +292,9 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn)
 	else if(isgrantblock){
 		int i = 3;
 		for(gait = grantAwards.begin(); gait != grantAwards.end();gait++){			
-				CBitcreditAddress address(gait->first);
-				txNew.vout[i].scriptPubKey= GetScriptForDestination(address.Get());				
+				CBitcreditAddress address(convertAddress(gait->first.c_str(),0x0c));
+				CTxDestination dest = address.Get();
+				txNew.vout[i].scriptPubKey= GetScriptForDestination(dest);			
 				i++;		
 			}		
 		}

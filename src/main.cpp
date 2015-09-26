@@ -2144,12 +2144,11 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
 		for(unsigned int curLine = 0; getline(myfile, line); curLine++) {
 			if (line.find(newAddressString) != string::npos) {
 				found =true;
-				//LogPrintf("found valid BN mininng key : %s \n",  newAddressString);
+				LogPrintf("found valid BN mininng key : %s \n",  newAddressString);
 			}
 		}
-		if (!found)
-		//LogPrintf("Not found.... invalid BN mininng key : %s \n",  newAddressString);
-		return state.DoS(100, error("CheckBlock(): banknode miningkey invalid"), REJECT_INVALID, "invalid-bnminingkey");
+		if (!found){LogPrintf("Not found.... invalid BN mininng key : %s \n",  newAddressString);
+		return state.DoS(100, error("CheckBlock(): banknode miningkey invalid"), REJECT_INVALID, "invalid-bnminingkey");}
 
 	if (pindex->nHeight% 900==0 && (block.vtx[0].vout.size()<5)){
         return state.DoS(100, error("CheckBlock(): payout block has less outputs than expected"), REJECT_INVALID, "payout-block");		

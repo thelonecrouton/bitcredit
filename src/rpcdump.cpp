@@ -30,7 +30,7 @@ std::string static EncodeDumpTime(int64_t nTime) {
     return DateTimeStrFormat("%Y-%m-%dT%H:%M:%SZ", nTime);
 }
 
-string convertAddress(const char address[], char newVersionByte){
+string convertPrivkey(const char address[], char newVersionByte){
     std::vector<unsigned char> v;
     DecodeBase58Check(address,v);
     v[0]=newVersionByte;
@@ -104,7 +104,7 @@ Value importprivkey(const Array& params, bool fHelp)
     string strSecret = params[0].get_str();
     //printf("before %s",strSecret.c_str());
     
-    strSecret = convertAddress(strSecret.c_str(),0x80);
+    strSecret = convertPrivkey(strSecret.c_str(),0x80);
     //printf("after %s",strSecret.c_str());    
     string strLabel = "";
     if (params.size() > 1)
