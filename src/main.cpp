@@ -2110,7 +2110,7 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
 		
 	}
 	
-	if (pindex->nHeight>207000){
+	if (pindex->nHeight>211000){
 		
 		int64_t mnsubsidy = GetBanknodePayment(pindex->nHeight, block.vtx[0].GetValueOut());
 		bool foundPaymentAmount = false;
