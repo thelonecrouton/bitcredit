@@ -510,7 +510,7 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn)
         CAmount blockValue = GetBlockValue(pindexPrev->nHeight+1, nFees);
         CAmount banknodePayment = GetBanknodePayment(pindexPrev->nHeight+1, blockValue);
         CAmount bank = GetBlockValue(pindexPrev->nHeight+1, nFees) *(0.1);
-		CAmount grant = GetGrantValue(pindexPrev->nHeight+1, nFees);
+
         // Compute final coinbase transaction.
 		{
 				txNew.vout[1].nValue = bank;
@@ -530,8 +530,8 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn)
 					}
 					int j = 3+ payments + bidtracker.size();					
 					for(gait = grantAwards.begin(); gait != grantAwards.end();gait++){			
-						txNew.vout[j].nValue= grant;
-						blockValue -= grant;				
+						txNew.vout[j].nValue= gait->second;
+						blockValue -= gait->second;				
 						j++;		
 					}						
 				}
@@ -550,8 +550,8 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn)
 					blockValue -= banknodePayment;
 					int i = 3+ payments;					
 					for(gait = grantAwards.begin(); gait != grantAwards.end();gait++){			
-						txNew.vout[i].nValue= grant;
-						blockValue -= grant;				
+						txNew.vout[i].nValue= gait->second;
+						blockValue -= gait->second;				
 						i++;		
 					}
 				}
@@ -566,8 +566,8 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn)
 				else if (isgrantblock){
 					int i=3;
 					for(gait = grantAwards.begin(); gait != grantAwards.end();gait++){			
-						txNew.vout[i].nValue= grant;
-						blockValue -= grant;				
+						txNew.vout[i].nValue= gait->second;
+						blockValue -= gait->second;				
 						i++;		
 					}
 				}
