@@ -1960,8 +1960,7 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
     // Check it again in case a previous version let a bad block in
     if (!CheckBlock(block, state, !fJustCheck, !fJustCheck))
         return false;
-	CBlock blockprev;
-	ReadBlockFromDisk(blockprev, pindex->pprev);
+
     // verify that the view's current state corresponds to the previous block
     uint256 hashPrevBlock = pindex->pprev == NULL ? uint256(0) : pindex->pprev->GetBlockHash();
     assert(hashPrevBlock == view.GetBestBlock());
@@ -2128,6 +2127,8 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
 	// check for and reject blocks that have the same key in tthe coinbase tx 
 	//this is not enough though , advanced users can easily make mods to get a new key at ecery block. 
 	if (pindex->nHeight>210000){
+		CBlock blockprev;
+		ReadBlockFromDisk(blockprev, pindex->pprev);
 		std::string line;
 		bool found =false;
 		CTxDestination address, address2;	
@@ -2138,7 +2139,7 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
 		ifstream myfile((GetDataDir() /"bnlist.dat").string().c_str());				
 		if (block.vtx[0].vout[0].scriptPubKey == blockprev.vtx[0].vout[0].scriptPubKey){
 		//LogPrintf("CheckBlock() : Consecutive coinbase key detected prevblock= %s, newblock = %s \n", prevAddressString, newAddressString);
-        return state.DoS(100, error("CheckBlock(): consecutive coinbase key detected"), REJECT_INVALID, "consecutive-coinbase");		
+        return state.DoS(100, error("ConnectBlock(): consecutive coinbase key detected"), REJECT_INVALID, "consecutive-coinbase");		
 		}
 
 		for(unsigned int curLine = 0; getline(myfile, line); curLine++) {
@@ -2147,11 +2148,15 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
 				LogPrintf("found valid BN mininng key : %s \n",  newAddressString);
 			}
 		}
-		if (!found){LogPrintf("Not found.... invalid BN mininng key : %s \n",  newAddressString);
-		return state.DoS(100, error("CheckBlock(): banknode miningkey invalid"), REJECT_INVALID, "invalid-bnminingkey");}
+		if (!found && mnodeman.size() !=0){
+		LogPrintf("Not found.... invalid BN mininng key : %s \n",  newAddressString);
+		
+		return state.DoS(100, error("ConnectBlock(): banknode miningkey invalid"), REJECT_INVALID, "invalid-bnminingkey");
+				
+		}
 
 	if (pindex->nHeight% 900==0 && (block.vtx[0].vout.size()<5)){
-        return state.DoS(100, error("CheckBlock(): payout block has less outputs than expected"), REJECT_INVALID, "payout-block");		
+        return state.DoS(100, error("ConnectBlock(): payout block has less outputs than expected"), REJECT_INVALID, "payout-block");		
 		}
 	
 		LOCK(grantdb);		

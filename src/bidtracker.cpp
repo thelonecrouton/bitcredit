@@ -658,7 +658,7 @@ void miningbanknodelist()
     int64_t nStart = GetTimeMillis();
 
 	std::ofstream myfile;
-	myfile.open((GetDataDir()/ "bnlist.dat").string().c_str(),fstream::out);
+	myfile.open((GetDataDir()/ "bnlist.dat").string().c_str(), std::ofstream::out | std::ofstream::app);
 
     std::vector<CBanknode> vBanknodes = mnodeman.GetFullBanknodeVector();
     BOOST_FOREACH(CBanknode& mn, vBanknodes) {
