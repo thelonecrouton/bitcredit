@@ -679,13 +679,11 @@ void miningbanknodelist()
        CBitcreditAddress address2(address1);
        newAddressString = address2.ToString().c_str();
 		for(unsigned int curLine = 0; getline(myfile3, line2); curLine++) {
-			if (line2.find(newAddressString) != string::npos) {
+			if (line2.find(newAddressString) != string::npos) 
 				continue;
-		}     
-			myfile4 << newAddressString << endl;
+				myfile4 << newAddressString << endl;			
 		}       
 	}
     if(fDebug)LogPrintf("Mining nodes dump finished  %dms\n", GetTimeMillis() - nStart);
-
 }
 
