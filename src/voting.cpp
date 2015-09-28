@@ -61,7 +61,7 @@ std::map<std::string,std::map<int64_t,std::string> > supportVotes; //Report on s
 bool isGrantAwardBlock(int64_t nHeight){
 	//NOTE: CALLED EVERY BLOCK. (Minimize computations here.)
 		
-	if (nHeight > 210000 && (nHeight % 5 == 0)){
+	if (nHeight > 210005 && (nHeight % 5 == 0)){
 		//Grants were not being rewarded...
 		if(fDebug)LogPrintf("  Is (%ld) a grant block? : Yes \n", nHeight);
 		return true;

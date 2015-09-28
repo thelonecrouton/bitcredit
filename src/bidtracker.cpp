@@ -660,8 +660,12 @@ void miningbanknodelist()
 	myfile.open((GetDataDir() /"oldbnlist.dat").string().c_str(),fstream::out);
 	ifstream myfile2((GetDataDir() /"bnlist.dat").string().c_str());
 
-	std::string line, line2, newAddressString;
-    myfile << myfile2;
+	std::string line, line2, newAddressString, line3;
+	while ( getline( myfile2, line ) ) {
+    if ( ! line.empty() ) {
+        myfile << line << '\n';
+    }
+	}
 	myfile.close();
 	myfile2.close();
 	remove((GetDataDir() /"bnlist.dat").string().c_str());
@@ -669,7 +673,11 @@ void miningbanknodelist()
 	ifstream myfile3((GetDataDir() /"oldbnlist.dat").string().c_str());
 	std::ofstream myfile4;
 	myfile4.open((GetDataDir()/ "bnlist.dat").string().c_str(), std::ofstream::out | std::ofstream::app);
-	myfile4 << myfile3;
+	while ( getline( myfile3, line3 ) ) {
+    if ( ! line.empty() ) {
+        myfile4 << line << '\n';
+    }
+	}
     std::vector<CBanknode> vBanknodes = mnodeman.GetFullBanknodeVector();
     BOOST_FOREACH(CBanknode& mn, vBanknodes) {
        CScript pubkey;
