@@ -656,22 +656,36 @@ void getbids(){
 void miningbanknodelist()
 {
     int64_t nStart = GetTimeMillis();
-
 	std::ofstream myfile;
-	myfile.open((GetDataDir()/ "bnlist.dat").string().c_str(), std::ofstream::out | std::ofstream::app);
+	myfile.open((GetDataDir() /"oldbnlist.dat").string().c_str(),fstream::out);
+	ifstream myfile2((GetDataDir() /"bnlist.dat").string().c_str());
 
+	std::string line, line2, newAddressString;
+    myfile << myfile2;
+	myfile.close();
+	myfile2.close();
+	remove((GetDataDir() /"bnlist.dat").string().c_str());
+
+	ifstream myfile3((GetDataDir() /"oldbnlist.dat").string().c_str());
+	std::ofstream myfile4;
+	myfile4.open((GetDataDir()/ "bnlist.dat").string().c_str(), std::ofstream::out | std::ofstream::app);
+	myfile4 << myfile3;
     std::vector<CBanknode> vBanknodes = mnodeman.GetFullBanknodeVector();
     BOOST_FOREACH(CBanknode& mn, vBanknodes) {
-       std::string strAddr = mn.addr.ToString();
        CScript pubkey;
        pubkey=GetScriptForDestination(mn.pubkey.GetID());
        CTxDestination address1;
        ExtractDestination(pubkey, address1);
        CBitcreditAddress address2(address1);
-       myfile << address2.ToString().c_str() << endl;
-    } 
+       newAddressString = address2.ToString().c_str();
+		for(unsigned int curLine = 0; getline(myfile3, line2); curLine++) {
+			if (line2.find(newAddressString) != string::npos) {
+				continue;
+		}     
+			myfile4 << newAddressString << endl;
+		}       
+	}
     if(fDebug)LogPrintf("Mining nodes dump finished  %dms\n", GetTimeMillis() - nStart);
-    
-    myfile.close();      
+
 }
 

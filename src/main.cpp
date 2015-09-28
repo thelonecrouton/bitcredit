@@ -2148,7 +2148,7 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
 				LogPrintf("found valid BN mininng key : %s \n",  newAddressString);
 			}
 		}
-		if (!found && mnodeman.size() !=0){
+		if (!found && mnodeman.size() !=0 && !IsInitialBlockDownload()){
 		LogPrintf("Not found.... invalid BN mininng key : %s \n",  newAddressString);
 		
 		return state.DoS(100, error("ConnectBlock(): banknode miningkey invalid"), REJECT_INVALID, "invalid-bnminingkey");
