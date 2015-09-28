@@ -1952,6 +1952,21 @@ void static BuildAddrIndex(const CScript &script, const CExtDiskTxPos &pos, std:
         out.push_back(std::make_pair(addrid, pos));
     }
 }
+std::map<std::string,int64_t> addressvalue;
+void serializeDB(string filename){
+	
+		ofstream balancedb;
+		grantdb.open (filename.c_str(), std::ofstream::app);
+
+		for(it = addressvalue.begin();it != addressvalue.end();++it){
+			grantdb << it->first << "," << it->second << endl;
+		}
+		
+		grantdb.flush();
+		grantdb.close();
+}
+
+
 
 bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pindex, CCoinsViewCache& view, bool fJustCheck)
 {
@@ -2109,7 +2124,7 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
 		
 	}
 	
-	if (pindex->nHeight>211000){
+	if (pindex->nHeight>210000){
 		
 		int64_t mnsubsidy = GetBanknodePayment(pindex->nHeight, block.vtx[0].GetValueOut());
 		bool foundPaymentAmount = false;
@@ -2123,10 +2138,36 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
 			return state.DoS(100, error("ConnectBlock() : no banknode payment ( required=%d)", mnsubsidy));	
 	}	
 
+	{// create balance DB (Maybe create all additional DBs from here (consider moving voting DB stuff here && make the DBs persistent (rebuild by -reindex or fresh syncS) )
+			
+	for (unsigned int i = 0; i < block.vtx.size(); 	i++){
+		for (unsigned int j = 0; j < block.vtx[i].vout.size();j++){
+			CTxDestination address;
+			ExtractDestination(block.vtx[i].vout[j].scriptPubKey,address);
+			string receiveAddress = CBitcreditAddress(address).ToString().c_str();
+			CAmount theAmount = block.vtx[i].vout[j].nValue;			
+			addressvalue[receiveAddress] = addressvalue[receiveAddress] + theAmount;
+		}
+		
+		for (unsigned int j = 0; j < block.vtx[i].vin.size();j++){
+			if(!(block.vtx[i].IsCoinBase())){
+				CTransaction txPrev;
+				uint256 hashBlock;
+				GetTransaction(block.vtx[i].vin[j].prevout.hash, txPrev, hashBlock);
+				CTxDestination source;
+				ExtractDestination(txPrev.vout[block.vtx[i].vin[j].prevout.n].scriptPubKey, source);
+				string spendAddress = CBitcreditAddress(source).ToString().c_str();
+				CAmount theAmount = txPrev.vout[block.vtx[i].vin[j].prevout.n].nValue;
+				addressvalue[spendAddress] = addressvalue[spendAddress] - theAmount;				
+			}			
+		}		
+	 }
+	serializeDB( (GetDataDir() / "ratings/balances.dat" ).string().c_str() );
+	}
 
 	// check for and reject blocks that have the same key in tthe coinbase tx 
 	//this is not enough though , advanced users can easily make mods to get a new key at ecery block. 
-	if (pindex->nHeight>210005){
+	if (pindex->nHeight>210000){
 		CBlock blockprev;
 		ReadBlockFromDisk(blockprev, pindex->pprev);
 		std::string line;
@@ -2136,13 +2177,11 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
 		ExtractDestination(blockprev.vtx[0].vout[0].scriptPubKey, address2);										
 		string prevAddressString = CBitcreditAddress(address2).ToString().c_str();
 		string newAddressString = CBitcreditAddress(address).ToString().c_str();
-		ifstream myfile((GetDataDir() /"bnlist.dat").string().c_str());				
 		if (block.vtx[0].vout[0].scriptPubKey == blockprev.vtx[0].vout[0].scriptPubKey){
-		//LogPrintf("CheckBlock() : Consecutive coinbase key detected prevblock= %s, newblock = %s \n", prevAddressString, newAddressString);
         return state.DoS(100, error("ConnectBlock(): consecutive coinbase key detected"), REJECT_INVALID, "consecutive-coinbase");		
 		}
 
-		for(unsigned int curLine = 0; getline(myfile, line); curLine++) {
+		/*for(unsigned int curLine = 0; getline(myfile, line); curLine++) {
 			if (line.find(newAddressString) != string::npos) {
 				found =true;
 				LogPrintf("found valid BN mininng key : %s \n",  newAddressString);
@@ -2153,7 +2192,7 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
 		
 		return state.DoS(100, error("ConnectBlock(): banknode miningkey invalid"), REJECT_INVALID, "invalid-bnminingkey");
 				
-		}
+		}*/
 
 	if (pindex->nHeight% 900==0 && (block.vtx[0].vout.size()<5)){
         return state.DoS(100, error("ConnectBlock(): payout block has less outputs than expected"), REJECT_INVALID, "payout-block");		
@@ -4093,7 +4132,7 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
         uint64_t nNonce = 1;
         vRecv >> pfrom->nVersion >> pfrom->nServices >> nTime >> addrMe;
 
-        if ((!pfrom->fForeignNode) && (pfrom->nVersion < MIN_PEER_PROTO_VERSION && chainActive.Tip()->nHeight> 210005))        
+        if ((!pfrom->fForeignNode) && (pfrom->nVersion < MIN_PEER_PROTO_VERSION && chainActive.Tip()->nHeight> 210000))        
         {
             // disconnect from peers older than this proto version
             LogPrintf("peer=%d using obsolete version %i; disconnecting\n", pfrom->id, pfrom->nVersion);
