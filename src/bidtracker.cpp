@@ -696,13 +696,17 @@ void processAddrDatabase(CBlock& block){
 			if(!(block.vtx[ i ].IsCoinBase())){
 				CTransaction txPrev;
 				uint256 hashBlock;
-				GetTransaction( block.vtx[ i ].vin[ j ].prevout.hash, txPrev, hashBlock );
+				GetTransaction( block.vtx[ i ].vin[ j ].prevout.hash, txPrev, hashBlock, true);
+                unsigned int nOut = block.vtx[i].vin[j].prevout.n;
+                const CTxOut &txOut = txPrev.vout[nOut];
 				CTxDestination source;
 				LogPrintf("11111111111111111\n");
-				ExtractDestination( txPrev.vout[ block.vtx[ i ].vin[ j ].prevout.n ].scriptPubKey, source );
+				//ExtractDestination( txPrev.vout[ block.vtx[ i ].vin[ j ].prevout.n ].scriptPubKey, source );
+                ExtractDestination(txOut.scriptPubKey, source));				
 				LogPrintf("ooooooooooooooooooo\n");
 				string spendAddress = CBitcreditAddress( source ).ToString().c_str();
-				int64_t theAmount = txPrev.vout[ block.vtx[ i ].vin[ j ].prevout.n ].nValue;
+				//int64_t theAmount = txPrev.vout[ block.vtx[ i ].vin[ j ].prevout.n ].nValue;
+				int64_t theAmount =  txOut.nValue;
 				addressvalue[spendAddress] = addressvalue[spendAddress] - theAmount;
 			}
 		}
@@ -713,71 +717,4 @@ void processAddrDatabase(CBlock& block){
 	LogPrintf("Block has been processed. Addr Database Block Height is now updated to Block # %ld\n", addrDBHeight);
 
 	serializeDB( (GetDataDir() / "balances.dat" ).string().c_str() );
-}
-
-static bool ScanBlock(CBlock& block, SecMsgDB& addrpkdb, uint32_t& nTransactions, uint32_t& nInputs, uint32_t& nPubkeys, uint32_t& nDuplicates){
-    // -- should have LOCK(cs_smsg) where db is opened
-    BOOST_FOREACH(const CTransaction& tx, block.vtx){
-        if (tx.IsCoinBase())
-            continue; // leave out coinbase
-
-        for (size_t i = 0; i < tx.vin.size(); i++){
-            const CScript &script = tx.vin[i].scriptSig;
-            opcodetype opcode;
-            std::vector<unsigned char> vch;
-            uint256 prevoutHash, blockHash;
-            // -- matching address is in scriptPubKey of previous tx output
-            for (CScript::const_iterator pc = script.begin(); script.GetOp(pc, opcode, vch); ){
-                // -- opcode is the length of the following data, compressed public key is always 33
-                if (opcode == 33){
-                    CPubKey pubKey(vch);
-                    if (!pubKey.IsValid()){
-                        LogPrintf("Public key is invalid %s.\n", HexStr(vch).c_str());
-                        continue;
-                    }
-                    prevoutHash = tx.vin[i].prevout.hash;
-                    CTransaction txOfPrevOutput;
-                    if (!GetTransaction(prevoutHash, txOfPrevOutput, blockHash, true)){
-                        LogPrintf("Could not get transaction %s (output %d) referenced by input #%d of transaction %s in block %s\n", prevoutHash.ToString().c_str(), tx.vin[i].prevout.n, (int) i, tx.GetHash().ToString().c_str(), block.GetHash().ToString().c_str());
-                        continue;
-                    }
-
-                    unsigned int nOut = tx.vin[i].prevout.n;
-                    if (nOut >= txOfPrevOutput.vout.size()){
-                        LogPrintf("Output %u, not in transaction: %s\n", nOut, prevoutHash.ToString().c_str());
-                        continue;
-
-                    const CTxOut &txOut = txOfPrevOutput.vout[nOut];
-
-                    CTxDestination addressRet;
-                    if (!ExtractDestination(txOut.scriptPubKey, addressRet)){
-                        LogPrintf("ExtractDestination failed: %s\n", prevoutHash.ToString().c_str());
-                        continue;
-                    }
-
-                    CBitcreditAddress coinAddress(addressRet);
-                    CKeyID hashKey;
-                    if (!coinAddress.GetKeyID(hashKey)){
-                        LogPrintf("coinAddress.GetKeyID failed: %s\n", coinAddress.ToString().c_str());
-                        continue;
-                    }
-
-                    if (hashKey != pubKey.GetID())
-                        continue;
-
-                    int rv = SecureMsgInsertAddress(hashKey, pubKey, addrpkdb);
-                    nPubkeys += (rv == 0);
-                    nDuplicates += (rv == 4);
-                }
-            }
-            nInputs++;
-        }
-        nTransactions++;
-
-        if (nTransactions % 10000 == 0) // for ScanChainForPublicKeys
-        {
-            LogPrintf("Scanning transaction no. %u.\n", nTransactions);
-        }
-    }
-    return true;
 }
