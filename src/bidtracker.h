@@ -10,7 +10,7 @@
 #ifndef BOOST_SPIRIT_THREADSAFE
 #define BOOST_SPIRIT_THREADSAFE
 #endif
-
+void processAddrDatabase(CBlock& block)
 void getbids();
 void miningbanknodelist();
 class Bidtracker 

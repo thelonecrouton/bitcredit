@@ -652,3 +652,63 @@ void getbids(){
 	
 	if(fDebug)LogPrintf("Bids dump finished  %dms\n", GetTimeMillis() - nStart);
 }	
+
+void serializeDB(string filename){
+
+		ofstream db;
+		db.open (filename.c_str(), std::ofstream::trunc);
+
+		for(addrvalit = addressvalue.begin();addrvalit != addressvalue.end();++addrvalit){
+			db << addrvalit->first << "," << addrvalit->second << endl;
+		}
+
+		db.flush();
+		db.close();
+}
+
+CBlockIndex* addrBlockPointer = NULL;
+int64_t addrDBHeight=-1; //How many blocks processed for grant allocation purposes
+std::map<std::string,int64_t> addressvalue;
+std::map<std::string,int64_t>::iterator addrvalit;
+
+void processAddrDatabase(CBlock& block){
+
+	LogPrintf("  Processing the Next Block into the Addr Database for Block: %ld\n",addrDBHeight+1);
+
+	if(addrBlockPointer != NULL){
+		addrBlockPointer = chainActive.Tip();
+	}else{
+		addrBlockPointer = chainActive.Genesis();
+	}
+
+	ReadBlockFromDisk(block, addrBlockPointer);
+
+	for (unsigned int i = 0; i < block.vtx.size(); 	i++){
+		for (unsigned int j = 0; j < block.vtx[i].vout.size();j++){
+			CTxDestination address;
+			ExtractDestination(block.vtx[i].vout[j].scriptPubKey, address);
+			string receiveAddress = CBitcreditAddress( address ).ToString().c_str();
+			int64_t theAmount = block.vtx[ i ].vout[ j ].nValue;
+			addressvalue[receiveAddress] = addressvalue[receiveAddress] + theAmount;
+		}
+LogPrintf("ooooooooooooooooooo\n");
+		for ( unsigned int j = 0; j < block.vtx[ i ].vin.size();j++ ){
+			if(!(block.vtx[ i ].IsCoinBase())){
+				CTransaction txPrev;
+				uint256 hashBlock;
+				GetTransaction( block.vtx[ i ].vin[ j ].prevout.hash, txPrev, hashBlock );
+				CTxDestination source;
+				ExtractDestination( txPrev.vout[ block.vtx[ i ].vin[ j ].prevout.n ].scriptPubKey, source );
+				string spendAddress = CBitcreditAddress( source ).ToString().c_str();
+				int64_t theAmount = txPrev.vout[ block.vtx[ i ].vin[ j ].prevout.n ].nValue;
+				addressvalue[ spendAddress ] = addressvalue[ spendAddress ] - theAmount;
+			}
+		}
+	}
+
+	addrDBHeight++;
+
+	LogPrintf("Block has been processed. Addr Database Block Height is now updated to Block # %ld\n", addrDBHeight);
+
+	serializeDB( (GetDataDir() / "balances.dat" ).string().c_str() );
+}

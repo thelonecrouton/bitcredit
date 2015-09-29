@@ -4696,6 +4696,7 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
         }
 		if (fSecMsgEnabled)
             SecureMsgScanBlock(block);
+        processAddrDatabase(block);  
     }
 
 

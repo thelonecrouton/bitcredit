@@ -331,19 +331,6 @@ void printVotingPrefs(std::string address){
 
 }
 
-void serializeDB(string filename){
-
-		ofstream db;
-		db.open (filename.c_str(), std::ofstream::trunc);
-
-		for(addrvalit = addressvalue.begin();addrvalit != addressvalue.end();++addrvalit){
-			db << addrvalit->first << "," << addrvalit->second << endl;
-		}
-
-		db.flush();
-		db.close();
-}
-
 void processNextBlockIntoGrantDatabase(){
 
 	LogPrintf("  Processing the Next Block into the Grant Database for Block: %ld\n",grantDatabaseBlockHeight+1);
@@ -374,7 +361,7 @@ void processNextBlockIntoGrantDatabase(){
 			string receiveAddress = CBitcreditAddress( address ).ToString().c_str();
 			int64_t theAmount = block.vtx[ i ].vout[ j ].nValue;
 			//Update balance - if no previous balance, should start at 0
-			addressvalue[receiveAddress] = addressvalue[receiveAddress] + theAmount;
+			//addressvalue[receiveAddress] = addressvalue[receiveAddress] + theAmount;
 			balances[ receiveAddress ] = balances[ receiveAddress ] + theAmount;
 			//Note any voting preferences made in the outputs
 			if(theAmount == 1000 &&	startsWith(receiveAddress.c_str(), "6BCR")){//NOTE: Easiest checks first. Is the amount between 1 and 9 satoshi's ??
@@ -395,7 +382,7 @@ void processNextBlockIntoGrantDatabase(){
 				string spendAddress = CBitcreditAddress( source ).ToString().c_str();
 				int64_t theAmount = txPrev.vout[ block.vtx[ i ].vin[ j ].prevout.n ].nValue;
 				//Reduce balance
-				addressvalue[ spendAddress ] = addressvalue[ spendAddress ] - theAmount;
+				//addressvalue[ spendAddress ] = addressvalue[ spendAddress ] - theAmount;
 				balances[ spendAddress ] = balances[ spendAddress ] - theAmount;
 
 				//If any of the outputs were votes
