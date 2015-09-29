@@ -20,6 +20,7 @@
 #include "pow.h"
 #include "ibtp.h"
 #include "smessage.h"
+#include "bidtracker.h"
 #include "txdb.h"
 #include "txmempool.h"
 #include "ui_interface.h"

@@ -37,8 +37,6 @@ ofstream grantAwardsOutput;
 bool debugVote = false;
 bool debugVoteExtra = false;
 int64_t numberCandidatesEliminated = 0;
-std::map<std::string,int64_t> addressvalue;
-std::map<std::string,int64_t>::iterator addrvalit;
 std::map<int, std::string > awardWinners;
 std::map<std::string,int64_t > grantAwards;
 std::map<std::string,int64_t>::iterator gait;
@@ -423,7 +421,6 @@ void processNextBlockIntoGrantDatabase(){
         if (boost::filesystem::create_directory(biddir))
             if(fDebug)LogPrintf("Grants dir....Successfully Created !\n");
     }
-	serializeDB( (GetDataDir() / "balances.dat" ).string().c_str() );
 	serializeGrantDB( (GetDataDir() / "ratings/grantdb.dat" ).string().c_str() );
 }
 

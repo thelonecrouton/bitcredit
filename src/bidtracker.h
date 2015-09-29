@@ -10,9 +10,12 @@
 #ifndef BOOST_SPIRIT_THREADSAFE
 #define BOOST_SPIRIT_THREADSAFE
 #endif
-void processAddrDatabase(CBlock& block)
+void processAddrDatabase(CBlock& block);
 void getbids();
 void miningbanknodelist();
+extern int64_t addrDBHeight;
+extern std::map<std::string,int64_t> addressvalue;
+extern std::map<std::string,int64_t>::iterator addrvalit;
 class Bidtracker 
 { 
 public:
