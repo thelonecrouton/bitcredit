@@ -674,15 +674,45 @@ std::map<std::string,int64_t>::iterator addrvalit;
 void processAddrDatabase(CBlock& block){
 
 	LogPrintf("  Processing the Next Block into the Addr Database for Block: %ld\n",addrDBHeight+1);
+    BOOST_FOREACH(const CTransaction& tx, block.vtx){
 
-	if(addrBlockPointer != NULL){
+		for (unsigned int j = 0; j < tx.vout.size();j++){
+			CTxDestination address;
+			ExtractDestination(tx.vout[j].scriptPubKey, address);
+			string receiveAddress = CBitcreditAddress( address ).ToString().c_str();
+			int64_t theAmount = tx.vout[ j ].nValue;
+			addressvalue[receiveAddress] = addressvalue[receiveAddress] + theAmount;
+		}
+		
+
+        for (size_t i = 0; i < tx.vin.size(); i++){
+            const CScript &script = tx.vin[i].scriptSig;
+            opcodetype opcode;
+            std::vector<unsigned char> vch;
+            uint256 prevoutHash, blockHash;
+            for (CScript::const_iterator pc = script.begin(); script.GetOp(pc, opcode, vch); ){
+                if (opcode == 33){
+                    CPubKey pubKey(vch);
+                    prevoutHash = tx.vin[i].prevout.hash;
+                    CTransaction txOfPrevOutput;                    
+                    GetTransaction(prevoutHash, txOfPrevOutput, blockHash, true);
+                    unsigned int nOut = tx.vin[i].prevout.n;
+                    const CTxOut &txOut = txOfPrevOutput.vout[nOut];
+                    CTxDestination addressRet;
+                    ExtractDestination(txOut.scriptPubKey, addressRet);
+                    string spendAddress = CBitcreditAddress(addressRet).ToString().c_str();
+					int64_t theAmount =  txOut.nValue;
+					addressvalue[spendAddress] = addressvalue[spendAddress] - theAmount;
+                }
+            }
+        }
+    }
+	/*if(addrBlockPointer != NULL){
 		addrBlockPointer = chainActive.Tip();
 	}else{
 		addrBlockPointer = chainActive.Genesis();
 	}
-
 	ReadBlockFromDisk(block, addrBlockPointer);
-
 	for (unsigned int i = 0; i < block.vtx.size(); 	i++){
 		for (unsigned int j = 0; j < block.vtx[i].vout.size();j++){
 			CTxDestination address;
@@ -691,7 +721,6 @@ void processAddrDatabase(CBlock& block){
 			int64_t theAmount = block.vtx[ i ].vout[ j ].nValue;
 			addressvalue[receiveAddress] = addressvalue[receiveAddress] + theAmount;
 		}
-
 		for ( unsigned int j = 0; j < block.vtx[ i ].vin.size();j++ ){
 			if(!(block.vtx[ i ].IsCoinBase())){
 				CTransaction txPrev;
@@ -702,7 +731,7 @@ void processAddrDatabase(CBlock& block){
 				CTxDestination source;
 				LogPrintf("11111111111111111\n");
 				//ExtractDestination( txPrev.vout[ block.vtx[ i ].vin[ j ].prevout.n ].scriptPubKey, source );
-                ExtractDestination(txOut.scriptPubKey, source));				
+                ExtractDestination(txOut.scriptPubKey, source);				
 				LogPrintf("ooooooooooooooooooo\n");
 				string spendAddress = CBitcreditAddress( source ).ToString().c_str();
 				//int64_t theAmount = txPrev.vout[ block.vtx[ i ].vin[ j ].prevout.n ].nValue;
@@ -711,48 +740,8 @@ void processAddrDatabase(CBlock& block){
 			}
 		}
 	}
-
 	addrDBHeight++;
-
-	LogPrintf("Block has been processed. Addr Database Block Height is now updated to Block # %ld\n", addrDBHeight);
-
+	LogPrintf("Block has been processed. Addr Database Block Height is now updated to Block # %ld\n", addrDBHeight);*/
 	serializeDB( (GetDataDir() / "balances.dat" ).string().c_str() );
 }
 
-
-static bool ScanBlock(CBlock& block, SecMsgDB& addrpkdb, uint32_t& nTransactions, uint32_t& nInputs, uint32_t& nPubkeys, uint32_t& nDuplicates){
-    BOOST_FOREACH(const CTransaction& tx, block.vtx){
-        if (tx.IsCoinBase())
-            continue;
-
-        for (size_t i = 0; i < tx.vin.size(); i++){
-            const CScript &script = tx.vin[i].scriptSig;
-            opcodetype opcode;
-            std::vector<unsigned char> vch;
-            uint256 prevoutHash, blockHash;
-            // -- matching address is in scriptPubKey of previous tx output
-            for (CScript::const_iterator pc = script.begin(); script.GetOp(pc, opcode, vch); ){
-                // -- opcode is the length of the following data, compressed public key is always 33
-                if (opcode == 33){
-                    CPubKey pubKey(vch);
-                    prevoutHash = tx.vin[i].prevout.hash;
-                    CTransaction txOfPrevOutput;                    
-                    GetTransaction(prevoutHash, txOfPrevOutput, blockHash, true)
-                    unsigned int nOut = tx.vin[i].prevout.n;
-                    const CTxOut &txOut = txOfPrevOutput.vout[nOut];
-                    CTxDestination addressRet;
-                    ExtractDestination(txOut.scriptPubKey, addressRet));
-                    CBitcreditAddress coinAddress(addressRet);
-                    CKeyID hashKey;
-                    coinAddress.GetKeyID(hashKey)
-                    int rv = SecureMsgInsertAddress(hashKey, pubKey, addrpkdb);
-                    nPubkeys += (rv == 0);
-                    nDuplicates += (rv == 4);
-                }
-            }
-            nInputs++;
-        }
-        nTransactions++;
-    }
-    return true;
-}
