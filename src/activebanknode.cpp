@@ -12,7 +12,7 @@
 #include "clientversion.h"
 
 //
-// Bootup the Banknode, look for a 250 000 BCR input and register on the network
+// Bootup the Banknode, look for a 50 000 BCR input and register on the network
 //
 void CActiveBanknode::ManageStatus()
 {

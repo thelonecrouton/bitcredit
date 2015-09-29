@@ -652,4 +652,3 @@ void getbids(){
 	
 	if(fDebug)LogPrintf("Bids dump finished  %dms\n", GetTimeMillis() - nStart);
 }	
-
