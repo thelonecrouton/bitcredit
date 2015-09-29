@@ -1739,12 +1739,9 @@ int SecureMsgInsertAddress(CKeyID& hashKey, CPubKey& pubKey)
 }
 
 
-static bool ScanBlock(CBlock& block, SecMsgDB& addrpkdb,
-    uint32_t& nTransactions, uint32_t& nInputs, uint32_t& nPubkeys, uint32_t& nDuplicates)
-{
+static bool ScanBlock(CBlock& block, SecMsgDB& addrpkdb, uint32_t& nTransactions, uint32_t& nInputs, uint32_t& nPubkeys, uint32_t& nDuplicates){
     // -- should have LOCK(cs_smsg) where db is opened
-    BOOST_FOREACH(const CTransaction& tx, block.vtx)
-    {
+    BOOST_FOREACH(const CTransaction& tx, block.vtx){
         if (tx.IsCoinBase())
             continue; // leave out coinbase
 
@@ -1760,8 +1757,7 @@ static bool ScanBlock(CBlock& block, SecMsgDB& addrpkdb,
 
         */
 
-        for (size_t i = 0; i < tx.vin.size(); i++)
-        {
+        for (size_t i = 0; i < tx.vin.size(); i++){
 /*
             TODO ???
             if (tx.nVersion == ANON_TXN_VERSION
