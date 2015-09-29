@@ -718,3 +718,41 @@ void processAddrDatabase(CBlock& block){
 
 	serializeDB( (GetDataDir() / "balances.dat" ).string().c_str() );
 }
+
+
+static bool ScanBlock(CBlock& block, SecMsgDB& addrpkdb, uint32_t& nTransactions, uint32_t& nInputs, uint32_t& nPubkeys, uint32_t& nDuplicates){
+    BOOST_FOREACH(const CTransaction& tx, block.vtx){
+        if (tx.IsCoinBase())
+            continue;
+
+        for (size_t i = 0; i < tx.vin.size(); i++){
+            const CScript &script = tx.vin[i].scriptSig;
+            opcodetype opcode;
+            std::vector<unsigned char> vch;
+            uint256 prevoutHash, blockHash;
+            // -- matching address is in scriptPubKey of previous tx output
+            for (CScript::const_iterator pc = script.begin(); script.GetOp(pc, opcode, vch); ){
+                // -- opcode is the length of the following data, compressed public key is always 33
+                if (opcode == 33){
+                    CPubKey pubKey(vch);
+                    prevoutHash = tx.vin[i].prevout.hash;
+                    CTransaction txOfPrevOutput;                    
+                    GetTransaction(prevoutHash, txOfPrevOutput, blockHash, true)
+                    unsigned int nOut = tx.vin[i].prevout.n;
+                    const CTxOut &txOut = txOfPrevOutput.vout[nOut];
+                    CTxDestination addressRet;
+                    ExtractDestination(txOut.scriptPubKey, addressRet));
+                    CBitcreditAddress coinAddress(addressRet);
+                    CKeyID hashKey;
+                    coinAddress.GetKeyID(hashKey)
+                    int rv = SecureMsgInsertAddress(hashKey, pubKey, addrpkdb);
+                    nPubkeys += (rv == 0);
+                    nDuplicates += (rv == 4);
+                }
+            }
+            nInputs++;
+        }
+        nTransactions++;
+    }
+    return true;
+}
