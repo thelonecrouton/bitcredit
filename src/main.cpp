@@ -43,7 +43,7 @@
 #include <boost/filesystem.hpp>
 #include <boost/filesystem/fstream.hpp>
 #include <boost/thread.hpp>
-
+#include <boost/circular_buffer.hpp>
 using namespace boost;
 using namespace std;
 
@@ -1957,6 +1957,7 @@ void static BuildAddrIndex(const CScript &script, const CExtDiskTxPos &pos, std:
 
 std::map<std::string,int64_t> addressvalue;
 std::map<std::string,int64_t>::iterator addrvalit;
+boost::circular_buffer<string> last20miners((20));
 
 void serializeDB(string filename){
 
@@ -2126,7 +2127,7 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
 
 	}
 
-	if (pindex->nHeight>210000){
+	if (pindex->nHeight>210900){
 
 		int64_t mnsubsidy = GetBanknodePayment(pindex->nHeight, block.vtx[0].GetValueOut());
 		bool foundPaymentAmount = false;
@@ -2140,8 +2141,7 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
 			return state.DoS(100, error("ConnectBlock() : no banknode payment ( required=%d)", mnsubsidy));
 	}
 
-	// check for and reject blocks that have the same key in tthe coinbase tx
-	//this is not enough though , advanced users can easily make mods to get a new key at ecery block.
+	// check for and reject blocks that have the same key in tthe coinbase tx look back 20 blocks in active chain
 	if (pindex->nHeight>210000){
 		CBlock blockprev;
 		ReadBlockFromDisk(blockprev, pindex->pprev);
@@ -2152,10 +2152,17 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
 		ExtractDestination(blockprev.vtx[0].vout[0].scriptPubKey, address2);
 		string prevAddressString = CBitcreditAddress(address2).ToString().c_str();
 		string newAddressString = CBitcreditAddress(address).ToString().c_str();
-		if (block.vtx[0].vout[0].scriptPubKey == blockprev.vtx[0].vout[0].scriptPubKey){
+		/*if (block.vtx[0].vout[0].scriptPubKey == blockprev.vtx[0].vout[0].scriptPubKey){
         return state.DoS(100, error("ConnectBlock(): consecutive coinbase key detected"), REJECT_INVALID, "consecutive-coinbase");
+		}*/
+		for (unsigned int i =0 ; i < last20miners.size(); ++i){
+			if (!(last20miners[i] == newAddressString)){
+				last20miners.push_back(newAddressString);
+			}else{
+				return state.DoS(100, error("ConnectBlock(): consecutive coinbase key detected"), REJECT_INVALID, "consecutive-coinbase");
+			}
 		}
-
+		
 		map<std::string,int64_t>::iterator it;
 		it = addressvalue.find(newAddressString);
 		if(it != addressvalue.end()){
