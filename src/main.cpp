@@ -2145,9 +2145,6 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
 
 	// check for and reject blocks that have the same key in tthe coinbase tx look back 20 blocks in active chain
 	if (pindex->nHeight>210000){
-		
-		if(pindex->nHeight%5==0)ensureGrantDatabaseUptoDate(pindex->nHeight);
-		
 		CBlock blockprev;
 		ReadBlockFromDisk(blockprev, pindex->pprev);
 		std::string line;
@@ -2164,10 +2161,11 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
 			if (!(addrvalit->second > 50000*COIN))
 				return state.DoS(100, error("ConnectBlock(): banknode miningkey invalid"), REJECT_INVALID, "invalid-bnminingkey");
 		}  		 
-		
+	}
+
 		LOCK(grantdb);
 		int64_t grantAward = 0;
-		if( isGrantAwardBlock( pindex->nHeight ) ){
+		if(isGrantAwardBlock(pindex->nHeight)){
 			//NOTE: getGrantAwards is returning false, this could mean the grant DB does not have enough information from previous blocks to process the current blocks.
 			//FIXME: Make sure grant awards are loaded.
 			if( !getGrantAwards( pindex->nHeight) ){
@@ -2181,7 +2179,6 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
 			}
 
 			if (grantAward == 0 ){
-				LogPrintf("ERROR! No Awards found.\n");
 				return state.DoS(100, error("ConnectBlock() : grant awards error( grantAward=%d)",grantAward));
 			}
 
@@ -2224,7 +2221,6 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
 				return state.DoS(100, error("ConnectBlock() : Bitcredit DB Corruption detected. Grant Awards not being paid or paying too much. \n Please restore a previous version of grantdb.dat and/or delete the old grantdb database."));
 			}
 		}
-	}
 
 	{
     BOOST_FOREACH(const CTransaction& tx, block.vtx){
@@ -2247,7 +2243,6 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
 			
 			if (fDebug)LogPrintf("New vout  address:- %s , amount :-%d\n",receiveAddress, theAmount);
 		}
-		
 
         for (size_t i = 0; i < tx.vin.size(); i++){
 			if (tx.IsCoinBase())
