@@ -220,7 +220,6 @@ bool deSerializeGrantDB( string filename, int64_t maxWanted ){
 	return 0;
 }
 
-
 bool getGrantAwards(int64_t nHeight){
 	//nHeight is the current block height
 	if( !isGrantAwardBlock( nHeight ) ){
@@ -264,9 +263,7 @@ bool ensureGrantDatabaseUptoDate(int64_t nHeight){
 			deSerializeGrantDB( ( GetDataDir() / "ratings/grantdb.dat" ).string().c_str(), requiredGrantDatabaseHeight );
 	}
 
- //NOTE: This has been removed... why?
- /*
-    if( grantDatabaseBlockHeight > requiredGrantDatabaseHeight ){
+ /*   if( grantDatabaseBlockHeight > requiredGrantDatabaseHeight ){
         LogPrintf("Grant database has processed too many blocks. Needs to be rebuilt. %lld", nHeight );
 		balances.clear();
 		for(int i = 0;i < numberOfOffices + 1;i++){
@@ -274,8 +271,8 @@ bool ensureGrantDatabaseUptoDate(int64_t nHeight){
         }
         gdBlockPointer = pindexGenesisBlock;
         grantDatabaseBlockHeight = -1;
-	}
-*/
+	}*/
+
     while(grantDatabaseBlockHeight < requiredGrantDatabaseHeight ){
         processNextBlockIntoGrantDatabase();
 	}
@@ -333,9 +330,7 @@ void processNextBlockIntoGrantDatabase(){
 
 	LogPrintf("  Processing the Next Block into the Grant Database for Block: %ld\n",grantDatabaseBlockHeight+1);
 
-	//NOTE: Process the latest block.
 	CBlock block;
-	//If it's the first block, we'll start with the Genesis Block
 
 	if(gdBlockPointer != NULL){
 		gdBlockPointer = chainActive.Tip();
@@ -344,8 +339,6 @@ void processNextBlockIntoGrantDatabase(){
 	}
 
 	ReadBlockFromDisk(block, gdBlockPointer);
-    //block.ReadFromDisk(gdBlockPointer,true); //Litecoin codebase method
-	//Look at all transactions in the block to update balances and see if they contain voting preferences
 
 	for (unsigned int i = 0; i < block.vtx.size(); 	i++)	{
 		std::map<std::string,int64_t > votes;

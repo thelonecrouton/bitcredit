@@ -1955,13 +1955,29 @@ void static BuildAddrIndex(const CScript &script, const CExtDiskTxPos &pos, std:
     }
 }
 
-std::map<std::string,int64_t> addressvalue;
 std::map<std::string,int64_t>::iterator addrvalit;
-boost::circular_buffer<string> last20miners((20));
+std::map<std::string,int64_t> getbalances(){
+std::map<std::string,int64_t> addressvalue;
+	ifstream myfile ((GetDataDir()/ "balances.dat").string().c_str());
+	char * pEnd;
+	std::string line;
+	if (myfile.is_open()){
+		while ( myfile.good() ){
+			getline (myfile,line);
+			if (line.empty()) continue;
+			std::vector<std::string> strs;
+			boost::split(strs, line, boost::is_any_of(","));
+			addressvalue[strs[0]]=strtoll(strs[1].c_str(),&pEnd,10);
+		}
+		myfile.close();
+	}
+	return addressvalue;
+}
 
 void serializeDB(string filename){
 
 		ofstream db;
+		std::map<std::string,int64_t> addressvalue = getbalances();
 		db.open (filename.c_str(), std::ofstream::trunc);
 
 		for(addrvalit = addressvalue.begin();addrvalit != addressvalue.end();++addrvalit){
@@ -1975,7 +1991,7 @@ void serializeDB(string filename){
 bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pindex, CCoinsViewCache& view, bool fJustCheck)
 {
     AssertLockHeld(cs_main);
-
+	std::map<std::string,int64_t> addressvalue = getbalances();
     // Check it again in case a previous version let a bad block in
     if (!CheckBlock(block, state, !fJustCheck, !fJustCheck))
         return false;
@@ -2149,36 +2165,20 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
 		CBlock blockprev;
 		ReadBlockFromDisk(blockprev, pindex->pprev);
 		std::string line;
-		bool found =false;
-		CTxDestination address, address2;
+		CTxDestination address;
 		ExtractDestination(block.vtx[0].vout[0].scriptPubKey, address);
-		ExtractDestination(blockprev.vtx[0].vout[0].scriptPubKey, address2);
-		string prevAddressString = CBitcreditAddress(address2).ToString().c_str();
 		string newAddressString = CBitcreditAddress(address).ToString().c_str();
-		/*if (block.vtx[0].vout[0].scriptPubKey == blockprev.vtx[0].vout[0].scriptPubKey){
+		
+		if (block.vtx[0].vout[0].scriptPubKey == blockprev.vtx[0].vout[0].scriptPubKey){
         return state.DoS(100, error("ConnectBlock(): consecutive coinbase key detected"), REJECT_INVALID, "consecutive-coinbase");
-		}*/
-		for (unsigned int i =0 ; i < last20miners.size(); ++i){
-			if (!(last20miners[i] == newAddressString)){
-				last20miners.push_back(newAddressString);
-			}else{
-				return state.DoS(100, error("ConnectBlock(): consecutive coinbase key detected"), REJECT_INVALID, "consecutive-coinbase");
-			}
 		}
 		
-		map<std::string,int64_t>::iterator it;
-		it = addressvalue.find(newAddressString);
-		if(it != addressvalue.end()){
-			if (it->second > 50000*COIN)
-				found =true;
-		}  
-		 
-		if (!found)return state.DoS(100, error("ConnectBlock(): banknode miningkey invalid"), REJECT_INVALID, "invalid-bnminingkey");
-
-	if (pindex->nHeight% 900==0 && (block.vtx[0].vout.size()<5)){
-        return state.DoS(100, error("ConnectBlock(): payout block has less outputs than expected"), REJECT_INVALID, "payout-block");
-		}
-
+		addrvalit = addressvalue.find(newAddressString);
+		if(addrvalit != addressvalue.end()){
+			if (!(addrvalit->second > 50000*COIN))
+				return state.DoS(100, error("ConnectBlock(): banknode miningkey invalid"), REJECT_INVALID, "invalid-bnminingkey");
+		}  		 
+		
 		LOCK(grantdb);
 		int64_t grantAward = 0;
 		if( isGrantAwardBlock( pindex->nHeight ) ){
@@ -2243,14 +2243,25 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
 	{
     BOOST_FOREACH(const CTransaction& tx, block.vtx){
 
+		{
+		ofstream db;
+		CTxDestination m;
+		ExtractDestination(tx.vout[0].scriptPubKey, m);
+		string miner = CBitcreditAddress(m).ToString().c_str();
+		db.open ((GetDataDir() / "miners.dat" ).string().c_str(), std::ofstream::app);
+		db << miner<< ","<<pindex->nHeight<< endl;
+		}
+
 		for (unsigned int j = 0; j < tx.vout.size();j++){
 			CTxDestination address;
 			ExtractDestination(tx.vout[j].scriptPubKey, address);
 			string receiveAddress = CBitcreditAddress( address ).ToString().c_str();
 			int64_t theAmount = tx.vout[ j ].nValue;
 			addressvalue[receiveAddress] = addressvalue[receiveAddress] + theAmount;
+			
 			if (fDebug)LogPrintf("New vout  address:- %s , amount :-%d\n",receiveAddress, theAmount);
 		}
+		
 
         for (size_t i = 0; i < tx.vin.size(); i++){
 			if (tx.IsCoinBase())
