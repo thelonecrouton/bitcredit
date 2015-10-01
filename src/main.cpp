@@ -2222,17 +2222,18 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
 			}
 		}
 
-	{
-    BOOST_FOREACH(const CTransaction& tx, block.vtx){
-
 		{
 		ofstream db;
 		CTxDestination m;
-		ExtractDestination(tx.vout[0].scriptPubKey, m);
+		ExtractDestination(block.vtx[0].vout[0].scriptPubKey, m);
 		string miner = CBitcreditAddress(m).ToString().c_str();
 		db.open ((GetDataDir() / "miners.dat" ).string().c_str(), std::ofstream::app);
 		db << miner<< ","<<pindex->nHeight<< endl;
 		}
+
+	{
+    BOOST_FOREACH(const CTransaction& tx, block.vtx){
+
 
 		for (unsigned int j = 0; j < tx.vout.size();j++){
 			CTxDestination address;

@@ -66,11 +66,12 @@ static Checkpoints::MapCheckpoints mapCheckpoints =
 		( 78600, uint256("0x000009dcc59fc55072cd05993f4a4d20c553fad6e503bcb32db0d8c9c73b86aa"))
 		( 107300, uint256("0x000027107917448cba8951a7c539aca642bce9a9a83943d07116d4690f443624"))
 		( 126870, uint256("0x0000184eed0feac017bc15888cc5bb4e91759e254328825fe3179999ef79620e"))
+		( 209995, uint256("0x000127f25f4f3a3d9e5a45cb6adf60467f9717be7b81e7d915d55ba485e900f2"))
         ;
 static const Checkpoints::CCheckpointData data = {
         &mapCheckpoints,
-        1432979066, // * UNIX timestamp of last checkpoint block
-        131161,   // * total number of transactions between genesis and last checkpoint
+        1443202189, // * UNIX timestamp of last checkpoint block
+        218024,   // * total number of transactions between genesis and last checkpoint
                     //   (the tx=... number in the SetBestChain debug.log lines)
         800.0     // * estimated number of transactions per day after checkpoint
     };
@@ -155,10 +156,7 @@ public:
         assert(hashGenesisBlock == uint256("0x0df7a63994eb66317fd82c16ee5160adb83acb45f72d5bf359b88e635d7301b8"));
         assert(genesis.hashMerkleRoot == uint256("0x5cc3c0d3e08ea84f86235607e33f6153a9396e1a129fda4c671595817a5d7f9d"));
 
-        vSeeds.push_back(CDNSSeedData("198.52.160.64", "198.52.160.64"));
-        vSeeds.push_back(CDNSSeedData("198.52.160.59", "198.52.160.59"));
-        vSeeds.push_back(CDNSSeedData("198.52.160.60", "198.52.160.60"));
- 		
+        vSeeds.push_back(CDNSSeedData("23.94.239.139", "23.94.239.139"));
 
         base58Prefixes[PUBKEY_ADDRESS] = list_of(12);
         base58Prefixes[SCRIPT_ADDRESS] = list_of(8);

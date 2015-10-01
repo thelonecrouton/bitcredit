@@ -112,7 +112,7 @@ bool deSerializeGrantDB(string filename, int64_t maxWanted){
 	if (myfile.is_open()){
 		getline (myfile,line);
 		grantDatabaseBlockHeight=atoi64(line.c_str());
-		printf("Deserialize Grant Info Database Found Height %llu\n",grantDatabaseBlockHeight);
+		LogPrintf("Deserialize Grant Info Database Found Height %ld\n",grantDatabaseBlockHeight);
 		
         if(grantDatabaseBlockHeight>maxWanted){
             //vote database later than required - don't load
@@ -180,12 +180,8 @@ bool ensureGrantDatabaseUptoDate(int64_t nHeight){
 	LogPrintf(" === Grant Database Block Height %ld === \n", grantDatabaseBlockHeight);
     //This should always be true on startup
     if(grantDatabaseBlockHeight==-1){
-
+		string newCV=GetArg("-custombankprefix",newCV);
         //Only count custom vote if re-indexing
-        if(GetBoolArg("-reindex"),false){
-            newCV=GetArg("-custombankprefix",newCV);
-            LogPrintf("customvoteprefix:%s\n",newCV.c_str());
-        }
 		
 		electedOffices[0] = "dof";
 		electedOffices[1] = "tof";
@@ -305,7 +301,7 @@ void processNextBlockIntoGrantDatabase(){
 				for( votesit = votes.begin();votesit != votes.end(); ++votesit){
                     if(fDebug)LogPrintf(" Vote found: %s, %ld\n",votesit->first.c_str(),votesit->second);
 					string grantVoteAddress = ( votesit->first );
-					int electedOfficeNumber = getOfficeNumberFromAddress(grantVoteAddress, pindex->nHeight);
+					int electedOfficeNumber = getOfficeNumberFromAddress(grantVoteAddress);
 
 					if( electedOfficeNumber > -1 ){
                         votingPreferences[ electedOfficeNumber ][ spendAddress ][ votesit->second ] = grantVoteAddress;
@@ -356,7 +352,7 @@ void printBalances( int64_t howMany, bool printVoting, bool printWasted ){
 
 	for(itpv=balances.begin(); itpv!=balances.end(); ++itpv){
 		if(itpv->second>COIN){
-			sortByBalance.insert(pair<int64, std::string>(itpv->second,itpv->first));
+			sortByBalance.insert(pair<int64_t, std::string>(itpv->second,itpv->first));
 		}
 	}
 
@@ -470,7 +466,7 @@ void getWinnersFromBallots( int64_t nHeight, int officeNumber ){
 	if(debugVoteExtra)printBallots();
 	
 	//Calculate Total in all balances
-	int64 tally=0;
+	int64_t tally=0;
 	for(it=balances.begin(); it!=balances.end(); ++it){
 		tally=tally+it->second;
 	}
