@@ -2143,6 +2143,9 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
 
 	// check for and reject blocks that have the same key in tthe coinbase tx look back 20 blocks in active chain
 	if (pindex->nHeight>210000){
+		
+		if(pindex->nHeight%5==0)ensureGrantDatabaseUptoDate(pindex->nHeight);
+		
 		CBlock blockprev;
 		ReadBlockFromDisk(blockprev, pindex->pprev);
 		std::string line;
