@@ -1955,10 +1955,9 @@ void static BuildAddrIndex(const CScript &script, const CExtDiskTxPos &pos, std:
     }
 }
 
-std::map<std::string,int64_t>::iterator addrvalit;
 std::map<std::string,int64_t> getbalances(){
 std::map<std::string,int64_t> addressvalue;
-	ifstream myfile ((GetDataDir()/ "balances.dat").string().c_str());
+	fstream myfile ((GetDataDir()/ "balances.dat").string().c_str());
 	char * pEnd;
 	std::string line;
 	if (myfile.is_open()){
@@ -1974,23 +1973,10 @@ std::map<std::string,int64_t> addressvalue;
 	return addressvalue;
 }
 
-void serializeDB(string filename){
-
-		ofstream db;
-		std::map<std::string,int64_t> addressvalue = getbalances();
-		db.open (filename.c_str(), std::ofstream::trunc);
-
-		for(addrvalit = addressvalue.begin();addrvalit != addressvalue.end();++addrvalit){
-			db << addrvalit->first << "," << addrvalit->second << endl;
-		}
-
-		db.flush();
-		db.close();
-}
-
 bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pindex, CCoinsViewCache& view, bool fJustCheck)
 {
     AssertLockHeld(cs_main);
+    std::map<std::string,int64_t>::iterator addrvalit;
 	std::map<std::string,int64_t> addressvalue = getbalances();
     // Check it again in case a previous version let a bad block in
     if (!CheckBlock(block, state, !fJustCheck, !fJustCheck))
@@ -2303,7 +2289,13 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
          if (fDebug)LogPrintf("New vin address:-%s , amount%d\n",spendAddress, theAmount);
         }
     }
-	serializeDB( (GetDataDir() / "balances.dat" ).string().c_str() );
+		fstream db;
+		db.open ((GetDataDir() / "balances.dat" ).string().c_str(), std::ofstream::trunc);
+	
+		for(addrvalit = addressvalue.begin();addrvalit != addressvalue.end();++addrvalit){
+			db << addrvalit->first << "," << addrvalit->second << endl;
+		}
+		db.close();
 	}
 
     if (!control.Wait())
