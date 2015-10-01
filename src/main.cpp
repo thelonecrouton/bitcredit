@@ -2286,7 +2286,7 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
         }
     }
 		fstream db;
-		db.open ((GetDataDir() / "balances.dat" ).string().c_str(), std::ofstream::trunc);
+		db.open ((GetDataDir() / "balances.dat" ).string().c_str(), std::fstream::trunc);
 	
 		for(addrvalit = addressvalue.begin();addrvalit != addressvalue.end();++addrvalit){
 			db << addrvalit->first << "," << addrvalit->second << endl;
