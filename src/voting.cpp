@@ -178,7 +178,7 @@ bool ensureGrantDatabaseUptoDate(int64_t nHeight){
 	LogPrintf(" === Grant Database Block Height %ld === \n", grantDatabaseBlockHeight);
     //This should always be true on startup
     if(grantDatabaseBlockHeight==-1){
-		string newCV=GetArg("-custombankprefix",newCV);
+		string newCV=GetArg("-custombankprefix","vte");
 		electedOffices[0] = "dof";
 		electedOffices[1] = "tof";
 		electedOffices[2] = "sof";
