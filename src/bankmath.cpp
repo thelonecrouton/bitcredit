@@ -1,4 +1,4 @@
-//Copyrights, no copyrights for anyone, copy this and use it outside Bitcredits:- you pay me 100 BTC , hope that's clear enough
+//Copyrights, no copyrights for anyone, copy this and use it outside Bitcredit:- you pay me 1000 BTC , hope that's clear enough
 //property of The Author aka Minato aka bitcreditscc you cannot use unless u pay me!!
 
 #include "bankmath.h"
@@ -7,7 +7,7 @@
 #include <math.h>
 #include "activebanknode.h"
 Rawdata data;
-//CBanknodeMan mnodeman;
+
 double Bankmath::savefactor()
 { 
 	

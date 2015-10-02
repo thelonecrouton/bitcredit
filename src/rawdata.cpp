@@ -209,7 +209,7 @@ CAmount Rawdata::Getgblmoneysupply()
 
 CAmount Rawdata::Getgrantstotal()
 {
-	int blocks = chainActive.Height() - 40000;
+	int blocks = chainActive.Height() - 210000;
 	int totalgr = blocks * 10;
 	return totalgr;  
 }

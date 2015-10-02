@@ -108,7 +108,7 @@ bool deSerializeGrantDB(string filename, int64_t maxWanted){
 	ifstream myfile;
 	
 	myfile.open (filename.c_str());	
-	//ifstream myfile ("grantsdb.dat");
+
 	if (myfile.is_open()){
 		getline (myfile,line);
 		grantDatabaseBlockHeight=atoi64(line.c_str());
@@ -151,7 +151,6 @@ bool deSerializeGrantDB(string filename, int64_t maxWanted){
         }
 
 		myfile.close();
-		LogPrintf("Insufficent number of blocks loaded %s\n");
 		//Set the pointer to next block to process
 		gdBlockPointer=chainActive.Genesis();
 		for(int i=0;i<grantDatabaseBlockHeight;i++){
@@ -163,7 +162,6 @@ bool deSerializeGrantDB(string filename, int64_t maxWanted){
 		}
 		return true;
 	}
-	return 0;
 }
 
 bool getGrantAwards(int64_t nHeight){
@@ -181,8 +179,6 @@ bool ensureGrantDatabaseUptoDate(int64_t nHeight){
     //This should always be true on startup
     if(grantDatabaseBlockHeight==-1){
 		string newCV=GetArg("-custombankprefix",newCV);
-        //Only count custom vote if re-indexing
-		
 		electedOffices[0] = "dof";
 		electedOffices[1] = "tof";
 		electedOffices[2] = "sof";
@@ -191,7 +187,6 @@ bool ensureGrantDatabaseUptoDate(int64_t nHeight){
 		electedOffices[5] = newCV;
     }
 
-    //NOTE: nHeight is the current block height
     //NOTE: requiredgrantdatabaseheight is 5 less than the current block
 	int64_t requiredGrantDatabaseHeight =nHeight-GRANTBLOCKINTERVAL;
 
