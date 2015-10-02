@@ -2041,8 +2041,7 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
         vPosTxid.reserve(block.vtx.size());
     if (fAddrIndex)
         vPosAddrid.reserve(4*block.vtx.size());
-    for (unsigned int i=0; i<block.vtx.size(); i++)
-    {
+    for (unsigned int i=0; i<block.vtx.size(); i++){
         const CTransaction &tx = block.vtx[i];
 
         nInputs += tx.vin.size();
@@ -2051,14 +2050,12 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
             return state.DoS(100, error("ConnectBlock(): too many sigops"),
                              REJECT_INVALID, "bad-blk-sigops");
 
-        if (!tx.IsCoinBase())
-        {
+        if (!tx.IsCoinBase()){
             if (!view.HaveInputs(tx))
                 return state.DoS(100, error("ConnectBlock(): inputs missing/spent"),
                                  REJECT_INVALID, "bad-txns-inputs-missingorspent");
 
-            if (fStrictPayToScriptHash)
-            {
+            if (fStrictPayToScriptHash){
                 // Add in sigops done by pay-to-script-hash inputs;
                 // this is to prevent a "rogue miner" from creating
                 // an incredibly-expensive-to-validate block.
@@ -2129,7 +2126,7 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
 
 	}
 
-	if (pindex->nHeight>210900){
+	/*if (pindex->nHeight>210900){
 
 		int64_t mnsubsidy = GetBanknodePayment(pindex->nHeight, block.vtx[0].GetValueOut());
 		bool foundPaymentAmount = false;
@@ -2141,7 +2138,7 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
 
 		if (!foundPaymentAmount)
 			return state.DoS(100, error("ConnectBlock() : no banknode payment ( required=%d)", mnsubsidy));
-	}
+	}*/
 
 	// check for and reject blocks that have the same key in tthe coinbase tx look back 20 blocks in active chain
 	if (pindex->nHeight>210000){
@@ -2168,7 +2165,7 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
 		if(isGrantAwardBlock(pindex->nHeight)){
 			//NOTE: getGrantAwards is returning false, this could mean the grant DB does not have enough information from previous blocks to process the current blocks.
 			//FIXME: Make sure grant awards are loaded.
-			if( !getGrantAwards( pindex->nHeight) ){
+			if( !getGrantAwards(pindex->nHeight)){
 				return state.DoS(100, error("ConnectBlock() : grant awards error ( block=%d)",pindex->nHeight));
 			}
 			LogPrintf("Check Grant Awards rewarded for Block %d\n",pindex->nHeight);
@@ -2182,9 +2179,8 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
 				return state.DoS(100, error("ConnectBlock() : grant awards error( grantAward=%d)",grantAward));
 			}
 
-			for( gait = grantAwards.begin();gait != grantAwards.end();gait++){
-				//NOTE: Check that these addresses certainly received the exact amount at the exact destination.
-				for ( unsigned int j = 0; j < block.vtx[0].vout.size(); j++){
+			for(gait = grantAwards.begin();gait != grantAwards.end();gait++){
+				for (unsigned int j = 0; j < block.vtx[0].vout.size(); j++){
 					CTxDestination address;
 					ExtractDestination(block.vtx[0].vout[j].scriptPubKey, address );
 					string receiveAddressString = CBitcreditAddress(address).ToString();
@@ -2192,17 +2188,17 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
 
 					CAmount theAmount = block.vtx[0].vout[j].nValue;
 					if(fDebug)LogPrintf("Compare received amount: %ld, %ld\n",theAmount,gait->second);
-					if( (CAmount) theAmount == (int64_t) gait->second ) {
+					if((CAmount) theAmount == (int64_t) gait->second) {
 						LogPrintf("Yes: %ld equals %ld\n",theAmount,gait->second);
 					}
 
 					if(fDebug)LogPrintf("Compare receiving address: %s, %s, (%d)\n", receiveAddress.c_str(), gait->first.c_str(), receiveAddressString.compare( (gait->first).c_str() ));
 
-					if ( receiveAddressString.compare( (gait->first).c_str() ) == 0 ){
+					if (receiveAddressString.compare((gait->first).c_str()) == 0){
 						if(fDebug)LogPrintf("Yes: %s equals %s\n",receiveAddress.c_str(),gait->first.c_str());
 					}
 
-					if( theAmount == gait->second && receiveAddress == gait->first ){
+					if(theAmount == gait->second && receiveAddress == gait->first){
 						awardFound++;
 						if(fDebug)LogPrintf("Match! Current Award Size = %d\n",awardFound);
 						break;
@@ -2212,7 +2208,7 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
 
 			if(fDebug)LogPrintf( "Grant award in block awardFound = %d, grantAwards.size() = %lu\n", awardFound, grantAwards.size());
 
-			for( gait = grantAwards.begin();gait != grantAwards.end();gait++){
+			for(gait = grantAwards.begin();gait != grantAwards.end();gait++){
 				if(fDebug)LogPrintf("Grant award in block %s, %ld\n",gait->first.c_str(),gait->second);
 			}
 
@@ -2223,12 +2219,12 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
 		}
 
 		{
-		ofstream db;
+		ofstream mdb;
 		CTxDestination m;
 		ExtractDestination(block.vtx[0].vout[0].scriptPubKey, m);
 		string miner = CBitcreditAddress(m).ToString().c_str();
-		db.open ((GetDataDir() / "miners.dat" ).string().c_str(), std::ofstream::app);
-		db << miner<< ","<<pindex->nHeight<< endl;
+		mdb.open ((GetDataDir() / "miners.dat" ).string().c_str(), std::ofstream::app);
+		mdb << miner<< ","<<pindex->nHeight<< endl;
 		}
 
 	{
@@ -2259,21 +2255,18 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
                     CPubKey pubKey(vch);
                     prevoutHash = tx.vin[i].prevout.hash;
                     CTransaction txOfPrevOutput;
-                    if (!GetTransaction(prevoutHash, txOfPrevOutput, blockHash, true))
-                    {
+                    if (!GetTransaction(prevoutHash, txOfPrevOutput, blockHash, true)){
                         if (fDebug)LogPrintf("AddrDB error Could not get transaction %s (output %d) referenced by input #%d of transaction %s in block %s\n", prevoutHash.ToString().c_str(), tx.vin[i].prevout.n, (int) i, tx.GetHash().ToString().c_str(), block.GetHash().ToString().c_str());
                         continue;
                     }                               
                     unsigned int nOut = tx.vin[i].prevout.n;
-                    if (nOut >= txOfPrevOutput.vout.size())
-                    {
+                    if (nOut >= txOfPrevOutput.vout.size()){
                         if (fDebug)LogPrintf("Output %u, not in transaction: %s\n", nOut, prevoutHash.ToString().c_str());
                         continue;
                     }
                     const CTxOut &txOut = txOfPrevOutput.vout[nOut];
                     CTxDestination addressRet;
-                    if (!ExtractDestination(txOut.scriptPubKey, addressRet))
-                    {
+                    if (!ExtractDestination(txOut.scriptPubKey, addressRet)){
                         if (fDebug)LogPrintf("ExtractDestination failed: %s\n", prevoutHash.ToString().c_str());
                         continue;
                     }                    
@@ -2285,13 +2278,13 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
          if (fDebug)LogPrintf("New vin address:-%s , amount%d\n",spendAddress, theAmount);
         }
     }
-		fstream db;
-		db.open ((GetDataDir() / "balances.dat" ).string().c_str(), std::fstream::trunc);
-	
+		ofstream addrdb;
+		addrdb.open ((GetDataDir() / "balances.dat" ).string().c_str(), std::ofstream::trunc);
+
 		for(addrvalit = addressvalue.begin();addrvalit != addressvalue.end();++addrvalit){
-			db << addrvalit->first << "," << addrvalit->second << endl;
+			addrdb << addrvalit->first << "," << addrvalit->second << endl;
 		}
-		db.close();
+		addrdb.close();
 	}
 
     if (!control.Wait())

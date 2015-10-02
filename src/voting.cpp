@@ -236,9 +236,7 @@ void printVotingPrefs(std::string address){
 
 }
 
-void processNextBlockIntoGrantDatabase(){
-
-	
+void processNextBlockIntoGrantDatabase(){	
 	CBlock block;
 
 	if(gdBlockPointer != NULL){
@@ -436,7 +434,6 @@ bool getGrantAwardsFromDatabaseForBlock(int64_t nHeight){
 				}
 			}
 		}
-		//if(debugVote)printBalances(100,true,false);
 		//TODO: decrease intensity of this function.
 		getWinnersFromBallots( nHeight, i );
 		//At this point, we know the vote winners - now to see if grants are to be awarded
@@ -453,16 +450,13 @@ bool getGrantAwardsFromDatabaseForBlock(int64_t nHeight){
 	if(debugVote)printCandidateSupport();
 	}
 
-
 	if(debugVote){grantAwardsOutput.close();}
 	return true;
 }
 
 void getWinnersFromBallots( int64_t nHeight, int officeNumber ){
 
-	if(debugVote)grantAwardsOutput <<"\n\n\n--------"<< electedOffices[officeNumber]<<"--------\n";
-	
-	
+	if(debugVote)grantAwardsOutput <<"\n\n\n--------"<< electedOffices[officeNumber]<<"--------\n";	
 	if(debugVoteExtra)printBallots();
 	
 	//Calculate Total in all balances
