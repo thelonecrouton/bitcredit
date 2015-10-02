@@ -190,7 +190,7 @@ bool ensureGrantDatabaseUptoDate(int64_t nHeight){
     //NOTE: requiredgrantdatabaseheight is 5 less than the current block
 	int64_t requiredGrantDatabaseHeight =nHeight-GRANTBLOCKINTERVAL;
 
- 	LogPrintf("Checking Grant Database is updated. ===\n=== Required Height : %ld, requested from: %ld ===\n",requiredGrantDatabaseHeight, nHeight);
+ 	LogPrintf("Checking GDB is updated...Required Height : %ld, requested from: %ld \n",requiredGrantDatabaseHeight, nHeight);
     //Maybe we don't have to count votes from the start - let's check if there's a recent vote database stored
     if(grantDatabaseBlockHeight== -1){
 			deSerializeGrantDB((GetDataDir() / "ratings/grantdb.dat" ).string().c_str(), requiredGrantDatabaseHeight );
@@ -239,7 +239,19 @@ void processNextBlockIntoGrantDatabase(){
 	}else{
 		gdBlockPointer = chainActive.Genesis();
 	}
+/*
+ * 	CBlock block;
+    CBlockIndex* pblockindex = chainActive[209980];
+    std::string hex = pblockindex->phashBlock->GetHex();     
+    uint256 hash(hex);
 
+	if(gdBlockPointer != NULL){
+		gdBlockPointer = chainActive.Tip();
+	}else{
+		gdBlockPointer = mapBlockIndex[hash];
+	}
+ * further study required
+*/
 	ReadBlockFromDisk(block, gdBlockPointer);
 	
 		std::map<std::string,int64_t > votes;

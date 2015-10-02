@@ -2189,7 +2189,7 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
 					CAmount theAmount = block.vtx[0].vout[j].nValue;
 					if(fDebug)LogPrintf("Compare received amount: %ld, %ld\n",theAmount,gait->second);
 					if((CAmount) theAmount == (int64_t) gait->second) {
-						LogPrintf("Yes: %ld equals %ld\n",theAmount,gait->second);
+						if(fDebug)LogPrintf("Yes: %ld equals %ld\n",theAmount,gait->second);
 					}
 
 					if(fDebug)LogPrintf("Compare receiving address: %s, %s, (%d)\n", receiveAddress.c_str(), gait->first.c_str(), receiveAddressString.compare( (gait->first).c_str() ));

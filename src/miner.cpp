@@ -675,7 +675,17 @@ void static BitcreditMiner(CWallet *pwallet)
     // Each thread has its own key and counter
     CReserveKey reservekey(pwallet);
     unsigned int nExtraNonce = 0;
-
+    
+    // get the address used for the last block, don't bother checking address validity,
+    // that will be done in TestBlockValidity
+	CBlock blockprev;
+	CBlockIndex* pindex = chainActive.Tip();
+	ReadBlockFromDisk(blockprev, pindex->pprev);
+	CTxDestination address;
+	ExtractDestination(blockprev.vtx[0].vout[0].scriptPubKey, address);
+	string lastAddressString = CBitcreditAddress(address).ToString().c_str();
+	string miningaddr =	GetArg("-bnminingkey", "");	
+    
     try {
         while (true) {
             if (Params().MiningRequiresPeers()) {
@@ -691,6 +701,12 @@ void static BitcreditMiner(CWallet *pwallet)
                         break;
                     MilliSleep(1000);
                 } while (true);
+            }
+
+            if (lastAddressString == miningaddr) {
+                // Busy-wait since we mined the last block - don't trigger DoS 
+                LogPrintf("mininkey : %s,  miningaddr : %s keys consecutive , sleeping for a minute.\n", lastAddressString, miningaddr);
+				MilliSleep(60000); //wait one minute and try again
             }
 
             //
