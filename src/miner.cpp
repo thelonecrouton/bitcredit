@@ -703,11 +703,11 @@ void static BitcreditMiner(CWallet *pwallet)
                 } while (true);
             }
 
-            if (lastAddressString == miningaddr) {
+            while (lastAddressString == miningaddr) {
                 // Busy-wait since we mined the last block - don't trigger DoS 
                 if(fDebug)LogPrintf("mininkey : %s,  miningaddr : %s keys consecutive , sleeping for a minute.\n", lastAddressString, miningaddr);
 				MilliSleep(60000); //wait one minute and try again
-				break;
+
             }
 
             //
