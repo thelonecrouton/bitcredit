@@ -167,14 +167,13 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn)
 		ispayoutblock=true;
 	}
 
-	if(isGrantAwardBlock(chainActive.Tip()->nHeight +1))
-		{
-			if( !getGrantAwards(chainActive.Tip()->nHeight+1) ){
-				throw std::runtime_error( "ConnectBlock() : Connect Block grant awards error.\n" );
-			}
-			isgrantblock = true;
-			if(fDebug)LogPrintf("Retrieved Grant Rewards, Add to Block %d \n", chainActive.Tip()->nHeight+1);
+	if(isGrantAwardBlock(chainActive.Tip()->nHeight +1)){
+		if( !getGrantAwards(chainActive.Tip()->nHeight+1) ){
+			throw std::runtime_error( "ConnectBlock() : Connect Block grant awards error.\n" );
 		}
+		isgrantblock = true;
+		if(fDebug)LogPrintf("Retrieved Grant Rewards, Add to Block %d \n", chainActive.Tip()->nHeight+1);
+	}
 
    { //coinbase size
 	    LOCK(grantdb);
