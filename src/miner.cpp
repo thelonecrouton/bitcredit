@@ -622,14 +622,36 @@ void IncrementExtraNonce(CBlock* pblock, CBlockIndex* pindexPrev, unsigned int& 
 //
 double dHashesPerMin = 0.0;
 int64_t nHPSTimerStart = 0;
-
+std::vector<std::string> miningkeys;
 CBlockTemplate* CreateNewBlockWithKey(CReserveKey& reservekey)
 {
-	CBitcreditAddress address(GetArg("-bnminingkey", ""));
-	CTxDestination dest = address.Get();
-	CScript scriptPubKey =  GetScriptForDestination(dest);
-	return CreateNewBlock(scriptPubKey);
+	std::ifstream file((GetDataDir() / "miningkeys.dat" ).string().c_str());
+	CScript scriptPubKey;
+	std::string line;
+	CBlock blockprev;
+	CBlockIndex* pindex = chainActive.Tip();
+	ReadBlockFromDisk(blockprev, pindex);
+	CTxDestination dest,m;
+	ExtractDestination(blockprev.vtx[0].vout[0].scriptPubKey, m);
+	string n = CBitcreditAddress(m).ToString().c_str();
+	
+	while (std::getline(file, line)){
+    if (!line.empty())
+        miningkeys.push_back(line);
+	}
 
+	for(unsigned int i=0; i < miningkeys.size(); i++){
+		CBitcreditAddress address(miningkeys[i]);
+		dest = address.Get();
+		scriptPubKey =  GetScriptForDestination(dest);
+		LogPrintf("key new  %s , keyprev     %s\n",miningkeys[i], n);
+		if (n == miningkeys[i]){			 
+			 continue;			
+		}
+		break;
+	}
+	
+	return CreateNewBlock(scriptPubKey);	
 }
 
 bool ProcessBlockFound(CBlock* pblock, CWallet& wallet, CReserveKey& reservekey)
@@ -678,13 +700,6 @@ void static BitcreditMiner(CWallet *pwallet)
     
     // get the address used for the last block, don't bother checking address validity,
     // that will be done in TestBlockValidity
-	CBlock blockprev;
-	CBlockIndex* pindex = chainActive.Tip();
-	ReadBlockFromDisk(blockprev, pindex->pprev);
-	CTxDestination address;
-	ExtractDestination(blockprev.vtx[0].vout[0].scriptPubKey, address);
-	string lastAddressString = CBitcreditAddress(address).ToString().c_str();
-	string miningaddr =	GetArg("-bnminingkey", "");	
     
     try {
         while (true) {
@@ -701,13 +716,6 @@ void static BitcreditMiner(CWallet *pwallet)
                         break;
                     MilliSleep(1000);
                 } while (true);
-            }
-
-            while (lastAddressString.c_str() == miningaddr.c_str()) {
-                // Busy-wait since we mined the last block - don't trigger DoS 
-                if(fDebug)LogPrintf("mininkey : %s,  miningaddr : %s keys consecutive , sleeping for a minute.\n", lastAddressString, miningaddr);
-				MilliSleep(60000); //wait one minute and try again
-
             }
 
             //
