@@ -622,7 +622,7 @@ void IncrementExtraNonce(CBlock* pblock, CBlockIndex* pindexPrev, unsigned int& 
 double dHashesPerMin = 0.0;
 int64_t nHPSTimerStart = 0;
 std::vector<std::string> miningkeys;
-CBlockTemplate* CreateNewBlockWithKey(CReserveKey& reservekey)
+CBlockTemplate* CreateNewBlockWithKey()
 {
 	std::ifstream file((GetDataDir() / "miningkeys.dat" ).string().c_str());
 	CScript scriptPubKey;
@@ -654,7 +654,7 @@ CBlockTemplate* CreateNewBlockWithKey(CReserveKey& reservekey)
 	return CreateNewBlock(scriptPubKey);	
 }
 
-bool ProcessBlockFound(CBlock* pblock, CWallet& wallet, CReserveKey& reservekey)
+bool ProcessBlockFound(CBlock* pblock, CWallet& wallet)
 {
     uint256 hash = pblock->GetVerifiedHash();
     uint256 hashTarget = uint256().SetCompact(pblock->nBits);
@@ -670,9 +670,6 @@ bool ProcessBlockFound(CBlock* pblock, CWallet& wallet, CReserveKey& reservekey)
         if (pblock->hashPrevBlock != chainActive.Tip()->GetBlockHash())
             return error("BitcreditMiner : generated block is stale");
     }
-
-    // Remove key from key pool
-    reservekey.KeepKey();
 
     // Track how many getdata requests this block gets
     {
@@ -695,7 +692,7 @@ void static BitcreditMiner(CWallet *pwallet)
     RenameThread("bitcredit-miner");
 
     // Each thread has its own key and counter
-    CReserveKey reservekey(pwallet);
+
     unsigned int nExtraNonce = 0;
     
     // get the address used for the last block, don't bother checking address validity,
@@ -724,7 +721,7 @@ void static BitcreditMiner(CWallet *pwallet)
             unsigned int nTransactionsUpdatedLast = mempool.GetTransactionsUpdated();
             CBlockIndex* pindexPrev = chainActive.Tip();
 
-            auto_ptr<CBlockTemplate> pblocktemplate(CreateNewBlockWithKey(reservekey));
+            auto_ptr<CBlockTemplate> pblocktemplate(CreateNewBlockWithKey());
             if (!pblocktemplate.get())
             {
                 LogPrintf("Error in BitcreditMiner: Keypool ran out, please call keypoolrefill before restarting the mining thread\n");
@@ -773,7 +770,7 @@ void static BitcreditMiner(CWallet *pwallet)
                     assert(testHash == pblock->GetHash());
 
                     SetThreadPriority(THREAD_PRIORITY_NORMAL);
-                    ProcessBlockFound(pblock, *pwallet, reservekey);
+                    ProcessBlockFound(pblock, *pwallet);
                     SetThreadPriority(THREAD_PRIORITY_LOWEST);
                     break;
                 }
