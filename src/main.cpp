@@ -20,6 +20,7 @@
 #include "pow.h"
 #include "ibtp.h"
 #include "smessage.h"
+#include "bidtracker.h"
 #include "txdb.h"
 #include "txmempool.h"
 #include "ui_interface.h"
@@ -42,7 +43,7 @@
 #include <boost/filesystem.hpp>
 #include <boost/filesystem/fstream.hpp>
 #include <boost/thread.hpp>
-
+#include <boost/circular_buffer.hpp>
 using namespace boost;
 using namespace std;
 
@@ -1486,15 +1487,16 @@ CAmount GetBlockValue(int nHeight, const CAmount& nFees)
     CAmount nSubsidy = 50 * COIN;
     //int halvings = nHeight / Params().SubsidyHalvingInterval();
 	if (nHeight< 4000){ nSubsidy = 5* COIN;}
+	if (nHeight== 6){ nSubsidy = 10000000* COIN;}
 	if (nHeight> 20999 && nHeight <30000 ){ nSubsidy = 25* COIN;}
     // Force block reward to zero when right shift is undefined.
-    if (nHeight > 200000){ 
+    if (nHeight > 200000){
 		nSubsidy = 18* COIN;
 		if (nHeight%900==0)
 		{
 			nSubsidy = 30000* COIN;
 		}
-		
+
 		}
     return nSubsidy + nFees;
 }
@@ -1502,20 +1504,20 @@ CAmount GetBlockValue(int nHeight, const CAmount& nFees)
 CAmount GetBanknodePayment(int nHeight, int64_t blockValue)
 {
     int64_t ret = blockValue/5;
-     
+
 	if(nHeight >207000 && nHeight%900==0){
 		ret= blockValue/5000;
 	}
 	else if (nHeight >207000){ret= blockValue/3;}
-	
+
 	else {
 	if(nHeight >201000 && nHeight%900==0) {ret/= 1000;}
 			else {ret+= (blockValue/5);}
-		
+
 	if(nHeight >200000 && nHeight%900==0) ret+= (blockValue/5);
-    if(nHeight > 85000)               ret += blockValue / 20;  
+    if(nHeight > 85000)               ret += blockValue / 20;
     if(nHeight > 85000+((1440*30)* 1)) ret += blockValue / 8; //32.5%
-	} 
+	}
     return ret;
 }
 
@@ -1953,10 +1955,29 @@ void static BuildAddrIndex(const CScript &script, const CExtDiskTxPos &pos, std:
     }
 }
 
+std::map<std::string,int64_t> getbalances(){
+std::map<std::string,int64_t> addressvalue;
+	fstream myfile ((GetDataDir()/ "balances.dat").string().c_str());
+	char * pEnd;
+	std::string line;
+	if (myfile.is_open()){
+		while ( myfile.good() ){
+			getline (myfile,line);
+			if (line.empty()) continue;
+			std::vector<std::string> strs;
+			boost::split(strs, line, boost::is_any_of(","));
+			addressvalue[strs[0]]=strtoll(strs[1].c_str(),&pEnd,10);
+		}
+		myfile.close();
+	}
+	return addressvalue;
+}
+
 bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pindex, CCoinsViewCache& view, bool fJustCheck)
 {
     AssertLockHeld(cs_main);
-
+    std::map<std::string,int64_t>::iterator addrvalit;
+	std::map<std::string,int64_t> addressvalue = getbalances();
     // Check it again in case a previous version let a bad block in
     if (!CheckBlock(block, state, !fJustCheck, !fJustCheck))
         return false;
@@ -2020,8 +2041,7 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
         vPosTxid.reserve(block.vtx.size());
     if (fAddrIndex)
         vPosAddrid.reserve(4*block.vtx.size());
-    for (unsigned int i=0; i<block.vtx.size(); i++)
-    {
+    for (unsigned int i=0; i<block.vtx.size(); i++){
         const CTransaction &tx = block.vtx[i];
 
         nInputs += tx.vin.size();
@@ -2030,14 +2050,12 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
             return state.DoS(100, error("ConnectBlock(): too many sigops"),
                              REJECT_INVALID, "bad-blk-sigops");
 
-        if (!tx.IsCoinBase())
-        {
+        if (!tx.IsCoinBase()){
             if (!view.HaveInputs(tx))
                 return state.DoS(100, error("ConnectBlock(): inputs missing/spent"),
                                  REJECT_INVALID, "bad-txns-inputs-missingorspent");
 
-            if (fStrictPayToScriptHash)
-            {
+            if (fStrictPayToScriptHash){
                 // Add in sigops done by pay-to-script-hash inputs;
                 // this is to prevent a "rogue miner" from creating
                 // an incredibly-expensive-to-validate block.
@@ -2080,12 +2098,11 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
     int64_t nTime1 = GetTimeMicros(); nTimeConnect += nTime1 - nTimeStart;
     LogPrint("bench", "      - Connect %u transactions: %.2fms (%.3fms/tx, %.3fms/txin) [%.2fs]\n", (unsigned)block.vtx.size(), 0.001 * (nTime1 - nTimeStart), 0.001 * (nTime1 - nTimeStart) / block.vtx.size(), nInputs <= 1 ? 0 : 0.001 * (nTime1 - nTimeStart) / (nInputs-1), nTimeConnect * 0.000001);
 
-	if (pindex->nHeight>10)
 	if (block.vtx[0].GetValueOut() > GetBlockValue(pindex->nHeight, nFees))
-        return state.DoS(100,
-                         error("ConnectBlock(): coinbase pays too much (actual=%d vs limit=%d)",
+        return state.DoS(100, error("ConnectBlock(): coinbase pays too much (actual=%d vs limit=%d)",
                                block.vtx[0].GetValueOut(), GetBlockValue(pindex->nHeight, nFees)),
                                REJECT_INVALID, "bad-cb-amount");
+
 	if (pindex->nHeight>40000){
 	int64_t bankfund = (GetBlockValue(pindex->nHeight, nFees))* (0.1);
 	int64_t bank_subsidy=0, reserve_subsidy=0;
@@ -2094,130 +2111,180 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
 
 		if (block.vtx[0].vout[i].scriptPubKey == BANK_SCRIPT){
 			bank_subsidy += block.vtx[0].vout[i].nValue;
-	
+
 		if (bank_subsidy < bankfund)
 			return state.DoS(100, error("ConnectBlock() : coinbase does not pay enough to the bank (actual=%d vs required=%d)", bank_subsidy, bankfund));
 		}
-		
+
 		if (block.vtx[0].vout[i].scriptPubKey == RESERVE_SCRIPT){
 			reserve_subsidy += block.vtx[0].vout[i].nValue;
-	
+
 		if (reserve_subsidy < bankfund)
 			return state.DoS(100, error("ConnectBlock() : coinbase does not pay enough to the reserve (actual=%d vs required=%d)", reserve_subsidy, bankfund));
 		}
 	}
-		
+
 	}
-	
-	if (pindex->nHeight>211000){
-		
+
+	/*if (pindex->nHeight>210900){
+
 		int64_t mnsubsidy = GetBanknodePayment(pindex->nHeight, block.vtx[0].GetValueOut());
 		bool foundPaymentAmount = false;
-	
+
 		for (unsigned int i = 0; i < block.vtx[0].vout.size(); i++){
 		  if(block.vtx[0].vout[i].nValue == mnsubsidy)
               foundPaymentAmount = true;
 		}
-	
+
 		if (!foundPaymentAmount)
-			return state.DoS(100, error("ConnectBlock() : no banknode payment ( required=%d)", mnsubsidy));	
-	}	
+			return state.DoS(100, error("ConnectBlock() : no banknode payment ( required=%d)", mnsubsidy));
+	}*/
 
-
-	// check for and reject blocks that have the same key in tthe coinbase tx 
-	//this is not enough though , advanced users can easily make mods to get a new key at ecery block. 
-	if (pindex->nHeight>210005){
+	// check for and reject blocks that have the same key in tthe coinbase tx look back 20 blocks in active chain
+	if (pindex->nHeight>210000){
 		CBlock blockprev;
 		ReadBlockFromDisk(blockprev, pindex->pprev);
 		std::string line;
-		bool found =false;
-		CTxDestination address, address2;	
+		CTxDestination address;
 		ExtractDestination(block.vtx[0].vout[0].scriptPubKey, address);
-		ExtractDestination(blockprev.vtx[0].vout[0].scriptPubKey, address2);										
-		string prevAddressString = CBitcreditAddress(address2).ToString().c_str();
 		string newAddressString = CBitcreditAddress(address).ToString().c_str();
-		ifstream myfile((GetDataDir() /"bnlist.dat").string().c_str());				
-		if (block.vtx[0].vout[0].scriptPubKey == blockprev.vtx[0].vout[0].scriptPubKey){
-		//LogPrintf("CheckBlock() : Consecutive coinbase key detected prevblock= %s, newblock = %s \n", prevAddressString, newAddressString);
-        return state.DoS(100, error("ConnectBlock(): consecutive coinbase key detected"), REJECT_INVALID, "consecutive-coinbase");		
-		}
-
-		for(unsigned int curLine = 0; getline(myfile, line); curLine++) {
-			if (line.find(newAddressString) != string::npos) {
-				found =true;
-				LogPrintf("found valid BN mininng key : %s \n",  newAddressString);
-			}
-		}
-		if (!found && mnodeman.size() !=0 && !IsInitialBlockDownload()){
-		LogPrintf("Not found.... invalid BN mininng key : %s \n",  newAddressString);
 		
-		return state.DoS(100, error("ConnectBlock(): banknode miningkey invalid"), REJECT_INVALID, "invalid-bnminingkey");
-				
+		if (block.vtx[0].vout[0].scriptPubKey == blockprev.vtx[0].vout[0].scriptPubKey){
+        return state.DoS(100, error("ConnectBlock(): consecutive coinbase key detected"), REJECT_INVALID, "consecutive-coinbase");
 		}
+		
+		addrvalit = addressvalue.find(newAddressString);
+		if(addrvalit != addressvalue.end()){
+			if (!(addrvalit->second > 50000*COIN))
+				return state.DoS(100, error("ConnectBlock(): banknode miningkey invalid"), REJECT_INVALID, "invalid-bnminingkey");
+		}  		 
+	}
 
-	if (pindex->nHeight% 900==0 && (block.vtx[0].vout.size()<5)){
-        return state.DoS(100, error("ConnectBlock(): payout block has less outputs than expected"), REJECT_INVALID, "payout-block");		
-		}
-	
-		LOCK(grantdb);		
+		LOCK(grantdb);
 		int64_t grantAward = 0;
-		if( isGrantAwardBlock( pindex->nHeight ) ){
+		if(isGrantAwardBlock(pindex->nHeight)){
 			//NOTE: getGrantAwards is returning false, this could mean the grant DB does not have enough information from previous blocks to process the current blocks.
-			//FIXME: Make sure grant awards are loaded.			
-			if( !getGrantAwards( pindex->nHeight) ){
+			//FIXME: Make sure grant awards are loaded.
+			if( !getGrantAwards(pindex->nHeight)){
 				return state.DoS(100, error("ConnectBlock() : grant awards error ( block=%d)",pindex->nHeight));
 			}
-			LogPrintf("Check Grant Awards rewarded for Block %d\n",pindex->nHeight);			
+			LogPrintf("Check Grant Awards rewarded for Block %d\n",pindex->nHeight);
 			unsigned int awardFound = 0;
 
 			for(gait = grantAwards.begin();gait != grantAwards.end();gait++){
 				grantAward = grantAward + gait->second;
 			}
-						
+
 			if (grantAward == 0 ){
-				LogPrintf("ERROR! No Awards found.\n");
 				return state.DoS(100, error("ConnectBlock() : grant awards error( grantAward=%d)",grantAward));
 			}
-			
-			for( gait = grantAwards.begin();gait != grantAwards.end();gait++){
-				//NOTE: Check that these addresses certainly received the exact amount at the exact destination.
-				for ( unsigned int j = 0; j < block.vtx[0].vout.size(); j++){
-					CTxDestination address;	
-					ExtractDestination(block.vtx[0].vout[j].scriptPubKey, address );										
+
+			for(gait = grantAwards.begin();gait != grantAwards.end();gait++){
+				for (unsigned int j = 0; j < block.vtx[0].vout.size(); j++){
+					CTxDestination address;
+					ExtractDestination(block.vtx[0].vout[j].scriptPubKey, address );
 					string receiveAddressString = CBitcreditAddress(address).ToString();
 					string receiveAddress = receiveAddressString.c_str();
 
 					CAmount theAmount = block.vtx[0].vout[j].nValue;
 					if(fDebug)LogPrintf("Compare received amount: %ld, %ld\n",theAmount,gait->second);
-					if( (CAmount) theAmount == (int64_t) gait->second ) {
-						LogPrintf("Yes: %ld equals %ld\n",theAmount,gait->second);
+					if((CAmount) theAmount == (int64_t) gait->second) {
+						if(fDebug)LogPrintf("Yes: %ld equals %ld\n",theAmount,gait->second);
 					}
-					
+
 					if(fDebug)LogPrintf("Compare receiving address: %s, %s, (%d)\n", receiveAddress.c_str(), gait->first.c_str(), receiveAddressString.compare( (gait->first).c_str() ));
-					
-					if ( receiveAddressString.compare( (gait->first).c_str() ) == 0 ){
+
+					if (receiveAddressString.compare((gait->first).c_str()) == 0){
 						if(fDebug)LogPrintf("Yes: %s equals %s\n",receiveAddress.c_str(),gait->first.c_str());
 					}
-				
-					if( theAmount == gait->second && receiveAddress == gait->first ){
+
+					if(theAmount == gait->second && receiveAddress == gait->first){
 						awardFound++;
-						if(fDebug)LogPrintf("Match! Current Award Size = %d\n",awardFound);						
+						if(fDebug)LogPrintf("Match! Current Award Size = %d\n",awardFound);
 						break;
 					}
 				}
 			}
-		
+
 			if(fDebug)LogPrintf( "Grant award in block awardFound = %d, grantAwards.size() = %lu\n", awardFound, grantAwards.size());
-			
-			for( gait = grantAwards.begin();gait != grantAwards.end();gait++){
+
+			for(gait = grantAwards.begin();gait != grantAwards.end();gait++){
 				if(fDebug)LogPrintf("Grant award in block %s, %ld\n",gait->first.c_str(),gait->second);
-			} 
-			
+			}
+
 			//NOTE: This is an error in the Grant DB.
 			if (awardFound != grantAwards.size()){
 				return state.DoS(100, error("ConnectBlock() : Bitcredit DB Corruption detected. Grant Awards not being paid or paying too much. \n Please restore a previous version of grantdb.dat and/or delete the old grantdb database."));
 			}
 		}
+
+		{
+		ofstream mdb;
+		CTxDestination m;
+		ExtractDestination(block.vtx[0].vout[0].scriptPubKey, m);
+		string miner = CBitcreditAddress(m).ToString().c_str();
+		mdb.open ((GetDataDir() / "miners.dat" ).string().c_str(), std::ofstream::app);
+		mdb << miner<< ","<<pindex->nHeight<< endl;
+		}
+
+	{
+    BOOST_FOREACH(const CTransaction& tx, block.vtx){
+
+
+		for (unsigned int j = 0; j < tx.vout.size();j++){
+			CTxDestination address;
+			ExtractDestination(tx.vout[j].scriptPubKey, address);
+			string receiveAddress = CBitcreditAddress( address ).ToString().c_str();
+			int64_t theAmount = tx.vout[ j ].nValue;
+			addressvalue[receiveAddress] = addressvalue[receiveAddress] + theAmount;
+			
+			if (fDebug)LogPrintf("New vout  address:- %s , amount :-%d\n",receiveAddress, theAmount);
+		}
+
+        for (size_t i = 0; i < tx.vin.size(); i++){
+			if (tx.IsCoinBase())
+				continue; 			
+            const CScript &script = tx.vin[i].scriptSig;
+            opcodetype opcode;
+            std::vector<unsigned char> vch;
+            uint256 prevoutHash, blockHash;
+            string spendAddress;
+            int64_t theAmount;
+            for (CScript::const_iterator pc = script.begin(); script.GetOp(pc, opcode, vch); ){
+                if (opcode == 33){
+                    CPubKey pubKey(vch);
+                    prevoutHash = tx.vin[i].prevout.hash;
+                    CTransaction txOfPrevOutput;
+                    if (!GetTransaction(prevoutHash, txOfPrevOutput, blockHash, true)){
+                        if (fDebug)LogPrintf("AddrDB error Could not get transaction %s (output %d) referenced by input #%d of transaction %s in block %s\n", prevoutHash.ToString().c_str(), tx.vin[i].prevout.n, (int) i, tx.GetHash().ToString().c_str(), block.GetHash().ToString().c_str());
+                        continue;
+                    }                               
+                    unsigned int nOut = tx.vin[i].prevout.n;
+                    if (nOut >= txOfPrevOutput.vout.size()){
+                        if (fDebug)LogPrintf("Output %u, not in transaction: %s\n", nOut, prevoutHash.ToString().c_str());
+                        continue;
+                    }
+                    const CTxOut &txOut = txOfPrevOutput.vout[nOut];
+                    CTxDestination addressRet;
+                    if (!ExtractDestination(txOut.scriptPubKey, addressRet)){
+                        if (fDebug)LogPrintf("ExtractDestination failed: %s\n", prevoutHash.ToString().c_str());
+                        continue;
+                    }                    
+                    spendAddress = CBitcreditAddress(addressRet).ToString().c_str();
+					theAmount =  txOut.nValue;
+					addressvalue[spendAddress] = addressvalue[spendAddress] - theAmount;
+                }
+            }
+         if (fDebug)LogPrintf("New vin address:-%s , amount%d\n",spendAddress, theAmount);
+        }
+    }
+		ofstream addrdb;
+		addrdb.open ((GetDataDir() / "balances.dat" ).string().c_str(), std::ofstream::trunc);
+
+		for(addrvalit = addressvalue.begin();addrvalit != addressvalue.end();++addrvalit){
+			addrdb << addrvalit->first << "," << addrvalit->second << endl;
+		}
+		addrdb.close();
 	}
 
     if (!control.Wait())
@@ -3020,7 +3087,7 @@ bool CheckBlock(const CBlock& block, CValidationState& state, bool fCheckPOW, bo
             return state.DoS(100, error("CheckBlock(): more than one coinbase"),
                              REJECT_INVALID, "bad-cb-multiple");
 
-		
+
     // ----------- instantX transaction scanning -----------
 
     if(block.nTime > 1443657600){
@@ -3042,7 +3109,7 @@ bool CheckBlock(const CBlock& block, CValidationState& state, bool fCheckPOW, bo
     }
 
     // ----------- banknode payments -----------
-    
+
     bool BanknodePayments = false;
 
     if(block.nTime > 1443657600) BanknodePayments = true;
@@ -4093,7 +4160,7 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
         uint64_t nNonce = 1;
         vRecv >> pfrom->nVersion >> pfrom->nServices >> nTime >> addrMe;
 
-        if ((!pfrom->fForeignNode) && (pfrom->nVersion < MIN_PEER_PROTO_VERSION && chainActive.Tip()->nHeight> 210005))        
+        if ((!pfrom->fForeignNode) && (pfrom->nVersion < MIN_PEER_PROTO_VERSION && chainActive.Tip()->nHeight> 210000))
         {
             // disconnect from peers older than this proto version
             LogPrintf("peer=%d using obsolete version %i; disconnecting\n", pfrom->id, pfrom->nVersion);
@@ -4698,6 +4765,7 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
         }
 		if (fSecMsgEnabled)
             SecureMsgScanBlock(block);
+        //processAddrDatabase(block);
     }
 
 
@@ -4921,7 +4989,7 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
     {
         if (!pfrom->fForeignNode && fSecMsgEnabled)
             SecureMsgReceiveData(pfrom, strCommand, vRecv);
-	
+
         darkSendPool.ProcessMessageDarksend(pfrom, strCommand, vRecv);
         mnodeman.ProcessMessage(pfrom, strCommand, vRecv);
         ProcessMessageBanknodePayments(pfrom, strCommand, vRecv);
