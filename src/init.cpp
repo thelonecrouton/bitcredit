@@ -1101,7 +1101,12 @@ bool AppInit2(boost::thread_group& threadGroup)
     // ********************************************************* Step 7: load block chain
 
     fReindex = GetBoolArg("-reindex", false);
-
+	if (fReindex){
+		remove((GetDataDir() /"ratings/grantdb.dat").string().c_str());
+		remove((GetDataDir() /"miners.dat").string().c_str());
+		remove((GetDataDir() /"balances.dat").string().c_str());
+	}
+	
     // Upgrading to 0.8; hard-link the old blknnnn.dat files into /blocks/
     filesystem::path blocksDir = GetDataDir() / "blocks";
     if (!filesystem::exists(blocksDir))
