@@ -73,7 +73,7 @@ Value GetNetworkHashPS(int lookup, int height) {
     uint256 workDiff = pb->nChainWork - pb0->nChainWork;
     int64_t timeDiff = maxTime - minTime;
 
-    return (int64_t)(workDiff.getdouble() / timeDiff);
+    return (workDiff.getdouble() / timeDiff);
 }
 
 Value getnetworkhashps(const Array& params, bool fHelp)
@@ -224,7 +224,7 @@ Value gethashespermin(const Array& params, bool fHelp)
 
     if (GetTimeMillis() - nHPSTimerStart > 8000 *60)
         return (int64_t)0;
-    return (int64_t)dHashesPerMin;
+    return dHashesPerMin;
 }
 #endif
 
@@ -697,7 +697,8 @@ Value getblocktemplate(const Array& params, bool fHelp)
             pblocktemplate = NULL;
         }
         CScript scriptDummy = CScript() << OP_TRUE;
-        pblocktemplate = CreateNewBlock(scriptDummy);
+       // pblocktemplate = CreateNewBlock(scriptDummy);
+        pblocktemplate = CreateNewBlockWithKey(reservekey);
         if (!pblocktemplate)
             throw JSONRPCError(RPC_OUT_OF_MEMORY, "Out of memory");
 
