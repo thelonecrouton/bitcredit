@@ -21,11 +21,11 @@ extern std::map<std::string,long double> getbidtracker();
 void GenerateBitcredits(bool fGenerate, CWallet* pwallet, int nThreads);
 /** Generate a new block, without valid proof-of-work */
 CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn);
-CBlockTemplate* CreateNewBlockWithKey(CReserveKey& reservekey);
+CBlockTemplate* CreateNewBlockWithKey();
 /** Modify the extranonce in a block */
 void IncrementExtraNonce(CBlock* pblock, CBlockIndex* pindexPrev, unsigned int& nExtraNonce);
 /** Check mined block */
-bool ProcessBlockFound(CBlock* pblock, CWallet& wallet, CReserveKey& reservekey);
+bool ProcessBlockFound(CBlock* pblock, CWallet& wallet);
 void UpdateTime(CBlockHeader* block, const CBlockIndex* pindexPrev);
 extern double dHashesPerMin;
 extern int64_t nHPSTimerStart;

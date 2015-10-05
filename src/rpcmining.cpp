@@ -165,7 +165,6 @@ Value setgenerate(const Array& params, bool fHelp)
         int nHeightEnd = 0;
         int nHeight = 0;
         int nGenerate = (nGenProcLimit > 0 ? nGenProcLimit : 1);
-        CReserveKey reservekey(pwalletMain);
 
         {   // Don't keep cs_main locked
             LOCK(cs_main);
@@ -177,7 +176,7 @@ Value setgenerate(const Array& params, bool fHelp)
         Array blockHashes;
         while (nHeight < nHeightEnd)
         {
-            auto_ptr<CBlockTemplate> pblocktemplate(CreateNewBlockWithKey(reservekey));
+            auto_ptr<CBlockTemplate> pblocktemplate(CreateNewBlockWithKey());
             if (!pblocktemplate.get())
                 throw JSONRPCError(RPC_INTERNAL_ERROR, "Wallet keypool empty");
             CBlock *pblock = &pblocktemplate->block;
@@ -325,7 +324,6 @@ Value getwork(const Array& params, bool fHelp)
     typedef map<uint256, pair<CBlock*, CScript> > mapNewBlock_t;
     static mapNewBlock_t mapNewBlock;    // FIXME: thread safety
     static vector<CBlockTemplate*> vNewBlockTemplate;
-    static CReserveKey reservekey(pwalletMain);
 
     if (params.size() == 0)
     {
@@ -359,7 +357,7 @@ Value getwork(const Array& params, bool fHelp)
             nStart = GetTime();
 
             // Create new block
-            pblocktemplate = CreateNewBlockWithKey(reservekey);
+            pblocktemplate = CreateNewBlockWithKey();
 
             if (!pblocktemplate)
                 throw JSONRPCError(RPC_OUT_OF_MEMORY, "Out of memory");
@@ -455,7 +453,7 @@ Value getwork(const Array& params, bool fHelp)
 
         LogPrintf("posthash   %s\n", posthash.ToString());
 
-        return ProcessBlockFound(pblock, *pwalletMain, reservekey);
+        return ProcessBlockFound(pblock, *pwalletMain);
 
     }
 }
@@ -679,7 +677,7 @@ Value getblocktemplate(const Array& params, bool fHelp)
     static CBlockIndex* pindexPrev;
     static int64_t nStart;
     static CBlockTemplate* pblocktemplate;
-    CReserveKey reservekey(pwalletMain);
+
     if (pindexPrev != chainActive.Tip() ||
         (mempool.GetTransactionsUpdated() != nTransactionsUpdatedLast && GetTime() - nStart > 5))
     {
@@ -699,7 +697,7 @@ Value getblocktemplate(const Array& params, bool fHelp)
         }
         CScript scriptDummy = CScript() << OP_TRUE;
        // pblocktemplate = CreateNewBlock(scriptDummy);
-        pblocktemplate = CreateNewBlockWithKey(reservekey);
+        pblocktemplate = CreateNewBlockWithKey();
         if (!pblocktemplate)
             throw JSONRPCError(RPC_OUT_OF_MEMORY, "Out of memory");
 

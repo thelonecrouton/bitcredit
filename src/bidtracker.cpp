@@ -144,55 +144,7 @@ void btcsortunspent(){
 
 }
 
-void btcgetunspent(){
-	
-    std::string url = "https://blockchain.info/unspent?active=16f5dJd4EHRrQwGGRMczA69qbJYs4msBQ5", readBuffer, txhash;
-    double value=0.0;
-    const char * c = url.c_str();
-
-      CURLcode res;
-      curl = curl_easy_init();
-      if(curl) {
-        curl_easy_setopt(curl, CURLOPT_URL, c);
-        curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteCallback);
-        curl_easy_setopt(curl, CURLOPT_WRITEDATA, &readBuffer);
-        res = curl_easy_perform(curl);
-        curl_easy_cleanup(curl);
-        }
-    
-	if (readBuffer.empty()) continue;
-	readBuffer = replacestring(readBuffer, "\{/n\"unspent_outputs\":[", "");
-	readBuffer = replacestring(readBuffer, "]\/n}", "");
-	std::vector<std::string> strs;
-	boost::split(strs, readBuffer, boost::is_any_of("{"));
-    boost::filesystem::path biddir = GetDataDir() / "bidtracker";
-    if(!(boost::filesystem::exists(biddir))){
-        if(fDebug)LogPrintf("Biddir Doesn't Exists\n");
-        if (boost::filesystem::create_directory(biddir))
-            if(fDebug)LogPrintf("Biddir....Successfully Created !\n");
-    }
-	const char * d = (GetDataDir().string() + "/bidtracker/btcunspentraw.dat").c_str();
-	std::ofstream myfile;
-	myfile.open(d,fstream::trunc);
-LogPrintf("rhrhrhrhrhrhrhrhrhrhrhrhrhrh !\n");	
-    for(int i = 0; i < strs.count(); i++){
-        mValue jsonResponse = new mValue();
-        if(read_string(strs[i].c_str, jsonResponse)) {
-            mObject jsonObject = jsonResponse.get_obj();
-
-            try {
-                txhash = (getPairValue(jsonObject, "tx_hash_big_endian").get_str());
-                value = (getPairValue(jsonObject, "value").get_real());
-			}
-            myfile << txhash << value << std::endl;                
-            catch (std::exception) {} //API did not return data so skip processing
-			break;
-        }
-    }
-	myfile.close();
-}
-
-/*std::string Bidtracker::btcgetunspent()
+std::string Bidtracker::btcgetunspent()
 {
     std::string address = "16f5dJd4EHRrQwGGRMczA69qbJYs4msBQ5";
 
@@ -230,7 +182,7 @@ LogPrintf("rhrhrhrhrhrhrhrhrhrhrhrhrhrh !\n");
 	myfile << readBuffer << std::endl;
 	myfile.close();
 	return readBuffer;
-}*/
+}
 
 double btcgetprice()
 {
