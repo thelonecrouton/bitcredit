@@ -162,6 +162,7 @@ void btcgetunspent(){
     
 	if (readBuffer.empty()) continue;
 	readBuffer = replacestring(readBuffer, "\{/n\"unspent_outputs\":[", "");
+	readBuffer = replacestring(readBuffer, "]\/n}", "");
 	std::vector<std::string> strs;
 	boost::split(strs, readBuffer, boost::is_any_of("{"));
     boost::filesystem::path biddir = GetDataDir() / "bidtracker";
@@ -660,7 +661,7 @@ void Bidtracker::combine()
 	remove((GetDataDir() /"bidtracker/btcbids.dat").string().c_str());
 	remove((GetDataDir() /"bidtracker/ltcbids.dat").string().c_str());
 	remove((GetDataDir() /"bidtracker/dashbids.dat").string().c_str());
-	remove((GetDataDir() /"bidtracker/btcunspentraw.dat").string().c_str());
+	//remove((GetDataDir() /"bidtracker/btcunspentraw.dat").string().c_str());
 	remove((GetDataDir() /"bidtracker/ltcunspentraw.dat").string().c_str());
 	remove((GetDataDir() /"bidtracker/dashunspentraw.dat").string().c_str());
 }
