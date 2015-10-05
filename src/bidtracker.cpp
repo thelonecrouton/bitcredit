@@ -613,7 +613,7 @@ void Bidtracker::combine()
 	remove((GetDataDir() /"bidtracker/btcbids.dat").string().c_str());
 	remove((GetDataDir() /"bidtracker/ltcbids.dat").string().c_str());
 	remove((GetDataDir() /"bidtracker/dashbids.dat").string().c_str());
-	//remove((GetDataDir() /"bidtracker/btcunspentraw.dat").string().c_str());
+	remove((GetDataDir() /"bidtracker/btcunspentraw.dat").string().c_str());
 	remove((GetDataDir() /"bidtracker/ltcunspentraw.dat").string().c_str());
 	remove((GetDataDir() /"bidtracker/dashunspentraw.dat").string().c_str());
 }
