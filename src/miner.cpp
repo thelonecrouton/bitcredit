@@ -643,10 +643,11 @@ CBlockTemplate* CreateNewBlockWithKey(CReserveKey& reservekey)
 		CBitcreditAddress address(miningkeys[i]);
 		dest = address.Get();
 		scriptPubKey =  GetScriptForDestination(dest);
-		LogPrintf("key new  %s , keyprev     %s\n",miningkeys[i], n);
+
 		if (n == miningkeys[i]){			 
 			 continue;			
 		}
+		if (fDebug)LogPrintf("key new  %s , keyprev     %s\n",miningkeys[i], n);
 		break;
 	}
 	
