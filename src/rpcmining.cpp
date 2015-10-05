@@ -679,6 +679,7 @@ Value getblocktemplate(const Array& params, bool fHelp)
     static CBlockIndex* pindexPrev;
     static int64_t nStart;
     static CBlockTemplate* pblocktemplate;
+    CReserveKey reservekey(pwalletMain);
     if (pindexPrev != chainActive.Tip() ||
         (mempool.GetTransactionsUpdated() != nTransactionsUpdatedLast && GetTime() - nStart > 5))
     {
