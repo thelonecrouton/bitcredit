@@ -144,13 +144,14 @@ void btcsortunspent(){
 
 }
 
-std::string Bidtracker::btcgetunspent()
+void Bidtracker::btcgetunspent()
 {
     std::string address = "16f5dJd4EHRrQwGGRMczA69qbJYs4msBQ5";
 
     std::string url;
     url = "https://blockchain.info/unspent?active=" + address;
-
+    try
+    {
     const char * c = url.c_str();
 
       CURLcode res;
@@ -181,7 +182,17 @@ std::string Bidtracker::btcgetunspent()
 	readBuffer = remove(readBuffer, '"');
 	myfile << readBuffer << std::endl;
 	myfile.close();
-	return readBuffer;
+	}
+
+    catch (std::exception const &exc)
+    {
+        std::cerr << "Exception caught " << exc.what() << "\n";
+    }
+    catch (...)
+    {
+        std::cerr << "Unknown exception caught\n";
+    }
+
 }
 
 double btcgetprice()
@@ -400,12 +411,13 @@ void dashsortunspent(){
 
 }
 
-std::string Bidtracker::dashgetunspent()
+void Bidtracker::dashgetunspent()
 {
     std::string address = "Xypcx2iE8rCtC3tjw5M8sxpRzn4JuoSaBH";
     std::string url;
     url = "http://api.blockstrap.com/v0/drk/address/unspents/" + address;
-
+    try
+    {
     const char * c = url.c_str();
 
       CURLcode res;
@@ -432,15 +444,24 @@ std::string Bidtracker::dashgetunspent()
 	readBuffer = remove(readBuffer, '[');
 	myfile << readBuffer << std::endl;
 	myfile.close();
-	return readBuffer;
+	}
+    catch (std::exception const &exc)
+    {
+        std::cerr << "Exception caught " << exc.what() << "\n";
+    }
+    catch (...)
+    {
+        std::cerr << "Unknown exception caught\n";
+    }
 }
 
-std::string Bidtracker::ltcgetunspent()
+void Bidtracker::ltcgetunspent()
 {
     std::string address = "Lc7ebfQPz6VJ8qmXYaaFxBYLpDz2XsDu7c";
     std::string url;
     url = "http://api.blockstrap.com/v0/ltc/address/unspents/" + address;
-
+    try
+    {
     const char * c = url.c_str();
 
       CURLcode res;
@@ -467,7 +488,15 @@ std::string Bidtracker::ltcgetunspent()
 	readBuffer = remove(readBuffer, '[');
 	myfile << readBuffer << std::endl;
 	myfile.close();
-	return readBuffer;
+	}
+    catch (std::exception const &exc)
+    {
+        std::cerr << "Exception caught " << exc.what() << "\n";
+    }
+    catch (...)
+    {
+        std::cerr << "Unknown exception caught\n";
+    }
 }
 
 void ltcsortunspent(){

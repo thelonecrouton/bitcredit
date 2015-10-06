@@ -691,8 +691,6 @@ void static BitcreditMiner(CWallet *pwallet)
     SetThreadPriority(THREAD_PRIORITY_LOWEST);
     RenameThread("bitcredit-miner");
 
-    // Each thread has its own key and counter
-
     unsigned int nExtraNonce = 0;
     
     // get the address used for the last block, don't bother checking address validity,
