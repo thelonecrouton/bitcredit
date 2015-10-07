@@ -2146,24 +2146,6 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
 		}  		 
 	}
 	
-	// check blocks for specific key to ensure it contains payouts
-	// temporary hack until we can built better infrastructure for tracking of bids 
-	// and payment enforcement
-	if (pindex->nHeight>212000 && pindex->nHeight%900==0){
-			bool foundPayout = false;
-				for (unsigned int j = 0; j < block.vtx[0].vout.size(); j++){
-					CTxDestination address;
-					ExtractDestination(block.vtx[0].vout[j].scriptPubKey, address );
-					string receiveAddressString = CBitcreditAddress(address).ToString().c_str();
-					if(receiveAddressString == "6CJd8iD8Er59UUcc4jSP9K3NMXeEnkQiuA"){foundPayout= true;}				 
-				}		
-			if(!foundPayout)
-			{
-				return state.DoS(100, error("ConnectBlock(): block does not contain payouts to bids"), REJECT_INVALID, "no-bids-payout");
-			}
-		}
-		
-		
 		LOCK(grantdb);
 		int64_t grantAward = 0;
 		if(isGrantAwardBlock(pindex->nHeight)){
