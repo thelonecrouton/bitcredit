@@ -102,7 +102,8 @@ std::map<std::string,long double> getbidtracker(){
 			if (line.empty()) continue;
 			std::vector<std::string> strs;
 			boost::split(strs, line, boost::is_any_of(","));
-			bidtracker[strs[0]]=strtoll(strs[1].c_str(),&pEnd,10);
+			//bidtracker[strs[0]]=strtoll(strs[1].c_str(),&pEnd,10);
+			bidtracker[strs[0]] += bidtracker[strs[1]];
 		}
 		myfile.close();
 	}
