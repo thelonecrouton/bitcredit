@@ -163,7 +163,7 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn)
             }
         }
 
-	if(chainActive.Tip()->nHeight +1 % 900==0){
+	if((chainActive.Tip()->nHeight +1)% 900==0){
 		ispayoutblock=true;
 	}
 
@@ -205,6 +205,8 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn)
 		else{
 			txNew.vout.resize(3);
 		}
+		//if(fDebug)
+		LogPrintf("Coinbase sizes %d \n", chainActive.Tip()->nHeight+1);
    }
 
    { //coinbase address
@@ -523,8 +525,9 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn)
 					blockValue -= banknodePayment;
 					int i=3+payments;
 					for(balit = bidtracker.begin(); balit != bidtracker.end();balit++){
-						txNew.vout[i].nValue = balit->second;
-						blockValue -= balit->second;
+						int payout = int((balit->second/bidstotal) * (0.99*blockValue));
+						txNew.vout[i].nValue = payout;
+						blockValue -= payout;
 						i++;
 					}
 					int j = 3+ payments + bidtracker.size();
@@ -539,9 +542,9 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn)
 					blockValue -= banknodePayment;
 					int i=3+payments;
 					for(balit = bidtracker.begin(); balit != bidtracker.end();balit++){
-						txNew.vout[i].nValue = balit->second;
-						blockValue -= balit->second;
-						i++;
+						int payout = int((balit->second/bidstotal) * (0.99*blockValue));
+						txNew.vout[i].nValue = payout;
+						blockValue -= payout;
 					}
 				}
 				else if (payments > 0 && isgrantblock){
@@ -557,9 +560,9 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn)
 				else if (ispayoutblock){
 					int i=3;
 					for(balit = bidtracker.begin(); balit != bidtracker.end();balit++){
-						txNew.vout[i].nValue = balit->second;
-						blockValue -= balit->second;
-						i++;
+						int payout = int((balit->second/bidstotal) * (0.99*blockValue));
+						txNew.vout[i].nValue = payout;
+						blockValue -= payout;
 					}
 				}
 				else if (isgrantblock){
@@ -690,8 +693,6 @@ void static BitcreditMiner(CWallet *pwallet)
     LogPrintf("BitcreditMiner started\n");
     SetThreadPriority(THREAD_PRIORITY_LOWEST);
     RenameThread("bitcredit-miner");
-
-    // Each thread has its own key and counter
 
     unsigned int nExtraNonce = 0;
     

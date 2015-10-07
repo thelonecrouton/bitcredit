@@ -406,7 +406,7 @@ Value getwork(const Array& params, bool fHelp)
         Object result;
 
         LogPrintf("Getwork Block Send %s\n", HexStr(BEGIN(pdata), END(pdata)));
-        LogPrintf("Getwork Target Send %s\n", HexStr(BEGIN(hashTarget), END(hashTarget)));
+        if (fDebug)LogPrintf("Getwork Target Send %s\n", HexStr(BEGIN(hashTarget), END(hashTarget)));
 
 
         result.push_back(Pair("data",     HexStr(BEGIN(pdata), END(pdata))));
@@ -421,7 +421,7 @@ Value getwork(const Array& params, bool fHelp)
         // Parse parameters
         vector<unsigned char> vchData = ParseHex(params[0].get_str());
 
-        LogPrintf("Getwork Block   %d bytes\n", vchData.size());
+        if (fDebug)LogPrintf("Getwork Block   %d bytes\n", vchData.size());
 
         if (vchData.size() != 88)
             throw JSONRPCError(RPC_INVALID_PARAMETER, "Invalid parameter");
@@ -435,11 +435,11 @@ Value getwork(const Array& params, bool fHelp)
         if (!mapNewBlock.count(pdata->hashMerkleRoot))
             return false;
 
-        LogPrintf("Getwork Block R %d bytes\n", vchData.size());
+        if (fDebug)LogPrintf("Getwork Block R %d bytes\n", vchData.size());
 
         CBlock* pblock = mapNewBlock[pdata->hashMerkleRoot].first;
 
-        LogPrintf("Getwork Block Mappd %s\n", HexStr(BEGIN(*pblock), 88+BEGIN(*pblock)));
+        if (fDebug)LogPrintf("Getwork Block Mappd %s\n", HexStr(BEGIN(*pblock), 88+BEGIN(*pblock)));
 
         pblock->nTime = pdata->nTime;
         pblock->nNonce = pdata->nNonce;
@@ -447,11 +447,11 @@ Value getwork(const Array& params, bool fHelp)
         pblock->nBirthdayB = pdata->nBirthdayB;     
         pblock->hashMerkleRoot = pblock->BuildMerkleTree();
 
-        LogPrintf("Getwork Block Rebld %s\n", HexStr(BEGIN(*pblock), 88+BEGIN(*pblock)));
+        if (fDebug)LogPrintf("Getwork Block Rebld %s\n", HexStr(BEGIN(*pblock), 88+BEGIN(*pblock)));
 
 		uint256 posthash = pblock->GetHash();
 
-        LogPrintf("posthash   %s\n", posthash.ToString());
+        if (fDebug)LogPrintf("posthash   %s\n", posthash.ToString());
 
         return ProcessBlockFound(pblock, *pwalletMain);
 
@@ -762,7 +762,7 @@ Value getblocktemplate(const Array& params, bool fHelp)
 	double total=0;
 	int bidders_count=0;
 
-    if (chainActive.Tip()->nHeight%900==0){
+    if ((chainActive.Tip()->nHeight+1)%900==0){
 
 		ifstream myfile ((GetDataDir()/ "bidtracker/final.dat").string().c_str());
 	
@@ -827,7 +827,7 @@ Value getblocktemplate(const Array& params, bool fHelp)
     result.push_back(Pair("banknode_payments", BanknodePayments));
     result.push_back(Pair("enforce_banknode_payments", true));
 
-    if (chainActive.Tip()->nHeight%900==0){
+    if ((chainActive.Tip()->nHeight+1)%900==0){
 		result.push_back(Pair("bidders_count", bidders_count));
 		result.push_back(Pair("bids_value", total));    
 		result.push_back(Pair("bidders", aBids));

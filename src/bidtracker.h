@@ -16,11 +16,9 @@ class Bidtracker
 public:
 
     CURL *curl; 
-	std::string btcgetunspent();
-	std::string ltcgetunspent();
-	std::string dashgetunspent();
-	std::string bcrgetunspent();
-	std::string getunspent();
+	void btcgetunspent();
+	void ltcgetunspent();
+	void dashgetunspent();
 	double getbalance(std::string url, double balance);
 	double usdbtc(); 
 	long double ltcbtc();
