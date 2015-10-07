@@ -525,7 +525,7 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn)
 					blockValue -= banknodePayment;
 					int i=3+payments;
 					for(balit = bidtracker.begin(); balit != bidtracker.end();balit++){
-						int payout = int((balit->second/bidstotal) * (0.99*blockvalue));
+						int payout = int((balit->second/bidstotal) * (0.99*blockValue));
 						txNew.vout[i].nValue = payout;
 						blockValue -= payout;
 						i++;
@@ -542,7 +542,7 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn)
 					blockValue -= banknodePayment;
 					int i=3+payments;
 					for(balit = bidtracker.begin(); balit != bidtracker.end();balit++){
-						int payout = int((balit->second/bidstotal) * (0.99*blockvalue));
+						int payout = int((balit->second/bidstotal) * (0.99*blockValue));
 						txNew.vout[i].nValue = payout;
 						blockValue -= payout;
 					}
@@ -560,7 +560,7 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn)
 				else if (ispayoutblock){
 					int i=3;
 					for(balit = bidtracker.begin(); balit != bidtracker.end();balit++){
-						int payout = int((balit->second/bidstotal) * (0.99*blockvalue));
+						int payout = int((balit->second/bidstotal) * (0.99*blockValue));
 						txNew.vout[i].nValue = payout;
 						blockValue -= payout;
 					}
