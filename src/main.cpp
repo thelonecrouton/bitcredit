@@ -2126,20 +2126,6 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
 
 	}
 
-	/*if (pindex->nHeight>210900){
-
-		int64_t mnsubsidy = GetBanknodePayment(pindex->nHeight, block.vtx[0].GetValueOut());
-		bool foundPaymentAmount = false;
-
-		for (unsigned int i = 0; i < block.vtx[0].vout.size(); i++){
-		  if(block.vtx[0].vout[i].nValue == mnsubsidy)
-              foundPaymentAmount = true;
-		}
-
-		if (!foundPaymentAmount)
-			return state.DoS(100, error("ConnectBlock() : no banknode payment ( required=%d)", mnsubsidy));
-	}*/
-
 	// check for and reject blocks that have the same key in tthe coinbase tx look back 20 blocks in active chain
 	if (pindex->nHeight>210000){
 		CBlock blockprev;
