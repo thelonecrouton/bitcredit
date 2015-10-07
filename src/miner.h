@@ -16,7 +16,7 @@ class CScript;
 class CWallet;
 
 struct CBlockTemplate;
-extern std::map<std::string,long double> getbidtracker();
+
 /** Run the miner threads */
 void GenerateBitcredits(bool fGenerate, CWallet* pwallet, int nThreads);
 /** Generate a new block, without valid proof-of-work */

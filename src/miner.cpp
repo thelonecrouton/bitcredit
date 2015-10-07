@@ -90,26 +90,6 @@ public:
     }
 };
 
-std::map<std::string,long double> getbidtracker(){
-	std::map<std::string,long double> bidtracker;
-
-	ifstream myfile ((GetDataDir()/ "bidtracker/final.dat").string().c_str());
-	char * pEnd;
-	std::string line;
-	if (myfile.is_open()){
-		while ( myfile.good() ){
-			getline (myfile,line);
-			if (line.empty()) continue;
-			std::vector<std::string> strs;
-			boost::split(strs, line, boost::is_any_of(","));
-			//bidtracker[strs[0]]=strtoll(strs[1].c_str(),&pEnd,10);
-			bidtracker[strs[0]] += bidtracker[strs[1]];
-		}
-		myfile.close();
-	}
-	return bidtracker;
-}
-
 string convertAddress(const char address[], char newVersionByte){
     std::vector<unsigned char> v;
     DecodeBase58Check(address,v);
@@ -144,8 +124,8 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn)
     bool hasPayment = false;
     bool isgrantblock = false;
     bool ispayoutblock = false;
-	std::map<std::string,long double> bidtracker = getbidtracker();
-	std::map<std::string,long double>::iterator balit;
+	std::map<std::string,int> bidtracker = getbidtracker();
+	std::map<std::string,int>::iterator balit;
     // Create coinbase tx
     CMutableTransaction txNew;
     txNew.vin.resize(1);

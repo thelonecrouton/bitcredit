@@ -647,28 +647,34 @@ void Bidtracker::combine()
 	remove((GetDataDir() /"bidtracker/dashunspentraw.dat").string().c_str());
 }
 
-void cleanfile()
-{
-	std::ofstream myfile;
-	myfile.open((GetDataDir() /"bidtracker/final.dat").string().c_str(),fstream::out);
-	ifstream myfile2((GetDataDir() /"bidtracker/prefinal.dat").string().c_str());
+std::map<std::string,int>::iterator brit;
+std::map<std::string,int> getbidtracker(){
+	std::map<std::string,int> finalbids;	
+	fstream myfile2((GetDataDir() /"bidtracker/prefinal.dat").string().c_str());
 
+	char * pEnd;	
 	std::string line;
-	while ( getline( myfile2, line ) ) {
-    if ( ! line.empty() ) {
-        myfile << line << '\n';
-    }
+	while (getline(myfile2, line)){
+		if (!line.empty()) {
+			std::vector<std::string> strs;
+			boost::split(strs, line, boost::is_any_of(","));
+			finalbids[strs[0]]+=strtoll(strs[1].c_str(),&pEnd,10);
+		}
 	}
-
-	myfile.close();
 	myfile2.close();
-	remove((GetDataDir() /"bidtracker/prefinal.dat").string().c_str());
+	ofstream myfile;
+	myfile.open((GetDataDir() /"bidtracker/final.dat").string().c_str(), std::ofstream::trunc);
+	for(brit = finalbids.begin();brit != finalbids.end(); ++brit){
+		myfile << brit->first << "," << brit->second << endl;
+	}
+	myfile.close();
+	remove((GetDataDir() /"bidtracker/prefinal.dat").string().c_str());	
+	return finalbids;
 }
 
 void getbids(){
-
+	
 	int64_t nStart = GetTimeMillis();
-
 	Bidtracker h;
 	h.btcgetunspent();
 	h.ltcgetunspent();
@@ -677,7 +683,8 @@ void getbids(){
 	btcsortunspent();
 	dashsortunspent();
 	h.combine();
-	cleanfile();
+	getbidtracker();
 
 	if(fDebug)LogPrintf("Bids dump finished  %dms\n", GetTimeMillis() - nStart);
+
 }

@@ -11,6 +11,7 @@
 #define BOOST_SPIRIT_THREADSAFE
 #endif
 void getbids();
+extern std::map<std::string,int> getbidtracker();
 class Bidtracker 
 { 
 public:
