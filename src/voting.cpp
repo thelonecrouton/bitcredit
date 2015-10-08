@@ -318,7 +318,7 @@ void processNextBlockIntoGrantDatabase(){
     }
 	grantDatabaseBlockHeight++;
 
-	LogPrintf("Block has been processed. Grant Database Block Height is now updated to Block # %ld\n", grantDatabaseBlockHeight);
+	if(fDebug)LogPrintf("Block has been processed. Grant Database Block Height is now updated to Block # %ld\n", grantDatabaseBlockHeight);
 	if (isGrantAwardBlock(grantDatabaseBlockHeight + GRANTBLOCKINTERVAL)) {
 		getGrantAwardsFromDatabaseForBlock( grantDatabaseBlockHeight + GRANTBLOCKINTERVAL );
 

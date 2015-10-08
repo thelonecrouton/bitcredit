@@ -405,7 +405,7 @@ Value getwork(const Array& params, bool fHelp)
 
         Object result;
 
-        LogPrintf("Getwork Block Send %s\n", HexStr(BEGIN(pdata), END(pdata)));
+        if(fDebug)LogPrintf("Getwork Block Send %s\n", HexStr(BEGIN(pdata), END(pdata)));
         if (fDebug)LogPrintf("Getwork Target Send %s\n", HexStr(BEGIN(hashTarget), END(hashTarget)));
 
 

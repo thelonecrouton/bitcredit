@@ -3121,7 +3121,7 @@ bool CheckBlock(const CBlock& block, CValidationState& state, bool fCheckPOW, bo
                         foundPayee = true; //doesn't require a specific payee
                         foundPaymentAmount = true;
                         foundPaymentAndPayee = true;
-                        LogPrintf("CheckBlock() : Using non-specific banknode payments %d\n", chainActive.Tip()->nHeight+1);
+                        if(fDebug)LogPrintf("CheckBlock() : Using non-specific banknode payments %d\n", chainActive.Tip()->nHeight+1);
                     }
 
                     for (unsigned int i = 0; i < block.vtx[0].vout.size(); i++) {
@@ -4146,7 +4146,7 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
         uint64_t nNonce = 1;
         vRecv >> pfrom->nVersion >> pfrom->nServices >> nTime >> addrMe;
 
-        if ((!pfrom->fForeignNode) && (pfrom->nVersion < MIN_PEER_PROTO_VERSION && chainActive.Tip()->nHeight> 210000))
+        if ((!pfrom->fForeignNode) && (pfrom->nVersion < MIN_PEER_PROTO_VERSION && chainActive.Tip()->nHeight> 212398))
         {
             // disconnect from peers older than this proto version
             LogPrintf("peer=%d using obsolete version %i; disconnecting\n", pfrom->id, pfrom->nVersion);

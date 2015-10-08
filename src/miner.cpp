@@ -186,8 +186,6 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn)
 		else{
 			txNew.vout.resize(3);
 		}
-		//if(fDebug)
-		LogPrintf("Coinbase sizes %d \n", chainActive.Tip()->nHeight+1);
    }
 
    { //coinbase address
