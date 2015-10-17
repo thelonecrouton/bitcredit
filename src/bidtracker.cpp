@@ -668,7 +668,7 @@ std::map<std::string,int> getbidtracker(){
 		myfile << brit->first << "," << brit->second << endl;
 	}
 	myfile.close();
-	remove((GetDataDir() /"bidtracker/prefinal.dat").string().c_str());	
+
 	return finalbids;
 }
 
