@@ -57,9 +57,7 @@ void VoteCoinsDialog::setModel(WalletModel *model)
     }
     if(model && model->getOptionsModel())
     {
-        //setBalance(model->getBalance(), model->getUnconfirmedBalance(), model->getImmatureBalance());
-        //connect(model, SIGNAL(balanceChanged(qint64, qint64, qint64)), this, SLOT(setBalance(qint64, qint64, qint64)));
-        //connect(model->getOptionsModel(), SIGNAL(displayUnitChanged(int)), this, SLOT(updateDisplayUnit()));
+
     }
 }
 
@@ -176,11 +174,8 @@ VoteCoinsEntry *VoteCoinsDialog::addEntry()
     // Focus the field, so that entry can start immediately
     entry->clear();
     entry->setFocus();
-    //ui->scrollAreaWidgetContents->resize(ui->scrollAreaWidgetContents->sizeHint());
     qApp->processEvents();
-    //QScrollBar* bar = ui->scrollArea->verticalScrollBar();
-    //if(bar)
-    //    bar->setSliderPosition(bar->maximum());
+
     return entry;
 }
 
@@ -196,7 +191,6 @@ void VoteCoinsDialog::updateRemoveEnabled()
             entry->setRemoveEnabled(enabled);
         }
     }
-    //setupTabChain(0);
 }
 
 void VoteCoinsDialog::removeEntry(VoteCoinsEntry* entry)
@@ -204,21 +198,6 @@ void VoteCoinsDialog::removeEntry(VoteCoinsEntry* entry)
     delete entry;
     updateRemoveEnabled();
 }
-
-/*QWidget *VoteCoinsDialog::setupTabChain(QWidget *prev)
-{
-    for(int i = 0; i < ui->entries->count(); ++i)
-    {
-        VoteCoinsEntry *entry = qobject_cast<VoteCoinsEntry*>(ui->entries->itemAt(i)->widget());
-        if(entry)
-        {
-            prev = entry->setupTabChain(prev);
-        }
-    }
-    QWidget::setTabOrder(prev, ui->addButton);
-    QWidget::setTabOrder(ui->addButton, ui->sendButton);
-    return ui->sendButton;
-}*/
 
 void VoteCoinsDialog::setAddress(const QString &address)
 {
@@ -303,7 +282,7 @@ void VoteCoinsDialog::processSendCoinsReturn(const WalletModel::SendCoinsReturn 
             QMessageBox::Ok, QMessageBox::Ok);
 		break;
     case WalletModel::InsaneFee:
-        msgParams.first = tr("A fee higher than %1 is considered an insanely high fee.").arg(BitcreditUnits::formatWithUnit(model->getOptionsModel()->getDisplayUnit(), 10000000));
+        msgParams.first = tr("A fee higher than %1 is considered an insanely high fee.").arg(BitcreditUnits::formatWithUnit(model->getOptionsModel()->getDisplayUnit(), 1000000));
         break;
     // included to prevent a compiler warning.
     case WalletModel::OK:

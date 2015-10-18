@@ -202,18 +202,13 @@ void BanknodeManager::updateNodeList()
     QString dataDir = getDefaultDataDirectory();
     QString path = QDir(dataDir).filePath("mybanknodes.txt");
         
-    // get theme info
     theme = GetArg("-theme", "");
     themestring = QString::fromUtf8(theme.c_str());  
-    //QTextStream(stdout) << "themestring: " + themestring;
 
     //check if file exists
     QFileInfo checkFile(path);
     if (checkFile.exists() && checkFile.isFile()) 
     {
-        //QTextStream(stdout) << "Trying to open: " + path;
-        //QTextStream(stdout) << "\n";
-
         QFile myTextFile(path);
         QStringList myStringList;
         if (!myTextFile.open(QIODevice::ReadOnly))
@@ -229,8 +224,6 @@ void BanknodeManager::updateNodeList()
                 myTextFile.close();
             }
         QString listitems = myStringList.join(""); 
-        //QTextStream(stdout) << listitems;
-        //QTextStream(stdout) << "\n";
         
         //search for pubkeys that match those in our list
         //ser our own count
@@ -241,8 +234,6 @@ void BanknodeManager::updateNodeList()
         {
             QTableWidgetItem *temp = ui->tableWidget->item(i, 5);
             QString str1 = temp->text();
-            //QTextStream(stdout) << str1;
-            //QTextStream(stdout) << "\n";
             //if showMineOnlychecked, hide everything else
             if ((!listitems.contains(str1)) && ui->showMineOnly->isChecked())
             {
@@ -352,9 +343,7 @@ void BanknodeManager::on_editButton_clicked()
     QModelIndex index = selected.at(0);
     int r = index.row();
     std::string sAddress = ui->tableWidget_2->item(r, 1)->text().toStdString();
-
     // get existing config entry
-
 }
 
 void BanknodeManager::on_getConfigButton_clicked()

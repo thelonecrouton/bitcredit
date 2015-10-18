@@ -160,10 +160,7 @@ BITCREDIT_CORE_H = \
   bankmath.h \
   ibtp.h \
   voting.h \
-  vanitygenwork.h \
-  avl.h \
-  vanity_util.h \
-  pattern.h
+  assets/coinspark.h
 
 JSON_H = \
   json/json_spirit.h \
@@ -214,9 +211,6 @@ libbitcredit_server_a_SOURCES = \
   txdb.cpp \
   txmempool.cpp \
   xxhash/xxhash.c \
-  vanitygenwork.cpp \
-  vanity_util.cpp \
-  pattern.cpp \
   json/json_spirit_value.cpp \
   json/json_spirit_reader.cpp \
   json/json_spirit_writer.cpp \
@@ -236,6 +230,7 @@ libbitcredit_wallet_a_SOURCES = \
   wallet_ismine.cpp \
   walletdb.cpp \
   keepass.cpp \
+  assets/coinspark.c \
   $(BITCREDIT_CORE_H)
 
 # crypto primitives library
@@ -279,7 +274,7 @@ libbitcredit_common_a_SOURCES = \
   darksend.cpp \
   darksend-relay.cpp \
   rawdata.cpp \
-  bankmath.cpp \  
+  bankmath.cpp \
   banknode.cpp \
   banknode-pos.cpp \
   banknodeman.cpp \
@@ -403,7 +398,7 @@ bitcredit_cli_LDFLAGS = $(RELDFLAGS) $(AM_LDFLAGS) $(LIBTOOL_APP_LDFLAGS)
 
 if BUILD_BITCREDIT_LIBS
 include_HEADERS = script/bitcreditconsensus.h
- 
+
 libbitcreditconsensus_la_SOURCES = \
   crypto/hmac_sha512.cpp \
   crypto/sha1.cpp \
@@ -425,8 +420,8 @@ if GLIBC_BACK_COMPAT
   libbitcreditconsensus_la_SOURCES += compat/glibcxx_compat.cpp
 endif
 
-libbitcreditconsensus_la_LDFLAGS = -no-undefined $(RELDFLAGS)  
-libbitcreditconsensus_la_LIBADD = $(LIBBITCREDIT_COMMON) $(CRYPTO_LIBS) 
+libbitcreditconsensus_la_LDFLAGS = -no-undefined $(RELDFLAGS)
+libbitcreditconsensus_la_LIBADD = $(LIBBITCREDIT_COMMON) $(CRYPTO_LIBS)
 libbitcreditconsensus_la_LIBADD += $(BOOST_LIBS)
 libbitcreditconsensus_la_CPPFLAGS = $(CRYPTO_CFLAGS) -I$(builddir)/obj -DBUILD_BITCREDIT_INTERNAL
 libbitcreditconsensus_la_CPPFLAGS += $(BITCREDIT_INCLUDES)

@@ -2,7 +2,7 @@
 #include "ui_vanitygenpage.h"
 #include "vanitygenwork.h"
 
-#include "bitcoingui.h"
+#include "bitcreditgui.h"
 #include "util.h"
 
 #include "walletmodel.h"
@@ -27,9 +27,8 @@
 
 #include <QDebug>
 
-VanityGenPage::VanityGenPage(QWidget *parent, BitcoinGUI *_gui):
+VanityGenPage::VanityGenPage(QWidget *parent):
     QWidget(parent),
-    gui(_gui),
     walletModel(0),
     ui(new Ui::VanityGenPage)
 {
@@ -66,7 +65,7 @@ VanityGenPage::VanityGenPage(QWidget *parent, BitcoinGUI *_gui):
 
     //Input field:
 
-    ui->lineEdit->setValidator(new QRegExpValidator(QRegExp("[S]{1,1}[MNP-Za-k]{1,1}[1-9A-HJ-NP-Za-km-z]{10,10}"), NULL));
+    ui->lineEdit->setValidator(new QRegExpValidator(QRegExp("(6BCR){1,1}[1-9A-HJ-NP-Za-km-z]{3,3}"), NULL));
     ui->lineEdit->setMaxLength(16);
 
     connect(ui->lineEdit, SIGNAL(textChanged(QString)), this, SLOT(changeAllowedText()));
@@ -104,8 +103,6 @@ VanityGenPage::VanityGenPage(QWidget *parent, BitcoinGUI *_gui):
 
 
     connect(ui->buttonStart,SIGNAL(clicked()), this, SLOT(startThread()));
-    connect(ui->buttonUnlock,SIGNAL(clicked()), this, SLOT(unlockWallet()));
-
 
     copyAddressAction = new QAction("Copy Address", this);
     copyPrivateKeyAction = new QAction("Copy PrivateKey", this);
@@ -218,43 +215,8 @@ void VanityGenPage::saveFile(){
 void VanityGenPage::setWalletModel(WalletModel *model)
 {
     this->walletModel = model;
-    (this->walletModel->getEncryptionStatus() == 1) ? buttonUnlockState = true : buttonUnlockState = false;
+    if (walletModel->getEncryptionStatus() != WalletModel::Locked)
     updateUi();
-}
-
-void VanityGenPage::unlockWallet(){
-
-    if(buttonUnlockState){
-
-        WalletModel::UnlockContext ctx(this->walletModel->requestUnlockIndefinite());//requestUnlock());//requestUnlock());
-
-        if (ctx.isValid()){
-            gui->externCommand((const QString) QString("walletpassphrase "+VanityGenPassphrase+" 1000000000"));
-
-            ui->checkBoxAutoImport->setChecked(true);
-            buttonUnlockState = !buttonUnlockState;
-        }
-    } else{
-        lockWallet();
-    }
-
-    updateUi();
-}
-
-void VanityGenPage::lockWallet(){
-
-    if(this->walletModel->getEncryptionStatus() == 2){
-        gui->externCommand((const QString) QString("walletlock"));
-        buttonUnlockState = !buttonUnlockState;
-        ui->checkBoxAutoImport->setChecked(false);
-        updateUi();
-    } else{
-        AskPassphraseDialog dlg(AskPassphraseDialog::Encrypt, this);
-        dlg.setModel(walletModel);
-        dlg.exec();
-
-        gui->setEncryptionStatus(walletModel->getEncryptionStatus());
-    }
 }
 
 void VanityGenPage::keyPressEvent(QKeyEvent *event)
@@ -285,7 +247,7 @@ void VanityGenPage::customMenuRequested(QPoint pos)
         deleteAction->setEnabled(false);
 
         if(VanityGenWorkList[tableIndexClicked].privkey != ""){
-            if(this->walletModel->getEncryptionStatus() != 1){
+            if(this->walletModel->getEncryptionStatus() != WalletModel::Locked){
                 int atLeastOneImportable = 0;
                 for(int i=0; i< selection.count(); i++)
                 {
@@ -337,7 +299,6 @@ void VanityGenPage::importIntoWallet()
         if(VanityGenWorkList[selection.at(i).row()].privkey != ""){
             sortIndex.append(index.row());
             AddressIsMine = true;
-            gui->externCommand((const QString) QString("importprivkey "+VanityGenWorkList[selection.at(i).row()].privkey+" VANITYGEN false" ));
         }
     }
 
@@ -360,7 +321,7 @@ void VanityGenPage::deleteEntry()
 
 void VanityGenPage::updateVanityGenUI(){
 
-    ui->checkBoxAutoImport->setEnabled((this->walletModel->getEncryptionStatus() != 1) ? true : false);
+    //ui->checkBoxAutoImport->setEnabled((this->walletModel->getEncryptionStatus() != WalletModel::Locked));
 
     ui->labelKeysChecked->setText("Keys checked:  "+QString::number(VanityGenKeysChecked,'g',15));
 
@@ -396,21 +357,12 @@ void VanityGenPage::updateVanityGenUI(){
                 addage = "";
 
                 VanityGenWorkList[i].notification = 0;
-                if(ui->checkBoxAutoImport->checkState() == 2 && !buttonUnlockState){
+                if(ui->checkBoxAutoImport->checkState() == 2 ){
                     AddressIsMine = true;
-                    gui->externCommand((const QString) QString("importprivkey "+VanityGenWorkList[i].privkey+" VANITYGEN false" ));
                     VanityGenWorkList[i].privkey = "";
                     VanityGenWorkList[i].state = 3;
                     addage = "\n\n(...importing address into wallet...)";
                 }
-
-#ifndef Q_OS_MAC
-                gui->trayIcon->showMessage("Spreadcoin: VanityGen",
-                                           "\nAddress found for pattern "+QString(VanityGenWorkList[i].pattern)+ ":\n\n"+QString(VanityGenWorkList[i].pubkey+addage),
-                                           QSystemTrayIcon::Information,
-                                           10000);
-#endif
-
                 saveFile();
             }
         }
@@ -513,7 +465,7 @@ void VanityGenPage::tableViewClicked(QItemSelection sel1, QItemSelection sel2)
                 atLeastOneImportable++;
             }
         }
-        if(atLeastOneImportable>0 && this->walletModel->getEncryptionStatus() != 1){
+        if(atLeastOneImportable>0 && this->walletModel->getEncryptionStatus() != WalletModel::Locked){
             ui->buttonImport->setEnabled(true);
         } else{
             ui->buttonImport->setEnabled(false);
@@ -523,7 +475,7 @@ void VanityGenPage::tableViewClicked(QItemSelection sel1, QItemSelection sel2)
 
 void VanityGenPage::deleteRows()
 {
-    QModelIndexList selection = ui->tableView->selectionModel()->selectedRows();//selectedIndexes();//;
+    QModelIndexList selection = ui->tableView->selectionModel()->selectedRows();
     QList<int> sortIndex;
     for(int i=0; i< selection.count(); i++)
     {
@@ -608,26 +560,16 @@ void VanityGenPage::changeAllowedText()
 
 void VanityGenPage::checkAllowedText(int curpos)
 {
-    ui->lineEdit->setValidator(new QRegExpValidator(QRegExp("[S]{1,1}[MNP-Za-k]{1,1}[1-9A-HJ-NP-Za-km-z]{14,14}"), NULL));
+    ui->lineEdit->setValidator(new QRegExpValidator(QRegExp("(6BCR){1,1}[1-9A-HJ-NP-Za-km-z]{3,3}"), NULL));
     QChar secondChar;
     if(ui->lineEdit->text().length() > 1){
         secondChar = ui->lineEdit->text().at(1);
     }
     if(curpos == 0){
-        ui->labelAllowed->setText("Allowed(@"+QString::number(curpos)+"): S");
-    } else if(curpos == 1){
-        ui->labelAllowed->setText("Allowed(@"+QString::number(curpos)+"): MNPQRSTUVWXYZabcdefghijk");
-    } else if(curpos == 2){
-        if(secondChar == 'M'){
-            ui->lineEdit->setValidator(new QRegExpValidator(QRegExp("[S]{1,1}[MNP-Za-k]{1,1}[J-NP-Za-km-z]{1,1}[1-9A-HJ-NP-Za-km-z]{13,13}"), NULL));
-            ui->labelAllowed->setText("Allowed(@"+QString::number(curpos)+"): JKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz");
-        } else if(secondChar == 'k'){
-            ui->labelAllowed->setText("Allowed(@"+QString::number(curpos)+"): 123456789ABCDEFGHJKLMNPQRSTUVWXYZabcd");
-            ui->lineEdit->setValidator(new QRegExpValidator(QRegExp("[S]{1,1}[MNP-Za-k]{1,1}[1-9A-HJNP-Za-d]{1,1}[1-9A-HJ-NP-Za-km-z]{13,13}"), NULL));
-        } else{
-            ui->labelAllowed->setText("Allowed(@"+QString::number(curpos)+"): 123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz");
-        }
-    } else{
+        ui->labelAllowed->setText("Allowed(@"+QString::number(curpos)+"): 6BCR");
+    } else if(curpos == 4){
+        ui->labelAllowed->setText("Allowed(@"+QString::number(curpos)+"): recognized prefixes, if you do not know, check the Help section");
+    } else if(curpos > 6){
         ui->labelAllowed->setText("Allowed(@"+QString::number(curpos)+"): 123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz");
     }
 }
@@ -635,7 +577,7 @@ void VanityGenPage::checkAllowedText(int curpos)
 void VanityGenPage::updateLabelNrThreads(int nThreads)
 {
     VanityGenNThreads = nThreads;
-    ui->labelNrThreads->setText("Number of threads to use : " + QString::number(nThreads));
+    ui->labelNrThreads->setText("Threads to use : " + QString::number(nThreads));
     updateUi();
 }
 
@@ -701,7 +643,5 @@ void VanityGenPage::updateUi()
     ui->buttonPattern->setEnabled(VanityGenRunning ? false : true);
 
     ui->buttonStart->setEnabled((ui->horizontalSlider->value() > 0 && (getNewJobsCount() > 0)) ? true : false);
-    ui->buttonUnlock->setText(buttonUnlockState ? "Unlock wallet" :"Lock wallet");
-
     VanityGenRunning ?  ui->buttonStart->setText("Stop") : ui->buttonStart->setText("Start");
 }

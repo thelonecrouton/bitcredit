@@ -1314,8 +1314,6 @@ bool AcceptableInputs(CTxMemPool& pool, CValidationState &state, const CTransact
     return true;
 }
 
-
-
 bool ReadTransaction(CTransaction& tx, const CDiskTxPos &pos, uint256 &hashBlock) {
     CAutoFile file(OpenBlockFile(pos, true), SER_DISK, CLIENT_VERSION);
     CBlockHeader header;
@@ -2200,7 +2198,7 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
 
 			//NOTE: This is an error in the Grant DB.
 			if (awardFound != grantAwards.size()){
-				return state.DoS(100, error("ConnectBlock() : Bitcredit DB Corruption detected. Grant Awards not being paid or paying too much. \n Please restore a previous version of grantdb.dat and/or delete the old grantdb database."));
+				return state.DoS(100, error("ConnectBlock() : DB Corruption detected. Grant Awards not being paid or paying too much. \n Please restore a previous version of grantdb.dat and/or delete the old grantdb database."));
 			}
 		}
 

@@ -4515,7 +4515,7 @@ bool CWallet::IsRetrievable(const uint256 hash, bool isEscrow) {
 }
 
 bool CWallet::clearRetrieveHashMap(bool isEscrow) {
-   bool erased;
+   bool erased = false;
     if (isEscrow) {
        map<uint256,std::string>::iterator it = mapEscrowRetrieve.begin();
        while(it != mapEscrowRetrieve.end()) {

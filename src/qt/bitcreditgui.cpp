@@ -18,13 +18,15 @@
 #include "rpcconsole.h"
 #include "utilitydialog.h"
 #include "exchangebrowser.h"
-#include "chatwindow.h"
 #include "util.h"
+#include "vanitygenpage.h"
+#include "miningpage.h"
+#include "blockexplorer.h"
 #ifdef ENABLE_WALLET
 #include "walletframe.h"
 #include "walletmodel.h"
 #include "stdio.h"
-#include "testpage.h"
+#include "bidpage.h"
 
 #endif // ENABLE_WALLET
 
@@ -35,7 +37,8 @@
 #include "init.h"
 #include "ui_interface.h"
 #include "util.h"
-
+#include "pixmap.h"
+#include "carousel.h"
 #include <iostream>
 #include <QtGui>
 #include <QAction>
@@ -80,6 +83,7 @@
 #endif
 #include <QStyle>
 #include <QFont>
+#include <QImage>
 #include <QFontDatabase>
 
 #include <iostream>
@@ -121,11 +125,11 @@ BitcreditGUI::BitcreditGUI(const NetworkStyle *networkStyle, QWidget *parent) :
     trayIcon(0),
     trayIconMenu(0),
     notificator(0),
-    rpcConsole(0),    
+    rpcConsole(0),
     prevBlocks(0),
     spinnerFrame(0)
 {
-    setFixedSize(1000, 565);
+    setFixedSize(1000, 600);
     setWindowFlags(Qt::FramelessWindowHint);
     QFontDatabase::addApplicationFont(":/fonts/preg");
     QFontDatabase::addApplicationFont(":/fonts/pxbold");
@@ -164,43 +168,43 @@ BitcreditGUI::BitcreditGUI(const NetworkStyle *networkStyle, QWidget *parent) :
             QFile qss(":/css/dark");
             qss.open(QFile::ReadOnly);
             qApp->setStyleSheet(qss.readAll());
-            qss.close();            
+            qss.close();
         }
         else if (themestr.contains("green"))
         {
             QFile qss(":/css/green");
             qss.open(QFile::ReadOnly);
             qApp->setStyleSheet(qss.readAll());
-            qss.close();            
+            qss.close();
         }
         else if (themestr.contains("blue"))
         {
             QFile qss(":/css/blue");
             qss.open(QFile::ReadOnly);
             qApp->setStyleSheet(qss.readAll());
-            qss.close();            
+            qss.close();
         }
         else if (themestr.contains("pink"))
         {
             QFile qss(":/css/pink");
             qss.open(QFile::ReadOnly);
             qApp->setStyleSheet(qss.readAll());
-            qss.close();            
+            qss.close();
         }
         else if (themestr.contains("purple"))
         {
             QFile qss(":/css/purple");
             qss.open(QFile::ReadOnly);
             qApp->setStyleSheet(qss.readAll());
-            qss.close();            
+            qss.close();
         }
         else if (themestr.contains("turq"))
         {
             QFile qss(":/css/turq");
             qss.open(QFile::ReadOnly);
             qApp->setStyleSheet(qss.readAll());
-            qss.close();            
-        }        
+            qss.close();
+        }
     }
     //if not, load the default theme
     else
@@ -210,7 +214,7 @@ BitcreditGUI::BitcreditGUI(const NetworkStyle *networkStyle, QWidget *parent) :
         qApp->setStyleSheet(qss.readAll());
         qss.close();
     }
-    	
+
 #ifndef Q_OS_MAC
     QApplication::setWindowIcon(networkStyle->getTrayAndWindowIcon());
     setWindowIcon(networkStyle->getTrayAndWindowIcon());
@@ -281,34 +285,30 @@ BitcreditGUI::BitcreditGUI(const NetworkStyle *networkStyle, QWidget *parent) :
     toolbar2->setFixedHeight(40);
     toolbar2->setFixedWidth(1000);
     toolbar2->setIconSize(QSize(18, 18));
-    
+
     QWidget* spacer2 = new QWidget();
-    //spacer2->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     spacer2->setFixedWidth(90);
     toolbar2->addWidget(spacer2);
     spacer2->setObjectName("spacer2");
     toolbar2->addWidget(labelConnectionsIcon);
 
     QWidget* spacer3 = new QWidget();
-    //spacer3->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     spacer3->setFixedWidth(30);
     toolbar2->addWidget(spacer3);
     spacer3->setObjectName("spacer3");
     toolbar2->addWidget(labelBlocksIcon);
-    
+
     QWidget* spacer6 = new QWidget();
-    //spacer3->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     spacer6->setFixedWidth(30);
     toolbar2->addWidget(spacer6);
     spacer6->setObjectName("spacer6");
-    toolbar2->addWidget(labelEncryptionIcon);    
+    toolbar2->addWidget(labelEncryptionIcon);
 
     QWidget* spacer4 = new QWidget();
-    //spacer4->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     spacer4->setFixedWidth(160);
     toolbar2->addWidget(spacer4);
     spacer4->setObjectName("spacer4");
-    
+
     toolbar2->addAction(openAction);
     toolbar2->addAction(usedSendingAddressesAction);
     toolbar2->addAction(verifyMessageAction);
@@ -320,8 +320,6 @@ BitcreditGUI::BitcreditGUI(const NetworkStyle *networkStyle, QWidget *parent) :
     toolbar2->addAction(aboutAction);
     toolbar2->addAction(toggleHideAction);
     toolbar2->addAction(quitAction);
-    
-
 
     connect(openRPCConsoleAction, SIGNAL(triggered()), rpcConsole, SLOT(show()));
 
@@ -368,6 +366,14 @@ void BitcreditGUI::createActions(const NetworkStyle *networkStyle)
     historyAction->setShortcut(QKeySequence(Qt::ALT + Qt::Key_4));
     tabGroup->addAction(historyAction);
 
+    vanityAction = new QAction(QIcon(":/icons/null"), tr("&Vanity"), this);
+    vanityAction->setCheckable(true);
+	tabGroup->addAction(vanityAction);
+
+    miningAction = new QAction(QIcon(":/icons/null"), tr("&Mining"), this);
+    miningAction->setCheckable(true);
+	tabGroup->addAction(miningAction);
+
     QToolBar *toolbarsend = addToolBar(tr("Send"));
     QToolBar *toolbarsend2 = addToolBar(tr("Receive"));
 
@@ -392,7 +398,7 @@ void BitcreditGUI::createActions(const NetworkStyle *networkStyle)
 
     QToolBar *toolbarmess = addToolBar(tr("Send Message"));
     QToolBar *toolbarmess2 = addToolBar(tr("Messages"));
-    
+
     toolbarmess->setIconSize(QSize(200, 35));
     toolbarmess2->setIconSize(QSize(200, 35));
     toolbarmess->setObjectName("toolbar5");
@@ -414,7 +420,7 @@ void BitcreditGUI::createActions(const NetworkStyle *networkStyle)
 
     QToolBar *toolbarrecinv = addToolBar(tr("Receipts"));
     QToolBar *toolbarrecinv2 = addToolBar(tr("Invoices"));
-    
+
     toolbarrecinv->setIconSize(QSize(200, 35));
     toolbarrecinv2->setIconSize(QSize(200, 35));
     toolbarrecinv->setObjectName("toolbar7");
@@ -437,7 +443,7 @@ void BitcreditGUI::createActions(const NetworkStyle *networkStyle)
     QToolBar *toolbarstats = addToolBar(tr("Block Browser"));
     QToolBar *toolbarstats2 = addToolBar(tr("Market"));
     QToolBar *toolbarstats3 = addToolBar(tr("Bank Statistics"));
-    
+
     toolbarstats->setIconSize(QSize(200, 35));
     toolbarstats2->setIconSize(QSize(200, 35));
     toolbarstats3->setIconSize(QSize(200, 35));
@@ -462,7 +468,6 @@ void BitcreditGUI::createActions(const NetworkStyle *networkStyle)
     wId4->hide();
 
     blockAction = new QAction(QIcon(":/icons/null"), tr("&Block Crawler"), this);
-    blockAction->setShortcut(QKeySequence(Qt::ALT + Qt::Key_5));
     blockAction->setCheckable(true);
     toolbarstats2->addAction(blockAction);
     tabGroup->addAction(blockAction);
@@ -517,21 +522,17 @@ void BitcreditGUI::createActions(const NetworkStyle *networkStyle)
 
     actionSendReceiveinv = new QAction(QIcon(":/icons/null"), tr("&Receipts / Invoices"), this);
     actionSendReceiveinv->setCheckable(true);
-    actionSendReceiveinv->setShortcut(QKeySequence(Qt::ALT + Qt::Key_4));
-    
+
     actionSendReceivestats = new QAction(QIcon(":/icons/null"), tr("&Statistics"), this);
     actionSendReceivestats->setCheckable(true);
-    actionSendReceivestats->setShortcut(QKeySequence(Qt::ALT + Qt::Key_5));    
 
-    chatAction = new QAction(QIcon(":/icons/null"), tr("&IRC"), this);
-    chatAction->setToolTip(tr("View chat"));
-    chatAction->setCheckable(true);
-    tabGroup->addAction(chatAction);   
+    bidAction = new QAction(QIcon(":/icons/null"), ("&BID + BACK!"), this);
+    bidAction->setCheckable(true);
+    tabGroup->addAction(bidAction);
 
-    testAction = new QAction(QIcon(":/icons/null"), ("&BID + BACK!"), this);
-    testAction->setToolTip(tr("Testing"));
-    testAction->setCheckable(true);
-    tabGroup->addAction(testAction);
+    voteCoinsAction = new QAction(QIcon(":/icons/null"), tr("&Vote"), this);
+    voteCoinsAction->setCheckable(true);
+    tabGroup->addAction(voteCoinsAction);
 
     sendMessagesAnonAction = new QAction(QIcon(":/icons/null"), tr("S&end Messages"), this);
     sendMessagesAnonAction->setCheckable(true);
@@ -557,14 +558,16 @@ void BitcreditGUI::createActions(const NetworkStyle *networkStyle)
     connect(actionSendReceiveinv, SIGNAL(triggered()), this, SLOT(showNormalIfMinimized()));
     connect(actionSendReceiveinv, SIGNAL(triggered()), this, SLOT(gotoInvoicesPage()));
     connect(actionSendReceivestats, SIGNAL(triggered()), this, SLOT(showNormalIfMinimized()));
-    connect(actionSendReceivestats, SIGNAL(triggered()), this, SLOT(gotoExchangeBrowserPage()));    
+    connect(actionSendReceivestats, SIGNAL(triggered()), this, SLOT(gotoExchangeBrowserPage()));
 
     connect(historyAction, SIGNAL(triggered()), this, SLOT(showNormalIfMinimized()));
     connect(historyAction, SIGNAL(triggered()), this, SLOT(gotoHistoryPage()));
-    connect(chatAction, SIGNAL(triggered()), this, SLOT(gotoChatPage()));
     connect(exchangeAction, SIGNAL(triggered()), this, SLOT(gotoExchangeBrowserPage()));
-    connect(blockAction, SIGNAL(triggered()), this, SLOT(gotoBlockBrowser()));
+    connect(blockAction, SIGNAL(triggered()), this, SLOT(gotoBlockExplorerPage()));
+    connect(blockAction, SIGNAL(triggered()), this, SLOT(showNormalIfMinimized()));
     connect(bankstatsAction, SIGNAL(triggered()), this, SLOT(gotoBankStatisticsPage()));
+    connect(voteCoinsAction, SIGNAL(triggered()), this, SLOT(showNormalIfMinimized()));
+    connect(voteCoinsAction, SIGNAL(triggered()), this, SLOT(gotoVoteCoinsPage()));
     connect(sendMessagesAction, SIGNAL(triggered()), this, SLOT(showNormalIfMinimized()));
     connect(sendMessagesAction, SIGNAL(triggered()), this, SLOT(gotoSendMessagesPage()));
     connect(messageAction, SIGNAL(triggered()), this, SLOT(showNormalIfMinimized()));
@@ -573,50 +576,51 @@ void BitcreditGUI::createActions(const NetworkStyle *networkStyle)
     connect(invoiceAction, SIGNAL(triggered()), this, SLOT(gotoInvoicesPage()));
     connect(receiptAction, SIGNAL(triggered()), this, SLOT(showNormalIfMinimized()));
     connect(receiptAction, SIGNAL(triggered()), this, SLOT(gotoReceiptPage()));
-    connect(sendMessagesAnonAction, SIGNAL(triggered()), this, SLOT(showNormalIfMinimized()));
     connect(banknodeManagerAction, SIGNAL(triggered()), this, SLOT(showNormalIfMinimized()));
     connect(banknodeManagerAction, SIGNAL(triggered()), this, SLOT(gotoBanknodeManagerPage()));
-    connect(testAction, SIGNAL(triggered()), this, SLOT(gotoTestPage()));
-    
-    //connect(toolbar2, SIGNAL(onHover()), this, SLOT(tb2hover()));
+    connect(bidAction, SIGNAL(triggered()), this, SLOT(gotoBidPage()));
+    connect(bidAction, SIGNAL(triggered()), this, SLOT(showNormalIfMinimized()));
+    connect(vanityAction, SIGNAL(triggered()), this, SLOT(gotoVanityGenPage()));
+    connect(vanityAction, SIGNAL(triggered()), this, SLOT(showNormalIfMinimized()));
+    connect(miningAction, SIGNAL(triggered()), this, SLOT(gotoMiningPage()));
+    connect(miningAction, SIGNAL(triggered()), this, SLOT(showNormalIfMinimized()));
 
-	
 #endif // ENABLE_WALLET
 
     quitAction = new QAction(QIcon(":/icons/quit"), tr("E&xit"), this);
     quitAction->setStatusTip(tr("Quit application"));
     quitAction->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_Q));
     quitAction->setMenuRole(QAction::QuitRole);
-    //aboutAction = new QAction(QIcon(":/icons/about"), tr("&About Bitcredit Core"), this);
-    //colour code according to theme    
+
+    //colour code according to theme
     if (themestr.contains("orange"))
     {
         aboutAction = new QAction(QIcon(":/icons/about-orange"), tr("&About Bitcredit Core"), this);
     }
     else if (themestr.contains("dark"))
     {
-        aboutAction = new QAction(QIcon(":/icons/about-orange"), tr("&About Bitcredit Core"), this);         
+        aboutAction = new QAction(QIcon(":/icons/about-orange"), tr("&About Bitcredit Core"), this);
     }
     else if (themestr.contains("green"))
     {
-        aboutAction = new QAction(QIcon(":/icons/about-green"), tr("&About Bitcredit Core"), this);         
+        aboutAction = new QAction(QIcon(":/icons/about-green"), tr("&About Bitcredit Core"), this);
     }
     else if (themestr.contains("blue"))
     {
-        aboutAction = new QAction(QIcon(":/icons/about-blue"), tr("&About Bitcredit Core"), this);         
+        aboutAction = new QAction(QIcon(":/icons/about-blue"), tr("&About Bitcredit Core"), this);
     }
     else if (themestr.contains("pink"))
     {
-        aboutAction = new QAction(QIcon(":/icons/about-pink"), tr("&About Bitcredit Core"), this);         
+        aboutAction = new QAction(QIcon(":/icons/about-pink"), tr("&About Bitcredit Core"), this);
     }
     else if (themestr.contains("purple"))
     {
-        aboutAction = new QAction(QIcon(":/icons/about-purple"), tr("&About Bitcredit Core"), this);         
+        aboutAction = new QAction(QIcon(":/icons/about-purple"), tr("&About Bitcredit Core"), this);
     }
     else if (themestr.contains("turq"))
     {
-        aboutAction = new QAction(QIcon(":/icons/about-turq"), tr("&About Bitcredit Core"), this);         
-    }    
+        aboutAction = new QAction(QIcon(":/icons/about-turq"), tr("&About Bitcredit Core"), this);
+    }
     else
     {
         aboutAction = new QAction(QIcon(":/icons/about"), tr("&About Bitcredit Core"), this);
@@ -683,15 +687,6 @@ void BitcreditGUI::createActions(const NetworkStyle *networkStyle)
 #endif
 }
 
-
-
-/*
-void BitcreditGUI::tb2hover()
-{
-    QMessageBox::information(0, "Event!", "Toolbar 2 airspace entered!");
-}
-*/
-
 void BitcreditGUI::createToolBars()
 {
     QLabel *labelLogo = new QLabel(this);
@@ -703,15 +698,15 @@ void BitcreditGUI::createToolBars()
     }
     else if (themestr.contains("dark"))
     {
-        labelLogo->setPixmap(QPixmap(":images/head"));      
+        labelLogo->setPixmap(QPixmap(":images/head"));
     }
     else if (themestr.contains("green"))
     {
-        labelLogo->setPixmap(QPixmap(":images/head-green"));        
+        labelLogo->setPixmap(QPixmap(":images/head-green"));
     }
     else if (themestr.contains("blue"))
     {
-        labelLogo->setPixmap(QPixmap(":images/head-blue"));      
+        labelLogo->setPixmap(QPixmap(":images/head-blue"));
     }
     else if (themestr.contains("pink"))
     {
@@ -719,12 +714,12 @@ void BitcreditGUI::createToolBars()
     }
     else if (themestr.contains("purple"))
     {
-        labelLogo->setPixmap(QPixmap(":images/head-purple"));    
+        labelLogo->setPixmap(QPixmap(":images/head-purple"));
     }
     else if (themestr.contains("turq"))
     {
         labelLogo->setPixmap(QPixmap(":images/head-turq"));
-    }    
+    }
     else
     {
         labelLogo->setPixmap(QPixmap(":images/head"));
@@ -739,29 +734,28 @@ void BitcreditGUI::createToolBars()
     toolbar->setMovable(false);
     toolbar->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
     toolbar->setIconSize(QSize(50,20));
-	
-	
+
+
     if(walletFrame)
     {
-        QWidget* spacer5 = new QWidget();		
+        /*QWidget* spacer5 = new QWidget();
         spacer5->setFixedHeight(15);
         toolbar->addWidget(spacer5);
-        spacer5->setObjectName("spacer5");
-	//toolbar->addAction(overviewAction);
-	toolbar->addAction(historyAction);
+        spacer5->setObjectName("spacer5");*/
+		toolbar->addAction(historyAction);
     	toolbar->addAction(actionSendReceive);
         toolbar->addAction(actionSendReceiveMess);
-   	toolbar->addAction(actionSendReceiveinv);
-	toolbar->addAction(actionSendReceivestats);		        		
-	toolbar->addAction(chatAction);
-	toolbar->addAction(banknodeManagerAction);
-        toolbar->addAction(testAction);
+   		toolbar->addAction(actionSendReceiveinv);
+		toolbar->addAction(actionSendReceivestats);
+		toolbar->addAction(banknodeManagerAction);
+		toolbar->addAction(voteCoinsAction);
+        toolbar->addAction(bidAction);
+        toolbar->addAction(vanityAction);
+        toolbar->addAction(miningAction);
+        overviewAction->setChecked(true);
         historyAction->setChecked(true);
     }
-    
-    //QWidget* spacer = new QWidget();
-    //spacer->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-    //toolbar->addWidget(spacer);
+
     toolbar->addAction(optionsAction);
 }
 
@@ -833,7 +827,6 @@ void BitcreditGUI::removeAllWallets()
 
 void BitcreditGUI::setWalletActionsEnabled(bool enabled)
 {
-    //overviewAction->setEnabled(enabled);
     sendCoinsAction->setEnabled(enabled);
     receiveCoinsAction->setEnabled(enabled);
     historyAction->setEnabled(enabled);
@@ -846,14 +839,16 @@ void BitcreditGUI::setWalletActionsEnabled(bool enabled)
     usedReceivingAddressesAction->setEnabled(enabled);
     openAction->setEnabled(enabled);
     paperWalletAction->setEnabled(enabled);
-    chatAction->setEnabled(enabled);
     exchangeAction->setEnabled(enabled);
     sendMessagesAction->setEnabled(enabled);
+	voteCoinsAction->setEnabled(enabled);
     messageAction->setEnabled(enabled);
     invoiceAction->setEnabled(enabled);
     receiptAction->setEnabled(enabled);
     banknodeManagerAction->setEnabled(enabled);
-    testAction->setEnabled(enabled);
+    bidAction->setEnabled(enabled);
+    vanityAction->setEnabled(enabled);
+    miningAction->setEnabled(enabled);
 }
 
 void BitcreditGUI::createTrayIcon(const NetworkStyle *networkStyle)
@@ -892,6 +887,7 @@ void BitcreditGUI::createTrayIconMenu()
     trayIconMenu->addAction(toggleHideAction);
     trayIconMenu->addSeparator();
     trayIconMenu->addAction(sendCoinsAction);
+    trayIconMenu->addAction(voteCoinsAction);
     trayIconMenu->addAction(receiveCoinsAction);
     trayIconMenu->addSeparator();
     trayIconMenu->addAction(signMessageAction);
@@ -954,45 +950,60 @@ void BitcreditGUI::openClicked()
     }
 }
 
-void BitcreditGUI::gotoBlockBrowser()
+void BitcreditGUI::gotoMiningPage()
 {
-    blockAction->setChecked(true);
-    actionSendReceive->setChecked(false);
-    actionSendReceiveinv->setChecked(false);
-    actionSendReceiveMess->setChecked(false);
-    if (walletFrame) walletFrame->gotoBlockBrowser();
-    
-    wId2->hide();
-    wId->hide();
-    wId3->hide();
-    wId4->show();
-    wId4->raise();    
-}
-
-void BitcreditGUI::gotoChatPage()
-{
-    chatAction->setChecked(true);
+    miningAction->setChecked(true);
     actionSendReceive->setChecked(false);
     actionSendReceiveMess->setChecked(false);
     actionSendReceiveinv->setChecked(false);
     actionSendReceivestats->setChecked(false);
-    if (walletFrame) walletFrame->gotoChatPage();
-    
+    if (walletFrame) walletFrame->gotoMiningPage();
+
     wId2->hide();
     wId->hide();
     wId3->hide();
     wId4->hide();
 }
 
-void BitcreditGUI::gotoTestPage()
+void BitcreditGUI::gotoBlockExplorerPage()
 {
-    testAction->setChecked(true);
+    blockAction->setChecked(true);
     actionSendReceive->setChecked(false);
     actionSendReceiveMess->setChecked(false);
     actionSendReceiveinv->setChecked(false);
     actionSendReceivestats->setChecked(false);
-    if (walletFrame) walletFrame->gotoTestPage();
-    
+    if (walletFrame) walletFrame->gotoBlockExplorerPage();
+
+    wId2->hide();
+    wId->hide();
+    wId3->hide();
+    wId4->hide();
+}
+
+void BitcreditGUI::gotoVanityGenPage()
+{
+    vanityAction->setChecked(true);
+    actionSendReceive->setChecked(false);
+    actionSendReceiveMess->setChecked(false);
+    actionSendReceiveinv->setChecked(false);
+    actionSendReceivestats->setChecked(false);
+    if (walletFrame) walletFrame->gotoVanityGenPage();
+
+    wId2->hide();
+    wId->hide();
+    wId3->hide();
+    wId4->hide();
+}
+
+void BitcreditGUI::gotoBidPage()
+{
+    bidAction->setChecked(true);
+    actionSendReceive->setChecked(false);
+    actionSendReceiveMess->setChecked(false);
+    actionSendReceiveinv->setChecked(false);
+    actionSendReceivestats->setChecked(false);
+    if (walletFrame) walletFrame->gotoBidPage();
+
     wId2->hide();
     wId->hide();
     wId3->hide();
@@ -1007,7 +1018,7 @@ void BitcreditGUI::gotoSendMessagesPage()
     actionSendReceiveinv->setChecked(false);
     actionSendReceivestats->setChecked(false);
     if (walletFrame) walletFrame->gotoSendMessagesPage();
-    
+
     wId2->hide();
     wId->show();
     wId->raise();
@@ -1023,7 +1034,7 @@ void BitcreditGUI::gotoMessagesPage()
     actionSendReceiveinv->setChecked(false);
     actionSendReceivestats->setChecked(false);
     if (walletFrame) walletFrame->gotoMessagesPage();
-    
+
     wId2->hide();
     wId->show();
     wId->raise();
@@ -1039,7 +1050,7 @@ void BitcreditGUI::gotoInvoicesPage()
     actionSendReceiveMess->setChecked(false);
     actionSendReceivestats->setChecked(false);
     if (walletFrame) walletFrame->gotoInvoicesPage();
-    
+
     wId2->hide();
     wId->hide();
     wId3->show();
@@ -1055,7 +1066,7 @@ void BitcreditGUI::gotoReceiptPage()
     actionSendReceiveMess->setChecked(false);
     actionSendReceivestats->setChecked(false);
     if (walletFrame) walletFrame->gotoReceiptPage();
-    
+
     wId2->hide();
     wId->hide();
     wId3->show();
@@ -1070,12 +1081,12 @@ void BitcreditGUI::gotoExchangeBrowserPage()
     actionSendReceiveMess->setChecked(false);
     actionSendReceiveinv->setChecked(false);
     if (walletFrame) walletFrame->gotoExchangeBrowserPage();
-    
+
     wId2->hide();
     wId->hide();
     wId3->hide();
     wId4->show();
-    wId4->raise();    
+    wId4->raise();
 }
 
 void BitcreditGUI::gotoBankStatisticsPage()
@@ -1085,12 +1096,12 @@ void BitcreditGUI::gotoBankStatisticsPage()
     actionSendReceiveMess->setChecked(false);
     actionSendReceiveinv->setChecked(false);
     if (walletFrame) walletFrame->gotoBankStatisticsPage();
-    
+
     wId2->hide();
     wId->hide();
     wId3->hide();
     wId4->show();
-    wId4->raise();    
+    wId4->raise();
 }
 
 void BitcreditGUI::gotoOverviewPage()
@@ -1102,7 +1113,7 @@ void BitcreditGUI::gotoOverviewPage()
     actionSendReceiveinv->setChecked(false);
     actionSendReceivestats->setChecked(false);
     if (walletFrame) walletFrame->gotoHistoryPage();
-    
+
     wId2->hide();
     wId->hide();
     wId3->hide();
@@ -1117,7 +1128,7 @@ void BitcreditGUI::gotoHistoryPage()
     actionSendReceiveinv->setChecked(false);
     actionSendReceivestats->setChecked(false);
     if (walletFrame) walletFrame->gotoHistoryPage();
-    
+
     wId2->hide();
     wId->hide();
     wId3->hide();
@@ -1132,13 +1143,13 @@ void BitcreditGUI::gotoReceiveCoinsPage()
     actionSendReceiveinv->setChecked(false);
     actionSendReceivestats->setChecked(false);
     if (walletFrame) walletFrame->gotoReceiveCoinsPage();
-    
+
     wId2->show();
     wId2->raise();
     wId->hide();
     wId3->hide();
     wId4->hide();
-    
+
 }
 
 void BitcreditGUI::gotoSendCoinsPage(QString addr)
@@ -1149,13 +1160,13 @@ void BitcreditGUI::gotoSendCoinsPage(QString addr)
     actionSendReceiveinv->setChecked(false);
     actionSendReceivestats->setChecked(false);
     if (walletFrame) walletFrame->gotoSendCoinsPage(addr);
-    
+
     wId2->show();
     wId2->raise();
     wId->hide();
     wId3->hide();
     wId4->hide();
-    
+
 }
 
 void BitcreditGUI::gotoBanknodeManagerPage()
@@ -1166,13 +1177,27 @@ void BitcreditGUI::gotoBanknodeManagerPage()
     actionSendReceiveinv->setChecked(false);
     actionSendReceivestats->setChecked(false);
     if (walletFrame) walletFrame->gotoBanknodeManagerPage();
-    
+
     wId2->hide();
     wId->hide();
     wId3->hide();
     wId4->hide();
 }
 
+void BitcreditGUI::gotoVoteCoinsPage(QString addr)
+{
+    banknodeManagerAction->setChecked(false);
+    actionSendReceive->setChecked(false);
+    actionSendReceiveMess->setChecked(false);
+    actionSendReceiveinv->setChecked(false);
+    actionSendReceivestats->setChecked(false);
+	if (walletFrame) walletFrame->gotoVoteCoinsPage(addr);
+
+    wId2->hide();
+    wId->hide();
+    wId3->hide();
+    wId4->hide();
+}
 
 void BitcreditGUI::gotoSignMessageTab(QString addr)
 {

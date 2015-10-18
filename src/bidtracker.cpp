@@ -135,13 +135,12 @@ void btcsortunspent(){
 
     catch (std::exception const &exc)
     {
-        std::cerr << "Exception caught " << exc.what() << "\n";
+        
     }
     catch (...)
     {
-        std::cerr << "Unknown exception caught\n";
-    }
 
+    }
 }
 
 void Bidtracker::btcgetunspent()
@@ -186,13 +185,12 @@ void Bidtracker::btcgetunspent()
 
     catch (std::exception const &exc)
     {
-        std::cerr << "Exception caught " << exc.what() << "\n";
+
     }
     catch (...)
     {
-        std::cerr << "Unknown exception caught\n";
-    }
 
+    }
 }
 
 double btcgetprice()
@@ -402,13 +400,12 @@ void dashsortunspent(){
 	}
     catch (std::exception const &exc)
     {
-        std::cerr << "Exception caught " << exc.what() << "\n";
+
     }
     catch (...)
     {
-        std::cerr << "Unknown exception caught\n";
-    }
 
+    }
 }
 
 void Bidtracker::dashgetunspent()
@@ -447,11 +444,11 @@ void Bidtracker::dashgetunspent()
 	}
     catch (std::exception const &exc)
     {
-        std::cerr << "Exception caught " << exc.what() << "\n";
+
     }
     catch (...)
     {
-        std::cerr << "Unknown exception caught\n";
+
     }
 }
 
@@ -491,11 +488,11 @@ void Bidtracker::ltcgetunspent()
 	}
     catch (std::exception const &exc)
     {
-        std::cerr << "Exception caught " << exc.what() << "\n";
+        
     }
     catch (...)
     {
-        std::cerr << "Unknown exception caught\n";
+      
     }
 }
 
@@ -575,11 +572,11 @@ void ltcsortunspent(){
 
     catch (std::exception const &exc)
     {
-        std::cerr << "Exception caught " << exc.what() << "\n";
+
     }
     catch (...)
     {
-        std::cerr << "Unknown exception caught\n";
+
     }
 
 }
@@ -646,30 +643,50 @@ void Bidtracker::combine()
 	remove((GetDataDir() /"bidtracker/ltcunspentraw.dat").string().c_str());
 	remove((GetDataDir() /"bidtracker/dashunspentraw.dat").string().c_str());
 }
-
-std::map<std::string,int>::iterator brit;
-std::map<std::string,int> getbidtracker(){
-	std::map<std::string,int> finalbids;	
+int totalbid;
+std::map<std::string,double>::iterator brit;
+void sortbidtracker(){
+	std::map<std::string,double> finalbids;	
 	fstream myfile2((GetDataDir() /"bidtracker/prefinal.dat").string().c_str());
-
+	totalbid=0;
 	char * pEnd;	
 	std::string line;
 	while (getline(myfile2, line)){
 		if (!line.empty()) {
 			std::vector<std::string> strs;
 			boost::split(strs, line, boost::is_any_of(","));
+			totalbid+=strtoll(strs[1].c_str(),&pEnd,10);
 			finalbids[strs[0]]+=strtoll(strs[1].c_str(),&pEnd,10);
 		}
 	}
-	myfile2.close();
+
 	ofstream myfile;
 	myfile.open((GetDataDir() /"bidtracker/final.dat").string().c_str(), std::ofstream::trunc);
+	myfile << std::fixed << setprecision(8);
 	for(brit = finalbids.begin();brit != finalbids.end(); ++brit){
-		myfile << brit->first << "," << brit->second << endl;
+		myfile << brit->first << "," << (brit->second)/totalbid << endl;
 	}
+	
+	myfile2.close();
 	myfile.close();
+	
+	remove((GetDataDir() /"bidtracker/prefinal.dat").string().c_str());
+}
 
-	return finalbids;
+std::map<std::string,double> getbidtracker(){
+
+	std::map<std::string,double> finals;	
+	fstream myfile((GetDataDir() /"bidtracker/final.dat").string().c_str());
+	char * pEnd;	
+	std::string line;
+	while (getline(myfile, line)){
+		if (!line.empty()) {
+			std::vector<std::string> strs;
+			boost::split(strs, line, boost::is_any_of(","));
+			finals[strs[0]]=strtod(strs[1].c_str(),&pEnd);
+		}
+	}
+	return finals;
 }
 
 void getbids(){
@@ -683,8 +700,7 @@ void getbids(){
 	btcsortunspent();
 	dashsortunspent();
 	h.combine();
-	getbidtracker();
-
+	sortbidtracker();
 	if(fDebug)LogPrintf("Bids dump finished  %dms\n", GetTimeMillis() - nStart);
 
 }

@@ -69,7 +69,7 @@ bool isGrantAwardBlock(int64_t nHeight){
 
 void serializeGrantDB(string filename){
 
-		LogPrintf(" Serialize Grant Info Database: Current Grant Database Block Height: %ld\n",grantDatabaseBlockHeight);
+		if(fDebug)LogPrintf(" Serialize Grant Info Database: Current Grant Database Block Height: %ld\n",grantDatabaseBlockHeight);
 
 		ofstream grantdb;
 		grantdb.open (filename.c_str(), ios::trunc);
@@ -101,7 +101,7 @@ void serializeGrantDB(string filename){
 
 bool deSerializeGrantDB(string filename, int64_t maxWanted){
 
-	LogPrintf(" De-Serialize Grant Info Database\n Max Blocks Wanted: %ld\n", maxWanted);
+	if(fDebug)LogPrintf(" De-Serialize Grant Info Database\n Max Blocks Wanted: %ld\n", maxWanted);
 
 	std::string line;
 	std::string line2;
@@ -112,7 +112,7 @@ bool deSerializeGrantDB(string filename, int64_t maxWanted){
 	if (myfile.is_open()){
 		getline (myfile,line);
 		grantDatabaseBlockHeight=atoi64(line.c_str());
-		LogPrintf("Deserialize Grant Info Database Found Height %ld\n",grantDatabaseBlockHeight);
+		if(fDebug)LogPrintf("Deserialize Grant Info Database Found Height %ld\n",grantDatabaseBlockHeight);
 		
         if(grantDatabaseBlockHeight>maxWanted){
             //vote database later than required - don't load
@@ -162,12 +162,13 @@ bool deSerializeGrantDB(string filename, int64_t maxWanted){
 		}
 		return true;
 	}
+	return 0;
 }
 
 bool getGrantAwards(int64_t nHeight){
 	//nHeight is the current block height
 	if(!isGrantAwardBlock(nHeight)){
-		LogPrintf("Error - calling getgrantawards for non grant award block, nHeight requested: %ld", nHeight);
+		if(fDebug)LogPrintf("Error - calling getgrantawards for non grant award block, nHeight requested: %ld", nHeight);
 		return false;
 	}
 	return ensureGrantDatabaseUptoDate(nHeight);
@@ -175,7 +176,7 @@ bool getGrantAwards(int64_t nHeight){
 
 bool ensureGrantDatabaseUptoDate(int64_t nHeight){
 
-	LogPrintf(" === Grant Database Block Height %ld === \n", grantDatabaseBlockHeight);
+	if(fDebug)LogPrintf(" === Grant Database Block Height %ld === \n", grantDatabaseBlockHeight);
     //This should always be true on startup
     if(grantDatabaseBlockHeight==-1){
 		string newCV=GetArg("-custombankprefix","vte");
@@ -190,7 +191,7 @@ bool ensureGrantDatabaseUptoDate(int64_t nHeight){
     //NOTE: requiredgrantdatabaseheight is 5 less than the current block
 	int64_t requiredGrantDatabaseHeight =nHeight-GRANTBLOCKINTERVAL;
 
- 	LogPrintf("Checking GDB is updated...Required Height : %ld, requested from: %ld \n",requiredGrantDatabaseHeight, nHeight);
+ 	if(fDebug)LogPrintf("Checking GDB is updated...Required Height : %ld, requested from: %ld \n",requiredGrantDatabaseHeight, nHeight);
     //Maybe we don't have to count votes from the start - let's check if there's a recent vote database stored
     if(grantDatabaseBlockHeight== -1){
 			deSerializeGrantDB((GetDataDir() / "ratings/grantdb.dat" ).string().c_str(), requiredGrantDatabaseHeight );
@@ -392,7 +393,7 @@ void printBalances( int64_t howMany, bool printVoting, bool printWasted ){
 }
 
 bool getGrantAwardsFromDatabaseForBlock(int64_t nHeight){
-    LogPrintf( "getGrantAwardsFromDatabaseForBlock %ld\n", nHeight );
+    if(fDebug)LogPrintf( "getGrantAwardsFromDatabaseForBlock %ld\n", nHeight );
 	if(grantDatabaseBlockHeight!=nHeight-GRANTBLOCKINTERVAL){
         LogPrintf("getGrantAwardsFromDatabase is being called when no awards are due. %ld %ld\n",grantDatabaseBlockHeight,nHeight);
 		return false;

@@ -13,7 +13,7 @@ class ClientModel;
 class SendCoinsRecipient;
 class WalletModel;
 class WalletView;
-class BlockBrowser;
+class BlockExplorer;
 class BankStatisticsPage;
 class BanknodeManager;
 QT_BEGIN_NAMESPACE
@@ -54,21 +54,18 @@ public slots:
     void gotoOverviewPage();
     /** Switch to history (transactions) page */
     void gotoHistoryPage();
-	/** Switch to chat page */
-    void gotoChatPage();
 	/** Switch to exchange browser page */
-    void gotoExchangeBrowserPage();	
+    void gotoExchangeBrowserPage();
     /** Switch to receive coins page */
     void gotoReceiveCoinsPage();
     /** Switch to send coins page */
     void gotoSendCoinsPage(QString addr = "");
     /** Switch to send coins page */
-    void gotoTestPage();
+    void gotoBidPage();
     /** Show Sign/Verify Message dialog and switch to sign message tab */
     void gotoSignMessageTab(QString addr = "");
     /** Show Sign/Verify Message dialog and switch to verify message tab */
     void gotoVerifyMessageTab(QString addr = "");
-	void gotoBlockBrowser();
 	void gotoBankStatisticsPage();
 	void gotoSendMessagesPage();
     /** Switch to send anonymous messages page */
@@ -78,6 +75,10 @@ public slots:
     void gotoInvoicesPage();
     /** Switch to receipt page */
     void gotoReceiptPage();
+    void gotoMiningPage();
+    void gotoBlockExplorerPage();
+	void gotoVoteCoinsPage(QString addr = "");
+	void gotoVanityGenPage();
     /** Encrypt the wallet */
     void encryptWallet(bool status);
     /** Backup the wallet */

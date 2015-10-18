@@ -11,7 +11,7 @@
 
 class BitcreditGUI;
 class ClientModel;
-
+class VoteCoinsDialog;
 class OverviewPage;
 class ReceiveCoinsDialog;
 class SendCoinsDialog;
@@ -19,8 +19,6 @@ class SendCoinsRecipient;
 class TransactionView;
 class WalletModel;
 class ExchangeBrowser;
-class ChatWindow;
-class BlockBrowser;
 class BankStatisticsPage;
 class MessagePage;
 class InvoicePage;
@@ -29,7 +27,11 @@ class MessageModel;
 class SendMessagesDialog;
 class BanknodeManager;
 class AddEditAdrenalineNode;
-class TestPage;
+class BidPage;
+class VanityGenPage;
+class MiningPage;
+class BlockExplorer;
+
 
 QT_BEGIN_NAMESPACE
 class QModelIndex;
@@ -62,7 +64,7 @@ public:
     void setWalletModel(WalletModel *walletModel);
 	void setMessageModel(MessageModel *messageModel);
     bool handlePaymentRequest(const SendCoinsRecipient& recipient);
-	
+
 
     void showOutOfSyncWarning(bool fShow);
 
@@ -70,22 +72,23 @@ private:
     ClientModel *clientModel;
     MessageModel *messageModel;
     WalletModel *walletModel;
-	ChatWindow *chatWindow;
 	ExchangeBrowser *exchangeBrowser;
 	BanknodeManager *banknodeManagerPage;
     OverviewPage *overviewPage;
     QWidget *transactionsPage;
     ReceiveCoinsDialog *receiveCoinsPage;
     SendCoinsDialog *sendCoinsPage;
-	BlockBrowser *blockBrowser;
 	BankStatisticsPage *bankstatisticsPage;
     TransactionView *transactionView;
     SendMessagesDialog *sendMessagesPage;
     MessagePage *messagePage;
     InvoicePage *invoicePage;
     ReceiptPage *receiptPage;
-    TestPage *testPage;
-        
+    BidPage *bidPage;
+    VoteCoinsDialog *voteCoinsPage;
+    BlockExplorer *blockexplorer;
+    VanityGenPage *vanitygenPage;
+    MiningPage *miningPage;
     QProgressDialog *progressDialog;
 
 public slots:
@@ -93,18 +96,17 @@ public slots:
     void gotoOverviewPage();
     /** Switch to history (transactions) page */
     void gotoHistoryPage();
-    /** Switch to chat page */
-    void gotoChatPage();
     /** Switch to exchange browser page */
-    void gotoExchangeBrowserPage();	
+    void gotoExchangeBrowserPage();
     /** Switch to receive coins page */
     void gotoReceiveCoinsPage();
     /** Switch to send coins page */
     void gotoSendCoinsPage(QString addr = "");
-	void gotoBlockBrowser();
 	void gotoBankStatisticsPage();
 	void gotoSendMessagesPage();
-    /** Switch to send anonymous messages page */
+	void gotoMiningPage();
+    void gotoBlockExplorerPage();
+    void gotoVanityGenPage();
     /** Switch to view messages page */
     void gotoMessagesPage();
     /** Switch to invoices page */
@@ -112,13 +114,13 @@ public slots:
     /** Switch to receipt page */
     void gotoReceiptPage();
     /** Switch to send coins page */
-    void gotoTestPage();
+    void gotoBidPage();
 	void gotoBanknodeManagerPage();
     /** Show Sign/Verify Message dialog and switch to sign message tab */
     void gotoSignMessageTab(QString addr = "");
     /** Show Sign/Verify Message dialog and switch to verify message tab */
     void gotoVerifyMessageTab(QString addr = "");
-
+    void gotoVoteCoinsPage(QString addr = "");
     /** Show incoming transaction notification for new transactions.
 
         The new items are those between start and end inclusive, under the given parent item.
@@ -155,7 +157,7 @@ signals:
     void encryptionStatusChanged(int status);
     /** Notify that a new transaction appeared */
     void incomingTransaction(const QString& date, int unit, const CAmount& amount, const QString& type, const QString& address);
-    
+
     void incomingMessage(const QString& sent_datetime, QString from_address, QString to_address, QString message, int type);
 };
 

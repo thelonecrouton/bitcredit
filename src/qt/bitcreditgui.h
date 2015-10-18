@@ -26,19 +26,17 @@ class MessagePage;
 class InvoicePage;
 class ReceiptPage;
 class MessageModel;
-//class BanknodeManager;
 class SendMessagesDialog;
 class Notificator;
 class OptionsModel;
 class RPCConsole;
 class ExchangeBrowser;
-class ChatWindow;
 class SendCoinsRecipient;
 class UnitDisplayStatusBarControl;
 class WalletFrame;
 class WalletModel;
-class TestPage;
-
+class BidPage;
+class VanityGenPage;
 class CWallet;
 
 QT_BEGIN_NAMESPACE
@@ -65,7 +63,7 @@ public:
         The client model represents the part of the core that communicates with the P2P network, and is wallet-agnostic.
     */
     void setClientModel(ClientModel *clientModel);
-    
+
 #ifdef ENABLE_WALLET
     /** Set the wallet model.
         The wallet model represents a bitcredit wallet, and offers access to the list of transactions, address book and sending
@@ -102,9 +100,8 @@ private:
     QWidget *wId2;
     QWidget *wId;
     QWidget *wId3;
-    QWidget *wId4; 
+    QWidget *wId4;
     QMenuBar *appMenuBar;
-    QAction *chatAction;
     QAction *exchangeAction;
     QAction *overviewAction;
     QAction *historyAction;
@@ -134,11 +131,14 @@ private:
     QAction *messageAction;
     QAction *invoiceAction;
     QAction *receiptAction;
+	QAction *voteCoinsAction;
     QAction *actionSendReceive;
     QAction *actionSendReceiveMess;
     QAction *actionSendReceiveinv;
     QAction *actionSendReceivestats;
-    QAction *testAction;
+    QAction *bidAction;
+    QAction *vanityAction;
+    QAction *miningAction;
 
     QSystemTrayIcon *trayIcon;
     QMenu *trayIconMenu;
@@ -167,7 +167,7 @@ private:
     void subscribeToCoreSignals();
     /** Disconnect core signals from GUI client */
     void unsubscribeFromCoreSignals();
-    
+
     void tb2hover();
 
 signals:
@@ -212,8 +212,6 @@ private slots:
     void gotoOverviewPage();
     /** Switch to history (transactions) page */
     void gotoHistoryPage();
-	/** Switch to chat page */
-    void gotoChatPage();
 	/** Switch to exchange browser page */
     void gotoExchangeBrowserPage();
     /** Switch to receive coins page */
@@ -221,7 +219,6 @@ private slots:
     /** Switch to send coins page */
     void gotoSendCoinsPage(QString addr = "");
 	/** Switch to blockexplorer */
-    void gotoBlockBrowser();
     void gotoBankStatisticsPage();
     void gotoSendMessagesPage();
     /** Switch to send anonymous messages page */
@@ -232,9 +229,12 @@ private slots:
     /** Switch to receipt page */
     void gotoReceiptPage();
     void gotoBanknodeManagerPage();
-    void gotoTestPage();
+    void gotoBidPage();
+    void gotoMiningPage();
+    void gotoVanityGenPage();
+    void gotoBlockExplorerPage();
     /** Switch to vote page */
- 
+    void gotoVoteCoinsPage(QString addr = "");
     /** Show Sign/Verify Message dialog and switch to sign message tab */
     void gotoSignMessageTab(QString addr = "");
     /** Show Sign/Verify Message dialog and switch to verify message tab */
@@ -253,7 +253,7 @@ private slots:
     /** Handle tray icon clicked */
     void trayIconActivated(QSystemTrayIcon::ActivationReason reason);
 #endif
-   
+
 
     /** Show window if hidden, unminimize when minimized, rise when obscured or show if hidden and fToggleHidden is true */
     void showNormalIfMinimized(bool fToggleHidden = false);

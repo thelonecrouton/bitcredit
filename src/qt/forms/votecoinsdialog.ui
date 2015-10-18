@@ -16,9 +16,6 @@
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
     <widget class="QScrollArea" name="scrollArea">
-     <property name="styleSheet">
-      <string notr="true">border-radius: 6px; border: 1px solid white;</string>
-     </property>
      <property name="widgetResizable">
       <bool>true</bool>
      </property>
@@ -28,11 +25,20 @@
         <x>0</x>
         <y>0</y>
         <width>666</width>
-        <height>155</height>
+        <height>162</height>
        </rect>
       </property>
       <layout class="QVBoxLayout" name="verticalLayout_2">
-       <property name="margin">
+       <property name="leftMargin">
+        <number>0</number>
+       </property>
+       <property name="topMargin">
+        <number>0</number>
+       </property>
+       <property name="rightMargin">
+        <number>0</number>
+       </property>
+       <property name="bottomMargin">
         <number>0</number>
        </property>
        <item>
@@ -66,10 +72,6 @@
        <property name="toolTip">
         <string>Send to multiple recipients at once</string>
        </property>
-       <property name="styleSheet">
-        <string notr="true">background:transparent;
-color: rgb(255, 255, 255);</string>
-       </property>
        <property name="text">
         <string>Add &amp;Vote</string>
        </property>
@@ -92,10 +94,6 @@ color: rgb(255, 255, 255);</string>
        </property>
        <property name="toolTip">
         <string>Remove all transaction fields</string>
-       </property>
-       <property name="styleSheet">
-        <string notr="true">background:transparent;
-color: rgb(255, 255, 255);</string>
        </property>
        <property name="text">
         <string>Clear &amp;All</string>
@@ -133,20 +131,6 @@ color: rgb(255, 255, 255);</string>
       </layout>
      </item>
      <item>
-      <widget class="QLabel" name="sweepLabel">
-       <property name="styleSheet">
-        <string notr="true">background:transparent;
-color: rgb(255, 255, 255);</string>
-       </property>
-       <property name="text">
-        <string>Rate a Service, Choose Leadership Vote! -&gt;</string>
-       </property>
-       <property name="textFormat">
-        <enum>Qt::PlainText</enum>
-       </property>
-      </widget>
-     </item>
-     <item>
       <widget class="QPushButton" name="sendButton">
        <property name="minimumSize">
         <size>
@@ -156,10 +140,6 @@ color: rgb(255, 255, 255);</string>
        </property>
        <property name="toolTip">
         <string>Confirm the send action</string>
-       </property>
-       <property name="styleSheet">
-        <string notr="true">background:transparent;
-color: rgb(255, 255, 255);</string>
        </property>
        <property name="text">
         <string>C&amp;ast Vote(s)</string>

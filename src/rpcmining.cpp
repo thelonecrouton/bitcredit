@@ -222,7 +222,7 @@ Value gethashespermin(const Array& params, bool fHelp)
         );
 
     if (GetTimeMillis() - nHPSTimerStart > 8000 *60)
-        return (int64_t)0;
+        return 0.0;
     return dHashesPerMin;
 }
 #endif

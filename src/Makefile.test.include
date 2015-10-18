@@ -68,13 +68,13 @@ BITCREDIT_TESTS =\
   test/transaction_tests.cpp \
   test/uint256_tests.cpp \
   test/univalue_tests.cpp \
-  test/util_tests.cpp
+  test/util_tests.cpp 
 
 if ENABLE_WALLET
 BITCREDIT_TESTS += \
   test/accounting_tests.cpp \
   test/wallet_tests.cpp \
-  test/rpc_wallet_tests.cpp
+  test/rpc_wallet_tests.cpp 
 endif
 
 test_test_bitcredit_SOURCES = $(BITCREDIT_TESTS) $(JSON_TEST_FILES) $(RAW_TEST_FILES)

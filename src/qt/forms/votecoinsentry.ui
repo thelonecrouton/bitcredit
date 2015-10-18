@@ -13,9 +13,6 @@
   <property name="windowTitle">
    <string>Form</string>
   </property>
-  <property name="styleSheet">
-   <string notr="true"/>
-  </property>
   <property name="frameShape">
    <enum>QFrame::StyledPanel</enum>
   </property>
@@ -28,9 +25,6 @@
    </property>
    <item row="3" column="2">
     <widget class="QLabel" name="label_2">
-     <property name="styleSheet">
-      <string notr="true">color: white; border: none;</string>
-     </property>
      <property name="text">
       <string>Preference Vote &amp;For:</string>
      </property>
@@ -50,11 +44,7 @@
      <item>
       <widget class="QValidatedLineEdit" name="payTo">
        <property name="toolTip">
-        <string>The address to send the payment to (e.g. 1NS17iag9jJgTHD1VXjvLCEnZuQ3rJDE9L)</string>
-       </property>
-       <property name="styleSheet">
-        <string notr="true">background:transparent;
-color: white;</string>
+        <string>The address to send the payment to (e.g. 5qoFUCqPUE4pyjus6U6jD6ba4oHR6NZ7c7)</string>
        </property>
        <property name="maxLength">
         <number>34</number>
@@ -65,9 +55,6 @@ color: white;</string>
       <widget class="QToolButton" name="addressBookButton">
        <property name="toolTip">
         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; color:#ffffff;&quot;&gt;Choose address from address book&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-       </property>
-       <property name="styleSheet">
-        <string notr="true">border-radius: 5px; border: 1px solid white;</string>
        </property>
        <property name="text">
         <string/>
@@ -86,9 +73,6 @@ color: white;</string>
        <property name="toolTip">
         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; color:#ffffff;&quot;&gt;Paste address from clipboard&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
        </property>
-       <property name="styleSheet">
-        <string notr="true">border-radius: 5px; border: 1px solid white;</string>
-       </property>
        <property name="text">
         <string/>
        </property>
@@ -105,9 +89,6 @@ color: white;</string>
       <widget class="QToolButton" name="deleteButton">
        <property name="toolTip">
         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; color:#ffffff;&quot;&gt;Remove this recipient&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-       </property>
-       <property name="styleSheet">
-        <string notr="true">border-radius: 5px; border: 1px solid white;</string>
        </property>
        <property name="text">
         <string/>
@@ -127,6 +108,9 @@ color: white;</string>
      </property>
      <property name="maxVisibleItems">
       <number>9</number>
+     </property>
+     <property name="frame">
+      <bool>false</bool>
      </property>
      <item>
       <property name="text">

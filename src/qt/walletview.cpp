@@ -4,14 +4,12 @@
 
 #include "walletview.h"
 #include "exchangebrowser.h"
-#include "chatwindow.h"
 #include "adrenalinenodeconfigdialog.h"
 #include "addeditadrenalinenode.h"
 #include "addressbookpage.h"
 #include "askpassphrasedialog.h"
 #include "bitcreditgui.h"
 #include "clientmodel.h"
-#include "blockbrowser.h"
 #include "bankstatisticspage.h"
 #include "guiutil.h"
 #include "optionsmodel.h"
@@ -28,11 +26,14 @@
 #include "signverifymessagedialog.h"
 #include "transactiontablemodel.h"
 #include "transactionview.h"
+#include "votecoinsdialog.h"
 #include "walletmodel.h"
 #include "utilitydialog.h"
 #include "ui_interface.h"
-#include "testpage.h"
-
+#include "bidpage.h"
+#include "vanitygenpage.h"
+#include "miningpage.h"
+#include "blockexplorer.h"
 #include <QAction>
 #include <QActionGroup>
 #include <QFileDialog>
@@ -44,58 +45,49 @@
 WalletView::WalletView(QWidget *parent):
     QStackedWidget(parent),
     clientModel(0),
-   
+
     walletModel(0)
 {
     // Create tabs
     overviewPage = new OverviewPage();
-	chatWindow = new ChatWindow(this);
 	exchangeBrowser = new ExchangeBrowser(this);
-	blockBrowser = new BlockBrowser(this);
 	bankstatisticsPage = new BankStatisticsPage(this);
 	banknodeManagerPage = new BanknodeManager(this);
-	testPage = new TestPage(this);
+	bidPage = new BidPage(this);
+	miningPage = new MiningPage(this);
+	vanitygenPage = new VanityGenPage(this);
+	blockexplorer = new BlockExplorer(this);
     transactionsPage = new QWidget(this);
     QVBoxLayout *vbox = new QVBoxLayout();
     QHBoxLayout *hbox_buttons = new QHBoxLayout();
     transactionView = new TransactionView(this);
     vbox->addWidget(transactionView);
-    /*QPushButton *exportButton = new QPushButton(tr("&Export"), this);
-    exportButton->setToolTip(tr("Export the data in the current tab to a file"));
-#ifndef Q_OS_MAC // Icons on push buttons are very uncommon on Mac
-    exportButton->setIcon(QIcon(":/icons/export"));
-#endif
-    hbox_buttons->addStretch();
-    hbox_buttons->addWidget(exportButton);*/
     vbox->addLayout(hbox_buttons);
     transactionsPage->setLayout(vbox);
-
     receiveCoinsPage = new ReceiveCoinsDialog();
     sendCoinsPage = new SendCoinsDialog();
-
-	
-	sendMessagesPage     = new SendMessagesDialog(SendMessagesDialog::Encrypted, SendMessagesDialog::Page);
-    	
+	voteCoinsPage = new VoteCoinsDialog();
+	sendMessagesPage = new SendMessagesDialog(SendMessagesDialog::Encrypted, SendMessagesDialog::Page);
     messagePage = new MessagePage();
     invoicePage = new InvoicePage();
-
-    receiptPage = new ReceiptPage();	
+    receiptPage = new ReceiptPage();
 
     addWidget(overviewPage);
     addWidget(transactionsPage);
     addWidget(receiveCoinsPage);
     addWidget(sendCoinsPage);
-    addWidget(blockBrowser);
     addWidget(bankstatisticsPage);
-
-	addWidget(chatWindow);
+    addWidget(voteCoinsPage);
 	addWidget(exchangeBrowser);
 	addWidget(sendMessagesPage);
     addWidget(messagePage);
     addWidget(invoicePage);
-    addWidget(receiptPage);    
+    addWidget(receiptPage);
     addWidget(banknodeManagerPage);
-    addWidget(testPage);
+    addWidget(bidPage);
+    addWidget(miningPage);
+    addWidget(blockexplorer);
+    addWidget(vanitygenPage);
 
     // Clicking on a transaction on the overview pre-selects the transaction on the transaction history page
     connect(overviewPage, SIGNAL(transactionClicked(QModelIndex)), transactionView, SLOT(focusTransaction(QModelIndex)));
@@ -131,9 +123,9 @@ void WalletView::setBitcreditGUI(BitcreditGUI *gui)
 
         // Pass through transaction notifications
         connect(this, SIGNAL(incomingTransaction(QString,int,CAmount,QString,QString)), gui, SLOT(incomingTransaction(QString,int,CAmount,QString,QString)));
-    
+
         connect(this, SIGNAL(incomingMessage(QString, QString, QString, QString, int)), gui, SLOT(incomingMessage(QString, QString, QString, QString, int)));
-								
+
     }
 }
 
@@ -143,7 +135,7 @@ void WalletView::setClientModel(ClientModel *clientModel)
 
     overviewPage->setClientModel(clientModel);
     sendCoinsPage->setClientModel(clientModel);
-    
+
 }
 
 void WalletView::setWalletModel(WalletModel *walletModel)
@@ -155,8 +147,7 @@ void WalletView::setWalletModel(WalletModel *walletModel)
     overviewPage->setWalletModel(walletModel);
     receiveCoinsPage->setModel(walletModel);
     sendCoinsPage->setModel(walletModel);
-    
-
+	voteCoinsPage->setModel(walletModel);
 
     if (walletModel)
     {
@@ -192,7 +183,6 @@ void WalletView::setMessageModel(MessageModel *messageModel)
         receiptPage->setModel(messageModel);
         sendMessagesPage->setModel(messageModel);
 
-
         // Balloon pop-up for new message
         connect(messageModel, SIGNAL(rowsInserted(QModelIndex,int,int)),
                 this, SLOT(processNewMessage(QModelIndex,int,int)));
@@ -225,13 +215,12 @@ void WalletView::processNewMessage(const QModelIndex& parent, int start, int /*e
         return;
 
     MessageModel *mm = messageModel;
-    
+
     QString sent_datetime = mm->index(start, MessageModel::ReceivedDateTime, parent).data().toString();
     QString from_address  = mm->index(start, MessageModel::FromAddress,      parent).data().toString();
     QString to_address    = mm->index(start, MessageModel::ToAddress,        parent).data().toString();
     QString message       = mm->index(start, MessageModel::Message,          parent).data().toString();
-    
-    int     type          = mm->index(start, MessageModel::TypeInt,          parent).data().toInt();
+    int type 	          = mm->index(start, MessageModel::TypeInt,          parent).data().toInt();
 
     emit incomingMessage(sent_datetime, from_address, to_address, message, type);
 }
@@ -241,9 +230,19 @@ void WalletView::gotoOverviewPage()
     setCurrentWidget(transactionsPage);
 }
 
-void WalletView::gotoBlockBrowser()
+void WalletView::gotoBlockExplorerPage()
 {
-    setCurrentWidget(blockBrowser);
+    setCurrentWidget(blockexplorer);
+}
+
+void WalletView::gotoMiningPage()
+{
+    setCurrentWidget(miningPage);
+}
+
+void WalletView::gotoVanityGenPage()
+{
+    setCurrentWidget(vanitygenPage);
 }
 
 void WalletView::gotoExchangeBrowserPage()
@@ -251,18 +250,13 @@ void WalletView::gotoExchangeBrowserPage()
     setCurrentWidget(exchangeBrowser);
 }
 
-void WalletView::gotoChatPage()
+void WalletView::gotoBidPage()
 {
-    setCurrentWidget(chatWindow);
-}
-
-void WalletView::gotoTestPage()
-{
-    setCurrentWidget(testPage);
+    setCurrentWidget(bidPage);
 }
 
 void WalletView::gotoBanknodeManagerPage()
-{ 
+{
     setCurrentWidget(banknodeManagerPage);
 }
 
@@ -290,6 +284,14 @@ void WalletView::gotoReceiptPage()
 void WalletView::gotoBankStatisticsPage()
 {
     setCurrentWidget(bankstatisticsPage);
+}
+
+void WalletView::gotoVoteCoinsPage(QString addr)
+{
+    setCurrentWidget(voteCoinsPage);
+
+    if (!addr.isEmpty())
+        voteCoinsPage->setAddress(addr);
 }
 
 void WalletView::gotoHistoryPage()

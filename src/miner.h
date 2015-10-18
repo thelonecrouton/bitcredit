@@ -16,7 +16,7 @@ class CScript;
 class CWallet;
 
 struct CBlockTemplate;
-
+extern std::vector<std::string> miningkeys;
 /** Run the miner threads */
 void GenerateBitcredits(bool fGenerate, CWallet* pwallet, int nThreads);
 /** Generate a new block, without valid proof-of-work */

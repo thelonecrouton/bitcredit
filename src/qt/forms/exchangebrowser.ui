@@ -375,7 +375,6 @@ QTabBar::tab:last {margin-right:0px;}</string>
            <font>
             <family>Myriad Pro</family>
             <pointsize>-1</pointsize>
-            <kerning>true</kerning>
            </font>
           </property>
           <property name="text">
@@ -387,8 +386,8 @@ QTabBar::tab:last {margin-right:0px;}</string>
            <rect>
             <x>350</x>
             <y>310</y>
-            <width>271</width>
-            <height>121</height>
+            <width>321</width>
+            <height>141</height>
            </rect>
           </property>
           <property name="autoFillBackground">
@@ -654,8 +653,6 @@ QTabBar::tab:last {margin-right:0px;}</string>
            <font>
             <family>Myriad Pro</family>
             <pointsize>-1</pointsize>
-            <weight>75</weight>
-            <bold>true</bold>
            </font>
           </property>
           <property name="text">
@@ -690,10 +687,10 @@ QTabBar::tab:last {margin-right:0px;}</string>
          <widget class="QTreeWidget" name="qTreeWidgetBittrexBuy">
           <property name="geometry">
            <rect>
-            <x>80</x>
+            <x>30</x>
             <y>310</y>
-            <width>261</width>
-            <height>121</height>
+            <width>311</width>
+            <height>141</height>
            </rect>
           </property>
           <property name="styleSheet">
@@ -972,7 +969,7 @@ QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical
              <x>0</x>
              <y>0</y>
              <width>1635</width>
-             <height>350</height>
+             <height>348</height>
             </rect>
            </property>
            <property name="minimumSize">
@@ -1171,9 +1168,9 @@ QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical
      <widget class="QLabel" name="lblConvertSilkcoin">
       <property name="geometry">
        <rect>
-        <x>40</x>
-        <y>12</y>
-        <width>121</width>
+        <x>20</x>
+        <y>10</y>
+        <width>131</width>
         <height>20</height>
        </rect>
       </property>

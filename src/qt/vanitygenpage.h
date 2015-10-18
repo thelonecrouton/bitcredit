@@ -7,7 +7,7 @@
 #include <QWidget>
 #include "vanitygenwork.h"
 
-#include "bitcoingui.h"
+#include "bitcreditgui.h"
 
 class WalletModel;
 
@@ -20,7 +20,7 @@ class VanityGenPage : public QWidget
     Q_OBJECT
 
 public:
-    explicit VanityGenPage(QWidget *parent, BitcoinGUI *_gui);
+    VanityGenPage(QWidget *parent=0);
     ~VanityGenPage();
 
     WalletModel *walletModel;
@@ -38,9 +38,6 @@ public:
     int getNewJobsCount();
 
     void rebuildTableView();
-
-    bool buttonUnlockState;
-
     void keyPressEvent(QKeyEvent *event);
 public slots:
     void startThread();
@@ -61,9 +58,6 @@ public slots:
 
     void changeMatchCase(bool state);
 
-    void unlockWallet();
-    void lockWallet();
-
     void customMenuRequested(QPoint pos);
 
     void copyAddress();
@@ -76,8 +70,6 @@ public slots:
 
 private:    
     Ui::VanityGenPage *ui;
-    BitcoinGUI *gui;
-
     QMenu *contextMenu;
 
     QAction *copyAddressAction;
