@@ -17,9 +17,9 @@ $(LIBLEVELDB) $(LIBMEMENV):
 endif
 
 BITCREDIT_CONFIG_INCLUDES=-I$(builddir)/config
-BITCREDIT_INCLUDES=-I$(builddir) -I$(builddir)/obj -I$(builddir)/json $(BOOST_CPPFLAGS) $(LEVELDB_CPPFLAGS) $(CRYPTO_CFLAGS) $(SSL_CFLAGS)
+BITCREDIT_INCLUDES=-I$(builddir) -I$(builddir)/obj -I$(builddir)/assets -I$(builddir)/json $(BOOST_CPPFLAGS) $(LEVELDB_CPPFLAGS) $(CRYPTO_CFLAGS) $(SSL_CFLAGS)
 
-BITCREDIT_INCLUDES += -I$(srcdir)/secp256k1/include
+BITCREDIT_INCLUDES += -I$(srcdir)/secp256k1/include 
 
 LIBBITCREDIT_SERVER=libbitcredit_server.a
 LIBBITCREDIT_WALLET=libbitcredit_wallet.a

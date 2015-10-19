@@ -1219,7 +1219,7 @@ bool SecureMsgReceiveData(CNode* pfrom, std::string strCommand, CDataStream& vRe
             if (fDebugSmsg)
             {
                 LogPrintf("peer bucket %d %u %u.\n", (int32_t) time, ncontent, hash);
-                std::cout << "this bucket " << time << ", " << smsgBuckets[time].setTokens.size() << ", " << smsgBuckets[time].hash << std::endl;
+                //std::cout << "this bucket " << time << ", " << smsgBuckets[time].setTokens.size() << ", " << smsgBuckets[time].hash << std::endl;
             }
 
             if (smsgBuckets[time].nLockCount > 0)

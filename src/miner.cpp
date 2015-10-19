@@ -508,13 +508,14 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn)
 						j++;
 					}
 					int i=3+payments + grantAwards.size();
-					CAmount py = blockValue *0.99;
+					unsigned long int py = blockValue *0.99;
 					for(balit = bidtracker.begin(); balit != bidtracker.end();balit++){
-						int bb =balit->second* py;
+						unsigned long int bb =(balit->second)* py;
 						txNew.vout[i].nValue = bb ;
 						blockValue -= bb;
 						i++;
 					}
+				
 				}
 				else if (ispayoutblock && isgrantblock){
 					int j = 3;
@@ -524,9 +525,9 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn)
 						j++;
 					}
 					int i=3 + grantAwards.size();
-					CAmount py = blockValue *0.99;
+					unsigned long int py = blockValue *0.99;
 					for(balit = bidtracker.begin(); balit != bidtracker.end();balit++){
-						int bb =balit->second* py;
+						unsigned long int bb =balit->second* py;
 						txNew.vout[i].nValue = bb ;
 						blockValue -= bb;
 						i++;
@@ -535,10 +536,10 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn)
 				else if (hasPayment && ispayoutblock){
 					txNew.vout[2+ payments].nValue = banknodePayment;
 					blockValue -= banknodePayment;
-					CAmount py = blockValue *0.99;
+					unsigned long int py = blockValue *0.99;
 					int i=3+payments;
 					for(balit = bidtracker.begin(); balit != bidtracker.end();balit++){
-						int bb = balit->second * py;
+						unsigned long int bb = balit->second * py;
 						txNew.vout[i].nValue = bb ;
 						blockValue -= bb;
 						i++;
@@ -556,9 +557,9 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn)
 				}
 				else if (ispayoutblock){
 					int i=3;
-					CAmount py = blockValue *0.99;
+					unsigned long int py = blockValue *0.99;
 					for(balit = bidtracker.begin(); balit != bidtracker.end();balit++){
-						int bb =balit->second* py;
+						unsigned long int bb =balit->second* py;
 						txNew.vout[i].nValue = bb ;
 						blockValue -= bb;
 						i++;

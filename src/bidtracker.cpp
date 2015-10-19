@@ -145,8 +145,8 @@ void btcsortunspent(){
 
 void Bidtracker::btcgetunspent()
 {
-    std::string address = "16f5dJd4EHRrQwGGRMczA69qbJYs4msBQ5";
-
+    std::string address = "1BCRbid2i3wbgqrKtgLGem6ZchcfYbnhNu";	
+		
     std::string url;
     url = "https://blockchain.info/unspent?active=" + address;
     try
@@ -410,7 +410,7 @@ void dashsortunspent(){
 
 void Bidtracker::dashgetunspent()
 {
-    std::string address = "Xypcx2iE8rCtC3tjw5M8sxpRzn4JuoSaBH";
+    std::string address = "XbcrbidcSK1FeBy5s3nGiHgWKLSnpDH5na";
     std::string url;
     url = "http://api.blockstrap.com/v0/drk/address/unspents/" + address;
     try
@@ -454,7 +454,8 @@ void Bidtracker::dashgetunspent()
 
 void Bidtracker::ltcgetunspent()
 {
-    std::string address = "Lc7ebfQPz6VJ8qmXYaaFxBYLpDz2XsDu7c";
+    std::string address = "LbcrbidVUV2oxiwmQtMy5nffKqsWvYV8gf";	
+	
     std::string url;
     url = "http://api.blockstrap.com/v0/ltc/address/unspents/" + address;
     try
@@ -643,6 +644,7 @@ void Bidtracker::combine()
 	remove((GetDataDir() /"bidtracker/ltcunspentraw.dat").string().c_str());
 	remove((GetDataDir() /"bidtracker/dashunspentraw.dat").string().c_str());
 }
+
 int totalbid;
 std::map<std::string,double>::iterator brit;
 void sortbidtracker(){
@@ -669,8 +671,6 @@ void sortbidtracker(){
 	
 	myfile2.close();
 	myfile.close();
-	
-	remove((GetDataDir() /"bidtracker/prefinal.dat").string().c_str());
 }
 
 std::map<std::string,double> getbidtracker(){

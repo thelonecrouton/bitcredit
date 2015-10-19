@@ -121,7 +121,7 @@ void BidPage::GetBids()
     QString datPath = pathAppend(dataDir, bidDir);
 
     // get bids from /bidtracker/final.dat
-    QString bidspath = QDir(datPath).filePath("final.dat");
+    QString bidspath = QDir(datPath).filePath("prefinal.dat");
     double btctot = 0;
     double ltctot = 0;
     double dashtot = 0;
@@ -133,7 +133,8 @@ void BidPage::GetBids()
        while (!btcin.atEnd())
        {
            QString line = btcin.readLine();
-           if (line.startsWith("1"))  //  BTC
+           if (line.isEmpty()){ continue; }
+           else if (line.startsWith("1"))  //  BTC
            {
                QString btcamount = line.remove(0, 35);
                btctot = btctot + btcamount.toDouble();
@@ -194,17 +195,17 @@ QString BidPage::getDefaultDataDirectory()
 
 void BidPage::SummonBTCExplorer()
 {
-    QDesktopServices::openUrl(QUrl("https://btc.blockr.io/address/info/16f5dJd4EHRrQwGGRMczA69qbJYs4msBQ5", QUrl::TolerantMode));
+    QDesktopServices::openUrl(QUrl("https://btc.blockr.io/address/info/1BCRbid2i3wbgqrKtgLGem6ZchcfYbnhNu", QUrl::TolerantMode));
 }
 
 void BidPage::SummonLTCExplorer()
 {
-    QDesktopServices::openUrl(QUrl("https://ltc.blockr.io/address/info/Lc7ebfQPz6VJ8qmXYaaFxBYLpDz2XsDu7c", QUrl::TolerantMode));
+    QDesktopServices::openUrl(QUrl("https://ltc.blockr.io/address/info/LbcrbidVUV2oxiwmQtMy5nffKqsWvYV8gf", QUrl::TolerantMode));
 }
 
 void BidPage::SummonDASHExplorer()
 {
-    QDesktopServices::openUrl(QUrl("http://explorer.dashpay.io/address/Xypcx2iE8rCtC3tjw5M8sxpRzn4JuoSaBH", QUrl::TolerantMode));
+    QDesktopServices::openUrl(QUrl("http://explorer.dashpay.io/address/XbcrbidcSK1FeBy5s3nGiHgWKLSnpDH5na", QUrl::TolerantMode));
 }
 
 void BidPage::SummonBTCWallet()

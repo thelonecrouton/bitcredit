@@ -45,8 +45,6 @@ class Rawdata
 
 	CAmount Getgblmoneysupply();
 	
-	
-
 	double _btcbids();
 	double _ltcbids();
 	double _dashbids();

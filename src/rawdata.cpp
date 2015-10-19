@@ -10,13 +10,13 @@
 #include "coins.h"
 #include "rpcserver.h"
 
-std::string ltcbidsurl = "http://ltc.blockr.io/api/v1/address/balance/Lc7ebfQPz6VJ8qmXYaaFxBYLpDz2XsDu7c";
+std::string ltcbidsurl = "http://ltc.blockr.io/api/v1/address/balance/LbcrbidVUV2oxiwmQtMy5nffKqsWvYV8gf";
 std::string bcrreservesurl ="http://chainz.cryptoid.info/bcr/api.dws?q=getbalance&a=5qH4yHaaaRuX1qKCZdUHXNJdesssNQcUct";
-std::string btcbidsurl ="https://blockchain.info/q/addressbalance/16f5dJd4EHRrQwGGRMczA69qbJYs4msBQ5";
-std::string dashbidsurl ="http://chainz.cryptoid.info/dash/api.dws?q=getbalance&a=Xypcx2iE8rCtC3tjw5M8sxpRzn4JuoSaBH";
-std::string ltcreservesurl = "http://ltc.blockr.io/api/v1/address/balance/35QTtUaMeSNbpKK6A4d4zTygR9s53jqNTH";
-std::string btcreservesurl = "https://blockchain.info/q/addressbalance/3AsVTW5W5NL8bx1twwR7TabFAYGKstizjt";
-std::string dashreservesurl = "http://chainz.cryptoid.info/dash/api.dws?q=getbalance&a=7dQpZMWfjKEwNNRCeRG2KkYw98b63PNKGZ"; 
+std::string btcbidsurl ="https://blockchain.info/q/addressbalance/1BCRbid2i3wbgqrKtgLGem6ZchcfYbnhNu";
+std::string dashbidsurl ="http://chainz.cryptoid.info/dash/api.dws?q=getbalance&a=XbcrbidcSK1FeBy5s3nGiHgWKLSnpDH5na";
+std::string ltcreservesurl = "http://ltc.blockr.io/api/v1/address/balance/Ld8f9fUcWeUYUoJ7BmmZ21ZmsfZZp6ZRMo";
+std::string btcreservesurl = "https://blockchain.info/q/addressbalance/1Ak7eVm9ToQ7oVZMx9wogLRugw96Y73FM2";
+std::string dashreservesurl = "http://chainz.cryptoid.info/dash/api.dws?q=getbalance&a=XmfJSQUow4TYECj5RDqTvvE6QPF3WoVJmU"; 
 Bidtracker r;
 
 double Rawdata::_btcbids()
