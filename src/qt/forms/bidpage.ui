@@ -62,7 +62,7 @@
          <string>View address on dashpay.io</string>
         </property>
         <property name="text">
-         <string>Xypcx2iE8rCtC3tjw5M8sxpRzn4JuoSaBH</string>
+         <string>XbcrbidcSK1FeBy5s3nGiHgWKLSnpDH5na</string>
         </property>
         <property name="flat">
          <bool>true</bool>
@@ -156,7 +156,7 @@
          <string notr="true">border = 0px;</string>
         </property>
         <property name="text">
-         <string>16f5dJd4EHRrQwGGRMczA69qbJYs4msBQ5</string>
+         <string>1BCRbid2i3wbgqrKtgLGem6ZchcfYbnhNu</string>
         </property>
         <property name="flat">
          <bool>true</bool>
@@ -186,7 +186,7 @@
          <string>View address on blockr.io</string>
         </property>
         <property name="text">
-         <string>Lc7ebfQPz6VJ8qmXYaaFxBYLpDz2XsDu7c</string>
+         <string>LbcrbidVUV2oxiwmQtMy5nffKqsWvYV8gf</string>
         </property>
         <property name="flat">
          <bool>true</bool>
