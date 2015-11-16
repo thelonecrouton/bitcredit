@@ -101,7 +101,9 @@ void BidPage::Estimate()
     float newtotal = bidz + mybid;
     float mybcr = (mybid / newtotal) * 30000;
     QString mybcrz = QString::number(mybcr);
-    ui->labelBCR->setText("<b>" + mybcrz + "</b> BCR");   
+    float cost = mybid / mybcr;
+    QString coststr = QString::number(cost, 'f', 8);
+    ui->labelBCR->setText("<b>" + mybcrz + "</b> BCR @ " + "<b>" + coststr + "</b>");   
 }
 
 void BidPage::GetBids()
@@ -211,19 +213,31 @@ void BidPage::SummonDASHExplorer()
 void BidPage::SummonBTCWallet()
 {
     QProcess *proc = new QProcess(this);
-    proc->startDetached("bitcoin-qt");
+    #ifdef linux
+        proc->startDetached("bitcoin-qt");
+    #elif _WIN32
+        proc->startDetached("bitcoin-qt.exe");
+    #endif
 }
 
 void BidPage::SummonLTCWallet()
 {
     QProcess *proc = new QProcess(this);
-    proc->startDetached("litecoin-qt");
+    #ifdef linux
+        proc->startDetached("litecoin-qt");
+    #elif _WIN32
+        proc->startDetached("litecoin-qt.exe");
+    #endif
 }
 
 void BidPage::SummonDASHWallet()
 {
     QProcess *proc = new QProcess(this);
-    proc->startDetached("dash-qt");
+    #ifdef linux
+        proc->startDetached("dash-qt");
+    #elif _WIN32
+        proc->startDetached("dash-qt.exe");
+    #endif
 }
 
 BidPage::~BidPage()

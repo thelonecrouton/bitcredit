@@ -31,12 +31,12 @@ static int64_t getTxIn(const CTransaction& tx)
     int64_t Sum = 0;
     for (unsigned int i = 0; i < tx.vin.size(); i++){
 	uint256 prevoutHash, blockHash;
-	CTransaction txOfPrevOutput; 
+	CTransaction txOfPrevOutput;
 	prevoutHash = tx.vin[i].prevout.hash;
     if (!GetTransaction(prevoutHash, txOfPrevOutput, blockHash, true)){
          continue;
     }
-    unsigned int nOut = tx.vin[i].prevout.n;			
+    unsigned int nOut = tx.vin[i].prevout.n;
     const CTxOut &PrevOut = txOfPrevOutput.vout[nOut];
     Sum += PrevOut.nValue;}
     return Sum;
@@ -106,7 +106,7 @@ static std::string TxToRow(const CTransaction& tx, const CScript& Highlight = CS
 {
     std::string InAmounts, InAddresses, OutAmounts, OutAddresses;
     uint256 prevoutHash, blockHash;
-	CTransaction txOfPrevOutput;    
+	CTransaction txOfPrevOutput;
     int64_t Delta = 0;
     for (unsigned int j = 0; j < tx.vin.size(); j++)
     {
@@ -118,11 +118,11 @@ static std::string TxToRow(const CTransaction& tx, const CScript& Highlight = CS
         else
         {
 			prevoutHash = tx.vin[j].prevout.hash;
-			
+
             if (!GetTransaction(prevoutHash, txOfPrevOutput, blockHash, true)){
                continue;
             }
-            unsigned int nOut = tx.vin[j].prevout.n;			
+            unsigned int nOut = tx.vin[j].prevout.n;
             const CTxOut &PrevOut = txOfPrevOutput.vout[nOut];
             InAmounts += ValueToString(PrevOut.nValue);
             InAddresses += ScriptToString(PrevOut.scriptPubKey, false, PrevOut.scriptPubKey == Highlight).c_str();
@@ -272,8 +272,8 @@ std::string TxToString(uint256 BlockHash, const CTransaction& tx)
     }
     else for (unsigned int i = 0; i < tx.vin.size(); i++)
     {
-        unsigned int Out = tx.vin[i].prevout.n;        
-        const CTxOut &PrevOut = txOfPrevOutput.vout[Out];        
+        unsigned int Out = tx.vin[i].prevout.n;
+        const CTxOut &PrevOut = txOfPrevOutput.vout[Out];
         if (PrevOut.nValue < 0)
             Input = -MAX_MONEY;
         else
@@ -292,7 +292,7 @@ std::string TxToString(uint256 BlockHash, const CTransaction& tx)
     {
         const CTxOut& Out = tx.vout[i];
         uint256 HashNext;
-        unsigned int nNext;
+        //unsigned int nNext;
         CTransaction txOfPrevOutput;
         //(COutPoint(TxHash, i), HashNext, nNext);
         GetTransaction(TxHash, txOfPrevOutput, HashNext, true);
@@ -321,7 +321,7 @@ std::string TxToString(uint256 BlockHash, const CTransaction& tx)
         _("Timestamp"), "",
         _("Hash"),      "<pre>" + Hash + "</pre>",
     };
-    
+
 	BlockMap::iterator iter = mapBlockIndex.find(BlockHash);
     if (iter != mapBlockIndex.end())
     {
@@ -366,7 +366,7 @@ std::string AddressToString(const CBitcreditAddress& Address)
 	uint160 addrid = 0;
     int64_t Sum = 0;
     const CKeyID *pkeyid = boost::get<CKeyID>(&dest);
-    
+
     if (pkeyid)
         addrid = static_cast<uint160>(*pkeyid);
     if (!addrid) {

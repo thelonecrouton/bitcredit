@@ -17,6 +17,7 @@
 #include "wallet.h"
 #include "bidtracker.h"
 
+
 #ifdef WIN32
 #include <string.h>
 #else
@@ -1761,6 +1762,7 @@ void StartNode(boost::thread_group& threadGroup)
 
     // Update Bids 
     threadGroup.create_thread(boost::bind(&LoopForever<void (*)()>, "updatebids", &getbids, UPDATE_BID_INTERVAL * 1000));
+
 }
 
 bool StopNode()

@@ -1,4 +1,5 @@
 // Copyright (c) 2014 The Memorycoin developers
+// Copyright (c) 2015 The Bitcredit developers
 #include "voting.h"
 #include "base58.h"
 #include "utilstrencodings.h"
@@ -15,7 +16,7 @@
 #include <boost/filesystem.hpp>
 #include <boost/filesystem/fstream.hpp>
 #include <boost/thread.hpp>
-
+#include "trust.h"
 #include <sys/stat.h>
 #include <stdio.h>
 
@@ -73,16 +74,16 @@ void serializeGrantDB(string filename){
 
 		ofstream grantdb;
 		grantdb.open (filename.c_str(), ios::trunc);
-		
+
 		//grantDatabaseBlockHeight
 		grantdb << grantDatabaseBlockHeight << "\n";
-		
+
 		//Balances
 		grantdb << balances.size()<< "\n";
 		for(it=balances.begin(); it!=balances.end(); ++it){
 			grantdb << it->first << "\n" << it->second<< "\n";
 		}
-		
+
 		//votingPreferences
         for(int i=0;i<numberOfOffices;i++){
             grantdb << votingPreferences[i].size()<< "\n";
@@ -106,14 +107,14 @@ bool deSerializeGrantDB(string filename, int64_t maxWanted){
 	std::string line;
 	std::string line2;
 	ifstream myfile;
-	
-	myfile.open (filename.c_str());	
+
+	myfile.open (filename.c_str());
 
 	if (myfile.is_open()){
 		getline (myfile,line);
 		grantDatabaseBlockHeight=atoi64(line.c_str());
 		if(fDebug)LogPrintf("Deserialize Grant Info Database Found Height %ld\n",grantDatabaseBlockHeight);
-		
+
         if(grantDatabaseBlockHeight>maxWanted){
             //vote database later than required - don't load
             grantDatabaseBlockHeight=-1;
@@ -130,7 +131,7 @@ bool deSerializeGrantDB(string filename, int64_t maxWanted){
 			getline(myfile, line2 );
 			balances[line]=atoi64(line2.c_str());
 		}
-		
+
 		//votingPreferences
         for(int i=0;i<numberOfOffices;i++){
             votingPreferences[i].clear();
@@ -141,7 +142,7 @@ bool deSerializeGrantDB(string filename, int64_t maxWanted){
                 std::string vpAddress=line;
                 getline(myfile,line);
                 int64_t vpAddressSize=atoi64(line.c_str());
-			
+
                 for(int j=0;j<vpAddressSize;j++){
                     getline(myfile,line);
                     getline(myfile,line2);
@@ -232,40 +233,94 @@ void printVotingPrefs(std::string address){
 
 }
 
-void processNextBlockIntoGrantDatabase(){	
+static int callback(void *NotUsed, int argc, char **argv, char **azColName){
+   int i;
+   for(i=0; i<argc; i++){
+      printf("%s = %s\n", azColName[i], argv[i] ? argv[i] : "NULL");
+   }
+   printf("\n");
+   return 0;
+}
+
+void processNextBlockIntoGrantDatabase(){
+
 	CBlock block;
 
+	sqlite3 *rawdb;
+	sqlite3_stmt *stmt;
+	char *zErrMsg = 0;
+	int rc;
+	
 	if(gdBlockPointer != NULL){
 		gdBlockPointer = chainActive.Tip();
 	}else{
 		gdBlockPointer = chainActive.Genesis();
 	}
-/*
- * 	CBlock block;
-    CBlockIndex* pblockindex = chainActive[209980];
-    std::string hex = pblockindex->phashBlock->GetHex();     
-    uint256 hash(hex);
 
-	if(gdBlockPointer != NULL){
-		gdBlockPointer = chainActive.Tip();
-	}else{
-		gdBlockPointer = mapBlockIndex[hash];
-	}
- * further study required
-*/
 	ReadBlockFromDisk(block, gdBlockPointer);
-	
-		std::map<std::string,int64_t > votes;
-		std::map<std::string,int64_t >::iterator votesit;
-		
-    BOOST_FOREACH(const CTransaction& tx, block.vtx){
 
+	std::map<std::string,int64_t > votes;
+	std::map<std::string,int64_t >::iterator votesit;
+
+    BOOST_FOREACH(const CTransaction& tx, block.vtx){
 		for (unsigned int j = 0; j < tx.vout.size();j++){
 			CTxDestination address;
 			ExtractDestination(tx.vout[j].scriptPubKey, address);
 			string receiveAddress = CBitcreditAddress( address ).ToString().c_str();
 			int64_t theAmount = tx.vout[ j ].nValue;
 			balances[ receiveAddress ] = balances[ receiveAddress ] + theAmount;
+			
+		if(GetBoolArg("-trustdb", false)) {
+			sqlite3_open((GetDataDir() / "ratings/rawdata.db").string().c_str(), &rawdb);
+
+            char *sql ="select * from RAWDATA where ADDRESS = ?";
+
+			rc = sqlite3_prepare(rawdb,sql, strlen(sql), &stmt,  0 );
+			sqlite3_bind_text(stmt, 1,receiveAddress.data(), receiveAddress.size(), 0);
+			if (sqlite3_step(stmt) == SQLITE_ROW){
+
+				int64_t balance, txoutcount, totalout;
+				balance = sqlite3_column_int(stmt, 1);
+				txoutcount = sqlite3_column_int(stmt, 4);
+				totalout = sqlite3_column_int(stmt, 6);
+				sqlite3_finalize(stmt);
+                LogPrintf ("SQlite output record retrieved %s, %d, %d, %d\n",receiveAddress, balance, txoutcount, totalout);
+
+                char* updatequery = sqlite3_mprintf("update RAWDATA set BALANCE = %ld, TXOUTCOUNT =%ld, TOTALOUT= %ld where ADDRESS = '%q'",balance+theAmount,txoutcount+1,totalout+theAmount, receiveAddress.c_str() );
+				rc = sqlite3_exec(rawdb, updatequery, callback, 0, &zErrMsg);
+
+				if( rc != SQLITE_OK ){
+					LogPrintf("SQL update output error: %s\n", zErrMsg);
+					sqlite3_free(zErrMsg);
+				}else{
+					LogPrintf( "update created successfully\n");
+				}
+				if(sqlite3_close(rawdb) != SQLITE_OK ){
+					LogPrintf("SQL unable to close database %s\n", sqlite3_errmsg(rawdb));
+					sqlite3_free(zErrMsg);
+				}else{
+					LogPrintf( "database closed successfully\n");
+				}
+			}else{
+                char * insertquery = sqlite3_mprintf("insert into RAWDATA (ADDRESS, BALANCE, FIRSTSEEN, TXOUTCOUNT, TOTALOUT) values ('%q',%ld,%ld,%ld,%ld)",receiveAddress.c_str(), theAmount, block.nTime, 1, theAmount );
+				rc = sqlite3_exec(rawdb, insertquery, callback, 0, &zErrMsg);
+
+				if( rc != SQLITE_OK ){
+					LogPrintf("SQL insert error: %s\n", zErrMsg);
+					sqlite3_free(zErrMsg);
+				}
+				else{
+                    LogPrintf( "insert created successfully\n");
+				}
+				sqlite3_finalize(stmt);
+				if(sqlite3_close(rawdb) != SQLITE_OK ){
+					LogPrintf("SQL unable to close database %s\n", sqlite3_errmsg(rawdb));
+					sqlite3_free(zErrMsg);
+				}else{
+					LogPrintf( "database closed successfully\n");
+				}
+			}
+		}
 			if(theAmount == 1000 &&	startsWith(receiveAddress.c_str(), GRANTPREFIX.c_str())){
 				votes[receiveAddress] = theAmount;
 			}
@@ -273,7 +328,7 @@ void processNextBlockIntoGrantDatabase(){
 
         for (size_t i = 0; i < tx.vin.size(); i++){
 			if (tx.IsCoinBase())
-				continue; 			
+				continue;
             const CScript &script = tx.vin[i].scriptSig;
             opcodetype opcode;
             std::vector<unsigned char> vch;
@@ -288,7 +343,7 @@ void processNextBlockIntoGrantDatabase(){
                     if (!GetTransaction(prevoutHash, txOfPrevOutput, blockHash, true))
                     {
                         continue;
-                    }                               
+                    }
                     unsigned int nOut = tx.vin[i].prevout.n;
                     if (nOut >= txOfPrevOutput.vout.size())
                     {
@@ -299,21 +354,56 @@ void processNextBlockIntoGrantDatabase(){
                     if (!ExtractDestination(txOut.scriptPubKey, addressRet))
                     {
                         continue;
-                    }                    
+                    }
                     spendAddress = CBitcreditAddress(addressRet).ToString().c_str();
 					theAmount =  txOut.nValue;
 					balances[ spendAddress ] = balances[ spendAddress ] - theAmount;
 
-				for( votesit = votes.begin();votesit != votes.end(); ++votesit){
-                    if(fDebug)LogPrintf(" Vote found: %s, %ld\n",votesit->first.c_str(),votesit->second);
-					string grantVoteAddress = ( votesit->first );
-					int electedOfficeNumber = getOfficeNumberFromAddress(grantVoteAddress);
+				if(fBankNode) {
+					sqlite3_open((GetDataDir() / "ratings/rawdata.db").string().c_str(), &rawdb);
 
-					if( electedOfficeNumber > -1 ){
-                        votingPreferences[ electedOfficeNumber ][ spendAddress ][ votesit->second ] = grantVoteAddress;
-                    }
+					const char *updatequery ="select * from RAWDATA where ADDRESS = ?";
+
+					rc = sqlite3_prepare(rawdb,updatequery, strlen(updatequery), &stmt,  0 );
+					sqlite3_bind_text(stmt, 1,spendAddress.data(), spendAddress.size(), 0);
+					if (sqlite3_step(stmt) == SQLITE_ROW){
+						int64_t balance, txincount, totalin;
+						balance = sqlite3_column_int(stmt, 1);
+						txincount = sqlite3_column_int(stmt, 3);
+						totalin = sqlite3_column_int(stmt, 5);
+
+						LogPrintf ("SQlite input record retrieved %s, %d, %d, %d \n",spendAddress, balance, txincount, totalin);
+						sqlite3_finalize(stmt);
+                        char *updatequery = sqlite3_mprintf("update RAWDATA set BALANCE = %ld , TXINCOUNT =%ld,  TOTALIN= %ld where ADDRESS = '%q'",balance-theAmount,txincount+1,totalin+theAmount, spendAddress.c_str());
+
+						rc = sqlite3_exec(rawdb, updatequery, callback, 0, &zErrMsg);
+
+						if( rc != SQLITE_OK ){
+							LogPrintf("SQL update output error: %s\n", zErrMsg);
+							sqlite3_free(zErrMsg);
+						}else{
+							LogPrintf( "update created successfully\n");
+						}
+
+						if(sqlite3_close(rawdb) != SQLITE_OK ){
+							LogPrintf("SQL unable to close database %s\n", sqlite3_errmsg(rawdb));
+							sqlite3_free(zErrMsg);
+						}else{
+							LogPrintf( "database closed successfully\n");
+						}
+					}
 				}
-                }
+
+					for( votesit = votes.begin();votesit != votes.end(); ++votesit){
+						if(fDebug)LogPrintf(" Vote found: %s, %ld\n",votesit->first.c_str(),votesit->second);
+						string grantVoteAddress = ( votesit->first );
+						int electedOfficeNumber = getOfficeNumberFromAddress(grantVoteAddress);
+
+						if( electedOfficeNumber > -1 ){
+							votingPreferences[ electedOfficeNumber ][ spendAddress ][ votesit->second ] = grantVoteAddress;
+						}
+					}
+				}
             }
         }
     }
@@ -325,27 +415,20 @@ void processNextBlockIntoGrantDatabase(){
 
 	}
 
-    boost::filesystem::path biddir = GetDataDir() / "ratings";
-
-    if(!(boost::filesystem::exists(biddir))){
-        if(fDebug)LogPrintf("Grants dir Doesn't Exists\n");
-
-        if (boost::filesystem::create_directory(biddir))
-            if(fDebug)LogPrintf("Grants dir....Successfully Created !\n");
-    }
 	serializeGrantDB( (GetDataDir() / "ratings/grantdb.dat" ).string().c_str() );
+
 }
 
 void printCandidateSupport(){
 	std::map<int64_t,std::string>::reverse_iterator itpv2;
 
 	grantAwardsOutput<<"\nWinner Support: \n";
-		
+
 	for(ballotit=supportVotes.begin(); ballotit!=supportVotes.end(); ++ballotit){
 		grantAwardsOutput<<"\n--"<<ballotit->first<<" \n";
 		for(itpv2=ballotit->second.rbegin();itpv2!=ballotit->second.rend();++itpv2){
             grantAwardsOutput<<"-->("<< itpv2->first/COIN <<"/"<<balances[itpv2->second.c_str()]/COIN <<") "<<itpv2->second.c_str()<<" \n";
-		}		
+		}
 	}
 }
 
@@ -378,7 +461,7 @@ void printBalances( int64_t howMany, bool printVoting, bool printWasted ){
 					grantAwardsOutput<<"---->No Vote: (Add Some Voting Preferences)\n";
 				}
 			}
-			
+
 			if(printVoting){
 				try{
 					printVotingPrefs(sbbit->second);
@@ -411,9 +494,9 @@ bool getGrantAwardsFromDatabaseForBlock(int64_t nHeight){
 		);
 		grantAwardsOutput.open ((GetDataDir() / "grantawards" / filename).string().c_str(), ios::trunc);}
 	//save to disk
-	
+
 	if(debugVote)grantAwardsOutput << "-------------:\nElection Count:\n-------------:\n\n";
-	
+
 	//Clear from last time, ensure nothing left over
 
 	awardWinners.clear();
@@ -464,9 +547,9 @@ bool getGrantAwardsFromDatabaseForBlock(int64_t nHeight){
 
 void getWinnersFromBallots( int64_t nHeight, int officeNumber ){
 
-	if(debugVote)grantAwardsOutput <<"\n\n\n--------"<< electedOffices[officeNumber]<<"--------\n";	
+	if(debugVote)grantAwardsOutput <<"\n\n\n--------"<< electedOffices[officeNumber]<<"--------\n";
 	if(debugVoteExtra)printBallots();
-	
+
 	//Calculate Total in all balances
 	int64_t tally=0;
 	for(it=balances.begin(); it!=balances.end(); ++it){
@@ -552,32 +635,32 @@ string electOrEliminate( int64_t droopQuota, unsigned int requiredCandidates ){
 			}
 		}
 	}
-		
+
 	if(topOfThePollAmount==0){
 		//No ballots left -end -
 		if(debugVote)grantAwardsOutput <<"No Candidates with support remaining. Grant awarded to unspendable address 6BCRBKZLmq2JwWLWDtJZL26ao4uHhqG6mH\n";
 		return "6BCRBKZLmq2JwWLWDtJZL26ao4uHhqG6mH";
 	}
-	
+
 	if(topOfThePollAmount>=droopQuota || requiredCandidates>=preferenceCount.size()){
-		
+
 		//Note: This is a simplified Gregory Transfer Value - ignoring ballots where there are no other hopefuls.
 		double gregorySurplusTransferValue=((double)topOfThePollAmount-(double)droopQuota)/(double)topOfThePollAmount;
-		
+
 		//Don't want this value to be negative when candidates are elected with less than a quota
 		if(gregorySurplusTransferValue<0){gregorySurplusTransferValue=0;}
-		
-		electCandidate(topOfThePoll,gregorySurplusTransferValue,(requiredCandidates==1));	
+
+		electCandidate(topOfThePoll,gregorySurplusTransferValue,(requiredCandidates==1));
 		if(debugVote){
 			if(numberCandidatesEliminated>0){
 				grantAwardsOutput <<"Candidates Eliminated ("<<numberCandidatesEliminated<<")\n\n";
 				numberCandidatesEliminated=0;
 			}
 			grantAwardsOutput <<"Candidate Elected: "<<topOfThePoll.c_str()<<" ("<<topOfThePollAmount/COIN<<")\n";
-			grantAwardsOutput <<"Surplus Transfer Value: "<<gregorySurplusTransferValue<<"\n";				
+			grantAwardsOutput <<"Surplus Transfer Value: "<<gregorySurplusTransferValue<<"\n";
 		}
 		return topOfThePoll;
-		
+
 	}else{
 		eliminateCandidate(bottomOfThePoll,false);
 		if(debugVote){
@@ -596,7 +679,7 @@ string electOrEliminate( int64_t droopQuota, unsigned int requiredCandidates ){
 }
 
 void electCandidate(string topOfThePoll, double gregorySurplusTransferValue,bool isLastCandidate){
-	
+
 	//Apply fraction to weights where the candidate was top of the preference list
 	for(ballotit=ballots.begin(); ballotit!=ballots.end(); ++ballotit){
 		svpit2=ballotit->second.begin();
@@ -605,7 +688,7 @@ void electCandidate(string topOfThePoll, double gregorySurplusTransferValue,bool
 			electedVotes[ballotit->first][balances[ballotit->first]*(ballotWeights[ballotit->first]*(1-gregorySurplusTransferValue))]=svpit2->second;
 			//Record the support for each candidate elected
 			supportVotes[topOfThePoll][balances[ballotit->first]*(ballotWeights[ballotit->first]*(1-gregorySurplusTransferValue))]=ballotit->first;
-			
+
 			//This voter had the elected candidate at the top of the ballot. Adjust weight for future preferences.
 			ballotWeights[ballotit->first]=ballotWeights[ballotit->first]*gregorySurplusTransferValue;
 		}
@@ -617,7 +700,7 @@ void eliminateCandidate(string removeid,bool isLastCandidate){
 
 	std::map<std::string, int64_t> ballotsToRemove;
 	std::map<std::string, int64_t>::iterator btrit;
-	
+
 	//Remove candidate from all ballots - note the candidate may be way down the preference list
 	for(ballotit=ballots.begin(); ballotit!=ballots.end(); ++ballotit){
 		int64_t markForRemoval = 0;
@@ -626,11 +709,11 @@ void eliminateCandidate(string removeid,bool isLastCandidate){
 				markForRemoval = svpit2->first;
 			}
 		}
-		
+
 		if(markForRemoval!=0){
 			ballotit->second.erase(markForRemoval);
 		}
-		
+
 		//Make a note of ballot to remove
 		if(ballotit->second.size()==0){
 			if(!isLastCandidate){
@@ -664,4 +747,41 @@ bool startsWith( const char *str, const char *pre ){
            lenstr = strlen( str );
 
     return lenstr < lenpre ? false : strncmp( pre, str, lenpre ) == 0;
+}
+
+std::map<std::string,int64_t> getbalances(){
+std::map<std::string,int64_t> addressvalue;
+	fstream myfile ((GetDataDir()/ "ratings/balances.dat").string().c_str());
+	char * pEnd;
+	std::string line;
+	if (myfile.is_open()){
+		while ( myfile.good() ){
+			getline (myfile,line);
+			if (line.empty()) continue;
+			std::vector<std::string> strs;
+			boost::split(strs, line, boost::is_any_of(","));
+			addressvalue[strs[0]]=strtoll(strs[1].c_str(),&pEnd,10);
+		}
+		myfile.close();
+	}
+	return addressvalue;
+}
+
+std::vector<std::string> getlast40miners(){
+std::vector<std::string> last40miners;
+	fstream myfile ((GetDataDir()/ "ratings/minedblocks.dat").string().c_str());
+	std::string line;
+	int counter=0;
+	if (myfile.is_open()){
+		while ( myfile.good() && counter<40 ){
+			getline (myfile,line);
+			if (line.empty()) continue;
+			std::vector<std::string> strs;
+			boost::split(strs, line, boost::is_any_of(","));
+			last40miners.push_back(strs[0]);
+			counter++;
+		}
+		myfile.close();
+	}
+	return last40miners;
 }

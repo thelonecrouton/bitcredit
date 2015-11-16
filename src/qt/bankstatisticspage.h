@@ -46,7 +46,7 @@ public:
 public slots:
 
     void updateStatistics();
-    void updatePrevious(double,double,double,double,double,double,double,double,double,double,double,int,int64_t,double,int64_t,double,int64_t,int64_t,double,QString,double );
+    void updatePrevious(double,double,double,double,double,double,double,double,double,double,int,int64_t,double,int64_t,double,int64_t,int64_t,double,QString,double );
 
 private slots:
 

@@ -23,9 +23,15 @@
     </rect>
    </property>
    <layout class="QVBoxLayout" name="verticalLayout_2">
+    <property name="topMargin">
+     <number>30</number>
+    </property>
+    <property name="rightMargin">
+     <number>20</number>
+    </property>
     <item>
      <layout class="QGridLayout" name="gridLayout">
-      <item row="5" column="1">
+      <item row="5" column="1" alignment="Qt::AlignBottom">
        <widget class="QLabel" name="labelTotal_2">
         <property name="font">
          <font>
@@ -56,7 +62,7 @@
         </property>
        </widget>
       </item>
-      <item row="4" column="2">
+      <item row="4" column="2" alignment="Qt::AlignLeft">
        <widget class="QPushButton" name="pushButtonDASHExplorer">
         <property name="toolTip">
          <string>View address on dashpay.io</string>
@@ -139,6 +145,18 @@
       </item>
       <item row="0" column="3">
        <widget class="QPushButton" name="pushButtonRefresh">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="minimumSize">
+         <size>
+          <width>2</width>
+          <height>29</height>
+         </size>
+        </property>
         <property name="toolTip">
          <string>Load current bids in bidtracker directory</string>
         </property>
@@ -147,7 +165,7 @@
         </property>
        </widget>
       </item>
-      <item row="2" column="2">
+      <item row="2" column="2" alignment="Qt::AlignLeft">
        <widget class="QPushButton" name="pushButtonBTCExplorer">
         <property name="toolTip">
          <string>View address on blockr.io</string>
@@ -180,7 +198,7 @@
         </property>
        </widget>
       </item>
-      <item row="3" column="2">
+      <item row="3" column="2" alignment="Qt::AlignLeft">
        <widget class="QPushButton" name="pushButtonLTCExplorer">
         <property name="toolTip">
          <string>View address on blockr.io</string>
@@ -266,7 +284,7 @@
         </property>
        </widget>
       </item>
-      <item row="5" column="0">
+      <item row="5" column="0" alignment="Qt::AlignBottom">
        <widget class="QLabel" name="labelTotal">
         <property name="font">
          <font>
@@ -342,7 +360,7 @@
     </item>
     <item>
      <layout class="QVBoxLayout" name="verticalLayout">
-      <item>
+      <item alignment="Qt::AlignBottom">
        <widget class="QLabel" name="labelCalc">
         <property name="font">
          <font>
@@ -379,6 +397,12 @@
             <verstretch>0</verstretch>
            </sizepolicy>
           </property>
+          <property name="maximumSize">
+           <size>
+            <width>150</width>
+            <height>16777215</height>
+           </size>
+          </property>
           <property name="toolTip">
            <string>Enter a BTC amount and press Enter to calculate</string>
           </property>
@@ -390,7 +414,7 @@
         <item>
          <widget class="QLabel" name="label_4">
           <property name="text">
-           <string>BTC bid, given the other currently existing bids, would yield appx. </string>
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;BTC bid, given other existing bids, would win appx.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
           </property>
          </widget>
         </item>
@@ -408,7 +432,7 @@
         </item>
        </layout>
       </item>
-      <item>
+      <item alignment="Qt::AlignBottom">
        <widget class="QLabel" name="labelRedeem">
         <property name="font">
          <font>

@@ -26,6 +26,7 @@
 #include "banknodeman.h"
 #include "banknodeconfig.h"
 #include "spork.h"
+#include "trust.h"
 #include "utilmoneystr.h"
 #ifdef ENABLE_WALLET
 #include "db.h"
@@ -695,8 +696,8 @@ bool AppInit2(boost::thread_group& threadGroup)
     };
 
     fDebugSmsg = GetBoolArg("-debugsmsg", false);
-    
-    fNoSmsg = GetBoolArg("-nosmsg", false); 
+
+    fNoSmsg = GetBoolArg("-nosmsg", false);
 
    /*** MEGANET Services ***/
     fAssetsEnabled = GetBoolArg("-assets", true);
@@ -829,7 +830,7 @@ bool AppInit2(boost::thread_group& threadGroup)
 #endif
     if (GetBoolArg("-shrinkdebugfile", !fDebug))
         ShrinkDebugFile();
-    LogPrintf("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
+    LogPrintf("\n\n\n\n\n");
     LogPrintf("Bitcredit version %s (%s)\n", FormatFullVersion(), CLIENT_DATE);
     LogPrintf("Using OpenSSL version %s\n", SSLeay_version(SSLEAY_VERSION));
 #ifdef ENABLE_WALLET
@@ -879,7 +880,7 @@ bool AppInit2(boost::thread_group& threadGroup)
     // ********************************************************* Step 5: verify wallet database integrity
 #ifdef ENABLE_WALLET
     if (!fDisableWallet) {
-    
+
         filesystem::path backupDir = GetDataDir() / "backups";
         if (!filesystem::exists(backupDir))
         {
@@ -1042,7 +1043,7 @@ bool AppInit2(boost::thread_group& threadGroup)
         // setup default name proxy and exit on error
         if (!SetNameProxy(CService(mapArgs["-proxy"], 9050)))
             return InitError(strprintf(_("Invalid name proxy address '%s' for: -proxy"), mapArgs["-proxy"].c_str()));
- 
+
 
     // see Step 2: parameter interactions for more information about these
     fListen = GetBoolArg("-listen", DEFAULT_LISTEN);
@@ -1096,17 +1097,45 @@ bool AppInit2(boost::thread_group& threadGroup)
             InitError(_("Invalid amount for -advertisedbalance=<percentage>"));
             return false;
         }
-    }    
+    }
 
     // ********************************************************* Step 7: load block chain
+    boost::filesystem::path rawdata = GetDataDir() / "ratings", biddir = GetDataDir() / "bidtracker", trustdb = GetDataDir() / "ratings/rawdata.db";
+
+    if(!(boost::filesystem::exists(rawdata))){
+        if(fDebug)LogPrintf("Data dir Doesn't Exists\n");
+
+        if (boost::filesystem::create_directory(rawdata))
+            if(fDebug)LogPrintf("Data dir....Successfully Created !\n");
+	TrustEngine db;
+	db.createdb();
+    }
+
+    if(!(boost::filesystem::exists(trustdb))){
+
+	TrustEngine db;
+	db.createdb();
+    }
+
+    if(!(boost::filesystem::exists(biddir))){
+        if(fDebug)LogPrintf("Biddir Doesn't Exists\n");
+
+        if (boost::filesystem::create_directory(biddir))
+            if(fDebug)LogPrintf("Biddir....Successfully Created !\n");
+    }
 
     fReindex = GetBoolArg("-reindex", false);
 	if (fReindex){
 		remove((GetDataDir() /"ratings/grantdb.dat").string().c_str());
-		remove((GetDataDir() /"miners.dat").string().c_str());
-		remove((GetDataDir() /"balances.dat").string().c_str());
+		remove((GetDataDir() /"ratings/miners.dat").string().c_str());
+		remove((GetDataDir() /"ratings/balances.dat").string().c_str());
+		remove((GetDataDir() / "ratings/txincount.dat" ).string().c_str());
+		remove((GetDataDir() / "ratings/txoutcount.dat" ).string().c_str());
+		remove((GetDataDir() / "ratings/totalin.dat" ).string().c_str());
+		remove((GetDataDir() / "ratings/totalout.dat" ).string().c_str());
+		remove((GetDataDir() / "ratings/firstseen.dat" ).string().c_str());
 	}
-	
+
     // Upgrading to 0.8; hard-link the old blknnnn.dat files into /blocks/
     filesystem::path blocksDir = GetDataDir() / "blocks";
     if (!filesystem::exists(blocksDir))
@@ -1197,7 +1226,6 @@ bool AppInit2(boost::thread_group& threadGroup)
                     strLoadError = _("You need to rebuild the database using -reindex to change -addrindex");
                     break;
                 }
-
 
                 uiInterface.InitMessage(_("Verifying blocks..."));
                 if (!CVerifyDB().VerifyDB(pcoinsdbview, GetArg("-checklevel", 3),
@@ -1406,7 +1434,7 @@ bool AppInit2(boost::thread_group& threadGroup)
     threadGroup.create_thread(boost::bind(&ThreadImport, vImportFiles));
 
     // ********************************************************* Step 10: start node
-	
+
     uiInterface.InitMessage(_("Loading banknode cache..."));
 
     CBanknodeDB mndb;
@@ -1497,7 +1525,7 @@ bool AppInit2(boost::thread_group& threadGroup)
     if(fBankNode && fLiteMode){
         return InitError("You can not start a banknode in litemode");
     }
-	
+
     LogPrintf("fEnableDarksend %d\n", fEnableDarksend);
     LogPrintf("fLiteMode %d\n", fLiteMode);
     LogPrintf("nInstantXDepth %d\n", nInstantXDepth);
@@ -1513,7 +1541,7 @@ bool AppInit2(boost::thread_group& threadGroup)
        1DRK+1000 == (.1DRK+100)*10
        10DRK+10000 == (1DRK+1000)*10
     */
-    darkSendDenominations.push_back( (100000      * COIN)+100000000 );    
+    darkSendDenominations.push_back( (100000      * COIN)+100000000 );
     darkSendDenominations.push_back( (10000       * COIN)+10000000 );
     darkSendDenominations.push_back( (1000        * COIN)+1000000 );
     darkSendDenominations.push_back( (100         * COIN)+100000 );
@@ -1533,7 +1561,7 @@ bool AppInit2(boost::thread_group& threadGroup)
 
     if (!CheckDiskSpace())
         return false;
- 
+
     if (!strErrors.str().empty())
         return InitError(strErrors.str());
 

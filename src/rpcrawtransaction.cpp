@@ -829,16 +829,8 @@ Value listadvertisedbalances(const Array& params, bool fHelp)
 
     std::map<CAddress, uint64_t> advertised_balances = ListAdvertisedBalances();
 
-
-
-    for (
-        std::map<
-            CAddress,
-            uint64_t
-        >::const_iterator address = advertised_balances.begin();
-        advertised_balances.end() != address;
-        address++
-    ) {
+    for (std::map<CAddress, uint64_t>::const_iterator address = advertised_balances.begin(); advertised_balances.end() != address;
+        address++) {
         Object entry;
         entry.push_back(Pair("address", address->first.ToStringIP()));
         entry.push_back(Pair("balance", ValueFromAmount(address->second)));

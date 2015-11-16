@@ -761,7 +761,7 @@ DBErrors CWalletDB::FindWalletTx(CWallet* pwallet, vector<uint256>& vTxHash, vec
         int nMinVersion = 0;
         if (Read((string)"minversion", nMinVersion))
         {
-            if (nMinVersion > CLIENT_VERSION)
+            if (nMinVersion > FEATURE_LATEST)
                 return DB_TOO_NEW;
             pwallet->LoadMinVersion(nMinVersion);
         }
