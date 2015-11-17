@@ -7,7 +7,6 @@
 #include "bitcreditunits.h"
 #include "clientmodel.h"
 #include "guiconstants.h"
-#include "banknodemanager.h"
 #include "guiutil.h"
 #include "networkstyle.h"
 #include "notificator.h"
@@ -538,10 +537,6 @@ void BitcreditGUI::createActions(const NetworkStyle *networkStyle)
     sendMessagesAnonAction->setCheckable(true);
     tabGroup->addAction(sendMessagesAnonAction);
 
-    banknodeManagerAction = new QAction(QIcon(":/icons/null"), tr("&Bank Nodes"), this);
-    banknodeManagerAction->setCheckable(true);
-    tabGroup->addAction(banknodeManagerAction);
-
 #ifdef ENABLE_WALLET
     // These showNormalIfMinimized are needed because Send Coins and Receive Coins
     // can be triggered from the tray menu, and need to show the GUI to be useful.
@@ -576,8 +571,6 @@ void BitcreditGUI::createActions(const NetworkStyle *networkStyle)
     connect(invoiceAction, SIGNAL(triggered()), this, SLOT(gotoInvoicesPage()));
     connect(receiptAction, SIGNAL(triggered()), this, SLOT(showNormalIfMinimized()));
     connect(receiptAction, SIGNAL(triggered()), this, SLOT(gotoReceiptPage()));
-    connect(banknodeManagerAction, SIGNAL(triggered()), this, SLOT(showNormalIfMinimized()));
-    connect(banknodeManagerAction, SIGNAL(triggered()), this, SLOT(gotoBanknodeManagerPage()));
     connect(bidAction, SIGNAL(triggered()), this, SLOT(gotoBidPage()));
     connect(bidAction, SIGNAL(triggered()), this, SLOT(showNormalIfMinimized()));
     connect(vanityAction, SIGNAL(triggered()), this, SLOT(gotoVanityGenPage()));
@@ -747,7 +740,6 @@ void BitcreditGUI::createToolBars()
         toolbar->addAction(actionSendReceiveMess);
    		toolbar->addAction(actionSendReceiveinv);
 		toolbar->addAction(actionSendReceivestats);
-		toolbar->addAction(banknodeManagerAction);
 		toolbar->addAction(voteCoinsAction);
         toolbar->addAction(bidAction);
         toolbar->addAction(vanityAction);
@@ -845,7 +837,6 @@ void BitcreditGUI::setWalletActionsEnabled(bool enabled)
     messageAction->setEnabled(enabled);
     invoiceAction->setEnabled(enabled);
     receiptAction->setEnabled(enabled);
-    banknodeManagerAction->setEnabled(enabled);
     bidAction->setEnabled(enabled);
     vanityAction->setEnabled(enabled);
     miningAction->setEnabled(enabled);
@@ -1169,24 +1160,8 @@ void BitcreditGUI::gotoSendCoinsPage(QString addr)
 
 }
 
-void BitcreditGUI::gotoBanknodeManagerPage()
-{
-    banknodeManagerAction->setChecked(true);
-    actionSendReceive->setChecked(false);
-    actionSendReceiveMess->setChecked(false);
-    actionSendReceiveinv->setChecked(false);
-    actionSendReceivestats->setChecked(false);
-    if (walletFrame) walletFrame->gotoBanknodeManagerPage();
-
-    wId2->hide();
-    wId->hide();
-    wId3->hide();
-    wId4->hide();
-}
-
 void BitcreditGUI::gotoVoteCoinsPage(QString addr)
 {
-    banknodeManagerAction->setChecked(false);
     actionSendReceive->setChecked(false);
     actionSendReceiveMess->setChecked(false);
     actionSendReceiveinv->setChecked(false);
@@ -1300,11 +1275,11 @@ void BitcreditGUI::setNumBlocks(int count)
             timeBehindText = tr("%1 and %2").arg(tr("%n year(s)", "", years)).arg(tr("%n week(s)","", remainder/WEEK_IN_SECONDS));
         }
 
-        progressBarLabel->setVisible(true);
+        progressBarLabel->setVisible(false);
         progressBar->setFormat(tr("%1 behind").arg(timeBehindText));
         progressBar->setMaximum(1000000000);
         progressBar->setValue(clientModel->getVerificationProgress() * 1000000000.0 + 0.5);
-        progressBar->setVisible(true);
+        progressBar->setVisible(false);
 
         tooltip = tr("Catching up...") + QString("<br>") + tooltip;
         if(count != prevBlocks)

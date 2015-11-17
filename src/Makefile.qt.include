@@ -105,7 +105,6 @@ QT_FORMS_UI = \
   qt/forms/bidpage.ui \
   qt/forms/addeditadrenalinenode.ui \
   qt/forms/adrenalinenodeconfigdialog.ui \
-  qt/forms/banknodemanager.ui \
   qt/forms/votecoinsdialog.ui \
   qt/forms/votecoinsentry.ui \
   qt/forms/blockexplorer.ui  \
@@ -170,7 +169,6 @@ QT_MOC_CPP = \
   qt/moc_invoicepage.cpp \
   qt/moc_invoiceviewpage.cpp \
   qt/moc_messagemodel.cpp \
-  qt/moc_banknodemanager.cpp \
   qt/moc_bidpage.cpp \
   qt/moc_vanity_util.cpp \
   qt/moc_vanity_pattern.cpp \
@@ -269,7 +267,6 @@ BITCREDIT_QT_H = \
   qt/invoicepage.h \
   qt/invoiceviewpage.h \
   qt/messagemodel.h \
-  qt/banknodemanager.h \
   qt/bidpage.h \
   qt/vanity_avl.h \
   qt/vanity_util.h \
@@ -373,7 +370,6 @@ BITCREDIT_QT_CPP = \
   qt/exchangebrowser.cpp \
   qt/qvalidatedtextedit.cpp \
   qt/messagemodel.cpp \
-  qt/banknodemanager.cpp \
   qt/vanity_util.cpp \
   qt/vanity_pattern.cpp \
   qt/vanitygenwork.cpp \

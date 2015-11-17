@@ -5,6 +5,7 @@
 
 #include "walletdb.h"
 
+
 #include "base58.h"
 #include "protocol.h"
 #include "serialize.h"

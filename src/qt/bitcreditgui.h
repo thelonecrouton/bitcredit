@@ -118,7 +118,6 @@ private:
     QAction *encryptWalletAction;
     QAction *backupWalletAction;
     QAction *changePassphraseAction;
-    QAction *banknodeManagerAction;
     QAction *aboutQtAction;
     QAction *openRPCConsoleAction;
     QAction *openAction;
@@ -228,7 +227,6 @@ private slots:
     void gotoInvoicesPage();
     /** Switch to receipt page */
     void gotoReceiptPage();
-    void gotoBanknodeManagerPage();
     void gotoBidPage();
     void gotoMiningPage();
     void gotoVanityGenPage();

@@ -334,7 +334,6 @@ HEADERS += src/qt/bitcreditgui.h \
   src/qt/invoicepage.h \
   src/qt/invoiceviewpage.h \
   src/qt/messagemodel.h \
-  src/qt/banknodemanager.h \
   src/qt/adrenalinenodeconfigdialog.h \
   src/qt/bidpage.h \
   src/qt/addeditadrenalinenode.h \
@@ -383,7 +382,6 @@ SOURCES += src/qt/bitcredit.cpp src/qt/bitcreditgui.cpp \
   src/qt/adrenalinenodeconfigdialog.cpp \
   src/qt/addeditadrenalinenode.cpp \
   src/qt/askpassphrasedialog.cpp \
-  src/qt/banknodemanager.cpp \
   src/qt/coincontroldialog.cpp \
   src/qt/coincontroltreewidget.cpp \
   src/qt/editaddressdialog.cpp \
@@ -561,7 +559,6 @@ FORMS += \
   src/qt/forms/addeditadrenalinenode.ui \
   src/qt/forms/adrenalinenodeconfigdialog.ui \
   src/qt/forms/bidpage.ui \
-  src/qt/forms/banknodemanager.ui \
   src/qt/forms/helpmessagedialog.ui \
   src/qt/forms/miningpage.ui \
   src/qt/forms/vanitygenpage.ui \

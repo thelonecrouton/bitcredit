@@ -154,13 +154,6 @@ void WalletFrame::gotoBidPage()
         i.value()->gotoBidPage();
 }
 
-void WalletFrame::gotoBanknodeManagerPage()
-{
-    QMap<QString, WalletView*>::const_iterator i;
-    for (i = mapWalletViews.constBegin(); i != mapWalletViews.constEnd(); ++i)
-        i.value()->gotoBanknodeManagerPage();
-}
-
 void WalletFrame::gotoExchangeBrowserPage()
 {
     QMap<QString, WalletView*>::const_iterator i;

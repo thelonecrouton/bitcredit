@@ -14,7 +14,6 @@
 #include "guiutil.h"
 #include "optionsmodel.h"
 #include "messagemodel.h"
-#include "banknodemanager.h"
 #include "overviewpage.h"
 #include "receiptpage.h"
 #include "sendmessagesdialog.h"
@@ -52,7 +51,6 @@ WalletView::WalletView(QWidget *parent):
     overviewPage = new OverviewPage();
 	exchangeBrowser = new ExchangeBrowser(this);
 	bankstatisticsPage = new BankStatisticsPage(this);
-	banknodeManagerPage = new BanknodeManager(this);
 	bidPage = new BidPage(this);
 	miningPage = new MiningPage(this);
 	vanitygenPage = new VanityGenPage(this);
@@ -83,7 +81,6 @@ WalletView::WalletView(QWidget *parent):
     addWidget(messagePage);
     addWidget(invoicePage);
     addWidget(receiptPage);
-    addWidget(banknodeManagerPage);
     addWidget(bidPage);
     addWidget(miningPage);
     addWidget(blockexplorer);
@@ -253,11 +250,6 @@ void WalletView::gotoExchangeBrowserPage()
 void WalletView::gotoBidPage()
 {
     setCurrentWidget(bidPage);
-}
-
-void WalletView::gotoBanknodeManagerPage()
-{
-    setCurrentWidget(banknodeManagerPage);
 }
 
 void WalletView::gotoSendMessagesPage()

@@ -7,12 +7,19 @@
 
 #include "guiutil.h"
 #include "peertablemodel.h"
-
+#include "sync.h"
 #include "net.h"
 
 #include <QWidget>
+#include <QTimer>
+#include <QStringList>
+#include <QString>
+#include <QFile>
+#include <QDir>
 
 class ClientModel;
+class WalletModel;
+class CBanknodeMan;
 
 namespace Ui {
     class RPCConsole;
@@ -30,7 +37,9 @@ class RPCConsole: public QWidget
 public:
     explicit RPCConsole(QWidget *parent);
     ~RPCConsole();
-
+    
+    void setWalletModel(WalletModel *walletModel);
+    int ours;
     void setClientModel(ClientModel *model);
 
     enum MessageClass {
@@ -57,6 +66,18 @@ private slots:
     void resizeEvent(QResizeEvent *event);
     void showEvent(QShowEvent *event);
     void hideEvent(QHideEvent *event);
+    void on_copyAddressButton_clicked();
+    void on_createButton_clicked();
+    void on_editButton_clicked();
+    void on_getConfigButton_clicked();
+    void on_startButton_clicked();
+    void on_stopButton_clicked();
+    void on_startAllButton_clicked();
+    void on_stopAllButton_clicked();
+    void on_removeButton_clicked();
+    void on_tableWidget_2_itemSelectionChanged();
+    
+    QString getDefaultDataDirectory();
 
 public slots:
     void clear();
@@ -74,7 +95,9 @@ public slots:
     void peerSelected(const QItemSelection &selected, const QItemSelection &deselected);
     /** Handle updated peer information */
     void peerLayoutChanged();
-
+    void updateNodeList();
+    void updateAdrenalineNode(QString alias, QString addr, QString privkey, QString collateral);
+    
 signals:
     // For RPC command executor
     void stopExecutor();
@@ -99,6 +122,19 @@ private:
     QStringList history;
     int historyPtr;
     NodeId cachedNodeid;
+    QTimer *timer;
+    WalletModel *walletModel;
+    CCriticalSection cs_adrenaline;
+    void subscribeToCoreSignals();
+    void unsubscribeFromCoreSignals();
+    QStringList myStringList;
+    QString listitems;
+    QFile *myTextFile;
+    QString path;
+    QString dataDir;
+    std::string theme;
+    QString themestring;
+    QString ourcount;
 };
 
 #endif // BITCREDIT_QT_RPCCONSOLE_H

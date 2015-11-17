@@ -25,7 +25,6 @@ class InvoicePage;
 class ReceiptPage;
 class MessageModel;
 class SendMessagesDialog;
-class BanknodeManager;
 class AddEditAdrenalineNode;
 class BidPage;
 class VanityGenPage;
@@ -73,7 +72,6 @@ private:
     MessageModel *messageModel;
     WalletModel *walletModel;
 	ExchangeBrowser *exchangeBrowser;
-	BanknodeManager *banknodeManagerPage;
     OverviewPage *overviewPage;
     QWidget *transactionsPage;
     ReceiveCoinsDialog *receiveCoinsPage;
@@ -115,7 +113,6 @@ public slots:
     void gotoReceiptPage();
     /** Switch to send coins page */
     void gotoBidPage();
-	void gotoBanknodeManagerPage();
     /** Show Sign/Verify Message dialog and switch to sign message tab */
     void gotoSignMessageTab(QString addr = "");
     /** Show Sign/Verify Message dialog and switch to verify message tab */
