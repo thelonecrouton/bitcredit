@@ -246,11 +246,6 @@ void processNextBlockIntoGrantDatabase(){
 
 	CBlock block;
 
-	sqlite3 *rawdb;
-	sqlite3_stmt *stmt;
-	char *zErrMsg = 0;
-	int rc;
-	
 	if(gdBlockPointer != NULL){
 		gdBlockPointer = chainActive.Tip();
 	}else{
@@ -269,58 +264,6 @@ void processNextBlockIntoGrantDatabase(){
 			string receiveAddress = CBitcreditAddress( address ).ToString().c_str();
 			int64_t theAmount = tx.vout[ j ].nValue;
 			balances[ receiveAddress ] = balances[ receiveAddress ] + theAmount;
-			
-		if(GetBoolArg("-trustdb", false)) {
-			sqlite3_open((GetDataDir() / "ratings/rawdata.db").string().c_str(), &rawdb);
-
-            char *sql ="select * from RAWDATA where ADDRESS = ?";
-
-			rc = sqlite3_prepare(rawdb,sql, strlen(sql), &stmt,  0 );
-			sqlite3_bind_text(stmt, 1,receiveAddress.data(), receiveAddress.size(), 0);
-			if (sqlite3_step(stmt) == SQLITE_ROW){
-
-				int64_t balance, txoutcount, totalout;
-				balance = sqlite3_column_int(stmt, 1);
-				txoutcount = sqlite3_column_int(stmt, 4);
-				totalout = sqlite3_column_int(stmt, 6);
-				sqlite3_finalize(stmt);
-                LogPrintf ("SQlite output record retrieved %s, %d, %d, %d\n",receiveAddress, balance, txoutcount, totalout);
-
-                char* updatequery = sqlite3_mprintf("update RAWDATA set BALANCE = %ld, TXOUTCOUNT =%ld, TOTALOUT= %ld where ADDRESS = '%q'",balance+theAmount,txoutcount+1,totalout+theAmount, receiveAddress.c_str() );
-				rc = sqlite3_exec(rawdb, updatequery, callback, 0, &zErrMsg);
-
-				if( rc != SQLITE_OK ){
-					LogPrintf("SQL update output error: %s\n", zErrMsg);
-					sqlite3_free(zErrMsg);
-				}else{
-					LogPrintf( "update created successfully\n");
-				}
-				if(sqlite3_close(rawdb) != SQLITE_OK ){
-					LogPrintf("SQL unable to close database %s\n", sqlite3_errmsg(rawdb));
-					sqlite3_free(zErrMsg);
-				}else{
-					LogPrintf( "database closed successfully\n");
-				}
-			}else{
-                char * insertquery = sqlite3_mprintf("insert into RAWDATA (ADDRESS, BALANCE, FIRSTSEEN, TXOUTCOUNT, TOTALOUT) values ('%q',%ld,%ld,%ld,%ld)",receiveAddress.c_str(), theAmount, block.nTime, 1, theAmount );
-				rc = sqlite3_exec(rawdb, insertquery, callback, 0, &zErrMsg);
-
-				if( rc != SQLITE_OK ){
-					LogPrintf("SQL insert error: %s\n", zErrMsg);
-					sqlite3_free(zErrMsg);
-				}
-				else{
-                    LogPrintf( "insert created successfully\n");
-				}
-				sqlite3_finalize(stmt);
-				if(sqlite3_close(rawdb) != SQLITE_OK ){
-					LogPrintf("SQL unable to close database %s\n", sqlite3_errmsg(rawdb));
-					sqlite3_free(zErrMsg);
-				}else{
-					LogPrintf( "database closed successfully\n");
-				}
-			}
-		}
 			if(theAmount == 1000 &&	startsWith(receiveAddress.c_str(), GRANTPREFIX.c_str())){
 				votes[receiveAddress] = theAmount;
 			}
@@ -358,41 +301,6 @@ void processNextBlockIntoGrantDatabase(){
                     spendAddress = CBitcreditAddress(addressRet).ToString().c_str();
 					theAmount =  txOut.nValue;
 					balances[ spendAddress ] = balances[ spendAddress ] - theAmount;
-
-				if(fBankNode) {
-					sqlite3_open((GetDataDir() / "ratings/rawdata.db").string().c_str(), &rawdb);
-
-					const char *updatequery ="select * from RAWDATA where ADDRESS = ?";
-
-					rc = sqlite3_prepare(rawdb,updatequery, strlen(updatequery), &stmt,  0 );
-					sqlite3_bind_text(stmt, 1,spendAddress.data(), spendAddress.size(), 0);
-					if (sqlite3_step(stmt) == SQLITE_ROW){
-						int64_t balance, txincount, totalin;
-						balance = sqlite3_column_int(stmt, 1);
-						txincount = sqlite3_column_int(stmt, 3);
-						totalin = sqlite3_column_int(stmt, 5);
-
-						LogPrintf ("SQlite input record retrieved %s, %d, %d, %d \n",spendAddress, balance, txincount, totalin);
-						sqlite3_finalize(stmt);
-                        char *updatequery = sqlite3_mprintf("update RAWDATA set BALANCE = %ld , TXINCOUNT =%ld,  TOTALIN= %ld where ADDRESS = '%q'",balance-theAmount,txincount+1,totalin+theAmount, spendAddress.c_str());
-
-						rc = sqlite3_exec(rawdb, updatequery, callback, 0, &zErrMsg);
-
-						if( rc != SQLITE_OK ){
-							LogPrintf("SQL update output error: %s\n", zErrMsg);
-							sqlite3_free(zErrMsg);
-						}else{
-							LogPrintf( "update created successfully\n");
-						}
-
-						if(sqlite3_close(rawdb) != SQLITE_OK ){
-							LogPrintf("SQL unable to close database %s\n", sqlite3_errmsg(rawdb));
-							sqlite3_free(zErrMsg);
-						}else{
-							LogPrintf( "database closed successfully\n");
-						}
-					}
-				}
 
 					for( votesit = votes.begin();votesit != votes.end(); ++votesit){
 						if(fDebug)LogPrintf(" Vote found: %s, %ld\n",votesit->first.c_str(),votesit->second);

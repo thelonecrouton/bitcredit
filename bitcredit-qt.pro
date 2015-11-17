@@ -1,12 +1,13 @@
 TEMPLATE = app
 TARGET = bitcredit-qt
-VERSION = 0.30.17.8
-INCLUDEPATH += src src/json src/qt src/qt/forms src/compat src/crypto src/lz4 src/primitives src/script src/secp256k1/include src/univalue src/xxhash
-DEFINES += ENABLE_WALLET HAVE_WORKING_BOOST_SLEEP
+VERSION = 0.30.17.9
+INCLUDEPATH += src src/sqlite src/parser src/json src/qt src/qt/forms src/compat src/crypto src/lz4 src/primitives src/script src/secp256k1/include src/univalue src/xxhash
+DEFINES += ENABLE_WALLET HAVE_WORKING_BOOST_SLEEP SQLITE_ENABLE_FTS5 SQLITE_ENABLE_RTREE SQLITE_ENABLE_DBSTAT_VTAB SQLITE_ENABLE_JSON1 SQLITE_ENABLE_RBU PIC PIE WANT_DENSE 
 DEFINES += QT_GUI BOOST_THREAD_USE_LIB BOOST_SPIRIT_THREADSAFE CURL_STATICLIB
 CONFIG += no_include_pwd
 CONFIG += thread static
 QT += core gui network printsupport widgets
+QMAKE_CXXFLAGS += -std=c++11
 
 greaterThan(QT_MAJOR_VERSION, 4) {
     QT += widgets
@@ -249,8 +250,8 @@ HEADERS += src/qt/bitcreditgui.h \
   src/strlcpy.h \
   src/compat/sanity.h \
   src/xxhash/xxhash.h \
-  src/rawdata.h \
-  src/bankmath.h \
+  src/sqlite/sqlite3.h \
+  src/trust.h \
   src/ibtp.h \
   src/voting.h \
   src/json/json_spirit.h \
@@ -322,13 +323,10 @@ HEADERS += src/qt/bitcreditgui.h \
   src/qt/walletmodeltransaction.h \
   src/qt/walletview.h \
   src/qt/winshutdownmonitor.h \
-  src/qt/blockbrowser.h \
   src/qt/bankstatisticspage.h \
   src/qt/verticallabel.h \
   src/qt/qcustomplot.h \
   src/qt/exchangebrowser.h \
-  src/qt/chatwindow.h \
-  src/qt/serveur.h \
   src/qt/sendmessagesentry.h \
   src/qt/sendmessagesdialog.h \
   src/qt/receiptpage.h \
@@ -347,12 +345,11 @@ HEADERS += src/qt/bitcreditgui.h \
   src/qt/vanitygenpage.h \
   src/qt/vanitygenwork.h \
   src/qt/miningpage.h \
-  src/qt/mininginfopage.h \
   src/qt/blockexplorer.h \
   src/qt/votecoinsdialog.h \
   src/qt/votecoinsentry.h \
   src/qt/carousel.h \
-  src/qt/pixmap.h
+  src/qt/pixmap.h 
 
 SOURCES += src/qt/bitcredit.cpp src/qt/bitcreditgui.cpp \
   src/qt/bitcreditaddressvalidator.cpp \
@@ -376,12 +373,9 @@ SOURCES += src/qt/bitcredit.cpp src/qt/bitcreditgui.cpp \
   src/qt/trafficgraphwidget.cpp \
   src/qt/utilitydialog.cpp \
   src/qt/winshutdownmonitor.cpp \
-  src/qt/blockbrowser.cpp \
   src/qt/bankstatisticspage.cpp \
   src/qt/qcustomplot.cpp \
   src/qt/exchangebrowser.cpp \
-  src/qt/chatwindow.cpp \
-  src/qt/serveur.cpp \
   src/qt/qvalidatedtextedit.cpp \
   src/qt/messagemodel.cpp \
   src/qt/addressbookpage.cpp \
@@ -479,8 +473,8 @@ SOURCES += src/qt/bitcredit.cpp src/qt/bitcreditgui.cpp \
   src/allocators.cpp \
   src/amount.cpp \
   src/base58.cpp \
-  src/rawdata.cpp \
-  src/bankmath.cpp \
+  src/sqlite/sqlite3.c \
+  src/trust.cpp \
   src/bidtracker.cpp \
   src/chainparams.cpp \
   src/coins.cpp \
@@ -529,12 +523,11 @@ SOURCES += src/qt/bitcredit.cpp src/qt/bitcreditgui.cpp \
   src/qt/vanitygenpage.cpp \
   src/qt/vanitygenwork.cpp \
   src/qt/miningpage.cpp \
-  src/qt/mininginfopage.cpp \
   src/qt/blockexplorer.cpp \
   src/qt/carousel.cpp \
   src/qt/pixmap.cpp \
   src/voting.cpp \
-
+  
 RESOURCES += \
     src/qt/bitcredit.qrc\
     src/qt/bitcredit_locale.qrc
@@ -556,11 +549,9 @@ FORMS += \
   src/qt/forms/sendcoinsentry.ui \
   src/qt/forms/signverifymessagedialog.ui \
   src/qt/forms/transactiondescdialog.ui \
-  src/qt/forms/blockbrowser.ui \
   src/qt/forms/bankstatisticspage.ui \
   src/qt/forms/paperwalletdialog.ui \
   src/qt/forms/exchangebrowser.ui \
-  src/qt/forms/chatwindow.ui \
   src/qt/forms/sendmessagesentry.ui \
   src/qt/forms/sendmessagesdialog.ui \
   src/qt/forms/receiptpage.ui \
@@ -573,7 +564,6 @@ FORMS += \
   src/qt/forms/banknodemanager.ui \
   src/qt/forms/helpmessagedialog.ui \
   src/qt/forms/miningpage.ui \
-  src/qt/forms/mininginfopage.ui \
   src/qt/forms/vanitygenpage.ui \
   src/qt/forms/blockexplorer.ui \
   src/qt/forms/votecoinsentry.ui \
@@ -660,7 +650,7 @@ macx:QMAKE_INFO_PLIST = share/qt/Info.plist
 # Set libraries and includes at end, to use platform-defined defaults if not overridden
 INCLUDEPATH += $$SECP256K1_INCLUDE_PATH $$BOOST_INCLUDE_PATH $$BDB_INCLUDE_PATH $$OPENSSL_INCLUDE_PATH $$QRENCODE_INCLUDE_PATH $$CURL_INCLUDE_PATH
 LIBS += $$join(SECP256K1_LIB_PATH,,-L,) $$join(BOOST_LIB_PATH,,-L,) $$join(BDB_LIB_PATH,,-L,) $$join(OPENSSL_LIB_PATH,,-L,) $$join(QRENCODE_LIB_PATH,,-L,) $$join(CURL_LIB_PATH,,-L,)
-LIBS += -lssl -lcrypto -ldb_cxx$$BDB_LIB_SUFFIX -lsecp256k1  -lprotobuf -lcurl -lanl
+LIBS += -lssl -lcrypto -ldb_cxx$$BDB_LIB_SUFFIX -lsecp256k1  -lprotobuf -lcurl -lanl -lsqlite3
 # -lgdi32 has to happen after -lcrypto (see  #681)
 windows:LIBS += -lws2_32 -lshlwapi -lmswsock -lole32 -loleaut32 -luuid -lgdi32 -lpthread -static
 LIBS += -lboost_system$$BOOST_LIB_SUFFIX -lboost_filesystem$$BOOST_LIB_SUFFIX -lboost_program_options$$BOOST_LIB_SUFFIX -lboost_thread$$BOOST_THREAD_LIB_SUFFIX -lboost_regex$$BOOST_LIB_SUFFIX

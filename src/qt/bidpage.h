@@ -21,21 +21,13 @@ public:
     QString str;
     QString btctotal;
     double btctot;
-    QString ltctotal;
-    double ltctot;
-    QString dashtotal;
-    double dashtot;
     std::string theme;
 
     void setClientModel(ClientModel *model);
 
 private slots:
-    void SummonBTCWallet(); 
-    void SummonLTCWallet();
-    void SummonDASHWallet();   
+    void SummonBTCWallet();   
     void SummonBTCExplorer(); 
-    void SummonLTCExplorer();
-    void SummonDASHExplorer();
     void GetBids();
     void setNumBlocks(int count);
     int getNumBlocks();

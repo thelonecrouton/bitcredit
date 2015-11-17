@@ -60,23 +60,23 @@ void BankStatisticsPage::updateStatistics()
 	double globaldebt =  grossmarketcap - marketcap;
 
 	
-    if(btcstash > 0 && btcstash< 1000)
+    if(btcstash > 0 && btcstash< 100)
     {
         ui->bankstatus->setText("<font color=\"red\">" + bankstatusCritical + "</font>");
     }
-    else if (btcstash > 999 && btcstash< 10000)
+    else if (btcstash > 99 && btcstash< 1000)
     {
         ui->bankstatus->setText("<font color=\"orange\">" + bankstatusLow + "</font>");
     }
-    else if (btcstash > 9999 && btcstash< 100000)
+    else if (btcstash > 999 && btcstash< 10000)
     {
         ui->bankstatus->setText("<font color=\"green\">" + bankstatusSafe + "</font>");
     }
-    else if (btcstash > 99999 && btcstash< 200000)
+    else if (btcstash > 9999 && btcstash< 20000)
     {
         ui->bankstatus->setText("<font color=\"blue\">" + bankstatusGood + "</font>");
     }
-    else if (btcstash > 199999)
+    else if (btcstash > 19999)
     {
         ui->bankstatus->setText("<font color=\"black\">" + bankstatusGreat + "</font>");
     }
@@ -219,19 +219,6 @@ void BankStatisticsPage::updateStatistics()
     {
     ui->trustscoreLabel->setText(ntrust);
     }
-
-    if(inflationindex > inflationindexPrevious)
-    {
-        ui->inflationindex->setText("<font color=\"green\">" + ninflationindex + "%"+ "</font>");
-    }
-    else if (inflationindex < inflationindexPrevious)
-    {
-        ui->inflationindex->setText("<font color=\"red\">" + ninflationindex + "%" + "</font>");
-    }
-    else
-    {
-    ui->inflationindex->setText(ninflationindex + "%");
-    }  
 
 	if(marketcap > marketcapPrevious)
     {

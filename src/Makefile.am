@@ -31,7 +31,7 @@ LIBBITCREDIT_CRYPTO=crypto/libbitcredit_crypto.a
 LIBBITCREDIT_UNIVALUE=univalue/libbitcredit_univalue.a
 LIBBITCREDITQT=qt/libbitcreditqt.a
 LIBSECP256K1=secp256k1/libsecp256k1.la
-LIBSQLITE=sqlite/libsqlite3.la
+#LIBSQLITE=sqlite/libsqlite3.la
 
 $(LIBSECP256K1): $(wildcard secp256k1/src/*) $(wildcard secp256k1/include/*)
 	$(AM_V_at)$(MAKE) $(AM_MAKEFLAGS) -C $(@D) $(@F)

@@ -641,12 +641,7 @@ CBlockTemplate* CreateNewBlockWithKey()
 	std::ifstream file((GetDataDir() / "miningkeys.dat" ).string().c_str());
 	CScript scriptPubKey;
 	std::string line;
-	CBlock blockprev;
-	CBlockIndex* pindex = chainActive.Tip();
-	ReadBlockFromDisk(blockprev, pindex);
-	CTxDestination dest,m;
-	ExtractDestination(blockprev.vtx[0].vout[0].scriptPubKey, m);
-	string n = CBitcreditAddress(m).ToString().c_str();
+	CTxDestination dest;
 
 	while (std::getline(file, line)){
     if (!line.empty())
@@ -658,10 +653,12 @@ CBlockTemplate* CreateNewBlockWithKey()
 		dest = address.Get();
 		scriptPubKey =  GetScriptForDestination(dest);
 
-		if (n == miningkeys[i]){
-			 continue;
+		if (std::find(last40blocks.begin(), last40blocks.end(), miningkeys[i]) != last40blocks.end())
+		{
+		LogPrintf("CreateNewBlockWithKey(): coinbase key %s detected in 40 block period\n",miningkeys[i]);
+		continue;
 		}
-		if (fDebug)LogPrintf("key new  %s , keyprev     %s\n",miningkeys[i], n);
+		
 		break;
 	}
 

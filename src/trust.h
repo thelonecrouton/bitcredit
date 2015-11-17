@@ -21,8 +21,6 @@
 
 using namespace std;
 
-void sortdata();
-
 class TrustEngine
 {
 public:
@@ -43,6 +41,7 @@ public:
 	
 	void buildrawdb();
 
+	void sortclientdata(string clientAddress);
 };
 
 #endif

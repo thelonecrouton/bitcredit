@@ -17,7 +17,7 @@ static int callback(void *NotUsed, int argc, char **argv, char **azColName){
    return 0;
 }
 
-void sortdata(){
+void TrustEngine::sortclientdata(std::string clientAddress){
 
 	sqlite3 *rawdb;
 	sqlite3_stmt *stmt;
@@ -31,22 +31,20 @@ void sortdata(){
    }else{
      if (fDebug) LogPrintf("Opened database successfully\n");
    }
-   sql="test";
+	sql="select * from RAWDATA where ADDRESS = ?";
 
 	rc = sqlite3_prepare(rawdb,sql, strlen(sql), &stmt,  0 );
-    //sqlite3_bind_text(stmt, 1,receiveAddress.data(), receiveAddress.size(), 0);
+    sqlite3_bind_text(stmt, 1,clientAddress.data(), clientAddress.size(), 0);
         int64_t balance, outgoingtx, firstuse, incomingtx, totalinputs, totaloutputs;
 	if (sqlite3_step(stmt) == SQLITE_ROW){
-        const unsigned char* mmaddress = sqlite3_column_text(stmt, 0);
+        
 		balance = (sqlite3_column_int(stmt, 1))/COIN;
 		firstuse = sqlite3_column_int(stmt, 2);
 		incomingtx = sqlite3_column_int(stmt, 3);
 		outgoingtx = sqlite3_column_int(stmt, 4);
 		totalinputs = sqlite3_column_int(stmt, 5);
 		totaloutputs = sqlite3_column_int(stmt, 6);
-        ostringstream j;
-        j<< mmaddress;
-        string mkl= j.str();
+
 		int64_t totaltx=  incomingtx+outgoingtx;
 		double globallife = (GetTime()- 1418504572)/24*3600;
 		double lifetime = (GetTime() - firstuse)/24*3600;
@@ -139,7 +137,7 @@ void sortdata(){
         	//myfile2<<strs[0]<<","<<balance<<","<<avedailyincome<<","<<trust<< ","<<endl;
 
 
-            CBitcreditAddress address(mkl.c_str());
+            CBitcreditAddress address(clientAddress.c_str());
 			CTxDestination dest = address.Get();
 			std::set<CExtDiskTxPos> setpos;
 			if (!FindTransactionsByDestination(dest, setpos)){
@@ -222,7 +220,7 @@ void sortdata(){
 				creditscore=0;
 			ofstream addrdb;
 			addrdb.open ((GetDataDir() / "ratings/creditfinal.dat" ).string().c_str(), std::ofstream::app);
-            addrdb<<mmaddress<<","<<balance<<","<<avedailyincome<<","<<trust<< ","<< creditscore << endl;
+            addrdb<<clientAddress<<","<<balance<<","<<avedailyincome<<","<<trust<< ","<< creditscore << endl;
 	}
 }
 

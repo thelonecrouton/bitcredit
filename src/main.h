@@ -40,6 +40,7 @@
 #include <vector>
 
 #include <boost/unordered_map.hpp>
+#include <boost/circular_buffer.hpp>
 using namespace std;
 
 class CBlockIndex;
@@ -119,6 +120,7 @@ struct BlockHasher
 extern CScript COINBASE_FLAGS;
 extern CScript BANK_SCRIPT;
 extern CScript RESERVE_SCRIPT;
+extern boost::circular_buffer<string> last40blocks;
 extern CCriticalSection cs_main;
 extern CTxMemPool mempool;
 typedef boost::unordered_map<uint256, CBlockIndex*, BlockHasher> BlockMap;
