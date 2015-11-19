@@ -50,8 +50,6 @@ SendMessagesDialog::SendMessagesDialog(Mode mode, Type type, QWidget *parent) :
 
     if(type == SendMessagesDialog::Page)
         ui->closeButton->hide();
-        
-        //this->setStyleSheet("background-image:url(:/images/background);");
 }
 
 void SendMessagesDialog::setModel(MessageModel *model)
@@ -186,7 +184,7 @@ void SendMessagesDialog::on_sendButton_clicked()
     QStringList formatted;
     foreach(const SendMessagesRecipient &rcp, recipients)
     {
-        formatted.append(tr("<b>%1</b> to %2 (%3)").arg(rcp.message, GUIUtil::HtmlEscape(rcp.label), rcp.address));
+        formatted.append(tr("<b>%1</b> to %2 (%3)").arg(rcp.message, Qt::escape(rcp.label), rcp.address));
     }
 
     fNewRecipientAllowed = false;
@@ -378,9 +376,9 @@ bool SendMessagesDialog::handleURI(const QString &uri)
 {
     SendMessagessRecipient rv;
     // URI has to be valid
-    if (GUIUtil::parseBitcreditURI(uri, &rv))
+    if (GUIUtil::parseBitcoinURI(uri, &rv))
     {
-        CBitcreditAddress address(rv.address.toStdString());
+        CBitcoinAddress address(rv.address.toStdString());
         if (!address.IsValid())
             return false;
         pasteEntry(rv);

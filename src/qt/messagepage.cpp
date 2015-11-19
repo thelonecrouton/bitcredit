@@ -1,6 +1,6 @@
 #include "messagepage.h"
 #include "ui_messagepage.h"
- 
+
 #include "sendmessagesdialog.h"
 #include "messagemodel.h"
 #include "bitcreditgui.h"
@@ -43,8 +43,6 @@ MessagePage::MessagePage(QWidget *parent) :
     connect(deleteAction,          SIGNAL(triggered()), this, SLOT(on_deleteButton_clicked()));
 
     connect(ui->tableView, SIGNAL(customContextMenuRequested(QPoint)), this, SLOT(contextualMenu(QPoint)));
-    
-   // this->setStyleSheet("background-image:url(:/images/background);");
 }
 
 MessagePage::~MessagePage()

@@ -40,9 +40,9 @@ QString BitcreditUnits::id(int unit)
 {
     switch(unit)
     {
-    case BCR: return QString("btc");
-    case mBCR: return QString("mbtc");
-    case uBCR: return QString("ubtc");
+    case BCR: return QString("bcr");
+    case mBCR: return QString("mbcr");
+    case uBCR: return QString("ubcr");
     default: return QString("???");
     }
 }

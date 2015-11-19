@@ -7,7 +7,6 @@
 
 #include "guiutil.h"
 #include "peertablemodel.h"
-#include "sync.h"
 #include "net.h"
 
 #include <QWidget>
