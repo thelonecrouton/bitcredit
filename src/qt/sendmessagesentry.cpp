@@ -15,6 +15,7 @@
 SendMessagesEntry::SendMessagesEntry(QWidget *parent) :
     QFrame(parent),
     ui(new Ui::SendMessagesEntry),
+    walletmodel(0),
     model(0)
 {
     ui->setupUi(this);
@@ -48,18 +49,13 @@ void SendMessagesEntry::on_pasteButton_clicked()
 
 void SendMessagesEntry::on_addressBookButton_clicked()
 {
-    if(!model)
+    if(!walletmodel)
         return;
-
     AddressBookPage dlg(AddressBookPage::ForSelection, AddressBookPage::SendingTab, this);
-
-    dlg.setModel(model->getWalletModel()->getAddressTableModel());
-
+    dlg.setModel(walletmodel->getAddressTableModel());
     if(dlg.exec())
     {
-
         ui->sendTo->setText(dlg.getReturnValue());
-
         if(ui->publicKey->text() == "")
             ui->publicKey->setFocus();
         else
@@ -99,6 +95,11 @@ void SendMessagesEntry::setModel(MessageModel *model)
     this->model = model;
 
     //clear();
+}
+
+void SendMessagesEntry::setWalletModel(WalletModel *walletmodel)
+{
+    this->walletmodel = walletmodel;
 }
 
 void SendMessagesEntry::loadRow(int row)

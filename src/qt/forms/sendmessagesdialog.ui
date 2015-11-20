@@ -13,9 +13,6 @@
   <property name="windowTitle">
    <string>Send Messages</string>
   </property>
-  <property name="styleSheet">
-   <string notr="true"/>
-  </property>
   <layout class="QVBoxLayout" name="verticalLayout" stretch="0,1,0,0">
    <property name="bottomMargin">
     <number>8</number>
@@ -54,9 +51,6 @@
        <height>16777215</height>
       </size>
      </property>
-     <property name="styleSheet">
-      <string notr="true"/>
-     </property>
      <property name="frameShape">
       <enum>QFrame::StyledPanel</enum>
      </property>
@@ -66,9 +60,6 @@
      <layout class="QHBoxLayout" name="horizontalLayout_3">
       <item>
        <widget class="QLabel" name="addressFromLabel">
-        <property name="styleSheet">
-         <string notr="true">;</string>
-        </property>
         <property name="text">
          <string>Address &amp;From:</string>
         </property>
@@ -84,18 +75,12 @@
         </property>
         <item>
          <widget class="QValidatedLineEdit" name="addressFrom">
-          <property name="styleSheet">
-           <string notr="true"/>
-          </property>
          </widget>
         </item>
         <item>
          <widget class="QToolButton" name="addressBookButton">
           <property name="toolTip">
            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; color:#ffffff;&quot;&gt;Choose address from address book&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-          </property>
-          <property name="styleSheet">
-           <string notr="true"/>
           </property>
           <property name="text">
            <string/>
@@ -113,9 +98,6 @@
          <widget class="QToolButton" name="pasteButton">
           <property name="toolTip">
            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; color:#ffffff;&quot;&gt;Paste address from clipboard&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-          </property>
-          <property name="styleSheet">
-           <string notr="true"/>
           </property>
           <property name="text">
            <string/>
@@ -136,9 +118,6 @@
    </item>
    <item>
     <widget class="QScrollArea" name="scrollArea">
-     <property name="styleSheet">
-      <string notr="true"/>
-     </property>
      <property name="widgetResizable">
       <bool>true</bool>
      </property>
@@ -150,9 +129,6 @@
         <width>830</width>
         <height>80</height>
        </rect>
-      </property>
-      <property name="styleSheet">
-       <string notr="true"/>
       </property>
       <layout class="QVBoxLayout" name="verticalLayout_2">
        <property name="margin">
@@ -189,9 +165,6 @@
        <property name="toolTip">
         <string>Send to multiple recipients at once</string>
        </property>
-       <property name="styleSheet">
-        <string notr="true"/>
-       </property>
        <property name="text">
         <string>Add &amp;Recipient</string>
        </property>
@@ -214,9 +187,6 @@
        </property>
        <property name="toolTip">
         <string>Remove all transaction fields</string>
-       </property>
-       <property name="styleSheet">
-        <string notr="true"/>
        </property>
        <property name="text">
         <string>Clear &amp;All</string>
@@ -257,9 +227,6 @@
        <property name="toolTip">
         <string>Confirm the send action</string>
        </property>
-       <property name="styleSheet">
-        <string notr="true"/>
-       </property>
        <property name="text">
         <string>S&amp;end</string>
        </property>
@@ -274,9 +241,6 @@
      </item>
      <item>
       <widget class="QPushButton" name="closeButton">
-       <property name="styleSheet">
-        <string notr="true"/>
-       </property>
        <property name="text">
         <string>&amp;Close</string>
        </property>

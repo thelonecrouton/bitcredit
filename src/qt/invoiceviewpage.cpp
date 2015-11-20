@@ -103,13 +103,13 @@ void InvoiceViewPage::newInvoice()
     ui->total           ->setText(model->data(model->index(row, model->Total,            QModelIndex()), Qt::DisplayRole).toString());
     */
 
-    proxyModel->setFilterRole(Qt::UserRole);
-    proxyModel->setFilterFixedString("new");
+    //proxyModel->setFilterRole(Qt::UserRole);
+    //proxyModel->setFilterFixedString("new");
 
-    if(proxyModel->rowCount() == 0)
-    {
+    //if(proxyModel->rowCount() == 0)
+    //{
         model->newInvoiceItem();
-    }
+    //}
 
     ui->sendButton->setVisible(true);
 }
@@ -119,7 +119,7 @@ void InvoiceViewPage::on_sendButton_clicked()
     if(!model)
         return;
 
-    SendMessagesDialog dlg(SendMessagesDialog::Encrypted, SendMessagesDialog::Dialog, this);
+    SendMessagesDialog dlg(this);
 
     dlg.setModel(model->getMessageModel());
 

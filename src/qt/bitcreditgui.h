@@ -87,8 +87,8 @@ protected:
     int m_nMouseClick_Y_Coordinate;
 private:
     ClientModel *clientModel;
-    WalletFrame *walletFrame;
     MessageModel *messageModel;
+    WalletFrame *walletFrame;
 
     UnitDisplayStatusBarControl *unitDisplayControl;
     QLabel *labelEncryptionIcon;
@@ -200,9 +200,11 @@ public slots:
     void setEncryptionStatus(int status);
 
     bool handlePaymentRequest(const SendCoinsRecipient& recipient);
-	void incomingMessage(const QString& sent_datetime, QString from_address, QString to_address, QString message, int type);
+
     /** Show incoming transaction notification for new transactions. */
     void incomingTransaction(const QString& date, int unit, const CAmount& amount, const QString& type, const QString& address);
+	void incomingMessage(const QString& sent_datetime, QString from_address, QString to_address, QString message, int type);
+
 #endif // ENABLE_WALLET
 
 private slots:
@@ -237,7 +239,6 @@ private slots:
     void gotoSignMessageTab(QString addr = "");
     /** Show Sign/Verify Message dialog and switch to verify message tab */
     void gotoVerifyMessageTab(QString addr = "");
-
     /** Show open dialog */
     void openClicked();
 #endif // ENABLE_WALLET

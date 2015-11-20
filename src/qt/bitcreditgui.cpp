@@ -13,7 +13,11 @@
 #include "openuridialog.h"
 #include "optionsdialog.h"
 #include "optionsmodel.h"
+#include "sendmessagesdialog.h"
 #include "messagemodel.h"
+#include "messagepage.h"
+#include "invoicepage.h"
+#include "receiptpage.h"
 #include "rpcconsole.h"
 #include "utilitydialog.h"
 #include "exchangebrowser.h"
@@ -92,6 +96,7 @@ const QString BitcreditGUI::DEFAULT_WALLET = "~Default";
 BitcreditGUI::BitcreditGUI(const NetworkStyle *networkStyle, QWidget *parent) :
     QMainWindow(parent),
     clientModel(0),
+    messageModel(0),
     walletFrame(0),
     unitDisplayControl(0),
     labelEncryptionIcon(0),
@@ -235,6 +240,7 @@ BitcreditGUI::BitcreditGUI(const NetworkStyle *networkStyle, QWidget *parent) :
         /** Create wallet frame and make it the central widget */
         walletFrame = new WalletFrame(this);
         setCentralWidget(walletFrame);
+       
     } else
 #endif // ENABLE_WALLET
     {
@@ -525,17 +531,13 @@ void BitcreditGUI::createActions(const NetworkStyle *networkStyle)
     actionSendReceivestats = new QAction(QIcon(":/icons/null"), tr("&Statistics"), this);
     actionSendReceivestats->setCheckable(true);
 
-    bidAction = new QAction(QIcon(":/icons/null"), ("&BID + BACK!"), this);
+    bidAction = new QAction(QIcon(":/icons/null"), ("&Block Auction"), this);
     bidAction->setCheckable(true);
     tabGroup->addAction(bidAction);
 
     voteCoinsAction = new QAction(QIcon(":/icons/null"), tr("&Vote"), this);
     voteCoinsAction->setCheckable(true);
     tabGroup->addAction(voteCoinsAction);
-
-    sendMessagesAnonAction = new QAction(QIcon(":/icons/null"), tr("S&end Messages"), this);
-    sendMessagesAnonAction->setCheckable(true);
-    tabGroup->addAction(sendMessagesAnonAction);
 
 #ifdef ENABLE_WALLET
     // These showNormalIfMinimized are needed because Send Coins and Receive Coins
@@ -1421,6 +1423,8 @@ void BitcreditGUI::incomingTransaction(const QString& date, int unit, const CAmo
 
 void BitcreditGUI::incomingMessage(const QString& sent_datetime, QString from_address, QString to_address, QString message, int type)
 {
+    // Prevent balloon-spam when initial block download is in progress
+
     if (type == MessageTableEntry::Received)
     {
         notificator->notify(Notificator::Information,

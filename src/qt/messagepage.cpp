@@ -100,7 +100,7 @@ void MessagePage::on_replyButton_clicked()
     if(indexes.isEmpty())
         return;
 
-    SendMessagesDialog dlg(SendMessagesDialog::Encrypted, SendMessagesDialog::Dialog, this);
+    SendMessagesDialog dlg(this);
 
     dlg.setModel(model);
     QModelIndex origIndex = proxyModel->mapToSource(indexes.at(0));

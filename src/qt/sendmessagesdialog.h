@@ -11,6 +11,7 @@ namespace Ui {
 class MessageModel;
 class SendMessagesEntry;
 class SendMessagesRecipient;
+class WalletModel;
 
 //QT_BEGIN_NAMESPACE
 //class QUrl;
@@ -33,10 +34,11 @@ public:
         Dialog,
     };
 
-    explicit SendMessagesDialog(Mode mode, Type type, QWidget *parent = 0);
+    explicit SendMessagesDialog(QWidget *parent = 0);
     ~SendMessagesDialog();
 
     void setModel (MessageModel *model);
+    void setWalletModel(WalletModel *walletmodel);
     void loadRow(int row);
     void loadInvoice(QString message, QString from_address = "", QString to_address = "");
     bool checkMode(Mode mode);
@@ -58,6 +60,7 @@ public slots:
 
 private:
     Ui::SendMessagesDialog *ui;
+    WalletModel *walletmodel;
     MessageModel *model;
     bool fNewRecipientAllowed;
     Mode mode;

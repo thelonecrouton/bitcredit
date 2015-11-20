@@ -44,7 +44,6 @@
 WalletView::WalletView(QWidget *parent):
     QStackedWidget(parent),
     clientModel(0),
-
     walletModel(0)
 {
     // Create tabs
@@ -65,7 +64,7 @@ WalletView::WalletView(QWidget *parent):
     receiveCoinsPage = new ReceiveCoinsDialog();
     sendCoinsPage = new SendCoinsDialog();
 	voteCoinsPage = new VoteCoinsDialog();
-	sendMessagesPage = new SendMessagesDialog(SendMessagesDialog::Encrypted, SendMessagesDialog::Page);
+    sendMessagesPage = new SendMessagesDialog();
     messagePage = new MessagePage();
     invoicePage = new InvoicePage();
     receiptPage = new ReceiptPage();
@@ -144,7 +143,8 @@ void WalletView::setWalletModel(WalletModel *walletModel)
     overviewPage->setWalletModel(walletModel);
     receiveCoinsPage->setModel(walletModel);
     sendCoinsPage->setModel(walletModel);
-	voteCoinsPage->setModel(walletModel);
+    voteCoinsPage->setModel(walletModel);
+    sendMessagesPage->setWalletModel(walletModel);
 
     if (walletModel)
     {
@@ -256,7 +256,6 @@ void WalletView::gotoSendMessagesPage()
 {
 	setCurrentWidget(sendMessagesPage);
 }
-
 
 void WalletView::gotoMessagesPage()
 {

@@ -16,12 +16,11 @@
 #include <QClipboard>
 #include <QDataWidgetMapper>
 
-SendMessagesDialog::SendMessagesDialog(Mode mode, Type type, QWidget *parent) :
+SendMessagesDialog::SendMessagesDialog(QWidget *parent) :
     QDialog(parent),
     ui(new Ui::SendMessagesDialog),
-    model(0),
-    mode(mode),
-    type(type)
+    walletmodel(0),
+    model(0)
 {
 
     ui->setupUi(this);
@@ -71,6 +70,11 @@ void SendMessagesDialog::setModel(MessageModel *model)
         if(entry)
             entry->setModel(model);
     }
+}
+
+void SendMessagesDialog::setWalletModel(WalletModel *walletmodel)
+{
+    this->walletmodel = walletmodel;
 }
 
 void SendMessagesDialog::loadRow(int row)
@@ -139,13 +143,10 @@ void SendMessagesDialog::on_pasteButton_clicked()
 
 void SendMessagesDialog::on_addressBookButton_clicked()
 {
-    if(!model)
+    if(!walletmodel)
         return;
-
     AddressBookPage dlg(AddressBookPage::ForSelection, AddressBookPage::ReceivingTab, this);
-
-    dlg.setModel(model->getWalletModel()->getAddressTableModel());
-
+    dlg.setModel(walletmodel->getAddressTableModel());
     if(dlg.exec())
     {
         ui->addressFrom->setText(dlg.getReturnValue());
@@ -184,7 +185,7 @@ void SendMessagesDialog::on_sendButton_clicked()
     QStringList formatted;
     foreach(const SendMessagesRecipient &rcp, recipients)
     {
-        formatted.append(tr("<b>%1</b> to %2 (%3)").arg(rcp.message, Qt::escape(rcp.label), rcp.address));
+        formatted.append(tr("<b>%1</b> to %2 (%3)").arg(rcp.message, GUIUtil::HtmlEscape(rcp.label), rcp.address));
     }
 
     fNewRecipientAllowed = false;

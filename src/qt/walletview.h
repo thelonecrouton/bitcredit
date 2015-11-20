@@ -61,9 +61,10 @@ public:
         functionality.
     */
     void setWalletModel(WalletModel *walletModel);
-	void setMessageModel(MessageModel *messageModel);
-    bool handlePaymentRequest(const SendCoinsRecipient& recipient);
 
+	void setMessageModel(MessageModel *messageModel);
+
+    bool handlePaymentRequest(const SendCoinsRecipient& recipient);
 
     void showOutOfSyncWarning(bool fShow);
 

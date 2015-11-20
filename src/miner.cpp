@@ -642,6 +642,8 @@ CBlockTemplate* CreateNewBlockWithKey()
 	CScript scriptPubKey;
 	std::string line;
 	CTxDestination dest;
+	std::map<std::string,int64_t> addressvalue = getbalances();
+	std::map<std::string,int64_t>::iterator addrvalit;
 
 	while (std::getline(file, line)){
     if (!line.empty())
@@ -657,6 +659,12 @@ CBlockTemplate* CreateNewBlockWithKey()
 		{
 		LogPrintf("CreateNewBlockWithKey(): coinbase key %s detected in 40 block period\n",miningkeys[i]);
 		continue;
+		}
+
+		addrvalit = addressvalue.find(miningkeys[i]);
+		if(addrvalit != addressvalue.end()){
+			if (!(addrvalit->second > 50000*COIN))
+				LogPrintf("CreateNewBlockWithKey(): banknode miningkey 50K failed");
 		}
 		
 		break;

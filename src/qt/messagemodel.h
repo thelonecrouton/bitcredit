@@ -43,13 +43,14 @@ struct MessageTableEntry
     QString from_address;
     QDateTime sent_datetime;
     QDateTime received_datetime;
+    bool read;
     QString message;
 
     MessageTableEntry() {}
     MessageTableEntry(const std::vector<unsigned char> vchKey, Type type, const QString &label, const QString &to_address, const QString &from_address,
-                      const QDateTime &sent_datetime, const QDateTime &received_datetime, const QString &message):
+                      const QDateTime &sent_datetime, const QDateTime &received_datetime, const bool &read, const QString &message):
         vchKey(vchKey), type(type), label(label), to_address(to_address), from_address(from_address), sent_datetime(sent_datetime), received_datetime(received_datetime),
-        message(message) {}
+        read(read), message(message) {}
 };
 
 /** Interface to Cinnicoin Secure Messaging from Qt view code. */
@@ -78,10 +79,45 @@ public:
         SentDateTime = 1, /**< Time Sent */
         ReceivedDateTime = 2, /**< Time Received */
         Label = 3,   /**< User specified label */
-        ToAddress = 4, /**< To Bitcoin address */
-        FromAddress = 5, /**< From Bitcoin address */
+        ToAddress = 4, /**< To Bitcredit address */
+        FromAddress = 5, /**< From Bitcredit address */
         Message = 6, /**< Plaintext */
-        TypeInt = 7, /**< Plaintext */
+        Read = 7, /**< Plaintext */
+        TypeInt = 8, /**< Plaintext */
+        Key = 9, /**< chKey */
+        HTML = 10, /**< HTML Formatted Data */
+    };
+
+    /** Roles to get specific information from a message row.
+        These are independent of column.
+    */
+    enum RoleIndex {
+        /** Type of message */
+        TypeRole = Qt::UserRole,
+        /** message key */
+        KeyRole,
+        /** Date and time this message was sent */
+        SentDateRole,
+        /** Date and time this message was received */
+        ReceivedDateRole,
+        /** From Address of message */
+        FromAddressRole,
+        /** To Address of message */
+        ToAddressRole,
+        /** Filter address related to message */
+        FilterAddressRole,
+        /** Label of address related to message */
+        LabelRole,
+        /** Full Message */
+        MessageRole,
+        /** Short Message */
+        ShortMessageRole,
+        /** Message Read */
+        ReadRole,
+        /** HTML Formatted */
+        HTMLRole,
+        /** Ambiguous bool */
+        Ambiguous
     };
 
     static const QString Sent; /**< Specifies sent message */
@@ -98,6 +134,10 @@ public:
     Qt::ItemFlags flags(const QModelIndex & index) const;
     /*@}*/
 
+
+    /* Mark message as read
+     */
+    bool markMessageAsRead(const QString &key) const;
     /* Look up row index of a message in the model.
        Return -1 if not found.
      */
@@ -129,8 +169,8 @@ private:
 public slots:
 
     /* Check for new messages */
-    void newMessage(const SecMsgStored& smsgInbox);
-    void newOutboxMessage(const SecMsgStored& smsgOutbox);
+    void newMessage(const SecMsgStored& smsg);
+    void newOutboxMessage(const SecMsgStored& smsg);
 
     void walletUnlocked();
 
@@ -223,8 +263,8 @@ public:
         SentDateTime = 1, /**< Time Sent */
         ReceivedDateTime = 2, /**< Time Received */
         Label = 3,   /**< User specified label */
-        ToAddress = 4, /**< To Bitcoin address */
-        FromAddress = 5, /**< From Bitcoin address */
+        ToAddress = 4, /**< To Bitcredit address */
+        FromAddress = 5, /**< From Bitcredit address */
         InvoiceNumber = 6, /**< Plaintext */
         DueDate = 7, /**< Plaintext */
         //SubTotal = 8,           /**< SubTotal */
@@ -263,7 +303,7 @@ public:
                     QString InvoiceNumber);
 
     void newInvoiceItem();
-    void newReceipt(QString InvoiceNumber, qint64 ReceiptAmount);
+    void newReceipt(QString InvoiceNumber, CAmount ReceiptAmount);
     //void setData(const int row, const int col, const QVariant & value);
 
     QString getInvoiceJSON(const int row);
@@ -375,8 +415,8 @@ public:
         SentDateTime = 1, /**< Time Sent */
         ReceivedDateTime = 2, /**< Time Received */
         Label = 3,   /**< User specified label */
-        ToAddress = 4, /**< To Bitcoin address */
-        FromAddress = 5, /**< From Bitcoin address */
+        ToAddress = 4, /**< To Bitcredit address */
+        FromAddress = 5, /**< From Bitcredit address */
         InvoiceNumber = 6, /**< Plaintext */
         Amount = 7, /**< qint64 */
         Outstanding = 8, /**< qint64 */

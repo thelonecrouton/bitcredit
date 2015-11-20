@@ -192,7 +192,7 @@ void InvoicePage::on_receiptButton_clicked()
 
     model->newReceipt(model->data(model->index(origIndex.row(), model->InvoiceNumber,  QModelIndex()), Qt::DisplayRole).toString(), amount);
 
-    SendMessagesDialog dlg(SendMessagesDialog::Encrypted, SendMessagesDialog::Dialog, this);
+    SendMessagesDialog dlg(this);
 
     dlg.setModel(model->getMessageModel());
 
@@ -215,7 +215,7 @@ void InvoicePage::on_replyButton_clicked()
     if(indexes.isEmpty())
         return;
 
-    SendMessagesDialog dlg(SendMessagesDialog::Encrypted, SendMessagesDialog::Dialog, this);
+    SendMessagesDialog dlg(this);
 
     dlg.setModel(model->getMessageModel());
     QModelIndex origIndex = proxyModel->mapToSource(indexes.at(0));
