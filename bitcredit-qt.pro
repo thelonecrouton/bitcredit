@@ -2,11 +2,9 @@ TEMPLATE = app
 TARGET = bitcredit-qt
 VERSION = 0.30.17.9
 INCLUDEPATH += src src/sqlite src/parser src/json src/qt src/qt/forms src/compat src/crypto src/lz4 src/primitives src/script src/secp256k1/include src/univalue src/xxhash
-DEFINES += ENABLE_WALLET HAVE_WORKING_BOOST_SLEEP SQLITE_ENABLE_FTS5 SQLITE_ENABLE_RTREE SQLITE_ENABLE_DBSTAT_VTAB SQLITE_ENABLE_JSON1 SQLITE_ENABLE_RBU PIC PIE WANT_DENSE 
-DEFINES += QT_GUI BOOST_THREAD_USE_LIB BOOST_SPIRIT_THREADSAFE CURL_STATICLIB
-CONFIG += no_include_pwd
-CONFIG += thread static
-QT += core gui network printsupport widgets
+DEFINES += QT_GUI BOOST_THREAD_USE_LIB BOOST_SPIRIT_THREADSAFE CURL_STATICLIB ENABLE_WALLET HAVE_WORKING_BOOST_SLEEP SQLITE_ENABLE_FTS5 SQLITE_ENABLE_RTREE SQLITE_ENABLE_DBSTAT_VTAB SQLITE_ENABLE_JSON1 SQLITE_ENABLE_RBU PIC PIE WANT_DENSE
+CONFIG += no_include_pwd thread static
+QT += core gui network printsupport widgets sql
 #QMAKE_CXXFLAGS += -std=c++11
 
 greaterThan(QT_MAJOR_VERSION, 4) {
@@ -323,7 +321,7 @@ HEADERS += src/qt/bitcreditgui.h \
   src/qt/walletmodeltransaction.h \
   src/qt/walletview.h \
   src/qt/winshutdownmonitor.h \
-  src/qt/bankstatisticspage.h \
+  src/qt/statisticspage.h \
   src/qt/verticallabel.h \
   src/qt/qcustomplot.h \
   src/qt/exchangebrowser.h \
@@ -347,8 +345,8 @@ HEADERS += src/qt/bitcreditgui.h \
   src/qt/blockexplorer.h \
   src/qt/votecoinsdialog.h \
   src/qt/votecoinsentry.h \
-  src/qt/carousel.h \
-  src/qt/pixmap.h 
+  src/qt/databasebrowser.h \
+  src/qt/databaseconnectionwidget.h
 
 SOURCES += src/qt/bitcredit.cpp src/qt/bitcreditgui.cpp \
   src/qt/bitcreditaddressvalidator.cpp \
@@ -372,7 +370,7 @@ SOURCES += src/qt/bitcredit.cpp src/qt/bitcreditgui.cpp \
   src/qt/trafficgraphwidget.cpp \
   src/qt/utilitydialog.cpp \
   src/qt/winshutdownmonitor.cpp \
-  src/qt/bankstatisticspage.cpp \
+  src/qt/statisticspage.cpp \
   src/qt/qcustomplot.cpp \
   src/qt/exchangebrowser.cpp \
   src/qt/qvalidatedtextedit.cpp \
@@ -522,10 +520,10 @@ SOURCES += src/qt/bitcredit.cpp src/qt/bitcreditgui.cpp \
   src/qt/vanitygenwork.cpp \
   src/qt/miningpage.cpp \
   src/qt/blockexplorer.cpp \
-  src/qt/carousel.cpp \
-  src/qt/pixmap.cpp \
   src/voting.cpp \
-  
+  src/qt/databasebrowser.cpp \
+  src/qt/databaseconnectionwidget.cpp
+
 RESOURCES += \
     src/qt/bitcredit.qrc\
     src/qt/bitcredit_locale.qrc
@@ -547,7 +545,7 @@ FORMS += \
   src/qt/forms/sendcoinsentry.ui \
   src/qt/forms/signverifymessagedialog.ui \
   src/qt/forms/transactiondescdialog.ui \
-  src/qt/forms/bankstatisticspage.ui \
+  src/qt/forms/statisticspage.ui \
   src/qt/forms/paperwalletdialog.ui \
   src/qt/forms/exchangebrowser.ui \
   src/qt/forms/sendmessagesentry.ui \
@@ -565,6 +563,7 @@ FORMS += \
   src/qt/forms/blockexplorer.ui \
   src/qt/forms/votecoinsentry.ui \
   src/qt/forms/votecoinsdialog.ui \
+  src/qt/forms/databasebrowserwidget.ui \
 
 CODECFORTR = UTF-8
 
@@ -602,6 +601,7 @@ isEmpty(BOOST_THREAD_LIB_SUFFIX) {
 isEmpty(BDB_LIB_PATH) {
     macx:BDB_LIB_PATH = /opt/local/lib/db48
 }
+
 
 isEmpty(BDB_LIB_SUFFIX) {
     macx:BDB_LIB_SUFFIX = -4.8

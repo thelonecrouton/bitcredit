@@ -1,5 +1,5 @@
-#ifndef BANKSTATISTICSPAGE_H
-#define BANKSTATISTICSPAGE_H
+#ifndef STATISTICSPAGE_H
+#define STATISTICSPAGE_H
 
 #include "clientmodel.h"
 #include "main.h"
@@ -20,17 +20,17 @@
 class Stats;
 
 namespace Ui {
-class BankStatisticsPage;
+class StatisticsPage;
 }
 class ClientModel;
 
-class BankStatisticsPage : public QWidget
+class StatisticsPage : public QWidget
 {
     Q_OBJECT
 
 public:
-    explicit BankStatisticsPage(QWidget *parent = 0);
-    ~BankStatisticsPage();
+    explicit StatisticsPage(QWidget *parent = 0);
+    ~StatisticsPage();
     
     void setModel(ClientModel *model);
     double trustr;
@@ -38,7 +38,7 @@ public:
     double avecreditscore;
     double bestcreditscore, mintrust, btcassets, gbltrust, besttrust, netinterestrate, 
      trust, inflationindex, consensusindex, globaldebt;
-    int64_t  grantsaverage, gblmoneysupply, grantstotal, bankreserve, gblavailablecredit;
+    int64_t  grantsaverage, gblmoneysupply, grantstotal, gblavailablecredit;
     int totalnumtxPrevious;
     QString bankstatus;
     int64_t marketcap;
@@ -46,14 +46,14 @@ public:
 public slots:
 
     void updateStatistics();
-    void updatePrevious(double,double,double,double,double,double,double,double,double,double,int,int64_t,double,int64_t,double,int64_t,int64_t,double,QString,double );
+    void updatePrevious(double,double,double,double,double,double,double,double,double,double,int,int64_t,double,int64_t,double,int64_t,double,QString,double );
 
 private slots:
 
 private:
-    Ui::BankStatisticsPage *ui;
+    Ui::StatisticsPage *ui;
     ClientModel *model;
     
 };
 
-#endif // BANKSTATISTICSPAGE_H
+#endif // STATISTICSPAGE_H

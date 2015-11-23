@@ -101,6 +101,7 @@ private:
     QWidget *wId;
     QWidget *wId3;
     QWidget *wId4;
+    QWidget *wId5;
     QMenuBar *appMenuBar;
     QAction *exchangeAction;
     QAction *overviewAction;
@@ -138,6 +139,7 @@ private:
     QAction *bidAction;
     QAction *vanityAction;
     QAction *miningAction;
+    QAction *dataAction;
 
     QSystemTrayIcon *trayIcon;
     QMenu *trayIconMenu;
@@ -220,7 +222,7 @@ private slots:
     /** Switch to send coins page */
     void gotoSendCoinsPage(QString addr = "");
 	/** Switch to blockexplorer */
-    void gotoBankStatisticsPage();
+    void gotoStatisticsPage();
     void gotoSendMessagesPage();
     /** Switch to send anonymous messages page */
     /** Switch to view messages page */
@@ -233,6 +235,7 @@ private slots:
     void gotoMiningPage();
     void gotoVanityGenPage();
     void gotoBlockExplorerPage();
+    void gotoDatabasePage();
     /** Switch to vote page */
     void gotoVoteCoinsPage(QString addr = "");
     /** Show Sign/Verify Message dialog and switch to sign message tab */

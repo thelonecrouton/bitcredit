@@ -39,12 +39,12 @@ std::string replacestring(std::string subject, const std::string& search,
     return subject;
 }
 
-double Bidtracker::getbalance(std::string url, double balance)
+double Bidtracker::getbalance(string url)
 {
     const char * c = url.c_str();
 
       std::string readBuffer;
-
+      CAmount balance;
       curl = curl_easy_init();
       if(curl) {
         curl_easy_setopt(curl, CURLOPT_URL, c);
@@ -76,7 +76,6 @@ void Bidtracker::btcsortunspent(){
 			string temp = line;
 			std::string search;
 			std::string search2;
-			std::string search3;
 			size_t pos;
 			size_t f = line.find("			tx_hash_big_endian:");
 			size_t g = line.find("			value:");

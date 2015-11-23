@@ -17,7 +17,10 @@
 #include <QStringList>
 #include <QTextStream>
 #include <QRadioButton>
-
+#include <QMessageBox>
+#include <QSpinBox>
+#include <QComboBox>
+#include <QCheckBox>
 
 class OptionsModel;
 class QValidatedLineEdit;
@@ -41,6 +44,14 @@ public:
 
     void setModel(OptionsModel *model);
     void setMapper();
+
+    QString driverName() const;
+    QString databaseName() const;
+    QString userName() const;
+    QString password() const;
+    QString hostName() const;
+    int port() const;
+    bool useDefaultDatabase();
 
 protected:
     bool eventFilter(QObject *object, QEvent *event);
@@ -100,7 +111,6 @@ private:
     QString data;
     QString tempfile;
     QString tempstring;
-    
     
 };
 

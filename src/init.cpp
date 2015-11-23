@@ -235,6 +235,11 @@ std::string HelpMessage(HelpMessageMode mode)
     strUsage += "  -conf=<file>           " + strprintf(_("Specify configuration file (default: %s)"), "bitcredit.conf") + "\n";
     strUsage += "  -noexchange=<anything> " + _("Disable exchangebrowser") + "\n";
     strUsage += "  -theme=<path>          " + _("Load stylesheet from specified path") + "\n";
+    strUsage += "  -dbname=<path>          " + _("Database name") + "\n";
+    strUsage += "  -dbuser=<path>          " + _("Database user") + "\n";
+    strUsage += "  -dbport=<path>          " + _("Database port") + "\n";
+    strUsage += "  -dbpass=<path>          " + _("Database password") + "\n";
+    strUsage += "  -dbhost=<path>          " + _("Database host") + "\n";
     if (mode == HMM_BITCREDITD)
     {
 #if !defined(WIN32)
@@ -1100,6 +1105,30 @@ bool AppInit2(boost::thread_group& threadGroup)
         }
     }
 
+    if (mapArgs.count("-dbuser"))
+    {
+        dbuser = mapArgs["-dbuser"].c_str();
+
+    }
+
+    if (mapArgs.count("-dbname"))
+    {
+        dbname = mapArgs["-dbname"].c_str();
+
+    }
+
+    if (mapArgs.count("-dbpass"))
+    {
+        dbpass = mapArgs["-dbpass"].c_str();
+
+    }
+
+    if (mapArgs.count("-dbport"))
+    {
+        dbport = mapArgs["-dbport"].c_str();
+
+    }
+
     // ********************************************************* Step 7: load block chain
     boost::filesystem::path rawdata = GetDataDir() / "ratings", biddir = GetDataDir() / "bidtracker", trustdb = GetDataDir() / "ratings/rawdata.db";
 
@@ -1108,12 +1137,6 @@ bool AppInit2(boost::thread_group& threadGroup)
 
         if (boost::filesystem::create_directory(rawdata))
             if(fDebug)LogPrintf("Data dir....Successfully Created !\n");
-	TrustEngine db;
-	db.createdb();
-    }
-
-    if(!(boost::filesystem::exists(trustdb))){
-
 	TrustEngine db;
 	db.createdb();
     }
@@ -1128,13 +1151,10 @@ bool AppInit2(boost::thread_group& threadGroup)
     fReindex = GetBoolArg("-reindex", false);
 	if (fReindex){
 		remove((GetDataDir() /"ratings/grantdb.dat").string().c_str());
-		remove((GetDataDir() /"ratings/miners.dat").string().c_str());
+		remove((GetDataDir() /"ratings/minedblocks.dat").string().c_str());
 		remove((GetDataDir() /"ratings/balances.dat").string().c_str());
-		remove((GetDataDir() / "ratings/txincount.dat" ).string().c_str());
-		remove((GetDataDir() / "ratings/txoutcount.dat" ).string().c_str());
-		remove((GetDataDir() / "ratings/totalin.dat" ).string().c_str());
-		remove((GetDataDir() / "ratings/totalout.dat" ).string().c_str());
-		remove((GetDataDir() / "ratings/firstseen.dat" ).string().c_str());
+		remove((GetDataDir() / "ratings/rawdata.dat" ).string().c_str());
+
 	}
 
     // Upgrading to 0.8; hard-link the old blknnnn.dat files into /blocks/

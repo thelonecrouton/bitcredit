@@ -305,54 +305,63 @@ border: 1px solid #45f806;
 QMainWindow QToolBar#toolbar9 QToolButton
 {
 background-image:url(:/icons/markettr);
+background-size: 100px 35px;
 border: 1px solid #b1b1b1;
 }
 
 QMainWindow QToolBar#toolbar9 QToolButton:checked 
 {
 background-image:url(:/icons/marketselected);
+background-size: 100px 35px;
 border: 2px solid #45f806;
 }  
 
 QMainWindow QToolBar#toolbar9 QToolButton:hover 
 {
 background-image:url(:/icons/markettr);
+background-size: 100px 35px;
 border: 1px solid #45f806;
 }
 
 QMainWindow QToolBar#toolbar10 QToolButton
 {
 background-image:url(:/icons/blockexplorertr);
+background-size: 100px 35px;
 border: 1px solid #b1b1b1;
 }
 
 QMainWindow QToolBar#toolbar10 QToolButton:checked 
 {
 background-image:url(:/icons/blockexplorerselected);
+background-size: 100px 35px;
 border: 2px solid #45f806;
 }  
 
 QMainWindow QToolBar#toolbar10 QToolButton:hover 
 {
 background-image:url(:/icons/blockexplorertr);
+background-size: 100px 35px;
 border: 1px solid #45f806;
 }
 
 QMainWindow QToolBar#toolbar11 QToolButton
 {
 background-image:url(:/icons/bankstatstr);
+background-size: 100px 35px;
 border: 1px solid #b1b1b1;
 }
 
 QMainWindow QToolBar#toolbar11 QToolButton:checked 
 {
 background-image:url(:/icons/bankstatsselected);
+background-size: 100px 35px;
 border: 2px solid #45f806;
 }  
 
 QMainWindow QToolBar#toolbar11 QToolButton:hover 
 {
 background-image:url(:/icons/bankstatstr);
+background-size: 100px 35px;
 border: 1px solid #45f806;
 }
 

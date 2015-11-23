@@ -637,6 +637,7 @@ int main(int argc, char *argv[])
         PrintExceptionContinue(NULL, "Runaway exception");
         app.handleRunawayException(QString::fromStdString(strMiscWarning));
     }
+
     return app.getReturnValue();
 }
 #endif // BITCREDIT_QT_TEST

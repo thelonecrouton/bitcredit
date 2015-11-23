@@ -72,8 +72,6 @@ bool fAddrIndex = false;
 bool fIsBareMultisigStd = true;
 unsigned int nCoinCacheSize = 5000;
 
-int64_t nAdvertisedBalance = 0;
-
 /** Fees smaller than this (in satoshi) are considered zero fee (for relaying and mining) */
 CFeeRate minRelayTxFee = CFeeRate(1000);
 
@@ -2132,7 +2130,7 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
 
 		addrvalit = addressvalue.find(newAddressString);
 		if(addrvalit != addressvalue.end()){
-			if (!(addrvalit->second > 50000*COIN))
+			if (!(addrvalit->second >= 50000*COIN))
 				return state.DoS(100, error("ConnectBlock(): banknode miningkey invalid"), REJECT_INVALID, "invalid-bnminingkey");
 		}
 	}
@@ -2475,18 +2473,31 @@ bool static ConnectTip(CValidationState &state, CBlockIndex *pindexNew, CBlock *
 	char *zErrMsg = 0;
 	int rc;
 
+    boost::filesystem::path trustdb = (GetDataDir() / "ratings/rawdata.db").string().c_str();
+    if(!(boost::filesystem::exists(trustdb))){
+
+	TrustEngine db;
+	db.createdb();
+    }
+		
     std::map<std::string,int64_t>::iterator addrvalit;
 	std::map<std::string,int64_t> addressvalue = getbalances();
     BOOST_FOREACH(const CTransaction& tx, pblock->vtx){
-		for (unsigned int j = 0; j < tx.vout.size();j++){
+	
+	sqlite3_open((GetDataDir() / "ratings/rawdata.db").string().c_str(), &rawdb);
+    char * insertquery = sqlite3_mprintf("insert into BLOCKS (ID, HASH, MINER) values (%ld,'%q','%q')",chainActive.Tip()->nHeight, pblock->GetHash().ToString().c_str(), miner.c_str());
+	rc = sqlite3_exec(rawdb, insertquery, callback, 0, &zErrMsg);
+	
+        for (unsigned int j = 0; j < tx.vout.size();j++){
 			CTxDestination address;
 			ExtractDestination(tx.vout[j].scriptPubKey, address);
 			string receiveAddress = CBitcreditAddress( address ).ToString().c_str();
 			int64_t theAmount = tx.vout[ j ].nValue;
 			addressvalue[receiveAddress] = addressvalue[receiveAddress] + theAmount;
-
-		if(fBankNode) {
-			sqlite3_open((GetDataDir() / "ratings/rawdata.db").string().c_str(), &rawdb);
+		
+            char * insertquery2 = sqlite3_mprintf("insert into OUTPUTS ( TXID, DADDR, VALUE, OFFSET )" \
+             "values ('%q','%q',%ld,%ld)",tx.GetHash().ToString().c_str(), receiveAddress.c_str(), theAmount,  j);
+            rc = sqlite3_exec(rawdb, insertquery2, callback, 0, &zErrMsg);
 
             char *sql ="select * from RAWDATA where ADDRESS = ?";
 
@@ -2505,37 +2516,27 @@ bool static ConnectTip(CValidationState &state, CBlockIndex *pindexNew, CBlock *
 				rc = sqlite3_exec(rawdb, updatequery, callback, 0, &zErrMsg);
 
 				if( rc != SQLITE_OK ){
-					LogPrintf("SQL update output error: %s\n", zErrMsg);
+					if (fDebug)LogPrintf("SQL update output error: %s\n", zErrMsg);
 					sqlite3_free(zErrMsg);
 				}else{
-					LogPrintf( "update created successfully\n");
+					if (fDebug)LogPrintf( "update created successfully\n");
 				}
-				if(sqlite3_close(rawdb) != SQLITE_OK ){
-					LogPrintf("SQL unable to close database %s\n", sqlite3_errmsg(rawdb));
-					sqlite3_free(zErrMsg);
-				}else{
-					LogPrintf( "database closed successfully\n");
-				}
+
 			}else{
-                char * insertquery = sqlite3_mprintf("insert into RAWDATA (ADDRESS, BALANCE, FIRSTSEEN, TXOUTCOUNT, TOTALOUT) values ('%q',%ld,%ld,%ld,%ld)",receiveAddress.c_str(), theAmount, block.nTime, 1, theAmount );
+                char * insertquery = sqlite3_mprintf("insert into RAWDATA (ADDRESS, BALANCE, FIRSTSEEN, TXOUTCOUNT, TOTALOUT) values ('%q',%ld,%ld,%ld,%ld)",receiveAddress.c_str(), theAmount, pblock->nTime, 1, theAmount );
 				rc = sqlite3_exec(rawdb, insertquery, callback, 0, &zErrMsg);
 
 				if( rc != SQLITE_OK ){
-					LogPrintf("SQL insert error: %s\n", zErrMsg);
+					if (fDebug)LogPrintf("SQL insert error: %s\n", zErrMsg);
 					sqlite3_free(zErrMsg);
 				}
 				else{
-                    LogPrintf( "insert created successfully\n");
+                    if (fDebug)LogPrintf( "insert created successfully\n");
 				}
 				sqlite3_finalize(stmt);
-				if(sqlite3_close(rawdb) != SQLITE_OK ){
-					LogPrintf("SQL unable to close database %s\n", sqlite3_errmsg(rawdb));
-					sqlite3_free(zErrMsg);
-				}else{
-					LogPrintf( "database closed successfully\n");
-				}
+
 			}
-		}
+		
 		}
 
         for (size_t i = 0; i < tx.vin.size(); i++){
@@ -2571,9 +2572,10 @@ bool static ConnectTip(CValidationState &state, CBlockIndex *pindexNew, CBlock *
                     spendAddress = CBitcreditAddress(addressRet).ToString().c_str();
 					theAmount =  txOut.nValue;
 					addressvalue[spendAddress] = addressvalue[spendAddress] - theAmount;
-				
-				if(fBankNode) {
-					sqlite3_open((GetDataDir() / "ratings/rawdata.db").string().c_str(), &rawdb);
+
+					char * insertquery2 = sqlite3_mprintf("insert into INPUTS (TXID, SRCADD, VALUE,  OFFSET )" \
+                    "values ('%q','%q',%ld,%ld)",tx.GetHash().ToString().c_str(), spendAddress.c_str(), theAmount,  i);
+					rc = sqlite3_exec(rawdb, insertquery2, callback, 0, &zErrMsg);
 
 					const char *updatequery ="select * from RAWDATA where ADDRESS = ?";
 
@@ -2592,23 +2594,23 @@ bool static ConnectTip(CValidationState &state, CBlockIndex *pindexNew, CBlock *
 						rc = sqlite3_exec(rawdb, updatequery, callback, 0, &zErrMsg);
 
 						if( rc != SQLITE_OK ){
-							LogPrintf("SQL update output error: %s\n", zErrMsg);
+							if (fDebug)LogPrintf("SQL update output error: %s\n", zErrMsg);
 							sqlite3_free(zErrMsg);
 						}else{
-							LogPrintf( "update created successfully\n");
-						}
-
-						if(sqlite3_close(rawdb) != SQLITE_OK ){
-							LogPrintf("SQL unable to close database %s\n", sqlite3_errmsg(rawdb));
-							sqlite3_free(zErrMsg);
-						}else{
-							LogPrintf( "database closed successfully\n");
+							if (fDebug)LogPrintf( "update created successfully\n");
 						}
 					}
-				}
+				
                 }
             }
         }
+	if(sqlite3_close(rawdb) != SQLITE_OK ){
+		if (fDebug)LogPrintf("SQL unable to close database %s\n", sqlite3_errmsg(rawdb));
+		sqlite3_free(zErrMsg);
+	}else{
+		if (fDebug)LogPrintf( "database closed successfully\n");
+		}
+
     }
 		ofstream addrdb;
 		addrdb.open ((GetDataDir() / "ratings/balances.dat" ).string().c_str(), std::ofstream::trunc);

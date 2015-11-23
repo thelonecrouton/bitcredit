@@ -14,7 +14,7 @@ class SendCoinsRecipient;
 class WalletModel;
 class WalletView;
 class BlockExplorer;
-class BankStatisticsPage;
+class StatisticsPage;
 
 QT_BEGIN_NAMESPACE
 class QStackedWidget;
@@ -66,7 +66,8 @@ public slots:
     void gotoSignMessageTab(QString addr = "");
     /** Show Sign/Verify Message dialog and switch to verify message tab */
     void gotoVerifyMessageTab(QString addr = "");
-	void gotoBankStatisticsPage();
+	void gotoStatisticsPage();
+	void gotoDatabasePage();
 	void gotoSendMessagesPage();
     /** Switch to send anonymous messages page */
     /** Switch to view messages page */

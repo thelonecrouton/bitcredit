@@ -109,7 +109,11 @@ bool fSucessfullyLoaded = false;
 bool fEnableDarksend = false;
 /** All denominations used by darksend */
 std::vector<int64_t> darkSendDenominations;
-
+int64_t nAdvertisedBalance = 0;
+string dbuser = "";
+string dbname = "";
+string dbport = "";
+string dbpass = "";
 map<string, string> mapArgs;
 map<string, vector<string> > mapMultiArgs;
 bool fDebug = false;

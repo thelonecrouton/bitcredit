@@ -1,7 +1,7 @@
-#include "bankstatisticspage.h"
+#include "statisticspage.h"
 #include "bidtracker.h"
 #include "banknodeman.h"
-#include "ui_bankstatisticspage.h"
+#include "ui_statisticspage.h"
 #include "main.h"
 #include "wallet.h"
 #include "init.h"
@@ -15,9 +15,9 @@
 
 using namespace json_spirit;
 
-BankStatisticsPage::BankStatisticsPage(QWidget *parent) :
+StatisticsPage::StatisticsPage(QWidget *parent) :
     QWidget(parent),
-    ui(new Ui::BankStatisticsPage)
+    ui(new Ui::StatisticsPage)
 {
     ui->setupUi(this);
 
@@ -32,51 +32,48 @@ int64_t  gblmoneysupplyPrevious = -1,  gblavailablecreditPrevious = -1, bankrese
 QString bankstatusPrevious = "Inactive" , bankstatusCritical = "Critical", bankstatusLow = "Low", bankstatusSafe = "Safe", bankstatusGood = "Healthy", bankstatusGreat = "Golden", networkstatus = "Out of Sync";
 QString phase = "";
 
-void BankStatisticsPage::updateStatistics()
+void StatisticsPage::updateStatistics()
 {
-
 	Bidtracker r;
+    CCoinsStats stats;
     double mincreditscore =  0.0;
     double avecreditscore = 0.0;
     double mintrust = 0.0;
-    double btcassets = r.getbalance("https://blockchain.info/q/addressbalance/1Ak7eVm9ToQ7oVZMx9wogLRugw96Y73FM2",0);
-    double bcrassets = r.getbalance("http://chainz.cryptoid.info/bcr/api.dws?q=getbalance&a=5qH4yHaaaRuX1qKCZdUHXNJdesssNQcUct",0);
-    double fiatassets = 0.0;
-    double netinterestrate = 00.0;
-    double trust = 0.0;
-    double assetstotal = 0.0;
-    int nHeight = (chainActive.Tip()->nHeight);
-    int64_t totalnumtx = 0;
+    double btcassets = r.getbalance("https://blockchain.info/q/addressbalance/16bi8R4FoDHfjNJ1RhpvcAEn4Cz78FbtZB")/COIN;
+    double bcrassets = r.getbalance("http://chainz.cryptoid.info/bcr/api.dws?q=getbalance&a=5qH4yHaaaRuX1qKCZdUHXNJdesssNQcUct");
     double bcrprice = r.bcrbtc();
     double btcprice = r.usdbtc();
-    double gblmoneysupply = 0;
+    double netinterestrate = 0.0;
+    double assetstotal = btcassets + bcrassets*bcrprice;
+    double fiatassets = assetstotal*btcprice;
+    int nHeight = (chainActive.Tip()->nHeight);
+    int64_t totalnumtx = 0;
+    double gblmoneysupply = stats.nTotalAmount/COIN ;
     double marketcap =  assetstotal - ((bcrprice*0) *btcprice);
-    double btcstash = 0;
-    int64_t bankreserve = btcassets;
-    double gblavailablecredit = 0;
+    double gblavailablecredit = (gblmoneysupply - bcrassets )- mnodeman.size()*50000;
     double grossmarketcap =  (gblmoneysupply * bcrprice) * btcprice;
     double inflationindex = (45000/gblmoneysupply) *100;
     double liquidityindex = ((gblmoneysupply * bcrprice)*btcprice)/ assetstotal;
 	double globaldebt =  grossmarketcap - marketcap;
 
 	
-    if(btcstash > 0 && btcstash< 100)
+    if(btcassets > 0 && btcassets< 100)
     {
         ui->bankstatus->setText("<font color=\"red\">" + bankstatusCritical + "</font>");
     }
-    else if (btcstash > 99 && btcstash< 1000)
+    else if (btcassets > 99 && btcassets< 1000)
     {
         ui->bankstatus->setText("<font color=\"orange\">" + bankstatusLow + "</font>");
     }
-    else if (btcstash > 999 && btcstash< 10000)
+    else if (btcassets > 999 && btcassets< 10000)
     {
         ui->bankstatus->setText("<font color=\"green\">" + bankstatusSafe + "</font>");
     }
-    else if (btcstash > 9999 && btcstash< 20000)
+    else if (btcassets > 9999 && btcassets< 20000)
     {
         ui->bankstatus->setText("<font color=\"blue\">" + bankstatusGood + "</font>");
     }
-    else if (btcstash > 19999)
+    else if (btcassets > 19999)
     {
         ui->bankstatus->setText("<font color=\"black\">" + bankstatusGreat + "</font>");
     }
@@ -285,10 +282,10 @@ void BankStatisticsPage::updateStatistics()
     ui->globaldebt->setText("$" + nglobaldebt);
     }
 
-    updatePrevious(mincreditscore , avecreditscore, mintrust, btcassets, bcrassets, fiatassets, netinterestrate, trust, inflationindex, consensusindex, nHeight, totalnumtx , marketcap ,  gblmoneysupply , assetstotal, bankreserve, gblavailablecredit, globaldebt, bankstatus, bidsPrevious);
+    updatePrevious(mincreditscore , avecreditscore, mintrust, btcassets, bcrassets, fiatassets, netinterestrate, trust, inflationindex, consensusindex, nHeight, totalnumtx , marketcap ,  gblmoneysupply , assetstotal, gblavailablecredit, globaldebt, bankstatus, bidsPrevious);
 }
 
-void BankStatisticsPage::updatePrevious(double mincreditscore , double  avecreditscore, double  mintrust, double  btcassets, double  bcrassets, double  fiatassets,double  netinterestrate,double  trust,double  inflationindex,double liquidityindex,int  nHeight,int64_t  totalnumtx ,double marketcap ,int64_t  gblmoneysupply ,double  assetstotal,int64_t  bankreserve,int64_t  gblavailablecredit,double  globaldebt, QString bankstatus, double bids)
+void StatisticsPage::updatePrevious(double mincreditscore , double  avecreditscore, double  mintrust, double  btcassets, double  bcrassets, double  fiatassets,double  netinterestrate,double  trust,double  inflationindex,double liquidityindex,int  nHeight,int64_t  totalnumtx ,double marketcap ,int64_t  gblmoneysupply ,double  assetstotal,int64_t  gblavailablecredit,double  globaldebt, QString bankstatus, double bids)
 {
     mincreditscorePrevious = mincreditscore;
     avecreditscorePrevious = avecreditscore;
@@ -304,20 +301,19 @@ void BankStatisticsPage::updatePrevious(double mincreditscore , double  avecredi
     gblmoneysupplyPrevious = gblmoneysupply;
     totalnumtxPrevious = totalnumtx;
     assetstotalPrevious = assetstotal;
-    bankreservePrevious = bankreserve;
     gblavailablecreditPrevious = gblavailablecredit;
     globaldebtPrevious = globaldebt;
     bidsPrevious= bids;
 }
 
-void BankStatisticsPage::setModel(ClientModel *model)
+void StatisticsPage::setModel(ClientModel *model)
 {
     updateStatistics();
     this->model = model;
 }
 
 
-BankStatisticsPage::~BankStatisticsPage()
+StatisticsPage::~StatisticsPage()
 {
     delete ui;
 }

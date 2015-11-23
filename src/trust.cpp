@@ -260,30 +260,45 @@ void TrustEngine::createdb()
          "CREDITSCORE            INTEGER     DEFAULT 0," \
          "RATING            INTEGER     DEFAULT 0);");
 
-  sql.push_back(  "CREATE TABLE INPUTADDR("  \
-         "ADDRESS TEXT PRIMARY KEY     NOT NULL," \
-         "RATING            INTEGER     DEFAULT 0);");
-
   sql.push_back(  "CREATE TABLE MINERS("  \
          "ADDRESS TEXT PRIMARY KEY     NOT NULL," \
-         "BLOCK           INTEGER    DEFAULT 0);");
+         "BLOCKCOUNT           INTEGER    DEFAULT 0);");
+
+  sql.push_back( "CREATE TABLE BLOCKS(" \
+            "    ID INTEGER PRIMARY KEY," \
+            "    HASH TEXT," \
+            "    MINER TEXT);");
+
+  sql.push_back( "CREATE TABLE OUTPUTS("
+            "    TXID TEXT PRIMARY KEY,n"
+            "    DADDR TEXT,"
+            "    VALUE INTEGER,"
+            "    OFFSET INTEGER"
+            ");");
+
+  sql.push_back(  "CREATE TABLE INPUTS("
+            "    TXID TEXT PRIMARY KEY,"
+            "    SRCADD TEXT,"
+            "    VALUE INTEGER,"
+            "    OFFSET INTEGER"
+            ");");
 
    /* Execute SQL statements */
 	for (unsigned int i =0;i < sql.size();i++){
 		rc = sqlite3_exec(rawdb, sql[i], callback, 0, &zErrMsg);
 		if( rc != SQLITE_OK ){
-			LogPrintf("SQL error: %s\n", zErrMsg);
+			if (fDebug)LogPrintf("SQL error: %s\n", zErrMsg);
 			sqlite3_free(zErrMsg);
 		}
 		else{
-			LogPrintf( "Table created successfully\n");
+			if (fDebug)LogPrintf( "Tables created successfully\n");
 		}
 	}
 
 	if(sqlite3_close(rawdb) != SQLITE_OK ){
-		LogPrintf("SQL unable to close database %s\n", sqlite3_errmsg(rawdb));
+		if (fDebug)LogPrintf("SQL unable to close database %s\n", sqlite3_errmsg(rawdb));
 		sqlite3_free(zErrMsg);
 	}else{
-		LogPrintf( "database closed successfully\n");
+		if (fDebug)LogPrintf( "database closed successfully\n");
 	}
 }

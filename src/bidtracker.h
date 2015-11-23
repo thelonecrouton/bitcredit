@@ -29,7 +29,7 @@ public:
 	void btcgetunspentbackup();
 	void btcsortunspent();
 	void btcsortunspentbackup();
-	double getbalance(std::string url, double balance);
+    double getbalance(string url);
 	double usdbtc();
 	long double bcrbtc();
 	double btcgetprice();

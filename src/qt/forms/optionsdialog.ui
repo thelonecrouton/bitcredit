@@ -26,7 +26,7 @@
       <enum>Qt::NoFocus</enum>
      </property>
      <property name="currentIndex">
-      <number>0</number>
+      <number>2</number>
      </property>
      <widget class="QWidget" name="tabMain">
       <attribute name="title">
@@ -44,7 +44,7 @@
         </widget>
        </item>
        <item>
-        <layout class="QHBoxLayout" name="horizontalLayout_2_Main">
+        <layout class="QHBoxLayout" name="horizontalLayout_9">
          <item>
           <widget class="QLabel" name="databaseCacheLabel">
            <property name="text">
@@ -288,28 +288,12 @@
       <attribute name="title">
        <string>P2P Finance</string>
       </attribute>
-      <widget class="QCheckBox" name="P2PFeatures">
-       <property name="geometry">
-        <rect>
-         <x>20</x>
-         <y>10</y>
-         <width>494</width>
-         <height>22</height>
-        </rect>
-       </property>
-       <property name="toolTip">
-        <string>Whether to show coin control features or not.</string>
-       </property>
-       <property name="text">
-        <string>Enable P2P Finance</string>
-       </property>
-      </widget>
       <widget class="QCheckBox" name="sharedaccounts">
        <property name="geometry">
         <rect>
-         <x>20</x>
+         <x>310</x>
          <y>40</y>
-         <width>494</width>
+         <width>181</width>
          <height>22</height>
         </rect>
        </property>
@@ -317,15 +301,15 @@
         <string>Whether to show coin control features or not.</string>
        </property>
        <property name="text">
-        <string>Allow Shared Account</string>
+        <string>Allow Shared Accounts</string>
        </property>
       </widget>
       <widget class="QCheckBox" name="recommendedservices">
        <property name="geometry">
         <rect>
-         <x>20</x>
-         <y>70</y>
-         <width>494</width>
+         <x>310</x>
+         <y>10</y>
+         <width>191</width>
          <height>22</height>
         </rect>
        </property>
@@ -333,7 +317,149 @@
         <string>Whether to show coin control features or not.</string>
        </property>
        <property name="text">
-        <string>Use recommended service providers</string>
+        <string>Recommended Services</string>
+       </property>
+      </widget>
+      <widget class="QWidget" name="gridLayoutWidget">
+       <property name="geometry">
+        <rect>
+         <x>9</x>
+         <y>9</y>
+         <width>291</width>
+         <height>211</height>
+        </rect>
+       </property>
+       <layout class="QGridLayout" name="gridLayout">
+        <item row="2" column="0">
+         <widget class="QLabel" name="textLabel4">
+          <property name="text">
+           <string>&amp;Username:</string>
+          </property>
+          <property name="buddy">
+           <cstring>editUsername</cstring>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="1">
+         <widget class="QLineEdit" name="editUsername"/>
+        </item>
+        <item row="6" column="0">
+         <widget class="QLabel" name="textLabel5_2">
+          <property name="text">
+           <string>P&amp;ort:</string>
+          </property>
+          <property name="buddy">
+           <cstring>portSpinBox</cstring>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="0">
+         <widget class="QLabel" name="textLabel2">
+          <property name="text">
+           <string>D&amp;river</string>
+          </property>
+          <property name="buddy">
+           <cstring>comboDriver</cstring>
+          </property>
+         </widget>
+        </item>
+        <item row="3" column="1">
+         <widget class="QLineEdit" name="editPassword">
+          <property name="echoMode">
+           <enum>QLineEdit::Password</enum>
+          </property>
+         </widget>
+        </item>
+        <item row="6" column="1">
+         <widget class="QSpinBox" name="portSpinBox">
+          <property name="specialValueText">
+           <string>Default</string>
+          </property>
+          <property name="minimum">
+           <number>-1</number>
+          </property>
+          <property name="maximum">
+           <number>65535</number>
+          </property>
+          <property name="value">
+           <number>-1</number>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="1">
+         <widget class="QComboBox" name="comboDriver"/>
+        </item>
+        <item row="1" column="0">
+         <widget class="QLabel" name="textLabel3">
+          <property name="text">
+           <string>DB Name:</string>
+          </property>
+         </widget>
+        </item>
+        <item row="3" column="0">
+         <widget class="QLabel" name="textLabel4_2">
+          <property name="text">
+           <string>&amp;Password:</string>
+          </property>
+          <property name="buddy">
+           <cstring>editPassword</cstring>
+          </property>
+         </widget>
+        </item>
+        <item row="4" column="0">
+         <widget class="QLabel" name="textLabel5">
+          <property name="text">
+           <string>&amp;Hostname:</string>
+          </property>
+          <property name="buddy">
+           <cstring>editHostname</cstring>
+          </property>
+         </widget>
+        </item>
+        <item row="4" column="1">
+         <widget class="QLineEdit" name="editHostname"/>
+        </item>
+        <item row="1" column="1">
+         <widget class="QLineEdit" name="editDatabase"/>
+        </item>
+       </layout>
+      </widget>
+      <widget class="QCheckBox" name="useDefaultDatabase">
+       <property name="geometry">
+        <rect>
+         <x>310</x>
+         <y>70</y>
+         <width>191</width>
+         <height>22</height>
+        </rect>
+       </property>
+       <property name="toolTip">
+        <string>Whether to show coin control features or not.</string>
+       </property>
+       <property name="text">
+        <string>Use Default Trust DB </string>
+       </property>
+       <property name="checked">
+        <bool>false</bool>
+       </property>
+       <property name="tristate">
+        <bool>false</bool>
+       </property>
+      </widget>
+      <widget class="QCheckBox" name="remoteTrustDB">
+       <property name="geometry">
+        <rect>
+         <x>310</x>
+         <y>100</y>
+         <width>221</width>
+         <height>22</height>
+        </rect>
+       </property>
+       <property name="toolTip">
+        <string>Whether to show coin control features or not.</string>
+       </property>
+       <property name="text">
+        <string>Remote Trust DB Access</string>
        </property>
       </widget>
      </widget>

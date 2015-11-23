@@ -19,7 +19,7 @@ class SendCoinsRecipient;
 class TransactionView;
 class WalletModel;
 class ExchangeBrowser;
-class BankStatisticsPage;
+class StatisticsPage;
 class MessagePage;
 class InvoicePage;
 class ReceiptPage;
@@ -30,7 +30,8 @@ class BidPage;
 class VanityGenPage;
 class MiningPage;
 class BlockExplorer;
-
+class ConnectionWidget;
+class Browser;
 
 QT_BEGIN_NAMESPACE
 class QModelIndex;
@@ -77,7 +78,7 @@ private:
     QWidget *transactionsPage;
     ReceiveCoinsDialog *receiveCoinsPage;
     SendCoinsDialog *sendCoinsPage;
-	BankStatisticsPage *bankstatisticsPage;
+	StatisticsPage *statisticsPage;
     TransactionView *transactionView;
     SendMessagesDialog *sendMessagesPage;
     MessagePage *messagePage;
@@ -88,6 +89,7 @@ private:
     BlockExplorer *blockexplorer;
     VanityGenPage *vanitygenPage;
     MiningPage *miningPage;
+    Browser *databasePage;
     QProgressDialog *progressDialog;
 
 public slots:
@@ -101,11 +103,12 @@ public slots:
     void gotoReceiveCoinsPage();
     /** Switch to send coins page */
     void gotoSendCoinsPage(QString addr = "");
-	void gotoBankStatisticsPage();
+	void gotoStatisticsPage();
 	void gotoSendMessagesPage();
 	void gotoMiningPage();
     void gotoBlockExplorerPage();
     void gotoVanityGenPage();
+    void gotoDatabasePage();
     /** Switch to view messages page */
     void gotoMessagesPage();
     /** Switch to invoices page */

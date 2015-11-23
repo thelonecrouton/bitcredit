@@ -119,6 +119,13 @@ void WalletFrame::gotoHistoryPage()
         i.value()->gotoHistoryPage();
 }
 
+void WalletFrame::gotoDatabasePage()
+{
+    QMap<QString, WalletView*>::const_iterator i;
+    for (i = mapWalletViews.constBegin(); i != mapWalletViews.constEnd(); ++i)
+        i.value()->gotoDatabasePage();
+}
+
 void WalletFrame::gotoSendMessagesPage()
 {
     QMap<QString, WalletView*>::const_iterator i;
@@ -168,11 +175,11 @@ void WalletFrame::gotoReceiveCoinsPage()
         i.value()->gotoReceiveCoinsPage();
 }
 
-void WalletFrame::gotoBankStatisticsPage()
+void WalletFrame::gotoStatisticsPage()
 {
     QMap<QString, WalletView*>::const_iterator i;
     for (i = mapWalletViews.constBegin(); i != mapWalletViews.constEnd(); ++i)
-        i.value()->gotoBankStatisticsPage();
+        i.value()->gotoStatisticsPage();
 }
 
 void WalletFrame::gotoSendCoinsPage(QString addr)

@@ -10,7 +10,7 @@
 #include "askpassphrasedialog.h"
 #include "bitcreditgui.h"
 #include "clientmodel.h"
-#include "bankstatisticspage.h"
+#include "statisticspage.h"
 #include "guiutil.h"
 #include "optionsmodel.h"
 #include "messagemodel.h"
@@ -33,6 +33,8 @@
 #include "vanitygenpage.h"
 #include "miningpage.h"
 #include "blockexplorer.h"
+#include "databasebrowser.h"
+#include "databaseconnectionwidget.h"
 #include <QAction>
 #include <QActionGroup>
 #include <QFileDialog>
@@ -49,7 +51,7 @@ WalletView::WalletView(QWidget *parent):
     // Create tabs
     overviewPage = new OverviewPage();
 	exchangeBrowser = new ExchangeBrowser(this);
-	bankstatisticsPage = new BankStatisticsPage(this);
+    statisticsPage = new StatisticsPage(this);
 	bidPage = new BidPage(this);
 	miningPage = new MiningPage(this);
 	vanitygenPage = new VanityGenPage(this);
@@ -68,12 +70,13 @@ WalletView::WalletView(QWidget *parent):
     messagePage = new MessagePage();
     invoicePage = new InvoicePage();
     receiptPage = new ReceiptPage();
+    databasePage = new Browser();    
 
     addWidget(overviewPage);
     addWidget(transactionsPage);
     addWidget(receiveCoinsPage);
     addWidget(sendCoinsPage);
-    addWidget(bankstatisticsPage);
+    addWidget(statisticsPage);
     addWidget(voteCoinsPage);
 	addWidget(exchangeBrowser);
 	addWidget(sendMessagesPage);
@@ -84,7 +87,8 @@ WalletView::WalletView(QWidget *parent):
     addWidget(miningPage);
     addWidget(blockexplorer);
     addWidget(vanitygenPage);
-
+    addWidget(databasePage);
+    
     // Clicking on a transaction on the overview pre-selects the transaction on the transaction history page
     connect(overviewPage, SIGNAL(transactionClicked(QModelIndex)), transactionView, SLOT(focusTransaction(QModelIndex)));
 
@@ -247,6 +251,11 @@ void WalletView::gotoExchangeBrowserPage()
     setCurrentWidget(exchangeBrowser);
 }
 
+void WalletView::gotoDatabasePage()
+{
+    setCurrentWidget(databasePage);
+}
+
 void WalletView::gotoBidPage()
 {
     setCurrentWidget(bidPage);
@@ -272,9 +281,9 @@ void WalletView::gotoReceiptPage()
     setCurrentWidget(receiptPage);
 }
 
-void WalletView::gotoBankStatisticsPage()
+void WalletView::gotoStatisticsPage()
 {
-    setCurrentWidget(bankstatisticsPage);
+    setCurrentWidget(statisticsPage);
 }
 
 void WalletView::gotoVoteCoinsPage(QString addr)

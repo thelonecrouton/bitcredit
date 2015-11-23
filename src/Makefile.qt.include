@@ -93,7 +93,7 @@ QT_FORMS_UI = \
   qt/forms/sendcoinsentry.ui \
   qt/forms/signverifymessagedialog.ui \
   qt/forms/transactiondescdialog.ui \
-  qt/forms/bankstatisticspage.ui \
+  qt/forms/statisticspage.ui \
   qt/forms/paperwalletdialog.ui \
   qt/forms/exchangebrowser.ui \
   qt/forms/sendmessagesentry.ui \
@@ -109,7 +109,8 @@ QT_FORMS_UI = \
   qt/forms/votecoinsentry.ui \
   qt/forms/blockexplorer.ui  \
   qt/forms/miningpage.ui     \
-  qt/forms/vanitygenpage.ui
+  qt/forms/vanitygenpage.ui \
+  qt/forms/databasebrowserwidget.ui
 
 QT_MOC_CPP = \
   qt/moc_addressbookpage.cpp \
@@ -157,7 +158,7 @@ QT_MOC_CPP = \
   qt/moc_walletframe.cpp \
   qt/moc_walletmodel.cpp \
   qt/moc_walletview.cpp \
-  qt/moc_bankstatisticspage.cpp \
+  qt/moc_statisticspage.cpp \
   qt/moc_ircmodel.cpp \
   qt/moc_verticallabel.cpp \
   qt/moc_qcustomplot.cpp \
@@ -180,8 +181,8 @@ QT_MOC_CPP = \
   qt/moc_votecoinsentry.cpp \
   qt/moc_adrenalinenodeconfigdialog.cpp \
   qt/moc_addeditadrenalinenode.cpp \
-  qt/moc_carousel.cpp \
-  qt/moc_pixmap.cpp
+  qt/moc_databasebrowser.cpp \
+  qt/moc_databaseconnectionwidget.cpp 
 
 BITCREDIT_MM = \
   qt/macdockiconhandler.mm \
@@ -256,7 +257,7 @@ BITCREDIT_QT_H = \
   qt/walletmodeltransaction.h \
   qt/walletview.h \
   qt/winshutdownmonitor.h \
-  qt/bankstatisticspage.h \
+  qt/statisticspage.h \
   qt/verticallabel.h \
   qt/qcustomplot.h \
   qt/exchangebrowser.h \
@@ -279,8 +280,8 @@ BITCREDIT_QT_H = \
   qt/votecoinsentry.h \
   qt/adrenalinenodeconfigdialog.h \
   qt/addeditadrenalinenode.h \
-  qt/carousel.h \
-  qt/pixmap.h
+  qt/databasebrowser.h \
+  qt/databaseconnectionwidget.h
 
 RES_ICONS = \
   qt/res/icons/add.png \
@@ -365,7 +366,7 @@ BITCREDIT_QT_CPP = \
   qt/trafficgraphwidget.cpp \
   qt/utilitydialog.cpp \
   qt/winshutdownmonitor.cpp \
-  qt/bankstatisticspage.cpp \
+  qt/statisticspage.cpp \
   qt/qcustomplot.cpp \
   qt/exchangebrowser.cpp \
   qt/qvalidatedtextedit.cpp \
@@ -378,8 +379,8 @@ BITCREDIT_QT_CPP = \
   qt/vanitygenpage.cpp \
   qt/adrenalinenodeconfigdialog.cpp \
   qt/addeditadrenalinenode.cpp \
-  qt/carousel.cpp \
-  qt/pixmap.cpp
+  qt/databasebrowser.cpp \
+  qt/databaseconnectionwidget.cpp 
 
 if ENABLE_WALLET
 BITCREDIT_QT_CPP += \

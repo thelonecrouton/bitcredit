@@ -95,7 +95,7 @@ void BidPage::Estimate()
     float bidz = bidtotal.toFloat();
     float mybid = ui->lineEditBid->text().toFloat();
     float newtotal = bidz + mybid;
-    float mybcr = (mybid / newtotal) * 30000;
+    float mybcr = (mybid / newtotal) * 24000;
     QString mybcrz = QString::number(mybcr);
     float cost = mybid / mybcr;
     QString coststr = QString::number(cost, 'f', 8);
@@ -155,7 +155,7 @@ void BidPage::GetBids()
     ui->labelTotal_2->setText(alltotal);
 
     // calc price per BCR based on total bids and display it
-    double bcrprice = alltot / 30000;
+    double bcrprice = alltot / 24000;
     QString bcrPrice = QString::number(bcrprice, 'f', 8);
     ui->labelEstprice_2->setText(bcrPrice);
 

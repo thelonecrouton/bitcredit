@@ -128,7 +128,7 @@ void OptionsModel::Init()
         addOverriddenOption("-proxy");
     else if(!settings.value("fUseProxy").toBool() && !GetArg("-proxy", "").empty())
         addOverriddenOption("-proxy");
-        
+
     if (!settings.contains("fUseSeparateProxyTor"))
         settings.setValue("fUseSeparateProxyTor", false);
     if (!settings.contains("addrSeparateProxyTor"))
@@ -136,6 +136,25 @@ void OptionsModel::Init()
     // Only try to set -onion, if user has enabled fUseSeparateProxyTor
     if (settings.value("fUseSeparateProxyTor").toBool() && !SoftSetArg("-onion", settings.value("addrSeparateProxyTor").toString().toStdString()))
         addOverriddenOption("-onion");
+
+	//P2P Finance
+    if (!settings.contains("dbname"))
+        settings.setValue("dbname", "rawdata.db");
+
+    if (!settings.contains("dbuser"))
+        settings.setValue("dbuser", "");
+
+    if (!settings.contains("dbpassword"))
+        settings.setValue("dbpassword", "");
+
+    if (!settings.contains("dbhost"))
+        settings.setValue("dbhost", "127.0.0.1");
+
+    if (!settings.contains("dbport"))
+        settings.setValue("dbport", "9020");
+
+    if (!settings.contains("dbdriver"))
+        settings.setValue("dbdriver", "QSQLITE");
 
     // Display
     if (!settings.contains("language"))
@@ -243,6 +262,18 @@ QVariant OptionsModel::data(const QModelIndex & index, int role) const
             return QVariant(nAnonymizeBitcreditAmount);
         case Listen:
             return settings.value("fListen");
+        case DriverName:
+			return settings.value("dbdriver");
+        case DatabaseName:
+			return settings.value("dbname");
+		case UserName:
+			return settings.value("dbuser");
+		case Password:
+			return settings.value("dbpassword");
+		case HostName:
+			return settings.value("dbhost");
+        case Port:
+			return settings.value("dbport");
         default:
             return QVariant();
         }
@@ -305,8 +336,8 @@ bool OptionsModel::setData(const QModelIndex & index, const QVariant & value, in
                 setRestartRequired(true);
             }
         }
-        break;    
-        
+        break;
+
         // separate Tor proxy
         case ProxyUseTor:
             if (settings.value("fUseSeparateProxyTor") != value) {
