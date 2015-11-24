@@ -75,6 +75,7 @@
 #include <QTimer>
 #include <QToolBar>
 #include <QVBoxLayout>
+#include <QStatusBar>
 
 #if QT_VERSION < 0x050000
 #include <QTextDocument>
@@ -261,6 +262,8 @@ BitcreditGUI::BitcreditGUI(const NetworkStyle *networkStyle, QWidget *parent) :
 
     // Create the toolbars
     createToolBars();
+    
+    statusBar()->hide();
 
     // Create system tray icon and notification
     createTrayIcon(networkStyle);

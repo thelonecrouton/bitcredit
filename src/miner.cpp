@@ -657,7 +657,7 @@ CBlockTemplate* CreateNewBlockWithKey()
 
 		if (std::find(last40blocks.begin(), last40blocks.end(), miningkeys[i]) != last40blocks.end())
 		{
-		LogPrintf("CreateNewBlockWithKey(): coinbase key %s detected in 40 block period\n",miningkeys[i]);
+		if(fDebug)LogPrintf("CreateNewBlockWithKey(): coinbase key %s detected in 40 block period\n",miningkeys[i]);
 		continue;
 		}
 

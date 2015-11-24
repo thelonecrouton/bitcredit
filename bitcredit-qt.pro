@@ -564,6 +564,7 @@ FORMS += \
   src/qt/forms/votecoinsentry.ui \
   src/qt/forms/votecoinsdialog.ui \
   src/qt/forms/databasebrowserwidget.ui \
+  src/qt/forms/requestloan.ui
 
 CODECFORTR = UTF-8
 

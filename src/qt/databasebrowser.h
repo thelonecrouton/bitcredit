@@ -32,33 +32,21 @@ public slots:
     void showTable(const QString &table);
     void showMetaData(const QString &table);
     void addConnection();
-    void currentChanged() { updateActions(); }
+    void currentChanged();
     void about();
 
-    void on_insertRowAction_triggered()
-    { insertRow(); }
-    void on_deleteRowAction_triggered()
-    { deleteRow(); }
+    void on_insertRowAction_triggered();
+    void on_deleteRowAction_triggered();
     void on_fieldStrategyAction_triggered();
     void on_rowStrategyAction_triggered();
     void on_manualStrategyAction_triggered();
     void on_submitAction_triggered();
     void on_revertAction_triggered();
     void on_selectAction_triggered();
-    void on_connectionWidget_tableActivated(const QString &table)
-    { showTable(table); }
-    void on_connectionWidget_metaDataRequested(const QString &table)
-    { showMetaData(table); }
-    void on_submitButton_clicked()
-    {
-        exec();
-        sqlEdit->setFocus();
-    }
-    void on_clearButton_clicked()
-    {
-        sqlEdit->clear();
-        sqlEdit->setFocus();
-    }
+    void on_connectionWidget_tableActivated(const QString &table);
+    void on_connectionWidget_metaDataRequested(const QString &table);
+    void on_submitButton_clicked();
+    void on_clearButton_clicked();
 
 signals:
     void statusMessage(const QString &message);

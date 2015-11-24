@@ -1132,21 +1132,16 @@ bool AppInit2(boost::thread_group& threadGroup)
     // ********************************************************* Step 7: load block chain
     boost::filesystem::path rawdata = GetDataDir() / "ratings", biddir = GetDataDir() / "bidtracker", trustdb = GetDataDir() / "ratings/rawdata.db";
 
-    if(!(boost::filesystem::exists(rawdata))){
-        if(fDebug)LogPrintf("Data dir Doesn't Exists\n");
+    if(!(boost::filesystem::exists(rawdata)))
+        boost::filesystem::create_directory(rawdata);
+    
+    TrustEngine db;       
+	
+	if(!(boost::filesystem::exists(trustdb)))	
+		db.createdb();    
 
-        if (boost::filesystem::create_directory(rawdata))
-            if(fDebug)LogPrintf("Data dir....Successfully Created !\n");
-	TrustEngine db;
-	db.createdb();
-    }
-
-    if(!(boost::filesystem::exists(biddir))){
-        if(fDebug)LogPrintf("Biddir Doesn't Exists\n");
-
-        if (boost::filesystem::create_directory(biddir))
-            if(fDebug)LogPrintf("Biddir....Successfully Created !\n");
-    }
+    if(!(boost::filesystem::exists(biddir)))
+        boost::filesystem::create_directory(biddir);
 
     fReindex = GetBoolArg("-reindex", false);
 	if (fReindex){
@@ -1154,7 +1149,6 @@ bool AppInit2(boost::thread_group& threadGroup)
 		remove((GetDataDir() /"ratings/minedblocks.dat").string().c_str());
 		remove((GetDataDir() /"ratings/balances.dat").string().c_str());
 		remove((GetDataDir() / "ratings/rawdata.dat" ).string().c_str());
-
 	}
 
     // Upgrading to 0.8; hard-link the old blknnnn.dat files into /blocks/

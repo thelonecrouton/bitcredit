@@ -2459,15 +2459,6 @@ bool static ConnectTip(CValidationState &state, CBlockIndex *pindexNew, CBlock *
         SyncWithWallets(tx, pblock);
     }
 
-	ofstream mdb;
-	CTxDestination m;
-    ExtractDestination(pblock->vtx[0].vout[0].scriptPubKey, m);
-	string miner = CBitcreditAddress(m).ToString().c_str();
-	mdb.open ((GetDataDir() / "ratings/minedblocks.dat" ).string().c_str(), std::ofstream::app);
-	mdb << miner<< ","<< chainActive.Tip()->nHeight << endl;
-	last40blocks.push_back(miner);
-	mdb.close();
-
 	sqlite3 *rawdb;
 	sqlite3_stmt *stmt;
 	char *zErrMsg = 0;
@@ -2479,12 +2470,20 @@ bool static ConnectTip(CValidationState &state, CBlockIndex *pindexNew, CBlock *
 	TrustEngine db;
 	db.createdb();
     }
-		
+	
+	CTxDestination m;
+    ExtractDestination(pblock->vtx[0].vout[0].scriptPubKey, m);
+	string miner = CBitcreditAddress(m).ToString().c_str();
+	last40blocks.push_back(miner);
+			
     std::map<std::string,int64_t>::iterator addrvalit;
 	std::map<std::string,int64_t> addressvalue = getbalances();
     BOOST_FOREACH(const CTransaction& tx, pblock->vtx){
 	
 	sqlite3_open((GetDataDir() / "ratings/rawdata.db").string().c_str(), &rawdb);
+    char * insertquery = sqlite3_mprintf("insert into BLOCKS (ID, HASH, MINER) values (%ld,'%q','%q')",chainActive.Tip()->nHeight, pblock->GetHash().ToString().c_str(), miner.c_str());
+	rc = sqlite3_exec(rawdb, insertquery, callback, 0, &zErrMsg);
+
     char * insertquery = sqlite3_mprintf("insert into BLOCKS (ID, HASH, MINER) values (%ld,'%q','%q')",chainActive.Tip()->nHeight, pblock->GetHash().ToString().c_str(), miner.c_str());
 	rc = sqlite3_exec(rawdb, insertquery, callback, 0, &zErrMsg);
 	
@@ -2510,7 +2509,7 @@ bool static ConnectTip(CValidationState &state, CBlockIndex *pindexNew, CBlock *
 				txoutcount = sqlite3_column_int(stmt, 4);
 				totalout = sqlite3_column_int(stmt, 6);
 				sqlite3_finalize(stmt);
-                LogPrintf ("SQlite output record retrieved %s, %d, %d, %d\n",receiveAddress, balance, txoutcount, totalout);
+                if (fDebug)LogPrintf ("SQlite output record retrieved %s, %d, %d, %d\n",receiveAddress, balance, txoutcount, totalout);
 
                 char* updatequery = sqlite3_mprintf("update RAWDATA set BALANCE = %ld, TXOUTCOUNT =%ld, TOTALOUT= %ld where ADDRESS = '%q'",balance+theAmount,txoutcount+1,totalout+theAmount, receiveAddress.c_str() );
 				rc = sqlite3_exec(rawdb, updatequery, callback, 0, &zErrMsg);
@@ -2534,9 +2533,7 @@ bool static ConnectTip(CValidationState &state, CBlockIndex *pindexNew, CBlock *
                     if (fDebug)LogPrintf( "insert created successfully\n");
 				}
 				sqlite3_finalize(stmt);
-
 			}
-		
 		}
 
         for (size_t i = 0; i < tx.vin.size(); i++){

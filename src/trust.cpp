@@ -242,46 +242,48 @@ void TrustEngine::createdb()
    }
 
    /* Create SQL statements */
-   sql.push_back(  "CREATE TABLE RAWDATA("  \
-         "ADDRESS TEXT PRIMARY KEY     NOT NULL," \
-         "BALANCE           INTEGER    DEFAULT 0," \
-         "FIRSTSEEN            INTEGER     DEFAULT 0," \
-         "TXINCOUNT            INTEGER     DEFAULT 0," \
-         "TXOUTCOUNT            INTEGER     DEFAULT 0," \
-         "TOTALIN            INTEGER     DEFAULT 0," \
-         "TOTALOUT            INTEGER     DEFAULT 0);");
+   sql.push_back("CREATE TABLE RAWDATA("  \
+         "ADDRESS TEXT PRIMARY KEY      NOT NULL," \
+         "BALANCE           INTEGER     DEFAULT 0," \
+         "FIRSTSEEN         INTEGER     DEFAULT 0," \
+         "TXINCOUNT         INTEGER     DEFAULT 0," \
+         "TXOUTCOUNT        INTEGER     DEFAULT 0," \
+         "TOTALIN           INTEGER     DEFAULT 0," \
+         "TOTALOUT          INTEGER     DEFAULT 0);");
 
-  sql.push_back(  "CREATE TABLE CLIENTS("  \
-         "ADDRESS TEXT PRIMARY KEY     NOT NULL," \
-         "BALANCE           INTEGER    DEFAULT 0," \
+  sql.push_back("CREATE TABLE CLIENTS("  \
+         "ADDRESS TEXT PRIMARY KEY      NOT NULL," \
+         "BALANCE           INTEGER     DEFAULT 0," \
          "INCOME            INTEGER     DEFAULT 0," \
-         "EXPENDITURE            INTEGER     DEFAULT 0," \
-         "TRUST            INTEGER     DEFAULT 0," \
-         "CREDITSCORE            INTEGER     DEFAULT 0," \
+         "EXPENDITURE       INTEGER     DEFAULT 0," \
+         "TRUST             INTEGER     DEFAULT 0," \
+         "CREDITSCORE       INTEGER     DEFAULT 0," \
          "RATING            INTEGER     DEFAULT 0);");
 
-  sql.push_back(  "CREATE TABLE MINERS("  \
-         "ADDRESS TEXT PRIMARY KEY     NOT NULL," \
-         "BLOCKCOUNT           INTEGER    DEFAULT 0);");
-
-  sql.push_back( "CREATE TABLE BLOCKS(" \
-            "    ID INTEGER PRIMARY KEY," \
+  sql.push_back("CREATE TABLE TRANSACTIONS(" \
+            "    ID INTEGER PRIMARY KEY AUTOINCREMENT," \
             "    HASH TEXT," \
+            "    BLOCKNUM INTEGER);");
+
+  sql.push_back("CREATE TABLE BLOCKS(" \
+            "    ID INTEGER PRIMARY KEY AUTOINCREMENT," \
+            "    HASH TEXT," \
+            "    TIME INTEGER," \
             "    MINER TEXT);");
 
-  sql.push_back( "CREATE TABLE OUTPUTS("
-            "    TXID TEXT PRIMARY KEY,n"
-            "    DADDR TEXT,"
-            "    VALUE INTEGER,"
-            "    OFFSET INTEGER"
-            ");");
+  sql.push_back("CREATE TABLE OUTPUTS(" \
+            "    ID INTEGER PRIMARY KEY AUTOINCREMENT," \
+            "    TXID TEXT," \
+            "    DADDR TEXT," \
+            "    VALUE INTEGER," \
+            "    OFFSET INTEGER);");
 
-  sql.push_back(  "CREATE TABLE INPUTS("
-            "    TXID TEXT PRIMARY KEY,"
-            "    SRCADD TEXT,"
-            "    VALUE INTEGER,"
-            "    OFFSET INTEGER"
-            ");");
+  sql.push_back("CREATE TABLE INPUTS(" \
+			"    ID INTEGER PRIMARY KEY AUTOINCREMENT," \
+            "    TXID TEXT ," \
+            "    SRCADD TEXT," \
+            "    VALUE INTEGER," \
+            "    OFFSET INTEGER);");
 
    /* Execute SQL statements */
 	for (unsigned int i =0;i < sql.size();i++){

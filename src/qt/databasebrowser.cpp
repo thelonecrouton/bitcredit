@@ -254,3 +254,40 @@ void Browser::on_selectAction_triggered()
     if (tm)
         tm->select();
 }
+
+void Browser::on_submitButton_clicked()
+{
+   exec();
+   sqlEdit->setFocus();
+}
+
+void Browser::on_clearButton_clicked()
+{
+    sqlEdit->clear();
+    sqlEdit->setFocus();
+}
+
+void Browser::on_connectionWidget_metaDataRequested(const QString &table)
+{
+	showMetaData(table);
+}
+
+void Browser::on_connectionWidget_tableActivated(const QString &table)
+{
+	 showTable(table);
+}
+
+void Browser::on_insertRowAction_triggered()
+{
+	 insertRow();
+}
+    
+void Browser::on_deleteRowAction_triggered()
+{
+	 deleteRow();
+}
+    
+void Browser::currentChanged() 
+{
+	updateActions(); 
+}
