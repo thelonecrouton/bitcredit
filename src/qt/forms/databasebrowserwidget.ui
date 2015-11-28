@@ -95,6 +95,9 @@
     </rect>
    </property>
    <layout class="QHBoxLayout" name="horizontalLayout">
+    <property name="spacing">
+     <number>4</number>
+    </property>
     <item>
      <widget class="QLabel" name="label">
       <property name="sizePolicy">
@@ -133,6 +136,9 @@
         <width>0</width>
         <height>120</height>
        </size>
+      </property>
+      <property name="lineWrapMode">
+       <enum>QTextEdit::NoWrap</enum>
       </property>
      </widget>
     </item>
@@ -179,6 +185,13 @@
       </property>
       <property name="shortcut">
        <string>Alt+P</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QCheckBox" name="customquery">
+      <property name="text">
+       <string>Custom</string>
       </property>
      </widget>
     </item>

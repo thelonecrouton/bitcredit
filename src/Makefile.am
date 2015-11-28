@@ -107,7 +107,7 @@ BITCREDIT_CORE_H = \
   key.h \
   keepass.h \
   keystore.h \
-  leveldbwrapper.h \
+  dbwrapper.h \
   limitedmap.h \
   lz4/lz4.h \
   main.h \
@@ -191,7 +191,7 @@ libbitcredit_server_a_SOURCES = \
   chain.cpp \
   checkpoints.cpp \
   init.cpp \
-  leveldbwrapper.cpp \
+  dbwrapper.cpp \
   main.cpp \
   merkleblock.cpp \
   miner.cpp \

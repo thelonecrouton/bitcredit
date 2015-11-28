@@ -37,7 +37,7 @@ void TrustEngine::sortclientdata(std::string clientAddress){
     sqlite3_bind_text(stmt, 1,clientAddress.data(), clientAddress.size(), 0);
         int64_t balance, outgoingtx, firstuse, incomingtx, totalinputs, totaloutputs;
 	if (sqlite3_step(stmt) == SQLITE_ROW){
-        
+
 		balance = (sqlite3_column_int(stmt, 1))/COIN;
 		firstuse = sqlite3_column_int(stmt, 2);
 		incomingtx = sqlite3_column_int(stmt, 3);
@@ -58,11 +58,12 @@ void TrustEngine::sortclientdata(std::string clientAddress){
 					savefactor =balance/totalinputs;
 				else
 					savefactor = 0;
-			double nettxpart = totaltx/ totalnettx;
-			double aveinput = totalinputs/ incomingtx;
-			double aveoutput = totaloutputs / outgoingtx;
-			double avedailyincome = totalinputs / lifetime;
-			double avedailyexpenditure = totaloutputs / lifetime;
+
+        double nettxpart = totaltx/ totalnettx;
+        double aveinput = totalinputs/ incomingtx;
+        double aveoutput = totaloutputs / outgoingtx;
+        double avedailyincome = totalinputs / lifetime;
+        double avedailyexpenditure = totaloutputs / lifetime;
 //			double minerpoints = minedblocks/chainActive.Tip()->nHeight;
 
 			double trust=0;
@@ -260,6 +261,16 @@ void TrustEngine::createdb()
          "CREDITSCORE       INTEGER     DEFAULT 0," \
          "RATING            INTEGER     DEFAULT 0);");
 
+  sql.push_back("CREATE TABLE TRUSTRATINGS("  \
+         "ADDRESS TEXT PRIMARY KEY      NOT NULL," \
+         "CLIENT       		TEXT     	," \
+         "BALANCE           INTEGER     DEFAULT 0," \
+         "INCOME            INTEGER     DEFAULT 0," \
+         "EXPENDITURE       INTEGER     DEFAULT 0," \
+         "TRUST             INTEGER     DEFAULT 0," \
+         "CREDITSCORE       INTEGER     DEFAULT 0," \
+         "RATING            INTEGER     DEFAULT 0);");
+
   sql.push_back("CREATE TABLE TRANSACTIONS(" \
             "    ID INTEGER PRIMARY KEY AUTOINCREMENT," \
             "    HASH TEXT," \
@@ -304,3 +315,218 @@ void TrustEngine::createdb()
 		if (fDebug)LogPrintf( "database closed successfully\n");
 	}
 }
+
+// sort all rawdata from table
+void buildtrustTableData()
+{
+
+    sqlite3 *rawdb;
+    char *zErrMsg = 0;
+    int rc;
+
+    rc = sqlite3_open((GetDataDir() /"ratings/rawdata.db").string().c_str(), &rawdb);
+    if( rc ){
+       if(fDebug)LogPrintf("Can't open database: %s\n", sqlite3_errmsg(rawdb));
+       exit(0);
+    }else{
+       if(fDebug)LogPrintf("Opened database successfully\n");
+    }
+
+    sqlite3_stmt *statement;
+
+    const char *query = "select * from RAWDATA";
+
+    if ( sqlite3_prepare(rawdb, query, -1, &statement, 0 ) == SQLITE_OK )
+    {
+        int ctotal = sqlite3_column_count(statement);
+        int res = 0;
+
+        while ( 1 )
+        {
+            res = sqlite3_step(statement);
+
+            if ( res == SQLITE_ROW )
+            {
+                for ( int i = 0; i < ctotal; i++ )
+                {
+					string address = (char*)sqlite3_column_text(statement, 0);
+                    int64_t balance, txoutcount, totalout, firstuse, incomingtx,totalinputs;
+					balance = sqlite3_column_int(statement, 1);
+					txoutcount = sqlite3_column_int(statement, 4);
+					totalout = sqlite3_column_int(statement, 6);
+                    firstuse = sqlite3_column_int(statement, 2);
+                    incomingtx = sqlite3_column_int(statement, 3);
+                    totalinputs = sqlite3_column_int(statement, 5);
+
+                    int64_t totaltx=  incomingtx+txoutcount;
+					double globallife = (GetTime()- 1418504572)/24*3600;
+					double lifetime = (GetTime() - firstuse)/24*3600;
+					int64_t totalnettx = chainActive.Tip()->nChainTx;
+					double txfreq = totaltx/lifetime;
+					double nettxfreq = totalnettx / globallife;
+                    double spendfactor = balance/totalout;
+					double savefactor;
+
+					if (totalinputs !=0)
+						savefactor =balance/totalinputs;
+					else
+						savefactor = 0;
+
+					double nettxpart = totaltx/ totalnettx;
+					double aveinput = totalinputs/ incomingtx;
+                    double aveoutput = totalout / txoutcount;
+					double avedailyincome = totalinputs / lifetime;
+                    double avedailyexpenditure = totalout/ lifetime;
+
+					double trust=0;
+					{
+						{
+						if (lifetime > 360 )
+							trust+= 20;
+						else if (lifetime > 30 && lifetime < 360 )
+							trust+= lifetime*0.055;
+						else
+							trust+= 0;
+						}
+
+					{
+					if (totaltx > 10000){
+						trust+= 10;
+					}
+					else if (totaltx>0 && totaltx< 10000){
+						trust+= totaltx*0.001;
+					}
+					else
+						trust+= 0;
+				}
+
+				{
+					if(balance > 1000000){
+						trust+= 25;
+					}
+					else if(balance > 0 && balance <= 1000000){
+						trust+= balance/50000;
+					}
+					else
+						trust+= 0;
+				}
+
+				{
+					if (txfreq > 5)
+						trust+=15;
+					else if (txfreq> 0.01 && txfreq< 5)
+						trust+= txfreq *3;
+					else
+						trust+= 0;
+				}
+
+				{
+					if (savefactor > 0.1)
+						trust+=20;
+					else if (savefactor> 0.001 && savefactor< 0.1)
+						trust+= savefactor *200;
+					else
+						trust+= 0;
+				}
+
+				{
+					if (avedailyincome > 100)
+						trust+=20;
+					else if (avedailyincome > 1 && avedailyincome< 100)
+						trust+= avedailyincome/5;
+					else
+						trust+= 0;
+				}
+
+				{
+					int count = 0;
+					char* minerquery = sqlite3_mprintf("select count(*) from RAWDATA where ADDRESS = '%q'",address.c_str());
+					rc = sqlite3_exec(rawdb, minerquery, callback, &count, &zErrMsg);
+					double points = count/chainActive.Tip()->nHeight;
+
+					if (points > 0.01 )
+						trust+= 20;
+					else if (points > 0.0001 && points < 0.01 )
+						trust+= points*190;
+					else
+						trust+= 0;
+				}
+
+            char *xsql ="select * from RAWDATA where ADDRESS = ?";
+
+			rc = sqlite3_prepare(rawdb,sql, strlen(sql), &stmt,  0 );
+			sqlite3_bind_text(stmt, 1,receiveAddress.data(), receiveAddress.size(), 0);
+			if (sqlite3_step(stmt) == SQLITE_ROW){
+
+				int64_t balance, txoutcount, totalout;
+				balance = sqlite3_column_int(stmt, 1);
+				txoutcount = sqlite3_column_int(stmt, 4);
+				totalout = sqlite3_column_int(stmt, 6);
+				sqlite3_finalize(stmt);
+                if (fDebug)LogPrintf ("SQlite output record retrieved %s, %lld, %lld, %lld\n",receiveAddress, balance, txoutcount, totalout);
+
+                char* updatequery = sqlite3_mprintf("update RAWDATA set BALANCE = %lld, TXOUTCOUNT =%lld, TOTALOUT= %lld where ADDRESS = '%q'",balance+theAmount,txoutcount+1,totalout+theAmount, receiveAddress.c_str() );
+				rc = sqlite3_exec(rawdb, updatequery, callback, 0, &zErrMsg);
+
+				if( rc != SQLITE_OK ){
+					if (fDebug)LogPrintf("SQL update output error: %s\n", zErrMsg);
+					sqlite3_free(zErrMsg);
+				}else{
+					if (fDebug)LogPrintf( "update created successfully\n");
+				}
+
+			}else{
+                char * insertquery = sqlite3_mprintf("insert into RAWDATA (ADDRESS, BALANCE, FIRSTSEEN, TXOUTCOUNT, TOTALOUT) values ('%q',%lld,%lld,%lld,%lld)",receiveAddress.c_str(), theAmount, pblock->nTime, 1, theAmount );
+				rc = sqlite3_exec(rawdb, insertquery, callback, 0, &zErrMsg);
+
+				if( rc != SQLITE_OK ){
+					if (fDebug)LogPrintf("SQL insert error: %s\n", zErrMsg);
+					sqlite3_free(zErrMsg);
+				}
+				else{
+                    if (fDebug)LogPrintf( "insert created successfully\n");
+				}
+				sqlite3_finalize(stmt);
+			}
+
+
+
+			}
+
+                }
+
+            }
+
+            if ( res == SQLITE_DONE || res==SQLITE_ERROR)
+            {
+                cout << "done " << endl;
+                break;
+            }
+        }
+    }
+}
+
+void getidtrust()
+{
+
+    sqlite3 *rawdb;
+    char *zErrMsg = 0;
+    int rc;
+
+    rc = sqlite3_open((GetDataDir() /"ratings/rawdata.db").string().c_str(), &rawdb);
+    if( rc ){
+       if(fDebug)LogPrintf("Can't open database: %s\n", sqlite3_errmsg(rawdb));
+       exit(0);
+    }else{
+       if(fDebug)LogPrintf("Opened database successfully\n");
+    }
+
+    sqlite3_stmt *statement;
+
+    const char *query = "select * from RAWDATA";
+
+
+
+
+}
+

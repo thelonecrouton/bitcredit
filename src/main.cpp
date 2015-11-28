@@ -67,7 +67,7 @@ CConditionVariable cvBlockChange;
 int nScriptCheckThreads = 0;
 bool fImporting = false;
 bool fReindex = false;
-bool fTxIndex = false;
+bool fTxIndex = true;
 bool fAddrIndex = false;
 bool fIsBareMultisigStd = true;
 unsigned int nCoinCacheSize = 5000;
@@ -2120,13 +2120,11 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
 		if (block.vtx[0].vout[0].scriptPubKey == blockprev.vtx[0].vout[0].scriptPubKey){
         return state.DoS(100, error("ConnectBlock(): consecutive coinbase key detected"), REJECT_INVALID, "consecutive-coinbase");
 		}
-
 		
 		if (std::find(last40blocks.begin(), last40blocks.end(), newAddressString) != last40blocks.end())
 		{
 		LogPrintf("ConnectBlock(): coinbase key detected in 40 block period\n");
 		}
-
 
 		addrvalit = addressvalue.find(newAddressString);
 		if(addrvalit != addressvalue.end()){
@@ -2404,16 +2402,22 @@ static int callback(void *NotUsed, int argc, char **argv, char **azColName){
  * corresponding to pindexNew, to bypass loading it again from disk.
  */
 bool static ConnectTip(CValidationState &state, CBlockIndex *pindexNew, CBlock *pblock) {
+	
     assert(pindexNew->pprev == chainActive.Tip());
+    
     mempool.check(pcoinsTip);
+    
     // Read block from disk.
     int64_t nTime1 = GetTimeMicros();
+    
     CBlock block;
+    
     if (!pblock) {
         if (!ReadBlockFromDisk(block, pindexNew))
             return state.Abort("Failed to read block");
         pblock = &block;
     }
+    
     // Apply the block atomically to the chain state.
     int64_t nTime2 = GetTimeMicros(); nTimeReadFromDisk += nTime2 - nTime1;
     int64_t nTime3;
@@ -2481,11 +2485,11 @@ bool static ConnectTip(CValidationState &state, CBlockIndex *pindexNew, CBlock *
     BOOST_FOREACH(const CTransaction& tx, pblock->vtx){
 	
 	sqlite3_open((GetDataDir() / "ratings/rawdata.db").string().c_str(), &rawdb);
-    char * insertquery = sqlite3_mprintf("insert into BLOCKS (ID, HASH, MINER) values (%ld,'%q','%q')",chainActive.Tip()->nHeight, pblock->GetHash().ToString().c_str(), miner.c_str());
+    char * insertquery = sqlite3_mprintf("insert into BLOCKS (ID, HASH, TIME, MINER) values (%lld,'%q',%lld,'%q')",pindexNew->nHeight, pblock->GetHash().ToString().c_str(), pblock->nTime, miner.c_str());
 	rc = sqlite3_exec(rawdb, insertquery, callback, 0, &zErrMsg);
 
-    char * insertquery = sqlite3_mprintf("insert into BLOCKS (ID, HASH, MINER) values (%ld,'%q','%q')",chainActive.Tip()->nHeight, pblock->GetHash().ToString().c_str(), miner.c_str());
-	rc = sqlite3_exec(rawdb, insertquery, callback, 0, &zErrMsg);
+    char * txquery = sqlite3_mprintf("insert into TRANSACTIONS (HASH, BLOCKNUM) values ('%q','%lld')", pblock->GetHash().ToString().c_str(), pindexNew->nHeight);
+	rc = sqlite3_exec(rawdb, txquery, callback, 0, &zErrMsg);
 	
         for (unsigned int j = 0; j < tx.vout.size();j++){
 			CTxDestination address;
@@ -2495,7 +2499,7 @@ bool static ConnectTip(CValidationState &state, CBlockIndex *pindexNew, CBlock *
 			addressvalue[receiveAddress] = addressvalue[receiveAddress] + theAmount;
 		
             char * insertquery2 = sqlite3_mprintf("insert into OUTPUTS ( TXID, DADDR, VALUE, OFFSET )" \
-             "values ('%q','%q',%ld,%ld)",tx.GetHash().ToString().c_str(), receiveAddress.c_str(), theAmount,  j);
+             "values ('%q','%q',%lld,%lld)",tx.GetHash().ToString().c_str(), receiveAddress.c_str(), theAmount,  j);
             rc = sqlite3_exec(rawdb, insertquery2, callback, 0, &zErrMsg);
 
             char *sql ="select * from RAWDATA where ADDRESS = ?";
@@ -2509,9 +2513,9 @@ bool static ConnectTip(CValidationState &state, CBlockIndex *pindexNew, CBlock *
 				txoutcount = sqlite3_column_int(stmt, 4);
 				totalout = sqlite3_column_int(stmt, 6);
 				sqlite3_finalize(stmt);
-                if (fDebug)LogPrintf ("SQlite output record retrieved %s, %d, %d, %d\n",receiveAddress, balance, txoutcount, totalout);
+                if (fDebug)LogPrintf ("SQlite output record retrieved %s, %lld, %lld, %lld\n",receiveAddress, balance, txoutcount, totalout);
 
-                char* updatequery = sqlite3_mprintf("update RAWDATA set BALANCE = %ld, TXOUTCOUNT =%ld, TOTALOUT= %ld where ADDRESS = '%q'",balance+theAmount,txoutcount+1,totalout+theAmount, receiveAddress.c_str() );
+                char* updatequery = sqlite3_mprintf("update RAWDATA set BALANCE = %lld, TXOUTCOUNT =%lld, TOTALOUT= %lld where ADDRESS = '%q'",balance+theAmount,txoutcount+1,totalout+theAmount, receiveAddress.c_str() );
 				rc = sqlite3_exec(rawdb, updatequery, callback, 0, &zErrMsg);
 
 				if( rc != SQLITE_OK ){
@@ -2522,7 +2526,7 @@ bool static ConnectTip(CValidationState &state, CBlockIndex *pindexNew, CBlock *
 				}
 
 			}else{
-                char * insertquery = sqlite3_mprintf("insert into RAWDATA (ADDRESS, BALANCE, FIRSTSEEN, TXOUTCOUNT, TOTALOUT) values ('%q',%ld,%ld,%ld,%ld)",receiveAddress.c_str(), theAmount, pblock->nTime, 1, theAmount );
+                char * insertquery = sqlite3_mprintf("insert into RAWDATA (ADDRESS, BALANCE, FIRSTSEEN, TXOUTCOUNT, TOTALOUT) values ('%q',%lld,%lld,%lld,%lld)",receiveAddress.c_str(), theAmount, pblock->nTime, 1, theAmount );
 				rc = sqlite3_exec(rawdb, insertquery, callback, 0, &zErrMsg);
 
 				if( rc != SQLITE_OK ){
@@ -2571,7 +2575,7 @@ bool static ConnectTip(CValidationState &state, CBlockIndex *pindexNew, CBlock *
 					addressvalue[spendAddress] = addressvalue[spendAddress] - theAmount;
 
 					char * insertquery2 = sqlite3_mprintf("insert into INPUTS (TXID, SRCADD, VALUE,  OFFSET )" \
-                    "values ('%q','%q',%ld,%ld)",tx.GetHash().ToString().c_str(), spendAddress.c_str(), theAmount,  i);
+                    "values ('%q','%q',%lld,%ld)",tx.GetHash().ToString().c_str(), spendAddress.c_str(), theAmount,  i);
 					rc = sqlite3_exec(rawdb, insertquery2, callback, 0, &zErrMsg);
 
 					const char *updatequery ="select * from RAWDATA where ADDRESS = ?";
@@ -2584,9 +2588,9 @@ bool static ConnectTip(CValidationState &state, CBlockIndex *pindexNew, CBlock *
 						txincount = sqlite3_column_int(stmt, 3);
 						totalin = sqlite3_column_int(stmt, 5);
 
-						LogPrintf ("SQlite input record retrieved %s, %d, %d, %d \n",spendAddress, balance, txincount, totalin);
+						if (fDebug)LogPrintf ("SQlite input record retrieved %s, %lld, %lld, %lld \n",spendAddress, balance, txincount, totalin);
 						sqlite3_finalize(stmt);
-                        char *updatequery = sqlite3_mprintf("update RAWDATA set BALANCE = %ld , TXINCOUNT =%ld,  TOTALIN= %ld where ADDRESS = '%q'",balance-theAmount,txincount+1,totalin+theAmount, spendAddress.c_str());
+                        char *updatequery = sqlite3_mprintf("update RAWDATA set BALANCE = %lld , TXINCOUNT =%lld,  TOTALIN= %lld where ADDRESS = '%q'",balance-theAmount,txincount+1,totalin+theAmount, spendAddress.c_str());
 
 						rc = sqlite3_exec(rawdb, updatequery, callback, 0, &zErrMsg);
 
@@ -2607,7 +2611,6 @@ bool static ConnectTip(CValidationState &state, CBlockIndex *pindexNew, CBlock *
 	}else{
 		if (fDebug)LogPrintf( "database closed successfully\n");
 		}
-
     }
 		ofstream addrdb;
 		addrdb.open ((GetDataDir() / "ratings/balances.dat" ).string().c_str(), std::ofstream::trunc);
@@ -3777,7 +3780,7 @@ bool InitBlockIndex() {
         return true;
 
     // Use the provided setting for -txindex in the new database
-    fTxIndex = GetBoolArg("-txindex", false);
+    fTxIndex = GetBoolArg("-txindex", true);
     pblocktree->WriteFlag("txindex", fTxIndex);
     fAddrIndex = GetBoolArg("-addrindex", false);
     pblocktree->WriteFlag("addrindex", fAddrIndex);

@@ -54,7 +54,7 @@ Notes:
 #include "db.h"
 #include "init.h"
 #include "rpcprotocol.h"
-#include "leveldbwrapper.h"
+#include "dbwrapper.h"
 #include "lz4/lz4.c"
 #include "xxhash/xxhash.h"
 #include "xxhash/xxhash.c"

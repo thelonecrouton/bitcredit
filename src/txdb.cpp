@@ -69,7 +69,7 @@ bool CCoinsViewDB::BatchWrite(CCoinsMap &mapCoins, const uint256 &hashBlock) {
     return db.WriteBatch(batch);
 }
 
-CBlockTreeDB::CBlockTreeDB(size_t nCacheSize, bool fMemory, bool fWipe) : CLevelDBWrapper(GetDataDir() / "blocks" / "index", nCacheSize, fMemory, fWipe) {
+CBlockTreeDB::CBlockTreeDB(size_t nCacheSize, bool fMemory, bool fWipe) : CDBWrapper(GetDataDir() / "blocks" / "index", nCacheSize, fMemory, fWipe) {
     if (!Read('S', salt)) {
         salt = GetRandHash();
         Write('S', salt);
@@ -100,7 +100,7 @@ bool CCoinsViewDB::GetStats(CCoinsStats &stats) const {
     /* It seems that there are no "const iterators" for LevelDB.  Since we
        only need read operations on it, use a const-cast to get around
        that restriction.  */
-    boost::scoped_ptr<leveldb::Iterator> pcursor(const_cast<CLevelDBWrapper*>(&db)->NewIterator());
+    boost::scoped_ptr<leveldb::Iterator> pcursor(const_cast<CDBWrapper*>(&db)->NewIterator());
     pcursor->SeekToFirst();
 
     CHashWriter ss(SER_GETHASH, PROTOCOL_VERSION);

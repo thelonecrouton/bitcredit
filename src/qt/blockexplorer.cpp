@@ -451,7 +451,7 @@ void BlockExplorer::showEvent(QShowEvent*)
         m_History.push_back(text);
         updateNavButtons();
 
-        if (!GetBoolArg("-txindex", false))
+        if (!GetBoolArg("-txindex", true))
         {
             QString Warning = tr("To view all transactions set txindex=1 in the configuration file (bitcredit.conf).");
             QMessageBox::warning(this, "Bitcredit Blockchain Voodoo", Warning, QMessageBox::Ok);

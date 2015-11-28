@@ -7,9 +7,9 @@
 
 #include "ui_databasebrowserwidget.h"
 
-#include "clientmodel.h"
+#include "walletmodel.h"
 
-class ClientModel;
+class WalletModel;
 class ConnectionWidget;
 
 class Browser: public QWidget, private Ui::Browser
@@ -25,7 +25,7 @@ public:
     void insertRow();
     void deleteRow();
     void updateActions();
-    void setModel(ClientModel *clientModel);
+    void setModel(WalletModel *model);
 
 public slots:
     void exec();
@@ -47,13 +47,14 @@ public slots:
     void on_connectionWidget_metaDataRequested(const QString &table);
     void on_submitButton_clicked();
     void on_clearButton_clicked();
+    void on_addressBookButton_clicked();
 
 signals:
     void statusMessage(const QString &message);
 
 private:
 
-	ClientModel *clientModel;
+	WalletModel *model;
 
 };
 

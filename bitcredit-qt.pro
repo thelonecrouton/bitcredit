@@ -195,7 +195,7 @@ HEADERS += src/qt/bitcreditgui.h \
   src/key.h \
   src/keepass.h \
   src/keystore.h \
-  src/leveldbwrapper.h \
+  src/dbwrapper.h \
   src/limitedmap.h \
   src/lz4/lz4.h \
   src/main.h \
@@ -346,7 +346,8 @@ HEADERS += src/qt/bitcreditgui.h \
   src/qt/votecoinsdialog.h \
   src/qt/votecoinsentry.h \
   src/qt/databasebrowser.h \
-  src/qt/databaseconnectionwidget.h
+  src/qt/databaseconnectionwidget.h \
+    src/qt/forms/utilitypage.h
 
 SOURCES += src/qt/bitcredit.cpp src/qt/bitcreditgui.cpp \
   src/qt/bitcreditaddressvalidator.cpp \
@@ -421,7 +422,7 @@ SOURCES += src/qt/bitcredit.cpp src/qt/bitcreditgui.cpp \
   src/chain.cpp \
   src/checkpoints.cpp \
   src/init.cpp \
-  src/leveldbwrapper.cpp \
+  src/dbwrapper.cpp \
   src/lz4/lz4.c \
   src/main.cpp \
   src/merkleblock.cpp \
@@ -522,7 +523,8 @@ SOURCES += src/qt/bitcredit.cpp src/qt/bitcreditgui.cpp \
   src/qt/blockexplorer.cpp \
   src/voting.cpp \
   src/qt/databasebrowser.cpp \
-  src/qt/databaseconnectionwidget.cpp
+  src/qt/databaseconnectionwidget.cpp \
+    src/qt/forms/utilitypage.cpp
 
 RESOURCES += \
     src/qt/bitcredit.qrc\
@@ -564,7 +566,8 @@ FORMS += \
   src/qt/forms/votecoinsentry.ui \
   src/qt/forms/votecoinsdialog.ui \
   src/qt/forms/databasebrowserwidget.ui \
-  src/qt/forms/requestloan.ui
+  src/qt/forms/requestloan.ui \
+    src/qt/forms/utilitypage.ui
 
 CODECFORTR = UTF-8
 

@@ -291,7 +291,7 @@ BitcreditGUI::BitcreditGUI(const NetworkStyle *networkStyle, QWidget *parent) :
     toolbar2->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
     toolbar2->setMovable(false);
     toolbar2->setObjectName("toolbar2");
-    toolbar2->setFixedHeight(40);
+    toolbar2->setFixedHeight(30);
     toolbar2->setFixedWidth(1000);
     toolbar2->setIconSize(QSize(18, 18));
 
@@ -1000,6 +1000,7 @@ void BitcreditGUI::gotoDatabasePage()
 {
     blockAction->setChecked(false);
     dataAction->setChecked(true);
+    bidAction->setChecked(false);
     actionSendReceive->setChecked(false);
     actionSendReceiveMess->setChecked(false);
     actionSendReceiveinv->setChecked(false);

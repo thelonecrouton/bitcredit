@@ -23,7 +23,7 @@
       <enum>QTabWidget::Rounded</enum>
      </property>
      <property name="currentIndex">
-      <number>4</number>
+      <number>5</number>
      </property>
      <widget class="QWidget" name="tab_info">
       <attribute name="title">
@@ -1085,168 +1085,163 @@
       <attribute name="title">
        <string>Active Base Nodes</string>
       </attribute>
-      <widget class="QWidget" name="verticalLayoutWidget_2">
+      <widget class="QWidget" name="horizontalLayoutWidget">
        <property name="geometry">
         <rect>
-         <x>2</x>
-         <y>9</y>
-         <width>711</width>
-         <height>391</height>
+         <x>0</x>
+         <y>0</y>
+         <width>721</width>
+         <height>31</height>
         </rect>
        </property>
-       <layout class="QVBoxLayout" name="verticalLayout_7">
+       <layout class="QHBoxLayout" name="horizontalLayout_6">
         <item>
-         <layout class="QHBoxLayout" name="horizontalLayout_6">
-          <property name="bottomMargin">
-           <number>0</number>
-          </property>
-          <item>
-           <widget class="QLabel" name="label_30">
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
-            </property>
-            <property name="maximumSize">
-             <size>
-              <width>120</width>
-              <height>16777215</height>
-             </size>
-            </property>
-            <property name="text">
-             <string>Active Count:</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QLabel" name="countLabel">
-            <property name="maximumSize">
-             <size>
-              <width>120</width>
-              <height>16777215</height>
-             </size>
-            </property>
-            <property name="text">
-             <string>0</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <spacer name="horizontalSpacer_6">
-            <property name="orientation">
-             <enum>Qt::Horizontal</enum>
-            </property>
-            <property name="sizeType">
-             <enum>QSizePolicy::Fixed</enum>
-            </property>
-            <property name="sizeHint" stdset="0">
-             <size>
-              <width>380</width>
-              <height>20</height>
-             </size>
-            </property>
-           </spacer>
-          </item>
-          <item>
-           <widget class="QRadioButton" name="showMineOnly">
-            <property name="maximumSize">
-             <size>
-              <width>220</width>
-              <height>16777215</height>
-             </size>
-            </property>
-            <property name="toolTip">
-             <string>Show only those Banknodes listed by their address in mybanknodes.txt</string>
-            </property>
-            <property name="text">
-             <string>Show only my Banknodes</string>
-            </property>
-           </widget>
-          </item>
-         </layout>
-        </item>
-        <item>
-         <widget class="QTableWidget" name="tableWidget">
+         <widget class="QLabel" name="label_30">
           <property name="sizePolicy">
-           <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+           <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
             <horstretch>0</horstretch>
             <verstretch>0</verstretch>
            </sizepolicy>
           </property>
-          <property name="minimumSize">
-           <size>
-            <width>0</width>
-            <height>0</height>
-           </size>
-          </property>
           <property name="maximumSize">
            <size>
-            <width>800</width>
-            <height>16777215</height>
+            <width>120</width>
+            <height>20</height>
            </size>
           </property>
-          <property name="editTriggers">
-           <set>QAbstractItemView::NoEditTriggers</set>
+          <property name="text">
+           <string>Active Count:</string>
           </property>
-          <property name="alternatingRowColors">
-           <bool>true</bool>
-          </property>
-          <property name="selectionBehavior">
-           <enum>QAbstractItemView::SelectRows</enum>
-          </property>
-          <property name="horizontalScrollMode">
-           <enum>QAbstractItemView::ScrollPerPixel</enum>
-          </property>
-          <attribute name="horizontalHeaderStretchLastSection">
-           <bool>false</bool>
-          </attribute>
-          <column>
-           <property name="text">
-            <string>Address</string>
-           </property>
-          </column>
-          <column>
-           <property name="text">
-            <string>Rank</string>
-           </property>
-          </column>
-          <column>
-           <property name="text">
-            <string>Active</string>
-           </property>
-          </column>
-          <column>
-           <property name="text">
-            <string>Uptime</string>
-           </property>
-          </column>
-          <column>
-           <property name="text">
-            <string>Last Seen</string>
-           </property>
-          </column>
-          <column>
-           <property name="text">
-            <string>Pubkey</string>
-           </property>
-          </column>
          </widget>
         </item>
         <item>
-         <spacer name="verticalSpacer_5">
+         <widget class="QLabel" name="countLabel">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>120</width>
+            <height>20</height>
+           </size>
+          </property>
+          <property name="text">
+           <string>0</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <spacer name="horizontalSpacer_6">
           <property name="orientation">
-           <enum>Qt::Vertical</enum>
+           <enum>Qt::Horizontal</enum>
           </property>
           <property name="sizeHint" stdset="0">
            <size>
-            <width>20</width>
-            <height>40</height>
+            <width>40</width>
+            <height>20</height>
            </size>
           </property>
          </spacer>
         </item>
+        <item>
+         <widget class="QRadioButton" name="showMineOnly">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>220</width>
+            <height>20</height>
+           </size>
+          </property>
+          <property name="toolTip">
+           <string>Show only those Banknodes listed by their address in mybanknodes.txt</string>
+          </property>
+          <property name="text">
+           <string>Show only my Banknodes</string>
+          </property>
+         </widget>
+        </item>
        </layout>
+      </widget>
+      <widget class="QTableWidget" name="tableWidget">
+       <property name="geometry">
+        <rect>
+         <x>0</x>
+         <y>30</y>
+         <width>721</width>
+         <height>371</height>
+        </rect>
+       </property>
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="minimumSize">
+        <size>
+         <width>0</width>
+         <height>0</height>
+        </size>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>800</width>
+         <height>16777215</height>
+        </size>
+       </property>
+       <property name="editTriggers">
+        <set>QAbstractItemView::NoEditTriggers</set>
+       </property>
+       <property name="alternatingRowColors">
+        <bool>true</bool>
+       </property>
+       <property name="selectionBehavior">
+        <enum>QAbstractItemView::SelectRows</enum>
+       </property>
+       <property name="horizontalScrollMode">
+        <enum>QAbstractItemView::ScrollPerPixel</enum>
+       </property>
+       <attribute name="horizontalHeaderStretchLastSection">
+        <bool>false</bool>
+       </attribute>
+       <column>
+        <property name="text">
+         <string>Address</string>
+        </property>
+       </column>
+       <column>
+        <property name="text">
+         <string>Rank</string>
+        </property>
+       </column>
+       <column>
+        <property name="text">
+         <string>Active</string>
+        </property>
+       </column>
+       <column>
+        <property name="text">
+         <string>Uptime</string>
+        </property>
+       </column>
+       <column>
+        <property name="text">
+         <string>Last Seen</string>
+        </property>
+       </column>
+       <column>
+        <property name="text">
+         <string>Pubkey</string>
+        </property>
+       </column>
       </widget>
      </widget>
      <widget class="QWidget" name="tab_bnmngr">
@@ -1258,7 +1253,7 @@
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>711</width>
+         <width>721</width>
          <height>401</height>
         </rect>
        </property>
@@ -1518,19 +1513,6 @@
            </spacer>
           </item>
          </layout>
-        </item>
-        <item>
-         <spacer name="verticalSpacer_6">
-          <property name="orientation">
-           <enum>Qt::Vertical</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>20</width>
-            <height>40</height>
-           </size>
-          </property>
-         </spacer>
         </item>
        </layout>
       </widget>

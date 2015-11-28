@@ -1,6 +1,7 @@
 #include "databasebrowser.h"
 #include "optionsdialog.h"
 #include "util.h"
+#include "addressbookpage.h"
 #include <QtWidgets>
 #include <QtSql>
 
@@ -42,11 +43,13 @@ Browser::Browser(QWidget *parent)
 
 Browser::~Browser()
 {
+	
 }
 
 void Browser::exec()
 {
     QSqlQueryModel *model = new QSqlQueryModel(table);
+    //QString b = "INSERT INTO table VALUE "% sqlEdit->toPlainText();
     model->setQuery(QSqlQuery(sqlEdit->toPlainText(), connectionWidget->currentDatabase()));
     table->setModel(model);
 
@@ -79,11 +82,6 @@ QSqlError Browser::addConnection(const QString &driver, const QString &dbName, c
     connectionWidget->refresh();
 
     return err;
-}
-
-void Browser::setModel(ClientModel *clientModel)
-{
-    this->clientModel = clientModel;
 }
 
 void Browser::addConnection()
@@ -255,6 +253,18 @@ void Browser::on_selectAction_triggered()
         tm->select();
 }
 
+void Browser::on_addressBookButton_clicked()
+{
+    if(!model)
+        return;
+    AddressBookPage dlg(AddressBookPage::ForSelection, AddressBookPage::SendingTab, this);
+    dlg.setModel(model->getAddressTableModel());
+    if(dlg.exec())
+    {
+        sqlEdit->setText(dlg.getReturnValue());
+    }
+}
+
 void Browser::on_submitButton_clicked()
 {
    exec();
@@ -290,4 +300,9 @@ void Browser::on_deleteRowAction_triggered()
 void Browser::currentChanged() 
 {
 	updateActions(); 
+}
+
+void Browser::setModel(WalletModel *model)
+{
+    this->model = model;
 }

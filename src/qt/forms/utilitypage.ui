@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>utilitypage</class>
+ <widget class="QTabWidget" name="utilitypage">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>767</width>
+    <height>501</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>TabWidget</string>
+  </property>
+  <property name="movable">
+   <bool>true</bool>
+  </property>
+  <widget class="QWidget" name="tab">
+   <attribute name="title">
+    <string>Tab 1</string>
+   </attribute>
+  </widget>
+  <widget class="QWidget" name="tab">
+   <attribute name="title">
+    <string>Tab 2</string>
+   </attribute>
+  </widget>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>
