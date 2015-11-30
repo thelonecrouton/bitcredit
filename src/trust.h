@@ -42,6 +42,8 @@ public:
 	void buildrawdb();
 
 	void sortclientdata(string clientAddress);
+	
+	string getidtrust(string search);
 };
 
 #endif

@@ -225,40 +225,6 @@ Value getbids(const Array& params, bool fHelp)
     return oBids;
 }
 
-Value gettrust(const Array& params, bool fHelp)
-{
-    if (fHelp || params.size() != 1)
-        throw runtime_error(
-            "gettrust  <ChainID>\n"
-            "Returns an object containing information about a ChainID's trust and credit scores\n"
-            "This should be used for debugging/confirmation purposes only; this is a resource intensive\n"
-            "operation and may slow down wallet operation, especially on smaller computers.\n"
-            "\nExamples:\n"
-            + HelpExampleCli("gettrust", "61Xw5qzVvbvumfKMUDcRYpzq4ELzCPnP1N")
-            + HelpExampleRpc("gettrust", "61Xw5qzVvbvumfKMUDcRYpzq4ELzCPnP1N")
-        );
-
-	Object o;
-
-	std::string query = params[0].get_str();
-
-
-	if (myfile.is_open()){
-		int i=1;
-		while (myfile.good()){
-			getline (myfile,line);
-			if (line.empty()) continue;
-            std::vector<std::string> strs;
-            boost::split(strs, line, boost::is_any_of(","));
-			oBids.push_back(Pair((strs[0].c_str()),strs[1].c_str()));
-
-			i++;
-	}
-	}
-	myfile.close();
-    return oBids;
-}
-
 /*
     Used for updating/reading spork settings on the network
 */

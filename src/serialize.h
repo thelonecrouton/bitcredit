@@ -108,15 +108,11 @@ enum
     void Unserialize(Stream& s, int nType, int nVersion) {                           \
         SerializationOp(s, CSerActionUnserialize(), nType, nVersion);                \
     }
-
-
-
+#define WRITEDATA(s, obj)   s.write((char*)&(obj), sizeof(obj))
+#define READDATA(s, obj)    s.read((char*)&(obj), sizeof(obj))
 /*
  * Basic Types
  */
-#define WRITEDATA(s, obj)   s.write((char*)&(obj), sizeof(obj))
-#define READDATA(s, obj)    s.read((char*)&(obj), sizeof(obj))
-
 inline unsigned int GetSerializeSize(char a,               int, int=0) { return sizeof(a); }
 inline unsigned int GetSerializeSize(signed char a,        int, int=0) { return sizeof(a); }
 inline unsigned int GetSerializeSize(unsigned char a,      int, int=0) { return sizeof(a); }

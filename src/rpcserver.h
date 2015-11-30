@@ -268,7 +268,7 @@ extern json_spirit::Value retrievedelegatetx(const json_spirit::Array& params, b
 extern json_spirit::Value dumpretrievalstrings(const json_spirit::Array& params, bool fHelp);
 extern json_spirit::Value clearretrievalstrings(const json_spirit::Array& params, bool fHelp);
 
-
+extern json_spirit::Value gettrust(const json_spirit::Array& params, bool fHelp);
 
 
 

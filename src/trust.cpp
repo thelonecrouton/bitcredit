@@ -252,24 +252,31 @@ void TrustEngine::createdb()
          "TOTALIN           INTEGER     DEFAULT 0," \
          "TOTALOUT          INTEGER     DEFAULT 0);");
 
-  sql.push_back("CREATE TABLE CLIENTS("  \
+  sql.push_back("CREATE TABLE PEERS("  \
          "ADDRESS TEXT PRIMARY KEY      NOT NULL," \
-         "BALANCE           INTEGER     DEFAULT 0," \
-         "INCOME            INTEGER     DEFAULT 0," \
-         "EXPENDITURE       INTEGER     DEFAULT 0," \
+         "CREDIT            INTEGER     DEFAULT 0," \
+         "DEBIT             INTEGER     DEFAULT 0," \
+         "TXCOUNT       	INTEGER     DEFAULT 0," \
          "TRUST             INTEGER     DEFAULT 0," \
          "CREDITSCORE       INTEGER     DEFAULT 0," \
-         "RATING            INTEGER     DEFAULT 0);");
+         "RATING       		INTEGER     DEFAULT 0," \
+         "TXDATE       		INTEGER     DEFAULT 0," \
+         "DUEDATE      		INTEGER     DEFAULT 0);");
 
   sql.push_back("CREATE TABLE TRUSTRATINGS("  \
          "ADDRESS TEXT PRIMARY KEY      NOT NULL," \
-         "CLIENT       		TEXT     	," \
          "BALANCE           INTEGER     DEFAULT 0," \
          "INCOME            INTEGER     DEFAULT 0," \
          "EXPENDITURE       INTEGER     DEFAULT 0," \
-         "TRUST             INTEGER     DEFAULT 0," \
-         "CREDITSCORE       INTEGER     DEFAULT 0," \
+         "TRUST            REAL     DEFAULT 0);");
+
+  sql.push_back("CREATE TABLE CREDITRATINGS("  \
+         "ADDRESS TEXT PRIMARY KEY      NOT NULL," \
+         "TRUST           INTEGER     DEFAULT 0," \
+         "VOTES            INTEGER     DEFAULT 0," \
+         "GROUP       INTEGER     DEFAULT 0," \
          "RATING            INTEGER     DEFAULT 0);");
+
 
   sql.push_back("CREATE TABLE TRANSACTIONS(" \
             "    ID INTEGER PRIMARY KEY AUTOINCREMENT," \
@@ -440,7 +447,7 @@ void buildtrustTableData()
 
 				{
 					int count = 0;
-					char* minerquery = sqlite3_mprintf("select count(*) from RAWDATA where ADDRESS = '%q'",address.c_str());
+					char* minerquery = sqlite3_mprintf("select count(*) from BLOCKS where MINER = '%q'",address.c_str());
 					rc = sqlite3_exec(rawdb, minerquery, callback, &count, &zErrMsg);
 					double points = count/chainActive.Tip()->nHeight;
 
@@ -451,21 +458,25 @@ void buildtrustTableData()
 					else
 						trust+= 0;
 				}
+         
+            char *xsql ="select * from TRUSTRATINGS where ADDRESS = ?";
+            sqlite3_stmt *stmt;
 
-            char *xsql ="select * from RAWDATA where ADDRESS = ?";
-
-			rc = sqlite3_prepare(rawdb,sql, strlen(sql), &stmt,  0 );
-			sqlite3_bind_text(stmt, 1,receiveAddress.data(), receiveAddress.size(), 0);
+			rc = sqlite3_prepare(rawdb,xsql, strlen(xsql), &stmt,  0 );
+			sqlite3_bind_text(stmt, 1,address.data(), address.size(), 0);
 			if (sqlite3_step(stmt) == SQLITE_ROW){
-
-				int64_t balance, txoutcount, totalout;
+				
+				int64_t balance, income, expenditure;
 				balance = sqlite3_column_int(stmt, 1);
-				txoutcount = sqlite3_column_int(stmt, 4);
-				totalout = sqlite3_column_int(stmt, 6);
+				income = sqlite3_column_int(stmt, 2);
+				expenditure = sqlite3_column_int(stmt, 3);
+				double trusto= sqlite3_column_int(stmt, 4);
+				
 				sqlite3_finalize(stmt);
-                if (fDebug)LogPrintf ("SQlite output record retrieved %s, %lld, %lld, %lld\n",receiveAddress, balance, txoutcount, totalout);
+                
+                if (fDebug)LogPrintf ("SQlite output record retrieved %s, %lld, %lld, %lld, %f\n",address, balance, income, expenditure,trusto );
 
-                char* updatequery = sqlite3_mprintf("update RAWDATA set BALANCE = %lld, TXOUTCOUNT =%lld, TOTALOUT= %lld where ADDRESS = '%q'",balance+theAmount,txoutcount+1,totalout+theAmount, receiveAddress.c_str() );
+                char* updatequery = sqlite3_mprintf("update TRUSTRATINGS set BALANCE = %lld, INCOME =%lld, EXPENDITURE= %lld, TRUST =%f where ADDRESS = '%q'",balance,avedailyincome,avedailyexpenditure,trust, address.c_str() );
 				rc = sqlite3_exec(rawdb, updatequery, callback, 0, &zErrMsg);
 
 				if( rc != SQLITE_OK ){
@@ -476,7 +487,7 @@ void buildtrustTableData()
 				}
 
 			}else{
-                char * insertquery = sqlite3_mprintf("insert into RAWDATA (ADDRESS, BALANCE, FIRSTSEEN, TXOUTCOUNT, TOTALOUT) values ('%q',%lld,%lld,%lld,%lld)",receiveAddress.c_str(), theAmount, pblock->nTime, 1, theAmount );
+                char * insertquery = sqlite3_mprintf("insert into TRUSTRATINGS (ADDRESS, BALANCE, INCOME, EXPENDITURE, TRUST) values ('%q',%lld,%lld,%lld,%lld)",address.c_str(), balance, avedailyincome, avedailyexpenditure, trust );
 				rc = sqlite3_exec(rawdb, insertquery, callback, 0, &zErrMsg);
 
 				if( rc != SQLITE_OK ){
@@ -488,13 +499,8 @@ void buildtrustTableData()
 				}
 				sqlite3_finalize(stmt);
 			}
-
-
-
 			}
-
-                }
-
+            }
             }
 
             if ( res == SQLITE_DONE || res==SQLITE_ERROR)
@@ -506,7 +512,7 @@ void buildtrustTableData()
     }
 }
 
-void getidtrust()
+string TrustEngine::getidtrust(string search)
 {
 
     sqlite3 *rawdb;
@@ -520,13 +526,33 @@ void getidtrust()
     }else{
        if(fDebug)LogPrintf("Opened database successfully\n");
     }
+    
+	char *sql ="select * from TRUSTRATINGS where ADDRESS = ?";
+    sqlite3_stmt *stmt;
+    std::stringstream ss;
 
-    sqlite3_stmt *statement;
+	rc = sqlite3_prepare(rawdb,sql, strlen(sql), &stmt,  0 );
+	sqlite3_bind_text(stmt, 1,search.data(), search.size(), 0);
+	if (sqlite3_step(stmt) == SQLITE_ROW){
+				
+		int64_t balance, income, expenditure;
+		balance = sqlite3_column_int(stmt, 1);
+		income = sqlite3_column_int(stmt, 2);
+		expenditure = sqlite3_column_int(stmt, 3);
+		double trusto= sqlite3_column_int(stmt, 4);
 
-    const char *query = "select * from RAWDATA";
+		sqlite3_finalize(stmt);
+		
+		ss <<" address :"  << search<< " balance :"<< balance <<" income :"<< income << " expenditure :"<< expenditure << " trust :"<< trusto;        
+               
+        if (fDebug)LogPrintf ("SQlite output record retrieved %s, %lld, %lld, %lld, %f\n",search, balance, income, expenditure, trusto);
 
+	}else{
+		LogPrintf ("SQlite record dopes not exist");
+		ss<< "No result";
+	}
 
-
+	return ss.str();
 
 }
 

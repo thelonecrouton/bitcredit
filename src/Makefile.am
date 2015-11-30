@@ -207,6 +207,7 @@ libbitcredit_server_a_SOURCES = \
   rpcnet.cpp \
   rpcrawtransaction.cpp \
   rpcserver.cpp \
+  rpctrust.cpp \
   script/sigcache.cpp \
   smessage.cpp \
   timedata.cpp \
