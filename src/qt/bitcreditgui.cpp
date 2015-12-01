@@ -7,14 +7,17 @@
 #include "bitcreditunits.h"
 #include "clientmodel.h"
 #include "guiconstants.h"
-#include "banknodemanager.h"
 #include "guiutil.h"
 #include "networkstyle.h"
 #include "notificator.h"
 #include "openuridialog.h"
 #include "optionsdialog.h"
 #include "optionsmodel.h"
+#include "sendmessagesdialog.h"
 #include "messagemodel.h"
+#include "messagepage.h"
+#include "invoicepage.h"
+#include "receiptpage.h"
 #include "rpcconsole.h"
 #include "utilitydialog.h"
 #include "exchangebrowser.h"
@@ -37,8 +40,6 @@
 #include "init.h"
 #include "ui_interface.h"
 #include "util.h"
-#include "pixmap.h"
-#include "carousel.h"
 #include <iostream>
 #include <QtGui>
 #include <QAction>
@@ -74,6 +75,7 @@
 #include <QTimer>
 #include <QToolBar>
 #include <QVBoxLayout>
+#include <QStatusBar>
 
 #if QT_VERSION < 0x050000
 #include <QTextDocument>
@@ -88,11 +90,16 @@
 
 #include <iostream>
 
+#include "databasebrowser.h"
+#include "databaseconnectionwidget.h"
+
+
 const QString BitcreditGUI::DEFAULT_WALLET = "~Default";
 
 BitcreditGUI::BitcreditGUI(const NetworkStyle *networkStyle, QWidget *parent) :
     QMainWindow(parent),
     clientModel(0),
+    messageModel(0),
     walletFrame(0),
     unitDisplayControl(0),
     labelEncryptionIcon(0),
@@ -134,7 +141,7 @@ BitcreditGUI::BitcreditGUI(const NetworkStyle *networkStyle, QWidget *parent) :
     QFontDatabase::addApplicationFont(":/fonts/preg");
     QFontDatabase::addApplicationFont(":/fonts/pxbold");
     QFontDatabase::addApplicationFont(":/fonts/mohave");
-    QString windowTitle = tr("Bitcredit Core") + " - ";
+    QString windowTitle = tr("Bitcredit ") + " - ";
 #ifdef ENABLE_WALLET
     /* if compiled with wallet support, -disablewallet can still disable the wallet */
     enableWallet = !GetBoolArg("-disablewallet", false);
@@ -236,6 +243,7 @@ BitcreditGUI::BitcreditGUI(const NetworkStyle *networkStyle, QWidget *parent) :
         /** Create wallet frame and make it the central widget */
         walletFrame = new WalletFrame(this);
         setCentralWidget(walletFrame);
+       
     } else
 #endif // ENABLE_WALLET
     {
@@ -252,9 +260,10 @@ BitcreditGUI::BitcreditGUI(const NetworkStyle *networkStyle, QWidget *parent) :
     // Needs walletFrame to be initialized
     createActions(networkStyle);
 
-
     // Create the toolbars
     createToolBars();
+    
+    statusBar()->hide();
 
     // Create system tray icon and notification
     createTrayIcon(networkStyle);
@@ -282,7 +291,7 @@ BitcreditGUI::BitcreditGUI(const NetworkStyle *networkStyle, QWidget *parent) :
     toolbar2->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
     toolbar2->setMovable(false);
     toolbar2->setObjectName("toolbar2");
-    toolbar2->setFixedHeight(40);
+    toolbar2->setFixedHeight(30);
     toolbar2->setFixedWidth(1000);
     toolbar2->setIconSize(QSize(18, 18));
 
@@ -358,21 +367,13 @@ void BitcreditGUI::createActions(const NetworkStyle *networkStyle)
 
     overviewAction = new QAction(QIcon(":/icons/null"), tr("&Overview"), this);
     overviewAction->setCheckable(true);
-    overviewAction->setShortcut(QKeySequence(Qt::ALT + Qt::Key_1));
-    //tabGroup->addAction(overviewAction);
+
+    dataAction = new QAction(QIcon(":/icons/null"), tr("&P2P Finance"), this);
+    dataAction->setCheckable(true);
 
     historyAction = new QAction(QIcon(":/icons/null"), tr("&Overview"), this);
     historyAction->setCheckable(true);
-    historyAction->setShortcut(QKeySequence(Qt::ALT + Qt::Key_4));
     tabGroup->addAction(historyAction);
-
-    vanityAction = new QAction(QIcon(":/icons/null"), tr("&Vanity"), this);
-    vanityAction->setCheckable(true);
-	tabGroup->addAction(vanityAction);
-
-    miningAction = new QAction(QIcon(":/icons/null"), tr("&Mining"), this);
-    miningAction->setCheckable(true);
-	tabGroup->addAction(miningAction);
 
     QToolBar *toolbarsend = addToolBar(tr("Send"));
     QToolBar *toolbarsend2 = addToolBar(tr("Receive"));
@@ -443,22 +444,37 @@ void BitcreditGUI::createActions(const NetworkStyle *networkStyle)
     QToolBar *toolbarstats = addToolBar(tr("Block Browser"));
     QToolBar *toolbarstats2 = addToolBar(tr("Market"));
     QToolBar *toolbarstats3 = addToolBar(tr("Bank Statistics"));
+    QToolBar *toolbarutils = addToolBar(tr("Mining"));
+    QToolBar *toolbarutils2 = addToolBar(tr("Vanity"));
+    QToolBar *toolbarutils3 = addToolBar(tr("Vote"));
 
-    toolbarstats->setIconSize(QSize(200, 35));
-    toolbarstats2->setIconSize(QSize(200, 35));
-    toolbarstats3->setIconSize(QSize(200, 35));
+    toolbarutils->setIconSize(QSize(100, 35));
+    toolbarutils2->setIconSize(QSize(100, 35));
+    toolbarutils3->setIconSize(QSize(100, 35));
+    toolbarutils->setObjectName("toolbar12");
+    toolbarutils2->setObjectName("toolbar13");
+    toolbarutils2->setObjectName("toolbar14");
+    toolbarutils->setFixedSize(100, 35);
+    toolbarutils2->setFixedSize(100, 35);
+    toolbarutils3->setFixedSize(100, 35);
+    toolbarstats->setIconSize(QSize(100, 35));
+    toolbarstats2->setIconSize(QSize(100, 35));
+    toolbarstats3->setIconSize(QSize(100, 35));
     toolbarstats->setObjectName("toolbar9");
     toolbarstats2->setObjectName("toolbar10");
     toolbarstats3->setObjectName("toolbar11");
-    toolbarstats->setFixedSize(200, 35);
-    toolbarstats2->setFixedSize(200, 35);
-    toolbarstats3->setFixedSize(200, 35);
+    toolbarstats->setFixedSize(100, 35);
+    toolbarstats2->setFixedSize(100, 35);
+    toolbarstats3->setFixedSize(100, 35);
     QHBoxLayout *vbox5 = new QHBoxLayout();
     vbox5->setContentsMargins(0, 0, 0, 0);
     vbox5->setSpacing(0);
     vbox5->addWidget(toolbarstats2);
     vbox5->addWidget(toolbarstats);
     vbox5->addWidget(toolbarstats3);
+    vbox5->addWidget(toolbarutils2);
+    vbox5->addWidget(toolbarutils);
+    vbox5->addWidget(toolbarutils3);
     wId4 = new QWidget(this);
     wId4->setContentsMargins(0, 0, 0, 0);
     wId4->setFixedSize(600, 35);
@@ -466,6 +482,16 @@ void BitcreditGUI::createActions(const NetworkStyle *networkStyle)
     wId4->setLayout(vbox5);
     wId4->setFocus();
     wId4->hide();
+
+    vanityAction = new QAction(QIcon(":/icons/null"), tr("&Vanity"), this);
+    vanityAction->setCheckable(true);
+    toolbarutils2->addAction(vanityAction);
+    tabGroup->addAction(vanityAction);
+
+    miningAction = new QAction(QIcon(":/icons/null"), tr("&Mining"), this);
+    miningAction->setCheckable(true);
+    toolbarutils->addAction(miningAction);
+    tabGroup->addAction(miningAction);
 
     blockAction = new QAction(QIcon(":/icons/null"), tr("&Block Crawler"), this);
     blockAction->setCheckable(true);
@@ -494,7 +520,6 @@ void BitcreditGUI::createActions(const NetworkStyle *networkStyle)
 
     actionSendReceive = new QAction(QIcon(":/icons/null"), tr("&Send / Receive"), this);
     actionSendReceive->setCheckable(true);
-    actionSendReceive->setShortcut(QKeySequence(Qt::ALT + Qt::Key_2));
 
     sendMessagesAction = new QAction(QIcon(":/icons/null"), tr("Send &Message"), this);
     sendMessagesAction->setCheckable(true);
@@ -507,8 +532,7 @@ void BitcreditGUI::createActions(const NetworkStyle *networkStyle)
     tabGroup->addAction(messageAction);
     
     actionSendReceiveMess = new QAction(QIcon(":/icons/null"), tr("&Messages"), this);
-    actionSendReceiveMess->setCheckable(true);
-    actionSendReceiveMess->setShortcut(QKeySequence(Qt::ALT + Qt::Key_3));    
+    actionSendReceiveMess->setCheckable(true); 
 
     invoiceAction = new QAction(QIcon(":/icons/null"), tr("&Invoices"), this);
     invoiceAction->setCheckable(true);
@@ -523,24 +547,17 @@ void BitcreditGUI::createActions(const NetworkStyle *networkStyle)
     actionSendReceiveinv = new QAction(QIcon(":/icons/null"), tr("&Receipts / Invoices"), this);
     actionSendReceiveinv->setCheckable(true);
 
-    actionSendReceivestats = new QAction(QIcon(":/icons/null"), tr("&Statistics"), this);
+    actionSendReceivestats = new QAction(QIcon(":/icons/null"), tr("&Utilities"), this);
     actionSendReceivestats->setCheckable(true);
 
-    bidAction = new QAction(QIcon(":/icons/null"), ("&BID + BACK!"), this);
+    bidAction = new QAction(QIcon(":/icons/null"), ("&Block Auction"), this);
     bidAction->setCheckable(true);
     tabGroup->addAction(bidAction);
 
     voteCoinsAction = new QAction(QIcon(":/icons/null"), tr("&Vote"), this);
     voteCoinsAction->setCheckable(true);
+    toolbarutils3->addAction(voteCoinsAction);
     tabGroup->addAction(voteCoinsAction);
-
-    sendMessagesAnonAction = new QAction(QIcon(":/icons/null"), tr("S&end Messages"), this);
-    sendMessagesAnonAction->setCheckable(true);
-    tabGroup->addAction(sendMessagesAnonAction);
-
-    banknodeManagerAction = new QAction(QIcon(":/icons/null"), tr("&Bank Nodes"), this);
-    banknodeManagerAction->setCheckable(true);
-    tabGroup->addAction(banknodeManagerAction);
 
 #ifdef ENABLE_WALLET
     // These showNormalIfMinimized are needed because Send Coins and Receive Coins
@@ -562,10 +579,12 @@ void BitcreditGUI::createActions(const NetworkStyle *networkStyle)
 
     connect(historyAction, SIGNAL(triggered()), this, SLOT(showNormalIfMinimized()));
     connect(historyAction, SIGNAL(triggered()), this, SLOT(gotoHistoryPage()));
+    connect(dataAction, SIGNAL(triggered()), this, SLOT(showNormalIfMinimized()));
+    connect(dataAction, SIGNAL(triggered()), this, SLOT(gotoDatabasePage()));
     connect(exchangeAction, SIGNAL(triggered()), this, SLOT(gotoExchangeBrowserPage()));
     connect(blockAction, SIGNAL(triggered()), this, SLOT(gotoBlockExplorerPage()));
     connect(blockAction, SIGNAL(triggered()), this, SLOT(showNormalIfMinimized()));
-    connect(bankstatsAction, SIGNAL(triggered()), this, SLOT(gotoBankStatisticsPage()));
+    connect(bankstatsAction, SIGNAL(triggered()), this, SLOT(gotoStatisticsPage()));
     connect(voteCoinsAction, SIGNAL(triggered()), this, SLOT(showNormalIfMinimized()));
     connect(voteCoinsAction, SIGNAL(triggered()), this, SLOT(gotoVoteCoinsPage()));
     connect(sendMessagesAction, SIGNAL(triggered()), this, SLOT(showNormalIfMinimized()));
@@ -576,8 +595,6 @@ void BitcreditGUI::createActions(const NetworkStyle *networkStyle)
     connect(invoiceAction, SIGNAL(triggered()), this, SLOT(gotoInvoicesPage()));
     connect(receiptAction, SIGNAL(triggered()), this, SLOT(showNormalIfMinimized()));
     connect(receiptAction, SIGNAL(triggered()), this, SLOT(gotoReceiptPage()));
-    connect(banknodeManagerAction, SIGNAL(triggered()), this, SLOT(showNormalIfMinimized()));
-    connect(banknodeManagerAction, SIGNAL(triggered()), this, SLOT(gotoBanknodeManagerPage()));
     connect(bidAction, SIGNAL(triggered()), this, SLOT(gotoBidPage()));
     connect(bidAction, SIGNAL(triggered()), this, SLOT(showNormalIfMinimized()));
     connect(vanityAction, SIGNAL(triggered()), this, SLOT(gotoVanityGenPage()));
@@ -744,14 +761,11 @@ void BitcreditGUI::createToolBars()
         spacer5->setObjectName("spacer5");*/
 		toolbar->addAction(historyAction);
     	toolbar->addAction(actionSendReceive);
+        toolbar->addAction(bidAction);
+        toolbar->addAction(dataAction);
         toolbar->addAction(actionSendReceiveMess);
    		toolbar->addAction(actionSendReceiveinv);
 		toolbar->addAction(actionSendReceivestats);
-		toolbar->addAction(banknodeManagerAction);
-		toolbar->addAction(voteCoinsAction);
-        toolbar->addAction(bidAction);
-        toolbar->addAction(vanityAction);
-        toolbar->addAction(miningAction);
         overviewAction->setChecked(true);
         historyAction->setChecked(true);
     }
@@ -845,10 +859,10 @@ void BitcreditGUI::setWalletActionsEnabled(bool enabled)
     messageAction->setEnabled(enabled);
     invoiceAction->setEnabled(enabled);
     receiptAction->setEnabled(enabled);
-    banknodeManagerAction->setEnabled(enabled);
     bidAction->setEnabled(enabled);
     vanityAction->setEnabled(enabled);
     miningAction->setEnabled(enabled);
+    dataAction->setEnabled(enabled);
 }
 
 void BitcreditGUI::createTrayIcon(const NetworkStyle *networkStyle)
@@ -957,6 +971,7 @@ void BitcreditGUI::gotoMiningPage()
     actionSendReceiveMess->setChecked(false);
     actionSendReceiveinv->setChecked(false);
     actionSendReceivestats->setChecked(false);
+    dataAction->setChecked(false);
     if (walletFrame) walletFrame->gotoMiningPage();
 
     wId2->hide();
@@ -972,7 +987,25 @@ void BitcreditGUI::gotoBlockExplorerPage()
     actionSendReceiveMess->setChecked(false);
     actionSendReceiveinv->setChecked(false);
     actionSendReceivestats->setChecked(false);
+    dataAction->setChecked(false);
     if (walletFrame) walletFrame->gotoBlockExplorerPage();
+
+    wId2->hide();
+    wId->hide();
+    wId3->hide();
+    wId4->hide();
+}
+
+void BitcreditGUI::gotoDatabasePage()
+{
+    blockAction->setChecked(false);
+    dataAction->setChecked(true);
+    bidAction->setChecked(false);
+    actionSendReceive->setChecked(false);
+    actionSendReceiveMess->setChecked(false);
+    actionSendReceiveinv->setChecked(false);
+    actionSendReceivestats->setChecked(false);
+    if (walletFrame) walletFrame->gotoDatabasePage();
 
     wId2->hide();
     wId->hide();
@@ -987,6 +1020,7 @@ void BitcreditGUI::gotoVanityGenPage()
     actionSendReceiveMess->setChecked(false);
     actionSendReceiveinv->setChecked(false);
     actionSendReceivestats->setChecked(false);
+    dataAction->setChecked(false);
     if (walletFrame) walletFrame->gotoVanityGenPage();
 
     wId2->hide();
@@ -1002,6 +1036,7 @@ void BitcreditGUI::gotoBidPage()
     actionSendReceiveMess->setChecked(false);
     actionSendReceiveinv->setChecked(false);
     actionSendReceivestats->setChecked(false);
+    dataAction->setChecked(false);
     if (walletFrame) walletFrame->gotoBidPage();
 
     wId2->hide();
@@ -1017,6 +1052,7 @@ void BitcreditGUI::gotoSendMessagesPage()
     actionSendReceive->setChecked(false);
     actionSendReceiveinv->setChecked(false);
     actionSendReceivestats->setChecked(false);
+    dataAction->setChecked(false);
     if (walletFrame) walletFrame->gotoSendMessagesPage();
 
     wId2->hide();
@@ -1033,6 +1069,7 @@ void BitcreditGUI::gotoMessagesPage()
     actionSendReceive->setChecked(false);
     actionSendReceiveinv->setChecked(false);
     actionSendReceivestats->setChecked(false);
+    dataAction->setChecked(false);
     if (walletFrame) walletFrame->gotoMessagesPage();
 
     wId2->hide();
@@ -1049,6 +1086,7 @@ void BitcreditGUI::gotoInvoicesPage()
     actionSendReceive->setChecked(false);
     actionSendReceiveMess->setChecked(false);
     actionSendReceivestats->setChecked(false);
+    dataAction->setChecked(false);
     if (walletFrame) walletFrame->gotoInvoicesPage();
 
     wId2->hide();
@@ -1065,6 +1103,7 @@ void BitcreditGUI::gotoReceiptPage()
     actionSendReceive->setChecked(false);
     actionSendReceiveMess->setChecked(false);
     actionSendReceivestats->setChecked(false);
+    dataAction->setChecked(false);
     if (walletFrame) walletFrame->gotoReceiptPage();
 
     wId2->hide();
@@ -1080,6 +1119,7 @@ void BitcreditGUI::gotoExchangeBrowserPage()
     actionSendReceive->setChecked(false);
     actionSendReceiveMess->setChecked(false);
     actionSendReceiveinv->setChecked(false);
+    dataAction->setChecked(false);
     if (walletFrame) walletFrame->gotoExchangeBrowserPage();
 
     wId2->hide();
@@ -1089,13 +1129,14 @@ void BitcreditGUI::gotoExchangeBrowserPage()
     wId4->raise();
 }
 
-void BitcreditGUI::gotoBankStatisticsPage()
+void BitcreditGUI::gotoStatisticsPage()
 {
     bankstatsAction->setChecked(true);
     actionSendReceive->setChecked(false);
     actionSendReceiveMess->setChecked(false);
     actionSendReceiveinv->setChecked(false);
-    if (walletFrame) walletFrame->gotoBankStatisticsPage();
+    dataAction->setChecked(false);
+    if (walletFrame) walletFrame->gotoStatisticsPage();
 
     wId2->hide();
     wId->hide();
@@ -1112,6 +1153,7 @@ void BitcreditGUI::gotoOverviewPage()
     actionSendReceiveMess->setChecked(false);
     actionSendReceiveinv->setChecked(false);
     actionSendReceivestats->setChecked(false);
+    dataAction->setChecked(false);
     if (walletFrame) walletFrame->gotoHistoryPage();
 
     wId2->hide();
@@ -1127,6 +1169,7 @@ void BitcreditGUI::gotoHistoryPage()
     actionSendReceiveMess->setChecked(false);
     actionSendReceiveinv->setChecked(false);
     actionSendReceivestats->setChecked(false);
+    dataAction->setChecked(false);
     if (walletFrame) walletFrame->gotoHistoryPage();
 
     wId2->hide();
@@ -1142,6 +1185,7 @@ void BitcreditGUI::gotoReceiveCoinsPage()
     actionSendReceiveMess->setChecked(false);
     actionSendReceiveinv->setChecked(false);
     actionSendReceivestats->setChecked(false);
+    dataAction->setChecked(false);
     if (walletFrame) walletFrame->gotoReceiveCoinsPage();
 
     wId2->show();
@@ -1159,6 +1203,7 @@ void BitcreditGUI::gotoSendCoinsPage(QString addr)
     actionSendReceiveMess->setChecked(false);
     actionSendReceiveinv->setChecked(false);
     actionSendReceivestats->setChecked(false);
+    dataAction->setChecked(false);
     if (walletFrame) walletFrame->gotoSendCoinsPage(addr);
 
     wId2->show();
@@ -1169,28 +1214,13 @@ void BitcreditGUI::gotoSendCoinsPage(QString addr)
 
 }
 
-void BitcreditGUI::gotoBanknodeManagerPage()
-{
-    banknodeManagerAction->setChecked(true);
-    actionSendReceive->setChecked(false);
-    actionSendReceiveMess->setChecked(false);
-    actionSendReceiveinv->setChecked(false);
-    actionSendReceivestats->setChecked(false);
-    if (walletFrame) walletFrame->gotoBanknodeManagerPage();
-
-    wId2->hide();
-    wId->hide();
-    wId3->hide();
-    wId4->hide();
-}
-
 void BitcreditGUI::gotoVoteCoinsPage(QString addr)
 {
-    banknodeManagerAction->setChecked(false);
     actionSendReceive->setChecked(false);
     actionSendReceiveMess->setChecked(false);
     actionSendReceiveinv->setChecked(false);
     actionSendReceivestats->setChecked(false);
+    dataAction->setChecked(false);
 	if (walletFrame) walletFrame->gotoVoteCoinsPage(addr);
 
     wId2->hide();
@@ -1230,7 +1260,7 @@ void BitcreditGUI::setNumBlocks(int count)
     if(!clientModel)
         return;
 
-    // Prevent orphan statusbar messages (e.g. hover Quit in main menu, wait until chain-sync starts -> garbelled text)
+    //Prevent orphan statusbar messages (e.g. hover Quit in main menu, wait until chain-sync starts -> garbelled text)
     statusBar()->clearMessage();
 
     // Acquire current block source
@@ -1300,11 +1330,11 @@ void BitcreditGUI::setNumBlocks(int count)
             timeBehindText = tr("%1 and %2").arg(tr("%n year(s)", "", years)).arg(tr("%n week(s)","", remainder/WEEK_IN_SECONDS));
         }
 
-        progressBarLabel->setVisible(true);
+        progressBarLabel->setVisible(false);
         progressBar->setFormat(tr("%1 behind").arg(timeBehindText));
         progressBar->setMaximum(1000000000);
         progressBar->setValue(clientModel->getVerificationProgress() * 1000000000.0 + 0.5);
-        progressBar->setVisible(true);
+        progressBar->setVisible(false);
 
         tooltip = tr("Catching up...") + QString("<br>") + tooltip;
         if(count != prevBlocks)
@@ -1446,6 +1476,8 @@ void BitcreditGUI::incomingTransaction(const QString& date, int unit, const CAmo
 
 void BitcreditGUI::incomingMessage(const QString& sent_datetime, QString from_address, QString to_address, QString message, int type)
 {
+    // Prevent balloon-spam when initial block download is in progress
+
     if (type == MessageTableEntry::Received)
     {
         notificator->notify(Notificator::Information,

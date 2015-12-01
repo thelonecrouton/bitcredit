@@ -28,6 +28,7 @@
 #include "utilmoneystr.h"
 #include "spork.h"
 #include "voting.h"
+#include "trust.h"
 #include "primitives/transaction.h"
 #include <fstream>
 #include <sstream>
@@ -36,14 +37,13 @@
 #include <boost/algorithm/string.hpp>
 #include <sys/stat.h>
 #include <stdio.h>
-
-
+#include <algorithm>
 
 #include <boost/algorithm/string/replace.hpp>
 #include <boost/filesystem.hpp>
 #include <boost/filesystem/fstream.hpp>
 #include <boost/thread.hpp>
-#include <boost/circular_buffer.hpp>
+
 using namespace boost;
 using namespace std;
 
@@ -67,12 +67,10 @@ CConditionVariable cvBlockChange;
 int nScriptCheckThreads = 0;
 bool fImporting = false;
 bool fReindex = false;
-bool fTxIndex = false;
+bool fTxIndex = true;
 bool fAddrIndex = false;
 bool fIsBareMultisigStd = true;
 unsigned int nCoinCacheSize = 5000;
-
-int64_t nAdvertisedBalance = 0;
 
 /** Fees smaller than this (in satoshi) are considered zero fee (for relaying and mining) */
 CFeeRate minRelayTxFee = CFeeRate(1000);
@@ -1953,29 +1951,14 @@ void static BuildAddrIndex(const CScript &script, const CExtDiskTxPos &pos, std:
     }
 }
 
-std::map<std::string,int64_t> getbalances(){
-std::map<std::string,int64_t> addressvalue;
-	fstream myfile ((GetDataDir()/ "balances.dat").string().c_str());
-	char * pEnd;
-	std::string line;
-	if (myfile.is_open()){
-		while ( myfile.good() ){
-			getline (myfile,line);
-			if (line.empty()) continue;
-			std::vector<std::string> strs;
-			boost::split(strs, line, boost::is_any_of(","));
-			addressvalue[strs[0]]=strtoll(strs[1].c_str(),&pEnd,10);
-		}
-		myfile.close();
-	}
-	return addressvalue;
-}
+boost::circular_buffer<string> last40blocks(40);
 
 bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pindex, CCoinsViewCache& view, bool fJustCheck)
 {
     AssertLockHeld(cs_main);
     std::map<std::string,int64_t>::iterator addrvalit;
 	std::map<std::string,int64_t> addressvalue = getbalances();
+
     // Check it again in case a previous version let a bad block in
     if (!CheckBlock(block, state, !fJustCheck, !fJustCheck))
         return false;
@@ -2124,7 +2107,8 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
 
 	}
 
-	// check for and reject blocks that have the same key in tthe coinbase tx look back 20 blocks in active chain
+	// check for and reject blocks that have the same key in tthe coinbase tx look back 40 blocks in active chain
+	// Warn during rc period then DoS active in deployment
 	if (pindex->nHeight>210000){
 		CBlock blockprev;
 		ReadBlockFromDisk(blockprev, pindex->pprev);
@@ -2132,27 +2116,30 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
 		CTxDestination address;
 		ExtractDestination(block.vtx[0].vout[0].scriptPubKey, address);
 		string newAddressString = CBitcreditAddress(address).ToString().c_str();
-		
+
 		if (block.vtx[0].vout[0].scriptPubKey == blockprev.vtx[0].vout[0].scriptPubKey){
         return state.DoS(100, error("ConnectBlock(): consecutive coinbase key detected"), REJECT_INVALID, "consecutive-coinbase");
 		}
 		
+		if (std::find(last40blocks.begin(), last40blocks.end(), newAddressString) != last40blocks.end())
+		{
+		LogPrintf("ConnectBlock(): coinbase key detected in 40 block period\n");
+		}
+
 		addrvalit = addressvalue.find(newAddressString);
 		if(addrvalit != addressvalue.end()){
-			if (!(addrvalit->second > 50000*COIN))
+			if (!(addrvalit->second >= 50000*COIN))
 				return state.DoS(100, error("ConnectBlock(): banknode miningkey invalid"), REJECT_INVALID, "invalid-bnminingkey");
-		}  		 
+		}
 	}
-	
+
 		LOCK(grantdb);
 		int64_t grantAward = 0;
 		if(isGrantAwardBlock(pindex->nHeight)){
-			//NOTE: getGrantAwards is returning false, this could mean the grant DB does not have enough information from previous blocks to process the current blocks.
-			//FIXME: Make sure grant awards are loaded.
 			if( !getGrantAwards(pindex->nHeight)){
 				return state.DoS(100, error("ConnectBlock() : grant awards error ( block=%d)",pindex->nHeight));
 			}
-			LogPrintf("Check Grant Awards rewarded for Block %d\n",pindex->nHeight);
+			if(fDebug)LogPrintf("Check Grant Awards rewarded for Block %d\n",pindex->nHeight);
 			unsigned int awardFound = 0;
 
 			for(gait = grantAwards.begin();gait != grantAwards.end();gait++){
@@ -2201,66 +2188,6 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
 				return state.DoS(100, error("ConnectBlock() : DB Corruption detected. Grant Awards not being paid or paying too much. \n Please restore a previous version of grantdb.dat and/or delete the old grantdb database."));
 			}
 		}
-
-	{
-    BOOST_FOREACH(const CTransaction& tx, block.vtx){
-
-
-		for (unsigned int j = 0; j < tx.vout.size();j++){
-			CTxDestination address;
-			ExtractDestination(tx.vout[j].scriptPubKey, address);
-			string receiveAddress = CBitcreditAddress( address ).ToString().c_str();
-			int64_t theAmount = tx.vout[ j ].nValue;
-			addressvalue[receiveAddress] = addressvalue[receiveAddress] + theAmount;
-			
-			if (fDebug)LogPrintf("New vout  address:- %s , amount :-%d\n",receiveAddress, theAmount);
-		}
-
-        for (size_t i = 0; i < tx.vin.size(); i++){
-			if (tx.IsCoinBase())
-				continue; 			
-            const CScript &script = tx.vin[i].scriptSig;
-            opcodetype opcode;
-            std::vector<unsigned char> vch;
-            uint256 prevoutHash, blockHash;
-            string spendAddress;
-            int64_t theAmount;
-            for (CScript::const_iterator pc = script.begin(); script.GetOp(pc, opcode, vch); ){
-                if (opcode == 33){
-                    CPubKey pubKey(vch);
-                    prevoutHash = tx.vin[i].prevout.hash;
-                    CTransaction txOfPrevOutput;
-                    if (!GetTransaction(prevoutHash, txOfPrevOutput, blockHash, true)){
-                        if (fDebug)LogPrintf("AddrDB error Could not get transaction %s (output %d) referenced by input #%d of transaction %s in block %s\n", prevoutHash.ToString().c_str(), tx.vin[i].prevout.n, (int) i, tx.GetHash().ToString().c_str(), block.GetHash().ToString().c_str());
-                        continue;
-                    }                               
-                    unsigned int nOut = tx.vin[i].prevout.n;
-                    if (nOut >= txOfPrevOutput.vout.size()){
-                        if (fDebug)LogPrintf("Output %u, not in transaction: %s\n", nOut, prevoutHash.ToString().c_str());
-                        continue;
-                    }
-                    const CTxOut &txOut = txOfPrevOutput.vout[nOut];
-                    CTxDestination addressRet;
-                    if (!ExtractDestination(txOut.scriptPubKey, addressRet)){
-                        if (fDebug)LogPrintf("ExtractDestination failed: %s\n", prevoutHash.ToString().c_str());
-                        continue;
-                    }                    
-                    spendAddress = CBitcreditAddress(addressRet).ToString().c_str();
-					theAmount =  txOut.nValue;
-					addressvalue[spendAddress] = addressvalue[spendAddress] - theAmount;
-                }
-            }
-         if (fDebug)LogPrintf("New vin address:-%s , amount%d\n",spendAddress, theAmount);
-        }
-    }
-		ofstream addrdb;
-		addrdb.open ((GetDataDir() / "balances.dat" ).string().c_str(), std::ofstream::trunc);
-
-		for(addrvalit = addressvalue.begin();addrvalit != addressvalue.end();++addrvalit){
-			addrdb << addrvalit->first << "," << addrvalit->second << endl;
-		}
-		addrdb.close();
-	}
 
     if (!control.Wait())
         return state.DoS(100, false);
@@ -2461,21 +2388,36 @@ static int64_t nTimeFlush = 0;
 static int64_t nTimeChainState = 0;
 static int64_t nTimePostConnect = 0;
 
+static int callback(void *NotUsed, int argc, char **argv, char **azColName){
+   int i;
+   for(i=0; i<argc; i++){
+      printf("%s = %s\n", azColName[i], argv[i] ? argv[i] : "NULL");
+   }
+   printf("\n");
+   return 0;
+}
+
 /**
  * Connect a new block to chainActive. pblock is either NULL or a pointer to a CBlock
  * corresponding to pindexNew, to bypass loading it again from disk.
  */
 bool static ConnectTip(CValidationState &state, CBlockIndex *pindexNew, CBlock *pblock) {
+	
     assert(pindexNew->pprev == chainActive.Tip());
+    
     mempool.check(pcoinsTip);
+    
     // Read block from disk.
     int64_t nTime1 = GetTimeMicros();
+    
     CBlock block;
+    
     if (!pblock) {
         if (!ReadBlockFromDisk(block, pindexNew))
             return state.Abort("Failed to read block");
         pblock = &block;
     }
+    
     // Apply the block atomically to the chain state.
     int64_t nTime2 = GetTimeMicros(); nTimeReadFromDisk += nTime2 - nTime1;
     int64_t nTime3;
@@ -2520,14 +2462,164 @@ bool static ConnectTip(CValidationState &state, CBlockIndex *pindexNew, CBlock *
     BOOST_FOREACH(const CTransaction &tx, pblock->vtx) {
         SyncWithWallets(tx, pblock);
     }
-		{
-		ofstream mdb;
-		CTxDestination m;
-		ExtractDestination(pblock->vtx[0].vout[0].scriptPubKey, m);
-		string miner = CBitcreditAddress(m).ToString().c_str();
-		mdb.open ((GetDataDir() / "miners.dat" ).string().c_str(), std::ofstream::app);
-		mdb << miner<< ","<< chainActive.Tip()->nHeight << endl;
+
+	sqlite3 *rawdb;
+	sqlite3_stmt *stmt;
+	char *zErrMsg = 0;
+	int rc;
+
+    boost::filesystem::path trustdb = (GetDataDir() / "ratings/rawdata.db").string().c_str();
+    if(!(boost::filesystem::exists(trustdb))){
+
+	TrustEngine db;
+	db.createdb();
+    }
+	
+	CTxDestination m;
+    ExtractDestination(pblock->vtx[0].vout[0].scriptPubKey, m);
+	string miner = CBitcreditAddress(m).ToString().c_str();
+	last40blocks.push_back(miner);
+			
+    std::map<std::string,int64_t>::iterator addrvalit;
+	std::map<std::string,int64_t> addressvalue = getbalances();
+    BOOST_FOREACH(const CTransaction& tx, pblock->vtx){
+	
+	sqlite3_open((GetDataDir() / "ratings/rawdata.db").string().c_str(), &rawdb);
+    char * insertquery = sqlite3_mprintf("insert into BLOCKS (ID, HASH, TIME, MINER) values (%lld,'%q',%lld,'%q')",pindexNew->nHeight, pblock->GetHash().ToString().c_str(), pblock->nTime, miner.c_str());
+	rc = sqlite3_exec(rawdb, insertquery, callback, 0, &zErrMsg);
+
+    char * txquery = sqlite3_mprintf("insert into TRANSACTIONS (HASH, BLOCKNUM) values ('%q','%lld')", pblock->GetHash().ToString().c_str(), pindexNew->nHeight);
+	rc = sqlite3_exec(rawdb, txquery, callback, 0, &zErrMsg);
+	
+        for (unsigned int j = 0; j < tx.vout.size();j++){
+			CTxDestination address;
+			ExtractDestination(tx.vout[j].scriptPubKey, address);
+			string receiveAddress = CBitcreditAddress( address ).ToString().c_str();
+			int64_t theAmount = tx.vout[ j ].nValue;
+			addressvalue[receiveAddress] = addressvalue[receiveAddress] + theAmount;
+		
+            char * insertquery2 = sqlite3_mprintf("insert into OUTPUTS ( TXID, DADDR, VALUE, OFFSET )" \
+             "values ('%q','%q',%lld,%lld)",tx.GetHash().ToString().c_str(), receiveAddress.c_str(), theAmount,  j);
+            rc = sqlite3_exec(rawdb, insertquery2, callback, 0, &zErrMsg);
+
+            char *sql ="select * from RAWDATA where ADDRESS = ?";
+
+			rc = sqlite3_prepare(rawdb,sql, strlen(sql), &stmt,  0 );
+			sqlite3_bind_text(stmt, 1,receiveAddress.data(), receiveAddress.size(), 0);
+			if (sqlite3_step(stmt) == SQLITE_ROW){
+
+				int64_t balance, txoutcount, totalout;
+				balance = sqlite3_column_int(stmt, 1);
+				txoutcount = sqlite3_column_int(stmt, 4);
+				totalout = sqlite3_column_int(stmt, 6);
+				sqlite3_finalize(stmt);
+                if (fDebug)LogPrintf ("SQlite output record retrieved %s, %lld, %lld, %lld\n",receiveAddress, balance, txoutcount, totalout);
+
+                char* updatequery = sqlite3_mprintf("update RAWDATA set BALANCE = %lld, TXOUTCOUNT =%lld, TOTALOUT= %lld where ADDRESS = '%q'",balance+theAmount,txoutcount+1,totalout+theAmount, receiveAddress.c_str() );
+				rc = sqlite3_exec(rawdb, updatequery, callback, 0, &zErrMsg);
+
+				if( rc != SQLITE_OK ){
+					if (fDebug)LogPrintf("SQL update output error: %s\n", zErrMsg);
+					sqlite3_free(zErrMsg);
+				}else{
+					if (fDebug)LogPrintf( "update created successfully\n");
+				}
+
+			}else{
+                char * insertquery = sqlite3_mprintf("insert into RAWDATA (ADDRESS, BALANCE, FIRSTSEEN, TXOUTCOUNT, TOTALOUT) values ('%q',%lld,%lld,%lld,%lld)",receiveAddress.c_str(), theAmount, pblock->nTime, 1, theAmount );
+				rc = sqlite3_exec(rawdb, insertquery, callback, 0, &zErrMsg);
+
+				if( rc != SQLITE_OK ){
+					if (fDebug)LogPrintf("SQL insert error: %s\n", zErrMsg);
+					sqlite3_free(zErrMsg);
+				}
+				else{
+                    if (fDebug)LogPrintf( "insert created successfully\n");
+				}
+				sqlite3_finalize(stmt);
+			}
 		}
+
+        for (size_t i = 0; i < tx.vin.size(); i++){
+			if (tx.IsCoinBase())
+				continue;
+            const CScript &script = tx.vin[i].scriptSig;
+            opcodetype opcode;
+            std::vector<unsigned char> vch;
+            uint256 prevoutHash, blockHash;
+            string spendAddress;
+            int64_t theAmount;
+            for (CScript::const_iterator pc = script.begin(); script.GetOp(pc, opcode, vch); ){
+                if (opcode == 33){
+                    CPubKey pubKey(vch);
+                    prevoutHash = tx.vin[i].prevout.hash;
+                    CTransaction txOfPrevOutput;
+                    if (!GetTransaction(prevoutHash, txOfPrevOutput, blockHash, true)){
+                        if (fDebug)LogPrintf("AddrDB error Could not get transaction %s (output %d) referenced by input #%d of transaction %s in block %s\n"
+                        , prevoutHash.ToString().c_str(), tx.vin[i].prevout.n, (int) i, tx.GetHash().ToString().c_str(), pblock->GetHash().ToString().c_str());
+                        continue;
+                    }
+                    unsigned int nOut = tx.vin[i].prevout.n;
+                    if (nOut >= txOfPrevOutput.vout.size()){
+                        if (fDebug)LogPrintf("Output %u, not in transaction: %s\n", nOut, prevoutHash.ToString().c_str());
+                        continue;
+                    }
+                    const CTxOut &txOut = txOfPrevOutput.vout[nOut];
+                    CTxDestination addressRet;
+                    if (!ExtractDestination(txOut.scriptPubKey, addressRet)){
+                        if (fDebug)LogPrintf("ExtractDestination failed: %s\n", prevoutHash.ToString().c_str());
+                        continue;
+                    }
+                    spendAddress = CBitcreditAddress(addressRet).ToString().c_str();
+					theAmount =  txOut.nValue;
+					addressvalue[spendAddress] = addressvalue[spendAddress] - theAmount;
+
+					char * insertquery2 = sqlite3_mprintf("insert into INPUTS (TXID, SRCADD, VALUE,  OFFSET )" \
+                    "values ('%q','%q',%lld,%ld)",tx.GetHash().ToString().c_str(), spendAddress.c_str(), theAmount,  i);
+					rc = sqlite3_exec(rawdb, insertquery2, callback, 0, &zErrMsg);
+
+					const char *updatequery ="select * from RAWDATA where ADDRESS = ?";
+
+					rc = sqlite3_prepare(rawdb,updatequery, strlen(updatequery), &stmt,  0 );
+					sqlite3_bind_text(stmt, 1,spendAddress.data(), spendAddress.size(), 0);
+					if (sqlite3_step(stmt) == SQLITE_ROW){
+						int64_t balance, txincount, totalin;
+						balance = sqlite3_column_int(stmt, 1);
+						txincount = sqlite3_column_int(stmt, 3);
+						totalin = sqlite3_column_int(stmt, 5);
+
+						if (fDebug)LogPrintf ("SQlite input record retrieved %s, %lld, %lld, %lld \n",spendAddress, balance, txincount, totalin);
+						sqlite3_finalize(stmt);
+                        char *updatequery = sqlite3_mprintf("update RAWDATA set BALANCE = %lld , TXINCOUNT =%lld,  TOTALIN= %lld where ADDRESS = '%q'",balance-theAmount,txincount+1,totalin+theAmount, spendAddress.c_str());
+
+						rc = sqlite3_exec(rawdb, updatequery, callback, 0, &zErrMsg);
+
+						if( rc != SQLITE_OK ){
+							if (fDebug)LogPrintf("SQL update output error: %s\n", zErrMsg);
+							sqlite3_free(zErrMsg);
+						}else{
+							if (fDebug)LogPrintf( "update created successfully\n");
+						}
+					}
+				
+                }
+            }
+        }
+	if(sqlite3_close(rawdb) != SQLITE_OK ){
+		if (fDebug)LogPrintf("SQL unable to close database %s\n", sqlite3_errmsg(rawdb));
+		sqlite3_free(zErrMsg);
+	}else{
+		if (fDebug)LogPrintf( "database closed successfully\n");
+		}
+    }
+		ofstream addrdb;
+		addrdb.open ((GetDataDir() / "ratings/balances.dat" ).string().c_str(), std::ofstream::trunc);
+
+		for(addrvalit = addressvalue.begin();addrvalit != addressvalue.end();++addrvalit){
+			addrdb << addrvalit->first << "," << addrvalit->second << endl;
+		}
+		addrdb.close();
+
     int64_t nTime6 = GetTimeMicros(); nTimePostConnect += nTime6 - nTime5; nTimeTotal += nTime6 - nTime1;
     LogPrint("bench", "  - Connect postprocess: %.2fms [%.2fs]\n", (nTime6 - nTime5) * 0.001, nTimePostConnect * 0.000001);
     LogPrint("bench", "- Connect block: %.2fms [%.2fs]\n", (nTime6 - nTime1) * 0.001, nTimeTotal * 0.000001);
@@ -3632,6 +3724,10 @@ bool CVerifyDB::VerifyDB(CCoinsView *coinsview, int nCheckLevel, int nCheckDepth
             } else
                 nGoodTransactions += block.vtx.size();
         }
+	CTxDestination m;
+    ExtractDestination(block.vtx[0].vout[0].scriptPubKey, m);
+	string miner = CBitcreditAddress(m).ToString().c_str();
+	last40blocks.push_back(miner);
     }
     if (pindexFailure)
         return error("VerifyDB(): *** coin database inconsistencies found (last %i blocks, %i good transactions before that)\n", chainActive.Height() - pindexFailure->nHeight + 1, nGoodTransactions);
@@ -3684,7 +3780,7 @@ bool InitBlockIndex() {
         return true;
 
     // Use the provided setting for -txindex in the new database
-    fTxIndex = GetBoolArg("-txindex", false);
+    fTxIndex = GetBoolArg("-txindex", true);
     pblocktree->WriteFlag("txindex", fTxIndex);
     fAddrIndex = GetBoolArg("-addrindex", false);
     pblocktree->WriteFlag("addrindex", fAddrIndex);

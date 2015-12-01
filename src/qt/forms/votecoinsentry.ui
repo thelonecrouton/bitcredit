@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>747</width>
-    <height>54</height>
+    <height>44</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -44,7 +44,7 @@
      <item>
       <widget class="QValidatedLineEdit" name="payTo">
        <property name="toolTip">
-        <string>The address to send the payment to (e.g. 5qoFUCqPUE4pyjus6U6jD6ba4oHR6NZ7c7)</string>
+        <string>The address to send the payment to (e.g. 1NS17iag9jJgTHD1VXjvLCEnZuQ3rJDE9L)</string>
        </property>
        <property name="maxLength">
         <number>34</number>
@@ -54,7 +54,7 @@
      <item>
       <widget class="QToolButton" name="addressBookButton">
        <property name="toolTip">
-        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; color:#ffffff;&quot;&gt;Choose address from address book&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        <string>Choose address from address book</string>
        </property>
        <property name="text">
         <string/>
@@ -71,7 +71,7 @@
      <item>
       <widget class="QToolButton" name="pasteButton">
        <property name="toolTip">
-        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; color:#ffffff;&quot;&gt;Paste address from clipboard&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        <string>Paste address from clipboard</string>
        </property>
        <property name="text">
         <string/>
@@ -88,7 +88,7 @@
      <item>
       <widget class="QToolButton" name="deleteButton">
        <property name="toolTip">
-        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; color:#ffffff;&quot;&gt;Remove this recipient&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        <string>Remove this recipient</string>
        </property>
        <property name="text">
         <string/>
@@ -108,9 +108,6 @@
      </property>
      <property name="maxVisibleItems">
       <number>9</number>
-     </property>
-     <property name="frame">
-      <bool>false</bool>
      </property>
      <item>
       <property name="text">

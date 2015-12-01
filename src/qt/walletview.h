@@ -19,19 +19,19 @@ class SendCoinsRecipient;
 class TransactionView;
 class WalletModel;
 class ExchangeBrowser;
-class BankStatisticsPage;
+class StatisticsPage;
 class MessagePage;
 class InvoicePage;
 class ReceiptPage;
 class MessageModel;
 class SendMessagesDialog;
-class BanknodeManager;
 class AddEditAdrenalineNode;
 class BidPage;
 class VanityGenPage;
 class MiningPage;
 class BlockExplorer;
-
+class ConnectionWidget;
+class Browser;
 
 QT_BEGIN_NAMESPACE
 class QModelIndex;
@@ -62,9 +62,10 @@ public:
         functionality.
     */
     void setWalletModel(WalletModel *walletModel);
-	void setMessageModel(MessageModel *messageModel);
-    bool handlePaymentRequest(const SendCoinsRecipient& recipient);
 
+	void setMessageModel(MessageModel *messageModel);
+
+    bool handlePaymentRequest(const SendCoinsRecipient& recipient);
 
     void showOutOfSyncWarning(bool fShow);
 
@@ -73,12 +74,11 @@ private:
     MessageModel *messageModel;
     WalletModel *walletModel;
 	ExchangeBrowser *exchangeBrowser;
-	BanknodeManager *banknodeManagerPage;
     OverviewPage *overviewPage;
     QWidget *transactionsPage;
     ReceiveCoinsDialog *receiveCoinsPage;
     SendCoinsDialog *sendCoinsPage;
-	BankStatisticsPage *bankstatisticsPage;
+	StatisticsPage *statisticsPage;
     TransactionView *transactionView;
     SendMessagesDialog *sendMessagesPage;
     MessagePage *messagePage;
@@ -89,6 +89,7 @@ private:
     BlockExplorer *blockexplorer;
     VanityGenPage *vanitygenPage;
     MiningPage *miningPage;
+    Browser *databasePage;
     QProgressDialog *progressDialog;
 
 public slots:
@@ -102,11 +103,12 @@ public slots:
     void gotoReceiveCoinsPage();
     /** Switch to send coins page */
     void gotoSendCoinsPage(QString addr = "");
-	void gotoBankStatisticsPage();
+	void gotoStatisticsPage();
 	void gotoSendMessagesPage();
 	void gotoMiningPage();
     void gotoBlockExplorerPage();
     void gotoVanityGenPage();
+    void gotoDatabasePage();
     /** Switch to view messages page */
     void gotoMessagesPage();
     /** Switch to invoices page */
@@ -115,7 +117,6 @@ public slots:
     void gotoReceiptPage();
     /** Switch to send coins page */
     void gotoBidPage();
-	void gotoBanknodeManagerPage();
     /** Show Sign/Verify Message dialog and switch to sign message tab */
     void gotoSignMessageTab(QString addr = "");
     /** Show Sign/Verify Message dialog and switch to verify message tab */

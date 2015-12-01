@@ -16,12 +16,11 @@
 #include <QClipboard>
 #include <QDataWidgetMapper>
 
-SendMessagesDialog::SendMessagesDialog(Mode mode, Type type, QWidget *parent) :
+SendMessagesDialog::SendMessagesDialog(QWidget *parent) :
     QDialog(parent),
     ui(new Ui::SendMessagesDialog),
-    model(0),
-    mode(mode),
-    type(type)
+    walletmodel(0),
+    model(0)
 {
 
     ui->setupUi(this);
@@ -50,8 +49,6 @@ SendMessagesDialog::SendMessagesDialog(Mode mode, Type type, QWidget *parent) :
 
     if(type == SendMessagesDialog::Page)
         ui->closeButton->hide();
-        
-        //this->setStyleSheet("background-image:url(:/images/background);");
 }
 
 void SendMessagesDialog::setModel(MessageModel *model)
@@ -73,6 +70,11 @@ void SendMessagesDialog::setModel(MessageModel *model)
         if(entry)
             entry->setModel(model);
     }
+}
+
+void SendMessagesDialog::setWalletModel(WalletModel *walletmodel)
+{
+    this->walletmodel = walletmodel;
 }
 
 void SendMessagesDialog::loadRow(int row)
@@ -141,13 +143,10 @@ void SendMessagesDialog::on_pasteButton_clicked()
 
 void SendMessagesDialog::on_addressBookButton_clicked()
 {
-    if(!model)
+    if(!walletmodel)
         return;
-
     AddressBookPage dlg(AddressBookPage::ForSelection, AddressBookPage::ReceivingTab, this);
-
-    dlg.setModel(model->getWalletModel()->getAddressTableModel());
-
+    dlg.setModel(walletmodel->getAddressTableModel());
     if(dlg.exec())
     {
         ui->addressFrom->setText(dlg.getReturnValue());
@@ -378,9 +377,9 @@ bool SendMessagesDialog::handleURI(const QString &uri)
 {
     SendMessagessRecipient rv;
     // URI has to be valid
-    if (GUIUtil::parseBitcreditURI(uri, &rv))
+    if (GUIUtil::parseBitcoinURI(uri, &rv))
     {
-        CBitcreditAddress address(rv.address.toStdString());
+        CBitcoinAddress address(rv.address.toStdString());
         if (!address.IsValid())
             return false;
         pasteEntry(rv);

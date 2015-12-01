@@ -40,6 +40,7 @@
 #include <vector>
 
 #include <boost/unordered_map.hpp>
+#include <boost/circular_buffer.hpp>
 using namespace std;
 
 class CBlockIndex;
@@ -109,8 +110,6 @@ static const unsigned char REJECT_DUST = 0x41;
 static const unsigned char REJECT_INSUFFICIENTFEE = 0x42;
 static const unsigned char REJECT_CHECKPOINT = 0x43;
 
-extern int64_t nAdvertisedBalance;
-
 struct BlockHasher
 {
     size_t operator()(const uint256& hash) const { return hash.GetLow64(); }
@@ -119,6 +118,7 @@ struct BlockHasher
 extern CScript COINBASE_FLAGS;
 extern CScript BANK_SCRIPT;
 extern CScript RESERVE_SCRIPT;
+extern boost::circular_buffer<string> last40blocks;
 extern CCriticalSection cs_main;
 extern CTxMemPool mempool;
 typedef boost::unordered_map<uint256, CBlockIndex*, BlockHasher> BlockMap;

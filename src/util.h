@@ -40,9 +40,13 @@ extern int64_t enforceBanknodePaymentsTime;
 extern std::string strBankNodeAddr;
 extern int nBanknodeMinProtocol;
 extern int keysLoaded;
+extern int64_t nAdvertisedBalance;
 extern bool fSucessfullyLoaded;
 extern std::vector<int64_t> darkSendDenominations;
-
+extern std::string dbuser;
+extern std::string dbname;
+extern std::string dbport;
+extern std::string dbpass;
 extern std::map<std::string, std::string> mapArgs;
 extern std::map<std::string, std::vector<std::string> > mapMultiArgs;
 extern bool fDebug;

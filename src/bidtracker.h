@@ -2,34 +2,43 @@
 #define BIDTRACKER_H
 
 #include "main.h"
+
 #include <curl/curl.h>
 #include <iostream>
 #include <string>
 #include "json/json_spirit.h"
 
+using namespace json_spirit;
+
 #ifndef BOOST_SPIRIT_THREADSAFE
 #define BOOST_SPIRIT_THREADSAFE
 #endif
+
 void getbids();
+
 extern int totalbid;
 extern std::map<std::string,double> getbidtracker();
-class Bidtracker 
-{ 
+
+class Bidtracker
+{
 public:
 
-    CURL *curl; 
+      CURLcode res;
+    CURL *curl;
 	void btcgetunspent();
-	void ltcgetunspent();
-	void dashgetunspent();
-	double getbalance(std::string url, double balance);
-	double usdbtc(); 
-	long double ltcbtc();
-	long double dashbtc();
+	void btcgetunspentbackup();
+	void btcsortunspent();
+	void btcsortunspentbackup();
+    double getbalance(string url);
+	double usdbtc();
 	long double bcrbtc();
-	double credit(); 
+	double btcgetprice();
+	double bcrgetprice();
+	double credit();
 	double newcredit;
 	double totalcredit;
-	void combine();    	
+	void combine();
 };
+
 
 #endif // BIDTRACKER_H

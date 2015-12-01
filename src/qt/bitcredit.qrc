@@ -138,12 +138,5 @@
         <file alias="pink">res/css/pink.qss</file>
         <file alias="purple">res/css/purple.qss</file>
         <file alias="turq">res/css/turq.qss</file>
-        <file alias="darkstylesheet">res/css/qdarkstyle.qss</file>        
-        <file alias="main.css">res/css/main.css</file>
-        <file alias="contextMenu.css">res/css/contextMenu.css</file>
-        <file alias="footable.core.css">res/css/footable.core.css</file>
-        <file alias="footable.metro.css">res/css/footable.metro.css</file>
-        <file alias="normalize.css">res/css/normalize.css</file>
-        <file alias="font-awesome.min.css">res/css/font-awesome.min.css</file>
     </qresource>
 </RCC>

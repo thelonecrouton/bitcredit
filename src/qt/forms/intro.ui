@@ -212,15 +212,12 @@ p, li { white-space: pre-wrap; }
         <string/>
        </property>
        <property name="pixmap">
-        <pixmap>:/images/intro</pixmap>
+        <pixmap resource="../bitcredit.qrc">:/images/intro</pixmap>
        </property>
        <property name="scaledContents">
         <bool>true</bool>
        </property>
       </widget>
-      <zorder>label</zorder>
-      <zorder>label_3</zorder>
-      <zorder>licenseBrowser</zorder>
      </widget>
     </item>
     <item>
@@ -248,7 +245,7 @@ p, li { white-space: pre-wrap; }
   </widget>
  </widget>
  <resources>
-  <include location="../../../../bicreditsnew-themeswitcherv2/src/qt/bitcredit.qrc"/>
+  <include location="../bitcredit.qrc"/>
  </resources>
  <connections>
   <connection>

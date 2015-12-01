@@ -52,6 +52,12 @@ public:
         DarksendRounds,    // int
         anonymizeBitcreditAmount, //int
         OptionIDRowCount,
+        DriverName, // QString
+        DatabaseName, // QString
+        UserName, // QString
+        Password, // QString
+        HostName, // QString
+        Port // int
     };
 
     void Init();

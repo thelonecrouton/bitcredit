@@ -57,7 +57,7 @@ MiningPage::MiningPage(QWidget *parent) :
 
     // give the axes some labels:
     ui->diffplot_hashrate->xAxis->setLabel(tr("Blocks"));
-    ui->diffplot_hashrate->yAxis->setLabel(tr("Hashrate MH/s"));
+    ui->diffplot_hashrate->yAxis->setLabel(tr("Hashrate H/s"));
 
     // set the pens
     //a13469, 6c3d94
@@ -263,7 +263,7 @@ void MiningPage::updatePlot()
     while(i >= 0 && itr2 != NULL)
     {
         vX2[i] = itr2->nHeight;
-        vY2[i] =  (double)GetNetworkHashPS(120, itr2->nHeight).get_int64()/1000000;//GetDifficulty(itr);
+        vY2[i] =  (double)GetNetworkHashPS(120, itr2->nHeight).get_int64();//GetDifficulty(itr);
         diffMax = std::max<double>(diffMax, vY2[i]);
 
         itr2 = itr2->pprev;

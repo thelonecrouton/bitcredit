@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>686</width>
+    <width>803</width>
     <height>217</height>
    </rect>
   </property>
@@ -24,7 +24,7 @@
        <rect>
         <x>0</x>
         <y>0</y>
-        <width>666</width>
+        <width>783</width>
         <height>162</height>
        </rect>
       </property>
@@ -129,6 +129,17 @@
         </spacer>
        </item>
       </layout>
+     </item>
+     <item>
+      <widget class="QPushButton" name="sweepButton">
+       <property name="text">
+        <string>Sweep</string>
+       </property>
+       <property name="icon">
+        <iconset resource="../bitcredit.qrc">
+         <normaloff>:/icons/send</normaloff>:/icons/send</iconset>
+       </property>
+      </widget>
      </item>
      <item>
       <widget class="QPushButton" name="sendButton">

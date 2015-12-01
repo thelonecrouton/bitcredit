@@ -40,7 +40,7 @@ VoteCoinsDialog::VoteCoinsDialog(QWidget *parent) :
 
     fNewRecipientAllowed = true;
     
-    this->setStyleSheet("background-image:url(:/images/background);");
+    //this->setStyleSheet("background-image:url(:/images/background);");
 }
 
 void VoteCoinsDialog::setModel(WalletModel *model)

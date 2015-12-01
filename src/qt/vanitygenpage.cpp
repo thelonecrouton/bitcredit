@@ -412,7 +412,7 @@ void VanityGenPage::updateVanityGenUI(){
                 } else{
                     if(VanityGenWorkList[i].state != 2){
                         double time;
-                        char * unit;
+                        const char * unit;
                         time = VanityGenWorkList[i].difficulty.toDouble()/VanityGenHashrate;
                         unit = "s";
                         if (time > 60) {

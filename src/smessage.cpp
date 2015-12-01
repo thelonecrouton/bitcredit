@@ -52,10 +52,9 @@ Notes:
 #include "base58.h"
 #include "crypter.h"
 #include "db.h"
-#include "init.h" // pwalletMain
+#include "init.h"
 #include "rpcprotocol.h"
-//#include "txdb-leveldb.h"
-#include "leveldbwrapper.h"
+#include "dbwrapper.h"
 #include "lz4/lz4.c"
 #include "xxhash/xxhash.h"
 #include "xxhash/xxhash.c"
@@ -867,8 +866,7 @@ int SecureMsgReadIni()
     if (fDebugSmsg)
         LogPrintf("SecureMsgReadIni()\n");
 
-    fs::path fullpath = GetDataDir() / "smsg.ini";
-
+    fs::path fullpath = GetDataDir() / "bitcredit.conf";
 
     FILE *fp;
     errno = 0;

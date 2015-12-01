@@ -13,9 +13,6 @@
   <property name="windowTitle">
    <string>Form</string>
   </property>
-  <property name="styleSheet">
-   <string notr="true"/>
-  </property>
   <property name="frameShape">
    <enum>QFrame::StyledPanel</enum>
   </property>
@@ -36,9 +33,6 @@
        <property name="toolTip">
         <string>The address to send the payment to  (e.g. 4Zo1ga6xuKuQ7JV7M9rGDoxdbYwV5zgQJ5)</string>
        </property>
-       <property name="styleSheet">
-        <string notr="true"/>
-       </property>
        <property name="maxLength">
         <number>34</number>
        </property>
@@ -48,9 +42,6 @@
       <widget class="QToolButton" name="addressBookButton">
        <property name="toolTip">
         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; color:#ffffff;&quot;&gt;Choose address from address book&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-       </property>
-       <property name="styleSheet">
-        <string notr="true"/>
        </property>
        <property name="text">
         <string/>
@@ -99,9 +90,6 @@
    </item>
    <item row="6" column="0">
     <widget class="QLabel" name="messageLabel">
-     <property name="styleSheet">
-      <string notr="true"/>
-     </property>
      <property name="text">
       <string>&amp;Message:</string>
      </property>
@@ -115,9 +103,6 @@
    </item>
    <item row="3" column="0">
     <widget class="QLabel" name="label_2">
-     <property name="styleSheet">
-      <string notr="true"/>
-     </property>
      <property name="text">
       <string>Send &amp;To:</string>
      </property>
@@ -137,9 +122,6 @@
      <property name="focusPolicy">
       <enum>Qt::StrongFocus</enum>
      </property>
-     <property name="styleSheet">
-      <string notr="true"/>
-     </property>
      <property name="tabChangesFocus">
       <bool>false</bool>
      </property>
@@ -153,16 +135,10 @@
      <property name="toolTip">
       <string>Enter a label for this address to add it to your address book</string>
      </property>
-     <property name="styleSheet">
-      <string notr="true"/>
-     </property>
     </widget>
    </item>
    <item row="4" column="0">
     <widget class="QLabel" name="label_4">
-     <property name="styleSheet">
-      <string notr="true"/>
-     </property>
      <property name="text">
       <string>&amp;Label:</string>
      </property>
@@ -176,9 +152,6 @@
    </item>
    <item row="5" column="0">
     <widget class="QLabel" name="publicKeyLabel">
-     <property name="styleSheet">
-      <string notr="true"/>
-     </property>
      <property name="text">
       <string>&amp;Public Key:</string>
      </property>
@@ -189,9 +162,6 @@
    </item>
    <item row="5" column="2">
     <widget class="QValidatedLineEdit" name="publicKey">
-     <property name="styleSheet">
-      <string notr="true"/>
-     </property>
     </widget>
    </item>
   </layout>

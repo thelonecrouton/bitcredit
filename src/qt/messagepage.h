@@ -1,6 +1,6 @@
 #ifndef MESSAGEPAGE_H
 #define MESSAGEPAGE_H
- 
+
 #include <QWidget>
 
 namespace Ui {

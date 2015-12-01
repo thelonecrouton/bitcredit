@@ -1,5 +1,6 @@
 // Copyright (c) 2009-2010 Satoshi Nakamoto
-// Copyright (c) 2009-2015 The Bitcredit Core developers
+// Copyright (c) 2009-2014 The Bitcoin Core developers
+// Copyright (c) 2014-2015 The Bitcredit developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -26,6 +27,7 @@
 #include "banknodeman.h"
 #include "banknodeconfig.h"
 #include "spork.h"
+#include "trust.h"
 #include "utilmoneystr.h"
 #ifdef ENABLE_WALLET
 #include "db.h"
@@ -233,6 +235,11 @@ std::string HelpMessage(HelpMessageMode mode)
     strUsage += "  -conf=<file>           " + strprintf(_("Specify configuration file (default: %s)"), "bitcredit.conf") + "\n";
     strUsage += "  -noexchange=<anything> " + _("Disable exchangebrowser") + "\n";
     strUsage += "  -theme=<path>          " + _("Load stylesheet from specified path") + "\n";
+    strUsage += "  -dbname=<path>          " + _("Database name") + "\n";
+    strUsage += "  -dbuser=<path>          " + _("Database user") + "\n";
+    strUsage += "  -dbport=<path>          " + _("Database port") + "\n";
+    strUsage += "  -dbpass=<path>          " + _("Database password") + "\n";
+    strUsage += "  -dbhost=<path>          " + _("Database host") + "\n";
     if (mode == HMM_BITCREDITD)
     {
 #if !defined(WIN32)
@@ -251,7 +258,7 @@ std::string HelpMessage(HelpMessageMode mode)
 #if !defined(WIN32)
     strUsage += "  -sysperms              " + _("Create new files with system default permissions, instead of umask 077 (only effective with disabled wallet functionality)") + "\n";
 #endif
-    strUsage += "  -txindex               " + strprintf(_("Maintain a full transaction index, used by the getrawtransaction rpc call (default: %u)"), 0) + "\n";
+    strUsage += "  -txindex               " + strprintf(_("Maintain a full transaction index, used by the getrawtransaction rpc call (default: %u)"), 1) + "\n";
 
     strUsage += "\n" + _("Connection options:") + "\n";
     strUsage += "  -addnode=<ip>          " + _("Add a node to connect to and attempt to keep the connection open") + "\n";
@@ -296,8 +303,8 @@ std::string HelpMessage(HelpMessageMode mode)
     strUsage += "  -keepassname=<name>    " + _("Name to construct url for KeePass entry that stores the wallet passphrase") + "\n";
     strUsage += "  -keypool=<n>           " + strprintf(_("Set key pool size to <n> (default: %u)"), 1) + "\n";
     if (GetBoolArg("-help-debug", false))
-        strUsage += "  -mintxfee=<amt>        " + strprintf(_("Fees (in BTC/Kb) smaller than this are considered zero fee for transaction creation (default: %s)"), FormatMoney(CWallet::minTxFee.GetFeePerK())) + "\n";
-    strUsage += "  -paytxfee=<amt>        " + strprintf(_("Fee (in BTC/kB) to add to transactions you send (default: %s)"), FormatMoney(payTxFee.GetFeePerK())) + "\n";
+        strUsage += "  -mintxfee=<amt>        " + strprintf(_("Fees (in BCR/Kb) smaller than this are considered zero fee for transaction creation (default: %s)"), FormatMoney(CWallet::minTxFee.GetFeePerK())) + "\n";
+    strUsage += "  -paytxfee=<amt>        " + strprintf(_("Fee (in BCR/kB) to add to transactions you send (default: %s)"), FormatMoney(payTxFee.GetFeePerK())) + "\n";
     strUsage += "  -rescan                " + _("Rescan the block chain for missing wallet transactions") + " " + _("on startup") + "\n";
     strUsage += "  -salvagewallet         " + _("Attempt to recover private keys from a corrupt wallet.dat") + " " + _("on startup") + "\n";
     strUsage += "  -sendfreetransactions  " + strprintf(_("Send transactions as zero-fee transactions if possible (default: %u)"), 0) + "\n";
@@ -342,7 +349,7 @@ std::string HelpMessage(HelpMessageMode mode)
         strUsage += "  -limitfreerelay=<n>    " + strprintf(_("Continuously rate-limit free transactions to <n>*1000 bytes per minute (default:%u)"), 15) + "\n";
         strUsage += "  -maxsigcachesize=<n>   " + strprintf(_("Limit size of signature cache to <n> entries (default: %u)"), 50000) + "\n";
     }
-    strUsage += "  -minrelaytxfee=<amt>   " + strprintf(_("Fees (in BTC/Kb) smaller than this are considered zero fee for relaying (default: %s)"), FormatMoney(::minRelayTxFee.GetFeePerK())) + "\n";
+    strUsage += "  -minrelaytxfee=<amt>   " + strprintf(_("Fees (in BCR/Kb) smaller than this are considered zero fee for relaying (default: %s)"), FormatMoney(::minRelayTxFee.GetFeePerK())) + "\n";
     strUsage += "  -printtoconsole        " + _("Send trace/debug info to console instead of debug.log file") + "\n";
     if (GetBoolArg("-help-debug", false))
     {
@@ -695,8 +702,8 @@ bool AppInit2(boost::thread_group& threadGroup)
     };
 
     fDebugSmsg = GetBoolArg("-debugsmsg", false);
-    
-    fNoSmsg = GetBoolArg("-nosmsg", false); 
+
+    fNoSmsg = GetBoolArg("-nosmsg", false);
 
    /*** MEGANET Services ***/
     fAssetsEnabled = GetBoolArg("-assets", true);
@@ -829,7 +836,7 @@ bool AppInit2(boost::thread_group& threadGroup)
 #endif
     if (GetBoolArg("-shrinkdebugfile", !fDebug))
         ShrinkDebugFile();
-    LogPrintf("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
+    LogPrintf("\n\n\n\n\n");
     LogPrintf("Bitcredit version %s (%s)\n", FormatFullVersion(), CLIENT_DATE);
     LogPrintf("Using OpenSSL version %s\n", SSLeay_version(SSLEAY_VERSION));
 #ifdef ENABLE_WALLET
@@ -879,7 +886,7 @@ bool AppInit2(boost::thread_group& threadGroup)
     // ********************************************************* Step 5: verify wallet database integrity
 #ifdef ENABLE_WALLET
     if (!fDisableWallet) {
-    
+
         filesystem::path backupDir = GetDataDir() / "backups";
         if (!filesystem::exists(backupDir))
         {
@@ -1042,7 +1049,7 @@ bool AppInit2(boost::thread_group& threadGroup)
         // setup default name proxy and exit on error
         if (!SetNameProxy(CService(mapArgs["-proxy"], 9050)))
             return InitError(strprintf(_("Invalid name proxy address '%s' for: -proxy"), mapArgs["-proxy"].c_str()));
- 
+
 
     // see Step 2: parameter interactions for more information about these
     fListen = GetBoolArg("-listen", DEFAULT_LISTEN);
@@ -1096,17 +1103,54 @@ bool AppInit2(boost::thread_group& threadGroup)
             InitError(_("Invalid amount for -advertisedbalance=<percentage>"));
             return false;
         }
-    }    
+    }
+
+    if (mapArgs.count("-dbuser"))
+    {
+        dbuser = mapArgs["-dbuser"].c_str();
+
+    }
+
+    if (mapArgs.count("-dbname"))
+    {
+        dbname = mapArgs["-dbname"].c_str();
+
+    }
+
+    if (mapArgs.count("-dbpass"))
+    {
+        dbpass = mapArgs["-dbpass"].c_str();
+
+    }
+
+    if (mapArgs.count("-dbport"))
+    {
+        dbport = mapArgs["-dbport"].c_str();
+
+    }
 
     // ********************************************************* Step 7: load block chain
+    boost::filesystem::path rawdata = GetDataDir() / "ratings", biddir = GetDataDir() / "bidtracker", trustdb = GetDataDir() / "ratings/rawdata.db";
+
+    if(!(boost::filesystem::exists(rawdata)))
+        boost::filesystem::create_directory(rawdata);
+    
+    TrustEngine db;       
+	
+	if(!(boost::filesystem::exists(trustdb)))	
+		db.createdb();    
+
+    if(!(boost::filesystem::exists(biddir)))
+        boost::filesystem::create_directory(biddir);
 
     fReindex = GetBoolArg("-reindex", false);
 	if (fReindex){
 		remove((GetDataDir() /"ratings/grantdb.dat").string().c_str());
-		remove((GetDataDir() /"miners.dat").string().c_str());
-		remove((GetDataDir() /"balances.dat").string().c_str());
+		remove((GetDataDir() /"ratings/minedblocks.dat").string().c_str());
+		remove((GetDataDir() /"ratings/balances.dat").string().c_str());
+		remove((GetDataDir() / "ratings/rawdata.dat" ).string().c_str());
 	}
-	
+
     // Upgrading to 0.8; hard-link the old blknnnn.dat files into /blocks/
     filesystem::path blocksDir = GetDataDir() / "blocks";
     if (!filesystem::exists(blocksDir))
@@ -1141,7 +1185,7 @@ bool AppInit2(boost::thread_group& threadGroup)
     else if (nTotalCache > (nMaxDbCache << 20))
         nTotalCache = (nMaxDbCache << 20); // total cache cannot be greater than nMaxDbCache
     size_t nBlockTreeDBCache = nTotalCache / 8;
-    if (nBlockTreeDBCache > (1 << 21) && !GetBoolArg("-txindex", false) && !GetBoolArg("-addrindex", false))
+    if (nBlockTreeDBCache > (1 << 21) && !GetBoolArg("-txindex", true) && !GetBoolArg("-addrindex", false))
         nBlockTreeDBCache = (1 << 21); // block tree db cache shouldn't be larger than 2 MiB
     nTotalCache -= nBlockTreeDBCache;
     size_t nCoinDBCache = nTotalCache / 2; // use half of the remaining cache for coindb cache
@@ -1187,7 +1231,7 @@ bool AppInit2(boost::thread_group& threadGroup)
                 }
 
                 // Check for changed -txindex state
-                if (fTxIndex != GetBoolArg("-txindex", false)) {
+                if (fTxIndex != GetBoolArg("-txindex", true)) {
                     strLoadError = _("You need to rebuild the database using -reindex to change -txindex");
                     break;
                 }
@@ -1197,7 +1241,6 @@ bool AppInit2(boost::thread_group& threadGroup)
                     strLoadError = _("You need to rebuild the database using -reindex to change -addrindex");
                     break;
                 }
-
 
                 uiInterface.InitMessage(_("Verifying blocks..."));
                 if (!CVerifyDB().VerifyDB(pcoinsdbview, GetArg("-checklevel", 3),
@@ -1406,7 +1449,7 @@ bool AppInit2(boost::thread_group& threadGroup)
     threadGroup.create_thread(boost::bind(&ThreadImport, vImportFiles));
 
     // ********************************************************* Step 10: start node
-	
+
     uiInterface.InitMessage(_("Loading banknode cache..."));
 
     CBanknodeDB mndb;
@@ -1497,7 +1540,7 @@ bool AppInit2(boost::thread_group& threadGroup)
     if(fBankNode && fLiteMode){
         return InitError("You can not start a banknode in litemode");
     }
-	
+
     LogPrintf("fEnableDarksend %d\n", fEnableDarksend);
     LogPrintf("fLiteMode %d\n", fLiteMode);
     LogPrintf("nInstantXDepth %d\n", nInstantXDepth);
@@ -1513,7 +1556,7 @@ bool AppInit2(boost::thread_group& threadGroup)
        1DRK+1000 == (.1DRK+100)*10
        10DRK+10000 == (1DRK+1000)*10
     */
-    darkSendDenominations.push_back( (100000      * COIN)+100000000 );    
+    darkSendDenominations.push_back( (100000      * COIN)+100000000 );
     darkSendDenominations.push_back( (10000       * COIN)+10000000 );
     darkSendDenominations.push_back( (1000        * COIN)+1000000 );
     darkSendDenominations.push_back( (100         * COIN)+100000 );
@@ -1533,7 +1576,7 @@ bool AppInit2(boost::thread_group& threadGroup)
 
     if (!CheckDiskSpace())
         return false;
- 
+
     if (!strErrors.str().empty())
         return InitError(strErrors.str());
 

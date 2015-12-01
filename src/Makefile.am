@@ -1,6 +1,7 @@
 DIST_SUBDIRS = secp256k1
+DIST_SUBDIRS += sqlite
 AM_LDFLAGS = $(PTHREAD_CFLAGS) $(LIBTOOL_LDFLAGS)
-LIBS = -lcurl -lanl
+LIBS = -lcurl -lanl -lsqlite3
 if EMBEDDED_LEVELDB
 LEVELDB_CPPFLAGS += -I$(srcdir)/leveldb/include
 LEVELDB_CPPFLAGS += -I$(srcdir)/leveldb/helpers/memenv
@@ -17,9 +18,9 @@ $(LIBLEVELDB) $(LIBMEMENV):
 endif
 
 BITCREDIT_CONFIG_INCLUDES=-I$(builddir)/config
-BITCREDIT_INCLUDES=-I$(builddir) -I$(builddir)/obj -I$(builddir)/assets -I$(builddir)/json $(BOOST_CPPFLAGS) $(LEVELDB_CPPFLAGS) $(CRYPTO_CFLAGS) $(SSL_CFLAGS)
+BITCREDIT_INCLUDES=-I$(builddir) -I$(builddir)/obj -I$(builddir)/json $(BOOST_CPPFLAGS) $(LEVELDB_CPPFLAGS) $(CRYPTO_CFLAGS) $(SSL_CFLAGS)
 
-BITCREDIT_INCLUDES += -I$(srcdir)/secp256k1/include 
+BITCREDIT_INCLUDES += -I$(srcdir)/secp256k1/include -I$(srcdir)/sqlite
 
 LIBBITCREDIT_SERVER=libbitcredit_server.a
 LIBBITCREDIT_WALLET=libbitcredit_wallet.a
@@ -30,9 +31,12 @@ LIBBITCREDIT_CRYPTO=crypto/libbitcredit_crypto.a
 LIBBITCREDIT_UNIVALUE=univalue/libbitcredit_univalue.a
 LIBBITCREDITQT=qt/libbitcreditqt.a
 LIBSECP256K1=secp256k1/libsecp256k1.la
+#LIBSQLITE=sqlite/libsqlite3.la
 
 $(LIBSECP256K1): $(wildcard secp256k1/src/*) $(wildcard secp256k1/include/*)
 	$(AM_V_at)$(MAKE) $(AM_MAKEFLAGS) -C $(@D) $(@F)
+
+#$(LIBSQLITE): $(wildcard sqlite/*) $(AM_V_at)$(MAKE) $(AM_MAKEFLAGS) -C $(@D) $(@F)
 
 # Make is not made aware of per-object dependencies to avoid limiting building parallelization
 # But to build the less dependent modules first, we manually select their order here:
@@ -103,7 +107,7 @@ BITCREDIT_CORE_H = \
   key.h \
   keepass.h \
   keystore.h \
-  leveldbwrapper.h \
+  dbwrapper.h \
   limitedmap.h \
   lz4/lz4.h \
   main.h \
@@ -156,11 +160,10 @@ BITCREDIT_CORE_H = \
   strlcpy.h \
   compat/sanity.h \
   xxhash/xxhash.h \
-  rawdata.h \
-  bankmath.h \
   ibtp.h \
   voting.h \
-  assets/coinspark.h
+  assets/coinspark.h \
+  trust.h
 
 JSON_H = \
   json/json_spirit.h \
@@ -188,8 +191,7 @@ libbitcredit_server_a_SOURCES = \
   chain.cpp \
   checkpoints.cpp \
   init.cpp \
-  leveldbwrapper.cpp \
-  lz4/lz4.c \
+  dbwrapper.cpp \
   main.cpp \
   merkleblock.cpp \
   miner.cpp \
@@ -205,12 +207,14 @@ libbitcredit_server_a_SOURCES = \
   rpcnet.cpp \
   rpcrawtransaction.cpp \
   rpcserver.cpp \
+  rpctrust.cpp \
   script/sigcache.cpp \
   smessage.cpp \
   timedata.cpp \
   txdb.cpp \
   txmempool.cpp \
   xxhash/xxhash.c \
+  trust.cpp \
   json/json_spirit_value.cpp \
   json/json_spirit_reader.cpp \
   json/json_spirit_writer.cpp \
@@ -231,6 +235,7 @@ libbitcredit_wallet_a_SOURCES = \
   walletdb.cpp \
   keepass.cpp \
   assets/coinspark.c \
+  lz4/lz4.c \
   $(BITCREDIT_CORE_H)
 
 # crypto primitives library
@@ -273,8 +278,6 @@ libbitcredit_common_a_SOURCES = \
   compressor.cpp \
   darksend.cpp \
   darksend-relay.cpp \
-  rawdata.cpp \
-  bankmath.cpp \
   banknode.cpp \
   banknode-pos.cpp \
   banknodeman.cpp \
@@ -345,7 +348,8 @@ bitcreditd_LDADD = \
   $(LIBBITCREDIT_CRYPTO) \
   $(LIBLEVELDB) \
   $(LIBMEMENV) \
-  $(LIBSECP256K1)
+  $(LIBSECP256K1) \
+  $(LIBSQLITE)
 
 if ENABLE_WALLET
 bitcreditd_LDADD += libbitcredit_wallet.a
@@ -384,7 +388,8 @@ bitcredit_tx_LDADD = \
   $(LIBBITCREDIT_CRYPTO) \
   $(LIBSECP256K1) \
   $(BOOST_LIBS) \
-  $(CRYPTO_LIBS)
+  $(CRYPTO_LIBS) \
+  $(LIBSQLITE)
 
 bitcredit_tx_SOURCES = bitcredit-tx.cpp
 bitcredit_tx_CPPFLAGS = $(BITCREDIT_INCLUDES)
@@ -439,6 +444,7 @@ EXTRA_DIST = leveldb
 clean-local:
 	-$(MAKE) -C leveldb clean
 	-$(MAKE) -C secp256k1 clean
+	-$(MAKE) -C sqlite clean
 	rm -f leveldb/*/*.gcno leveldb/helpers/memenv/*.gcno
 	-rm -f config.h
 

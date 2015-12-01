@@ -1,7 +1,7 @@
 #ifndef MESSAGEMODEL_H
 #define MESSAGEMODEL_H
 
-#include "uint256.h" 
+#include "uint256.h"
 
 #include <vector>
 #include "allocators.h" /* for SecureString */
@@ -36,7 +36,7 @@ struct MessageTableEntry
         Received
     };
 
-    std::vector<unsigned char> chKey;
+    std::vector<unsigned char> vchKey;
     Type type;
     QString label;
     QString to_address;
@@ -47,29 +47,13 @@ struct MessageTableEntry
     QString message;
 
     MessageTableEntry() {}
-    MessageTableEntry(std::vector<unsigned char> &chKey,
-                      Type type,
-                      const QString &label,
-                      const QString &to_address,
-                      const QString &from_address,
-                      const QDateTime &sent_datetime,
-                      const QDateTime &received_datetime,
-                      const bool &read,
-                      const QString &message):
-        chKey(chKey),
-        type(type),
-        label(label),
-        to_address(to_address),
-        from_address(from_address),
-        sent_datetime(sent_datetime),
-        received_datetime(received_datetime),
-        read(read),
-        message(message)
-    {
-    }
+    MessageTableEntry(const std::vector<unsigned char> vchKey, Type type, const QString &label, const QString &to_address, const QString &from_address,
+                      const QDateTime &sent_datetime, const QDateTime &received_datetime, const bool &read, const QString &message):
+        vchKey(vchKey), type(type), label(label), to_address(to_address), from_address(from_address), sent_datetime(sent_datetime), received_datetime(received_datetime),
+        read(read), message(message) {}
 };
 
-
+/** Interface to Cinnicoin Secure Messaging from Qt view code. */
 class MessageModel : public QAbstractTableModel
 {
     Q_OBJECT
@@ -139,15 +123,13 @@ public:
     static const QString Sent; /**< Specifies sent message */
     static const QString Received; /**< Specifies sent message */
 
-    //QList<QString> ambiguous; /**< Specifies Ambiguous addresses */
-
     /** @name Methods overridden from QAbstractTableModel
         @{*/
     int rowCount(const QModelIndex &parent) const;
     int columnCount(const QModelIndex &parent) const;
     QVariant data(const QModelIndex &index, int role) const;
     QVariant headerData(int section, Qt::Orientation orientation, int role) const;
-    QModelIndex index(int row, int column, const QModelIndex & parent = QModelIndex()) const;
+    QModelIndex index(int row, int column, const QModelIndex & parent) const;
     bool removeRows(int row, int count, const QModelIndex & parent = QModelIndex());
     Qt::ItemFlags flags(const QModelIndex & index) const;
     /*@}*/
@@ -159,7 +141,7 @@ public:
     /* Look up row index of a message in the model.
        Return -1 if not found.
      */
-    int lookupMessage(const QString &key) const;
+    int lookupMessage(const QString &message) const;
 
     WalletModel *getWalletModel();
     OptionsModel *getOptionsModel();
@@ -168,10 +150,9 @@ public:
 
     bool getAddressOrPubkey( QString &Address,  QString &Pubkey) const;
 
-    void resetFilter();
-	StatusCode sendMessages(const QList<SendMessagesRecipient> &recipients);
-    StatusCode sendMessage(const QString &address, const QString &message, const QString &addressFrom);
-	StatusCode sendMessages(const QList<SendMessagesRecipient> &recipients, const QString addressFrom);
+    // Send messages to a list of recipients
+    StatusCode sendMessages(const QList<SendMessagesRecipient> &recipients);
+    StatusCode sendMessages(const QList<SendMessagesRecipient> &recipients, const QString &addressFrom);
 
 private:
     CWallet *wallet;
@@ -190,8 +171,9 @@ public slots:
     /* Check for new messages */
     void newMessage(const SecMsgStored& smsg);
     void newOutboxMessage(const SecMsgStored& smsg);
-    //void walletUnlocked();
-    
+
+    void walletUnlocked();
+
     void setEncryptionStatus(int status);
 
     friend class MessageTablePriv;
@@ -205,7 +187,7 @@ signals:
 struct InvoiceItemTableEntry
 {
 
-    std::vector<unsigned char> chKey;
+    std::vector<unsigned char> vchKey;
     MessageTableEntry::Type type;
     QString code;
     QString description;
@@ -215,19 +197,19 @@ struct InvoiceItemTableEntry
 
     InvoiceItemTableEntry(){};
     InvoiceItemTableEntry(const bool newInvoice):
-        chKey(0), type(MessageTableEntry::Sent), code(""), description(""), quantity(0), price(0)
+        vchKey(0), type(MessageTableEntry::Sent), code(""), description(""), quantity(0), price(0)
     {
-        chKey.resize(3);
-        memcpy(&chKey[0], "new", 3);
+        vchKey.resize(3);
+        memcpy(&vchKey[0], "new", 3);
     };
-    InvoiceItemTableEntry(const std::vector<unsigned char> chKey, MessageTableEntry::Type type, const QString &code, const QString &description, const int &quantity, const qint64 &price): //, const bool &tax):
-        chKey(chKey), type(type), code(code), description(description), quantity(quantity), price(price) {} //, tax(tax) {}
+    InvoiceItemTableEntry(const std::vector<unsigned char> vchKey, MessageTableEntry::Type type, const QString &code, const QString &description, const int &quantity, const qint64 &price): //, const bool &tax):
+        vchKey(vchKey), type(type), code(code), description(description), quantity(quantity), price(price) {} //, tax(tax) {}
 };
 
 
 struct InvoiceTableEntry
 {
-    std::vector<unsigned char> chKey;
+    std::vector<unsigned char> vchKey;
     MessageTableEntry::Type type;
     QString label;
     QString to_address;
@@ -244,28 +226,30 @@ struct InvoiceTableEntry
 
     InvoiceTableEntry() {}
     InvoiceTableEntry(const bool newInvoice):
-        chKey(0), type(MessageTableEntry::Sent), label(""), to_address(""), from_address(""), sent_datetime(), received_datetime(), company_info_left(""), company_info_right(""),
+        vchKey(0), type(MessageTableEntry::Sent), label(""), to_address(""), from_address(""), sent_datetime(), received_datetime(), company_info_left(""), company_info_right(""),
         billing_info_left(""), billing_info_right(""), footer(""), invoice_number(""), due_date()
     {
-        chKey.resize(3);
-        memcpy(&chKey[0], "new", 3);
+        vchKey.resize(3);
+        memcpy(&vchKey[0], "new", 3);
     };
-    InvoiceTableEntry(const std::vector<unsigned char> chKey, MessageTableEntry::Type type, const QString &label, const QString &to_address, const QString &from_address,
+    InvoiceTableEntry(const std::vector<unsigned char> vchKey, MessageTableEntry::Type type, const QString &label, const QString &to_address, const QString &from_address,
                       const QDateTime &sent_datetime, const QDateTime &received_datetime, const QString &company_info_left, const QString &company_info_right,
                       const QString &billing_info_left, const QString &billing_info_right, const QString &footer, const QString &invoice_number, const QDate &due_date):
-        chKey(chKey), type(type), label(label), to_address(to_address), from_address(from_address), sent_datetime(sent_datetime), received_datetime(received_datetime),
+        vchKey(vchKey), type(type), label(label), to_address(to_address), from_address(from_address), sent_datetime(sent_datetime), received_datetime(received_datetime),
         company_info_left(company_info_left), company_info_right(company_info_right), billing_info_left(billing_info_left), billing_info_right(billing_info_right),
         footer(footer), invoice_number(invoice_number), due_date(due_date)
     {}
     InvoiceTableEntry(const MessageTableEntry &messageTableEntry, const QString &company_info_left, const QString &company_info_right,
                       const QString &billing_info_left, const QString &billing_info_right, const QString &footer, const QString &invoice_number, const QDate &due_date):
-        chKey(messageTableEntry.chKey), type(messageTableEntry.type), label(messageTableEntry.label), to_address(messageTableEntry.to_address), from_address(messageTableEntry.from_address),
+        vchKey(messageTableEntry.vchKey), type(messageTableEntry.type), label(messageTableEntry.label), to_address(messageTableEntry.to_address), from_address(messageTableEntry.from_address),
         sent_datetime(messageTableEntry.sent_datetime), received_datetime(messageTableEntry.received_datetime),
         company_info_left(company_info_left), company_info_right(company_info_right), billing_info_left(billing_info_left), billing_info_right(billing_info_right),
         footer(footer), invoice_number(invoice_number), due_date(due_date)
     {}
 };
 
+
+/** Interface to Cinnicoin Secure Messaging Invoices from Qt view code. */
 class InvoiceTableModel : public QAbstractTableModel
 {
     Q_OBJECT
@@ -337,6 +321,7 @@ public slots:
 };
 
 
+/** Interface to Cinnicoin Secure Messaging Invoice Items from Qt view code. */
 class InvoiceItemTableModel : public QAbstractTableModel
 {
     Q_OBJECT
@@ -382,7 +367,7 @@ public slots:
 
 struct ReceiptTableEntry
 {
-    std::vector<unsigned char> chKey;
+    std::vector<unsigned char> vchKey;
     MessageTableEntry::Type type;
     QString label;
     QString to_address;
@@ -394,28 +379,29 @@ struct ReceiptTableEntry
 
     ReceiptTableEntry() {}
     ReceiptTableEntry(const bool newReceipt):
-        chKey(0), type(MessageTableEntry::Sent), label(""), to_address(""), from_address(""), sent_datetime(), received_datetime(), invoice_number(""), amount(0)
+        vchKey(0), type(MessageTableEntry::Sent), label(""), to_address(""), from_address(""), sent_datetime(), received_datetime(), invoice_number(""), amount(0)
     {
-        chKey.resize(3);
-        memcpy(&chKey[0], "new", 3);
+        vchKey.resize(3);
+        memcpy(&vchKey[0], "new", 3);
     };
 
-    ReceiptTableEntry(const std::vector<unsigned char> chKey, MessageTableEntry::Type type, const QString &label, const QString &to_address, const QString &from_address,
+    ReceiptTableEntry(const std::vector<unsigned char> vchKey, MessageTableEntry::Type type, const QString &label, const QString &to_address, const QString &from_address,
                       const QDateTime &sent_datetime, const QDateTime &received_datetime, const QString &invoice_number, const qint64 &amount):
-        chKey(chKey), type(type), label(label), to_address(to_address), from_address(from_address), sent_datetime(sent_datetime), received_datetime(received_datetime),
+        vchKey(vchKey), type(type), label(label), to_address(to_address), from_address(from_address), sent_datetime(sent_datetime), received_datetime(received_datetime),
         invoice_number(invoice_number), amount(amount)
     {}
     ReceiptTableEntry(const MessageTableEntry &messageTableEntry, const QString &invoice_number, const qint64 &amount):
-        chKey(messageTableEntry.chKey), type(messageTableEntry.type), label(messageTableEntry.label), to_address(messageTableEntry.to_address), from_address(messageTableEntry.from_address),
+        vchKey(messageTableEntry.vchKey), type(messageTableEntry.type), label(messageTableEntry.label), to_address(messageTableEntry.to_address), from_address(messageTableEntry.from_address),
         sent_datetime(messageTableEntry.sent_datetime), received_datetime(messageTableEntry.received_datetime), invoice_number(invoice_number), amount(amount)
     {}
     ReceiptTableEntry(const InvoiceTableEntry &invoiceTableEntry, const qint64 &amount):
-        chKey(invoiceTableEntry.chKey), type(invoiceTableEntry.type), label(invoiceTableEntry.label), to_address(invoiceTableEntry.to_address), from_address(invoiceTableEntry.from_address),
+        vchKey(invoiceTableEntry.vchKey), type(invoiceTableEntry.type), label(invoiceTableEntry.label), to_address(invoiceTableEntry.to_address), from_address(invoiceTableEntry.from_address),
         sent_datetime(invoiceTableEntry.sent_datetime), received_datetime(invoiceTableEntry.received_datetime), invoice_number(invoiceTableEntry.invoice_number), amount(amount)
     {}
 };
 
 
+/** Interface to Cinnicoin Secure Messaging Receipts from Qt view code. */
 class ReceiptTableModel : public QAbstractTableModel
 {
     Q_OBJECT

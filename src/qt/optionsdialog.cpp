@@ -47,7 +47,7 @@
 #include <QTextStream>
 #include <QTimer>
 #include <QDir>
-
+#include <QSqlDatabase>
 
 OptionsDialog::OptionsDialog(QWidget *parent, bool enableWallet) :
     QDialog(parent),
@@ -145,6 +145,18 @@ OptionsDialog::OptionsDialog(QWidget *parent, bool enableWallet) :
 #endif
 
     ui->unit->setModel(new BitcreditUnits(this));
+
+    QStringList drivers = QSqlDatabase::drivers();
+
+    // remove compat names
+    drivers.removeAll("QMYSQL3");
+    drivers.removeAll("QOCI8");
+    drivers.removeAll("QODBC3");
+    drivers.removeAll("QPSQL7");
+    drivers.removeAll("QTDS7");
+
+    ui->comboDriver->addItems(drivers);
+
 
     /* Widget-to-option mapper */
     mapper = new QDataWidgetMapper(this);
@@ -313,6 +325,14 @@ void OptionsDialog::setMapper()
     mapper->addMapping(ui->databaseCache, OptionsModel::DatabaseCache);
     mapper->addMapping(ui->advertisedBalance, OptionsModel::AdvertisedBalance);
 
+    /* P2P Finance */
+    mapper->addMapping(ui->comboDriver, OptionsModel::DriverName);
+    mapper->addMapping(ui->editDatabase, OptionsModel::DatabaseName);
+    mapper->addMapping(ui->editUsername, OptionsModel::UserName);
+    mapper->addMapping(ui->editPassword, OptionsModel::Password);
+    mapper->addMapping(ui->editHostname, OptionsModel::HostName);
+    mapper->addMapping(ui->portSpinBox, OptionsModel::Port);
+
     /* Wallet */
     mapper->addMapping(ui->spendZeroConfChange, OptionsModel::SpendZeroConfChange);
     mapper->addMapping(ui->coinControlFeatures, OptionsModel::CoinControlFeatures);
@@ -386,6 +406,11 @@ void OptionsDialog::on_okButton_clicked()
 {
     mapper->submit();
     darkSendPool.cachedNumBlocks = 0;
+    if (ui->comboDriver->currentText().isEmpty()) {
+        QMessageBox::information(this, tr("No database driver selected"),
+                                 tr("Please select a database driver"));
+        ui->comboDriver->setFocus();
+    } 
     accept();
     updateDefaultProxyNets();
 }
@@ -475,4 +500,39 @@ bool OptionsDialog::eventFilter(QObject *object, QEvent *event)
         }
     }
     return QDialog::eventFilter(object, event);
+}
+
+QString OptionsDialog::driverName() const
+{
+    return ui->comboDriver->currentText();
+}
+
+QString OptionsDialog::databaseName() const
+{
+    return ui->editDatabase->text();
+}
+
+QString OptionsDialog::userName() const
+{
+    return ui->editUsername->text();
+}
+
+QString OptionsDialog::password() const
+{
+    return ui->editPassword->text();
+}
+
+QString OptionsDialog::hostName() const
+{
+    return ui->editHostname->text();
+}
+
+int OptionsDialog::port() const
+{
+    return ui->portSpinBox->value();
+}
+
+bool OptionsDialog::useDefaultDatabase()
+{
+    return ui->useDefaultDatabase->isChecked();
 }

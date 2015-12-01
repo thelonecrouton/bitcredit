@@ -6,14 +6,14 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>900</width>
-    <height>600</height>
+    <width>845</width>
+    <height>500</height>
    </rect>
   </property>
   <property name="minimumSize">
    <size>
     <width>800</width>
-    <height>600</height>
+    <height>500</height>
    </size>
   </property>
   <property name="maximumSize">
@@ -42,10 +42,10 @@
   <widget class="QTextEdit" name="helpMessage">
    <property name="geometry">
     <rect>
-     <x>20</x>
-     <y>527</y>
+     <x>10</x>
+     <y>380</y>
      <width>831</width>
-     <height>67</height>
+     <height>111</height>
     </rect>
    </property>
    <property name="font">
@@ -85,11 +85,11 @@
      <x>20</x>
      <y>111</y>
      <width>821</width>
-     <height>267</height>
+     <height>221</height>
     </rect>
    </property>
    <property name="text">
-    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Bitcredit is an asset-backed digital currency that brings you secure decentralised banking and related services.&lt;/p&gt;&lt;p&gt;Bitcredit uses Banknodes (a Bitcredit wallet that meets certain criteria) to provide banking, escrow, insurance, asset management etc. direct on the blockchain. Anyone can run a Banknode and earn rewards for doing so, more information is in the links below.&lt;/p&gt;&lt;p&gt;The Bitcredit blockchain is secured by SmartSig PoW - providing far greater decentralisation of transaction validation than traditional PoW, making Bitcredit more secure, and by doing this co-operatively instead of competitively, Bitcredit eliminates all the wasted megawatts of electricity that other PoW currencies require and enables the Bitcredit network to process greater transaction volume.&lt;/p&gt;&lt;p&gt;Distribution of newly minted Bitcredit is by tender - from within the Bitcredit wallet you can bid for and purchase BCR directly with Bitcoin and other currencies. Anyone can easily acquire and use BCR, not just people with expensive and specialised computer hardware. This also means that Bitcredit is &lt;span style=&quot; font-weight:600;&quot;&gt;backed by every penny spent on it&lt;/span&gt;, resulting in a more stable and ever increasing BCR price. &lt;/p&gt;&lt;p&gt;More information and assistance can be found at:&lt;/p&gt;&lt;p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Bitcredit is an asset-backed digital currency that brings you secure p2p financial services.&lt;/p&gt;&lt;p&gt;Bitcredit uses specialized Banknodes to provide banking, escrow, insurance, asset management etc. direct on the blockchain. Anyone can run a Banknode and earn rewards for doing so, more information is in the links below.&lt;/p&gt;&lt;p&gt;The Bitcredit blockchain is secured by SmartSig PoW - providing far greater decentralisation of transaction validation than traditional PoW, making Bitcredit more secure, and by doing this co-operatively instead of competitively, Bitcredit eliminates all the wasted megawatts of electricity that other PoW currencies require and enables the Bitcredit network to process greater transaction volume.&lt;/p&gt;&lt;p&gt;Distribution of newly minted Bitcredit is by tender - from within the Bitcredit wallet you can bid for and purchase BCR directly with Bitcoin and other currencies. Anyone can easily acquire and use BCR, not just people with expensive and specialised computer hardware. This also means that Bitcredit is &lt;span style=&quot; font-weight:600;&quot;&gt;backed by every penny spent on it&lt;/span&gt;, resulting in a more stable and ever increasing BCR price. &lt;/p&gt;&lt;p&gt;More information and assistance can be found at:&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
    </property>
    <property name="wordWrap">
     <bool>true</bool>
@@ -98,9 +98,9 @@
   <widget class="QPushButton" name="pushButtonBCT">
    <property name="geometry">
     <rect>
-     <x>20</x>
-     <y>390</y>
-     <width>290</width>
+     <x>10</x>
+     <y>340</y>
+     <width>201</width>
      <height>27</height>
     </rect>
    </property>
@@ -114,9 +114,9 @@
   <widget class="QPushButton" name="pushButtonForum">
    <property name="geometry">
     <rect>
-     <x>20</x>
-     <y>420</y>
-     <width>290</width>
+     <x>220</x>
+     <y>340</y>
+     <width>141</width>
      <height>27</height>
     </rect>
    </property>
@@ -130,9 +130,9 @@
   <widget class="QPushButton" name="pushButtonWiki">
    <property name="geometry">
     <rect>
-     <x>20</x>
-     <y>450</y>
-     <width>290</width>
+     <x>550</x>
+     <y>340</y>
+     <width>111</width>
      <height>27</height>
     </rect>
    </property>
@@ -146,9 +146,9 @@
   <widget class="QPushButton" name="pushButtonExplorer">
    <property name="geometry">
     <rect>
-     <x>20</x>
-     <y>480</y>
-     <width>290</width>
+     <x>370</x>
+     <y>340</y>
+     <width>161</width>
      <height>27</height>
     </rect>
    </property>

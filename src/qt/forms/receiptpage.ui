@@ -13,9 +13,6 @@
   <property name="windowTitle">
    <string>Address Book</string>
   </property>
-  <property name="styleSheet">
-   <string notr="true"/>
-  </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
     <widget class="QFrame" name="verticalFrame">
@@ -39,9 +36,6 @@
    </item>
    <item>
     <widget class="QLabel" name="labelExplanation">
-     <property name="styleSheet">
-      <string notr="true"/>
-     </property>
      <property name="text">
       <string>These are your sent and received receipts. Click on an item to view it.</string>
      </property>
@@ -60,9 +54,6 @@
      </property>
      <property name="toolTip">
       <string/>
-     </property>
-     <property name="styleSheet">
-      <string notr="true"/>
      </property>
      <property name="tabKeyNavigation">
       <bool>false</bool>
@@ -88,9 +79,6 @@
     <layout class="QHBoxLayout" name="horizontalLayout">
      <item>
       <widget class="QPushButton" name="newButton">
-       <property name="styleSheet">
-        <string notr="true"/>
-       </property>
        <property name="text">
         <string>&amp;New</string>
        </property>
@@ -102,9 +90,6 @@
      </item>
      <item>
       <widget class="QPushButton" name="replyButton">
-       <property name="styleSheet">
-        <string notr="true"/>
-       </property>
        <property name="text">
         <string>&amp;Reply</string>
        </property>
@@ -118,9 +103,6 @@
       <widget class="QPushButton" name="resendButton">
        <property name="toolTip">
         <string>Sign a message to prove you own a Bitcredit address</string>
-       </property>
-       <property name="styleSheet">
-        <string notr="true"/>
        </property>
        <property name="text">
         <string>R&amp;esend</string>
@@ -136,9 +118,6 @@
        <property name="toolTip">
         <string>Copy the currently selected address to the system clipboard</string>
        </property>
-       <property name="styleSheet">
-        <string notr="true"/>
-       </property>
        <property name="text">
         <string>&amp;Copy From Address</string>
        </property>
@@ -153,9 +132,6 @@
        <property name="toolTip">
         <string>Copy the currently selected address to the system clipboard</string>
        </property>
-       <property name="styleSheet">
-        <string notr="true"/>
-       </property>
        <property name="text">
         <string>Copy To &amp;Address</string>
        </property>
@@ -169,9 +145,6 @@
       <widget class="QPushButton" name="deleteButton">
        <property name="toolTip">
         <string>Delete the currently selected address from the list</string>
-       </property>
-       <property name="styleSheet">
-        <string notr="true"/>
        </property>
        <property name="text">
         <string>&amp;Delete</string>

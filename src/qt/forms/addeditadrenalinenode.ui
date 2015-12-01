@@ -34,7 +34,7 @@
         </sizepolicy>
        </property>
        <property name="text">
-        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Enter an Alias (friendly name) for your Banknode and its address (either clearnet IP and port or Tor onion address and port). The address should be in the format 123.456.789.123:9999 or akjdsafxjkhasdf.onion:9999. A Banknode private key and a collateral address will both be automatically generated for you. You must send exactly 250 000 BCR to the collateral address.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Enter an Alias (friendly name) for your Banknode and its address (either clearnet IP and port or Tor onion address and port). The address should be in the format 123.456.789.123:9999 or akjdsafxjkhasdf.onion:9999. A Banknode private key and a collateral address will both be automatically generated for you. You must send exactly 50 000 BCR to the collateral address.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
        </property>
        <property name="wordWrap">
         <bool>true</bool>
@@ -87,6 +87,13 @@
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout_Buttons">
      <item>
+      <widget class="QPushButton" name="okButton">
+       <property name="text">
+        <string>&amp;OK</string>
+       </property>
+      </widget>
+     </item>
+     <item>
       <spacer name="horizontalSpacer_1">
        <property name="orientation">
         <enum>Qt::Horizontal</enum>
@@ -115,26 +122,6 @@
        </property>
        <property name="wordWrap">
         <bool>true</bool>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <spacer name="horizontalSpacer_2">
-       <property name="orientation">
-        <enum>Qt::Horizontal</enum>
-       </property>
-       <property name="sizeHint" stdset="0">
-        <size>
-         <width>40</width>
-         <height>48</height>
-        </size>
-       </property>
-      </spacer>
-     </item>
-     <item>
-      <widget class="QPushButton" name="okButton">
-       <property name="text">
-        <string>&amp;OK</string>
        </property>
       </widget>
      </item>

@@ -4,7 +4,6 @@
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include "miner.h"
-#include "rawdata.h"
 #include "activebanknode.h"
 #include "amount.h"
 #include "base58.h"
@@ -208,7 +207,7 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn)
 				CBitcreditAddress address(convertAddress(balit->first.c_str(),0x0c));
 				CTxDestination dest = address.Get();
 				txNew.vout[i].scriptPubKey= GetScriptForDestination(dest);
-				bidstotal+=balit->second;			
+				bidstotal+=balit->second;
 				i++;
 			}
 		}
@@ -515,7 +514,7 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn)
 						blockValue -= bb;
 						i++;
 					}
-				
+
 				}
 				else if (ispayoutblock && isgrantblock){
 					int j = 3;
@@ -579,16 +578,16 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn)
 				}
 				txNew.vout[0].nValue = blockValue;
 		}
-		
+
 		if (fDebug){//debug payouts
-			LogPrintf(" Bidtracker size:  %ld\n",bidtracker.size()); 
+			LogPrintf(" Bidtracker size:  %ld\n",bidtracker.size());
 			for(unsigned int i=0; i < txNew.vout.size();i++){
 				CAmount payout = txNew.vout[i].nValue;
 				CTxDestination address;
 				ExtractDestination(txNew.vout[i].scriptPubKey, address);
-				string receiveAddress = CBitcreditAddress( address ).ToString().c_str();				
+				string receiveAddress = CBitcreditAddress( address ).ToString().c_str();
 				LogPrintf(" Payouts: %s :-, %ld\n",receiveAddress,payout);
-				}			
+				}
 		}
 
         txNew.vin[0].scriptSig = CScript() << nHeight << OP_0;
@@ -636,18 +635,16 @@ void IncrementExtraNonce(CBlock* pblock, CBlockIndex* pindexPrev, unsigned int& 
 double dHashesPerMin = 0.0;
 int64_t nHPSTimerStart = 0;
 std::vector<std::string> miningkeys;
+
 CBlockTemplate* CreateNewBlockWithKey()
 {
 	std::ifstream file((GetDataDir() / "miningkeys.dat" ).string().c_str());
 	CScript scriptPubKey;
 	std::string line;
-	CBlock blockprev;
-	CBlockIndex* pindex = chainActive.Tip();
-	ReadBlockFromDisk(blockprev, pindex);
-	CTxDestination dest,m;
-	ExtractDestination(blockprev.vtx[0].vout[0].scriptPubKey, m);
-	string n = CBitcreditAddress(m).ToString().c_str();
-	
+	CTxDestination dest;
+	std::map<std::string,int64_t> addressvalue = getbalances();
+	std::map<std::string,int64_t>::iterator addrvalit;
+
 	while (std::getline(file, line)){
     if (!line.empty())
         miningkeys.push_back(line);
@@ -658,14 +655,22 @@ CBlockTemplate* CreateNewBlockWithKey()
 		dest = address.Get();
 		scriptPubKey =  GetScriptForDestination(dest);
 
-		if (n == miningkeys[i]){			 
-			 continue;			
+		if (std::find(last40blocks.begin(), last40blocks.end(), miningkeys[i]) != last40blocks.end())
+		{
+		if(fDebug)LogPrintf("CreateNewBlockWithKey(): coinbase key %s detected in 40 block period\n",miningkeys[i]);
+		continue;
 		}
-		if (fDebug)LogPrintf("key new  %s , keyprev     %s\n",miningkeys[i], n);
+
+		addrvalit = addressvalue.find(miningkeys[i]);
+		if(addrvalit != addressvalue.end()){
+			if (!(addrvalit->second > 50000*COIN))
+				LogPrintf("CreateNewBlockWithKey(): banknode miningkey 50K failed");
+		}
+		
 		break;
 	}
-	
-	return CreateNewBlock(scriptPubKey);	
+
+	return CreateNewBlock(scriptPubKey);
 }
 
 bool ProcessBlockFound(CBlock* pblock, CWallet& wallet)
@@ -706,10 +711,10 @@ void static BitcreditMiner(CWallet *pwallet)
     RenameThread("bitcredit-miner");
 
     unsigned int nExtraNonce = 0;
-    
+
     // get the address used for the last block, don't bother checking address validity,
     // that will be done in TestBlockValidity
-    
+
     try {
         while (true) {
             if (Params().MiningRequiresPeers()) {

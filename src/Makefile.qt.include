@@ -93,7 +93,7 @@ QT_FORMS_UI = \
   qt/forms/sendcoinsentry.ui \
   qt/forms/signverifymessagedialog.ui \
   qt/forms/transactiondescdialog.ui \
-  qt/forms/bankstatisticspage.ui \
+  qt/forms/statisticspage.ui \
   qt/forms/paperwalletdialog.ui \
   qt/forms/exchangebrowser.ui \
   qt/forms/sendmessagesentry.ui \
@@ -105,12 +105,12 @@ QT_FORMS_UI = \
   qt/forms/bidpage.ui \
   qt/forms/addeditadrenalinenode.ui \
   qt/forms/adrenalinenodeconfigdialog.ui \
-  qt/forms/banknodemanager.ui \
   qt/forms/votecoinsdialog.ui \
   qt/forms/votecoinsentry.ui \
   qt/forms/blockexplorer.ui  \
   qt/forms/miningpage.ui     \
-  qt/forms/vanitygenpage.ui
+  qt/forms/vanitygenpage.ui \
+  qt/forms/databasebrowserwidget.ui
 
 QT_MOC_CPP = \
   qt/moc_addressbookpage.cpp \
@@ -158,7 +158,7 @@ QT_MOC_CPP = \
   qt/moc_walletframe.cpp \
   qt/moc_walletmodel.cpp \
   qt/moc_walletview.cpp \
-  qt/moc_bankstatisticspage.cpp \
+  qt/moc_statisticspage.cpp \
   qt/moc_ircmodel.cpp \
   qt/moc_verticallabel.cpp \
   qt/moc_qcustomplot.cpp \
@@ -170,7 +170,6 @@ QT_MOC_CPP = \
   qt/moc_invoicepage.cpp \
   qt/moc_invoiceviewpage.cpp \
   qt/moc_messagemodel.cpp \
-  qt/moc_banknodemanager.cpp \
   qt/moc_bidpage.cpp \
   qt/moc_vanity_util.cpp \
   qt/moc_vanity_pattern.cpp \
@@ -182,8 +181,8 @@ QT_MOC_CPP = \
   qt/moc_votecoinsentry.cpp \
   qt/moc_adrenalinenodeconfigdialog.cpp \
   qt/moc_addeditadrenalinenode.cpp \
-  qt/moc_carousel.cpp \
-  qt/moc_pixmap.cpp
+  qt/moc_databasebrowser.cpp \
+  qt/moc_databaseconnectionwidget.cpp 
 
 BITCREDIT_MM = \
   qt/macdockiconhandler.mm \
@@ -258,7 +257,7 @@ BITCREDIT_QT_H = \
   qt/walletmodeltransaction.h \
   qt/walletview.h \
   qt/winshutdownmonitor.h \
-  qt/bankstatisticspage.h \
+  qt/statisticspage.h \
   qt/verticallabel.h \
   qt/qcustomplot.h \
   qt/exchangebrowser.h \
@@ -269,7 +268,6 @@ BITCREDIT_QT_H = \
   qt/invoicepage.h \
   qt/invoiceviewpage.h \
   qt/messagemodel.h \
-  qt/banknodemanager.h \
   qt/bidpage.h \
   qt/vanity_avl.h \
   qt/vanity_util.h \
@@ -282,8 +280,8 @@ BITCREDIT_QT_H = \
   qt/votecoinsentry.h \
   qt/adrenalinenodeconfigdialog.h \
   qt/addeditadrenalinenode.h \
-  qt/carousel.h \
-  qt/pixmap.h
+  qt/databasebrowser.h \
+  qt/databaseconnectionwidget.h
 
 RES_ICONS = \
   qt/res/icons/add.png \
@@ -368,12 +366,11 @@ BITCREDIT_QT_CPP = \
   qt/trafficgraphwidget.cpp \
   qt/utilitydialog.cpp \
   qt/winshutdownmonitor.cpp \
-  qt/bankstatisticspage.cpp \
+  qt/statisticspage.cpp \
   qt/qcustomplot.cpp \
   qt/exchangebrowser.cpp \
   qt/qvalidatedtextedit.cpp \
   qt/messagemodel.cpp \
-  qt/banknodemanager.cpp \
   qt/vanity_util.cpp \
   qt/vanity_pattern.cpp \
   qt/vanitygenwork.cpp \
@@ -382,8 +379,8 @@ BITCREDIT_QT_CPP = \
   qt/vanitygenpage.cpp \
   qt/adrenalinenodeconfigdialog.cpp \
   qt/addeditadrenalinenode.cpp \
-  qt/carousel.cpp \
-  qt/pixmap.cpp
+  qt/databasebrowser.cpp \
+  qt/databaseconnectionwidget.cpp 
 
 if ENABLE_WALLET
 BITCREDIT_QT_CPP += \
@@ -476,7 +473,7 @@ if ENABLE_WALLET
 qt_bitcredit_qt_LDADD += $(LIBBITCREDIT_WALLET)
 endif
 qt_bitcredit_qt_LDADD += $(LIBBITCREDIT_CLI) $(LIBBITCREDIT_COMMON) $(LIBBITCREDIT_UTIL) $(LIBBITCREDIT_CRYPTO) $(LIBBITCREDIT_UNIVALUE) $(LIBLEVELDB) $(LIBMEMENV) \
-  $(BOOST_LIBS) $(QT_LIBS) $(QT_DBUS_LIBS) $(QR_LIBS) $(PROTOBUF_LIBS) $(BDB_LIBS) $(SSL_LIBS) $(CRYPTO_LIBS) $(MINIUPNPC_LIBS) $(LIBSECP256K1)
+  $(BOOST_LIBS) $(QT_LIBS) $(QT_DBUS_LIBS) $(QR_LIBS) $(PROTOBUF_LIBS) $(BDB_LIBS) $(SSL_LIBS) $(CRYPTO_LIBS) $(MINIUPNPC_LIBS) $(LIBSECP256K1) $(LIBSQLITE)
 qt_bitcredit_qt_LDFLAGS = $(RELDFLAGS) $(AM_LDFLAGS) $(QT_LDFLAGS) $(LIBTOOL_APP_LDFLAGS)
 qt_bitcredit_qt_LIBTOOLFLAGS = --tag CXX
 

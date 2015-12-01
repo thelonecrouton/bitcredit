@@ -6,8 +6,10 @@
 namespace Ui {
     class SendMessagesEntry;
 }
+
 class MessageModel;
 class SendMessagesRecipient;
+class WalletModel;
 
 /** A single entry in the dialog for sending messages. */
 class SendMessagesEntry : public QFrame
@@ -19,6 +21,7 @@ public:
     ~SendMessagesEntry();
 
     void setModel(MessageModel *model);
+    void setWalletModel(WalletModel *walletmodel);
     void loadRow(int row);
     void loadInvoice(QString message, QString to_address);
     bool validate();
@@ -50,6 +53,7 @@ private slots:
 
 private:
     Ui::SendMessagesEntry *ui;
+    WalletModel *walletmodel;
     MessageModel *model;
 };
 

@@ -52,8 +52,6 @@ ReceiptPage::ReceiptPage(QWidget *parent) :
     //connect(ui->tableView,         SIGNAL (doubleClicked(const QModelIndex&)), this, SLOT (viewInvoice(const QModelIndex&)));
 
     connect(ui->tableView, SIGNAL(customContextMenuRequested(QPoint)), this, SLOT(contextualMenu(QPoint)));
-    
-   // this->setStyleSheet("background-image:url(:/images/background);");
 }
 
 ReceiptPage::~ReceiptPage()
@@ -128,7 +126,7 @@ void ReceiptPage::on_replyButton_clicked()
     if(indexes.isEmpty())
         return;
 
-    SendMessagesDialog dlg(SendMessagesDialog::Encrypted, SendMessagesDialog::Dialog, this);
+    SendMessagesDialog dlg(this);
 
     dlg.setModel(messageModel);
     QModelIndex origIndex = proxyModel->mapToSource(indexes.at(0));

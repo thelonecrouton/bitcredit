@@ -384,7 +384,9 @@ static const CRPCCommand vRPCCommands[] =
     { "secureMsg" ,         "smsginbox",              &smsginbox,              true,      false,	  true },
     { "secureMsg" ,         "smsgoutbox",             &smsgoutbox,             true,      false,	  false},
     { "secureMsg" ,         "smsgbuckets",            &smsgbuckets,            true,      false,	  false},
-
+    
+	{ "p2pfinance",         "gettrust",    			  &gettrust,  			   false,     false,      false},
+	
 #ifdef ENABLE_WALLET
     /* Escrow */    
     { "escrow",           "sendbydelegate",           &sendbydelegate,         false,     false,      false},
