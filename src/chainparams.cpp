@@ -56,7 +56,7 @@ static Checkpoints::MapCheckpoints mapCheckpoints =
         boost::assign::map_list_of
         ( 0, uint256("0x0df7a63994eb66317fd82c16ee5160adb83acb45f72d5bf359b88e635d7301b8"))
         ( 50, uint256("0x05743f466ecb2e1252779730ac3658400960ef44dd17453032ae340b6e1eedc0"))
-        ( 798, uint256("0x0000ea5d57ecf0193788783a010695c934485352002dc6355d0c459a2b259436")) 
+        ( 798, uint256("0x0000ea5d57ecf0193788783a010695c934485352002dc6355d0c459a2b259436"))
         ( 4798, uint256("0x00165e5b7a69a00cfbb27a8ce183bdb036c922f3355a20f696fd3c574d210ca9"))
         ( 11921, uint256("0x0001f822b95475978cb2cffdc35dee11c69bb7eff3330f14e298f8f5030b8397"))
         ( 12730, uint256("0x00078729870af9ea8f24d31973fca4382e676fa3a88fb5b3e1ed997549ba063e"))
@@ -103,7 +103,7 @@ public:
     CMainParams() {
         networkID = CBaseChainParams::MAIN;
         strNetworkID = "main";
-        /** 
+        /**
          * The message start string is designed to be unlikely to occur in normal data.
          * The characters are rarely used upper ASCII, not valid as UTF-8, and produce
          * a large 32-bit integer with any alignment.
@@ -121,7 +121,7 @@ public:
         nToCheckBlockUpgradeMajority = 100;
         nMinerThreads = 0;
         nTargetTimespan = 1 * 60 *60; // one hour
-        nTargetTimespan2 = 1 * 60; // per block basis 
+        nTargetTimespan2 = 1 * 60; // per block basis
         nTargetSpacing = 1 * 60; //one minute
 
         /**
@@ -157,6 +157,9 @@ public:
         assert(genesis.hashMerkleRoot == uint256("0x5cc3c0d3e08ea84f86235607e33f6153a9396e1a129fda4c671595817a5d7f9d"));
 
         vSeeds.push_back(CDNSSeedData("91.230.123.11", "91.230.123.11"));
+        vSeeds.push_back(CDNSSeedData("176.56.238.121", "176.56.238.121"));
+        vSeeds.push_back(CDNSSeedData("168.235.88.30", "168.235.88.30"));
+        vSeeds.push_back(CDNSSeedData("45.32.235.149", "45.32.235.149																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																															"));
 
         base58Prefixes[PUBKEY_ADDRESS] = std::vector<unsigned char>(1,12);
         base58Prefixes[SCRIPT_ADDRESS] = std::vector<unsigned char>(1,8);
@@ -176,7 +179,7 @@ public:
         fTestnetToBeDeprecatedFieldRPC = false;
     }
 
-    const Checkpoints::CCheckpointData& Checkpoints() const 
+    const Checkpoints::CCheckpointData& Checkpoints() const
     {
         return data;
     }
@@ -209,7 +212,7 @@ public:
         genesis.nNonce   = 2;
         genesis.nBirthdayA   = 6252506;
         genesis.nBirthdayB   = 10141203;
-        
+
        /* {
 		printf("Generating new genesis block...\n");
 		uint256 hashTarget = uint256().SetCompact(genesis.nBits);
@@ -217,7 +220,7 @@ public:
 		genesis.nNonce = 0;
 		genesis.nBirthdayA = 0;
 		genesis.nBirthdayB = 0;
-		
+
 		for (;;)
 		{
 			genesis.nNonce=genesis.nNonce+1;
@@ -231,13 +234,13 @@ public:
 				printf("Found Genesis Block nTime: %d\n", genesis.nTime);
 				printf("Found Genesis Block nBirthdayA: %d\n", genesis.nBirthdayA);
 				printf("Found Genesis Block nBirthdayB: %d\n", genesis.nBirthdayB);
-				
+
 				break;
 			}
 		}
     }*/
-         
-        
+
+
         hashGenesisBlock = genesis.GetHash();
         assert(hashGenesisBlock == uint256("0x04f7a847af5a8af914941f4f779680fa00b01aca5411532dfca24d2bcd38e35a"));
 
@@ -261,7 +264,7 @@ public:
         fMineBlocksOnDemand = false;
         fTestnetToBeDeprecatedFieldRPC = true;
     }
-    const Checkpoints::CCheckpointData& Checkpoints() const 
+    const Checkpoints::CCheckpointData& Checkpoints() const
     {
         return dataTestnet;
     }
@@ -308,7 +311,7 @@ public:
         fMineBlocksOnDemand = true;
         fTestnetToBeDeprecatedFieldRPC = false;
     }
-    const Checkpoints::CCheckpointData& Checkpoints() const 
+    const Checkpoints::CCheckpointData& Checkpoints() const
     {
         return dataRegtest;
     }
@@ -334,7 +337,7 @@ public:
         fMineBlocksOnDemand = true;
     }
 
-    const Checkpoints::CCheckpointData& Checkpoints() const 
+    const Checkpoints::CCheckpointData& Checkpoints() const
     {
         // UnitTest share the same checkpoints as MAIN
         return data;
