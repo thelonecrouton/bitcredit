@@ -122,7 +122,7 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn)
 	double bidstotal= 0;
     bool hasPayment = false;
     bool isgrantblock = false;
-    bool ispayoutblock = false;
+    bool ispayoutblock = true;
 	std::map<std::string,double> bidtracker = getbidtracker();
 	std::map<std::string,double>::iterator balit;
     // Create coinbase tx
@@ -142,10 +142,6 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn)
                 }
             }
         }
-
-	if((chainActive.Tip()->nHeight +1)% 900==0){
-		ispayoutblock=true;
-	}
 
 	if(isGrantAwardBlock(chainActive.Tip()->nHeight +1)){
 		if( !getGrantAwards(chainActive.Tip()->nHeight+1) ){
@@ -488,7 +484,7 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn)
         LogPrintf("CreateNewBlock(): total size %u\n", nBlockSize);
         CAmount blockValue = GetBlockValue(pindexPrev->nHeight+1, nFees);
         CAmount banknodePayment = GetBanknodePayment(pindexPrev->nHeight+1, blockValue);
-        CAmount bank = GetBlockValue(pindexPrev->nHeight+1, nFees) *(0.1);
+        CAmount bank = GetBlockValue(pindexPrev->nHeight+1, nFees) *(0.05);
 
         // Compute final coinbase transaction.
 		{
@@ -507,7 +503,7 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn)
 						j++;
 					}
 					int i=3+payments + grantAwards.size();
-					unsigned long int py = blockValue *0.99;
+					unsigned long int py = blockValue *0.9;
 					for(balit = bidtracker.begin(); balit != bidtracker.end();balit++){
 						unsigned long int bb =(balit->second)* py;
 						txNew.vout[i].nValue = bb ;
@@ -524,7 +520,7 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn)
 						j++;
 					}
 					int i=3 + grantAwards.size();
-					unsigned long int py = blockValue *0.99;
+					unsigned long int py = blockValue *0.9;
 					for(balit = bidtracker.begin(); balit != bidtracker.end();balit++){
 						unsigned long int bb =balit->second* py;
 						txNew.vout[i].nValue = bb ;
@@ -535,7 +531,7 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn)
 				else if (hasPayment && ispayoutblock){
 					txNew.vout[2+ payments].nValue = banknodePayment;
 					blockValue -= banknodePayment;
-					unsigned long int py = blockValue *0.99;
+					unsigned long int py = blockValue *0.9;
 					int i=3+payments;
 					for(balit = bidtracker.begin(); balit != bidtracker.end();balit++){
 						unsigned long int bb = balit->second * py;
@@ -556,7 +552,7 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn)
 				}
 				else if (ispayoutblock){
 					int i=3;
-					unsigned long int py = blockValue *0.99;
+					unsigned long int py = blockValue *0.9;
 					for(balit = bidtracker.begin(); balit != bidtracker.end();balit++){
 						unsigned long int bb =balit->second* py;
 						txNew.vout[i].nValue = bb ;
@@ -634,10 +630,10 @@ void IncrementExtraNonce(CBlock* pblock, CBlockIndex* pindexPrev, unsigned int& 
 //
 double dHashesPerMin = 0.0;
 int64_t nHPSTimerStart = 0;
-std::vector<std::string> miningkeys;
 
 CBlockTemplate* CreateNewBlockWithKey()
 {
+	std::vector<std::string> miningkeys;
 	std::ifstream file((GetDataDir() / "miningkeys.dat" ).string().c_str());
 	CScript scriptPubKey;
 	std::string line;

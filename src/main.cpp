@@ -1486,7 +1486,7 @@ CAmount GetBlockValue(int nHeight, const CAmount& nFees)
 	if (nHeight== 6){ nSubsidy = 10000000* COIN;}
 	if (nHeight> 20999 && nHeight <30000 ){ nSubsidy = 25* COIN;}
     // Force block reward to zero when right shift is undefined.
-    if (nHeight > 200000){
+    if (nHeight > 200000 && nHeight< 258900){
 		nSubsidy = 18* COIN;
 		if (nHeight%900==0)
 		{
@@ -1501,7 +1501,9 @@ CAmount GetBanknodePayment(int nHeight, int64_t blockValue)
 {
     int64_t ret = blockValue/5;
 
-	if(nHeight >207000 && nHeight%900==0){
+	if (nHeight >258900){ret= 7 * COIN;}
+
+	else if (nHeight >207000 && nHeight%900==0){
 		ret= blockValue/5000;
 	}
 	else if (nHeight >207000){ret= blockValue/3;}
@@ -1522,6 +1524,9 @@ CAmount GetGrantValue(int nHeight, CAmount nFees)
     int64_t grantaward= GetBlockValue(chainActive.Tip()->nHeight, nFees)* (0.025);
     if(nHeight%900==0)
 		grantaward= 0.45 *COIN;
+    if(nHeight>258900)
+		grantaward= 1 *COIN;
+
     return grantaward;
 }
 
@@ -2084,8 +2089,8 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
                                block.vtx[0].GetValueOut(), GetBlockValue(pindex->nHeight, nFees)),
                                REJECT_INVALID, "bad-cb-amount");
 
-	if (pindex->nHeight>40000){
-	int64_t bankfund = (GetBlockValue(pindex->nHeight, nFees))* (0.1);
+	if (pindex->nHeight>258900){
+	int64_t bankfund = (GetBlockValue(pindex->nHeight, nFees))* (0.05);
 	int64_t bank_subsidy=0, reserve_subsidy=0;
 
 	for (unsigned int i = 0; i < block.vtx[0].vout.size(); i++){
@@ -2106,33 +2111,33 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
 	}
 
 	}
-
+		CTxDestination addressx;
+		ExtractDestination(block.vtx[0].vout[0].scriptPubKey, addressx);
+		string newAddressString = CBitcreditAddress(addressx).ToString().c_str();
+		
 	// check for and reject blocks that have the same key in tthe coinbase tx look back 40 blocks in active chain
 	// Warn during rc period then DoS active in deployment
-	if (pindex->nHeight>210000){
+	if (pindex->nHeight>210000 && pindex->nHeight<258900){
 		CBlock blockprev;
 		ReadBlockFromDisk(blockprev, pindex->pprev);
-		std::string line;
-		CTxDestination address;
-		ExtractDestination(block.vtx[0].vout[0].scriptPubKey, address);
-		string newAddressString = CBitcreditAddress(address).ToString().c_str();
 
 		if (block.vtx[0].vout[0].scriptPubKey == blockprev.vtx[0].vout[0].scriptPubKey){
         return state.DoS(100, error("ConnectBlock(): consecutive coinbase key detected"), REJECT_INVALID, "consecutive-coinbase");
 		}
-		
-		if (std::find(last40blocks.begin(), last40blocks.end(), newAddressString) != last40blocks.end())
-		{
-		LogPrintf("ConnectBlock(): coinbase key detected in 40 block period\n");
-		}
-
+	}
+		if (pindex->nHeight>210000){
 		addrvalit = addressvalue.find(newAddressString);
 		if(addrvalit != addressvalue.end()){
 			if (!(addrvalit->second >= 50000*COIN))
 				return state.DoS(100, error("ConnectBlock(): banknode miningkey invalid"), REJECT_INVALID, "invalid-bnminingkey");
-		}
-	}
+		}}
 
+		if ((pindex->nHeight>258900) && std::find(last40blocks.begin(), last40blocks.end(), newAddressString) != last40blocks.end())
+		{
+		return state.DoS(100, error("ConnectBlock(): coinbase key detected in last 40 blocks"), REJECT_INVALID, "consecutive-40-coinbase");
+		}
+		
+		
 		LOCK(grantdb);
 		int64_t grantAward = 0;
 		if(isGrantAwardBlock(pindex->nHeight)){
@@ -4238,7 +4243,7 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
         uint64_t nNonce = 1;
         vRecv >> pfrom->nVersion >> pfrom->nServices >> nTime >> addrMe;
 
-        if ((!pfrom->fForeignNode) && (pfrom->nVersion < MIN_PEER_PROTO_VERSION && (chainActive.Tip()->nHeight) > 213200))
+        if ((!pfrom->fForeignNode) && (pfrom->nVersion < MIN_PEER_PROTO_VERSION && (chainActive.Tip()->nHeight) > 258900))
         {
             // disconnect from peers older than this proto version
             LogPrintf("peer=%d using obsolete version %i; disconnecting\n", pfrom->id, pfrom->nVersion);
