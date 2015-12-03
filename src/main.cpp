@@ -2492,9 +2492,6 @@ bool static ConnectTip(CValidationState &state, CBlockIndex *pindexNew, CBlock *
 	sqlite3_open((GetDataDir() / "ratings/rawdata.db").string().c_str(), &rawdb);
     char * insertquery = sqlite3_mprintf("insert into BLOCKS (ID, HASH, TIME, MINER) values (%lld,'%q',%lld,'%q')",pindexNew->nHeight, pblock->GetHash().ToString().c_str(), pblock->nTime, miner.c_str());
 	rc = sqlite3_exec(rawdb, insertquery, callback, 0, &zErrMsg);
-
-    char * txquery = sqlite3_mprintf("insert into TRANSACTIONS (HASH, BLOCKNUM) values ('%q','%lld')", pblock->GetHash().ToString().c_str(), pindexNew->nHeight);
-	rc = sqlite3_exec(rawdb, txquery, callback, 0, &zErrMsg);
 	
         for (unsigned int j = 0; j < tx.vout.size();j++){
 			CTxDestination address;
@@ -2503,10 +2500,6 @@ bool static ConnectTip(CValidationState &state, CBlockIndex *pindexNew, CBlock *
 			int64_t theAmount = tx.vout[ j ].nValue;
 			addressvalue[receiveAddress] = addressvalue[receiveAddress] + theAmount;
 		
-            char * insertquery2 = sqlite3_mprintf("insert into OUTPUTS ( TXID, DADDR, VALUE, OFFSET )" \
-             "values ('%q','%q',%lld,%lld)",tx.GetHash().ToString().c_str(), receiveAddress.c_str(), theAmount,  j);
-            rc = sqlite3_exec(rawdb, insertquery2, callback, 0, &zErrMsg);
-
             char *sql ="select * from RAWDATA where ADDRESS = ?";
 
 			rc = sqlite3_prepare(rawdb,sql, strlen(sql), &stmt,  0 );
@@ -2578,10 +2571,6 @@ bool static ConnectTip(CValidationState &state, CBlockIndex *pindexNew, CBlock *
                     spendAddress = CBitcreditAddress(addressRet).ToString().c_str();
 					theAmount =  txOut.nValue;
 					addressvalue[spendAddress] = addressvalue[spendAddress] - theAmount;
-
-					char * insertquery2 = sqlite3_mprintf("insert into INPUTS (TXID, SRCADD, VALUE,  OFFSET )" \
-                    "values ('%q','%q',%lld,%ld)",tx.GetHash().ToString().c_str(), spendAddress.c_str(), theAmount,  i);
-					rc = sqlite3_exec(rawdb, insertquery2, callback, 0, &zErrMsg);
 
 					const char *updatequery ="select * from RAWDATA where ADDRESS = ?";
 

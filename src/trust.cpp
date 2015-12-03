@@ -263,45 +263,12 @@ void TrustEngine::createdb()
          "TXDATE       		INTEGER     DEFAULT 0," \
          "DUEDATE      		INTEGER     DEFAULT 0);");
 
-  sql.push_back("CREATE TABLE TRUSTRATINGS("  \
-         "ADDRESS TEXT PRIMARY KEY      NOT NULL," \
-         "BALANCE           INTEGER     DEFAULT 0," \
-         "INCOME            INTEGER     DEFAULT 0," \
-         "EXPENDITURE       INTEGER     DEFAULT 0," \
-         "TRUST            REAL     DEFAULT 0);");
-
-  sql.push_back("CREATE TABLE CREDITRATINGS("  \
-         "ADDRESS TEXT PRIMARY KEY      NOT NULL," \
-         "TRUST           INTEGER     DEFAULT 0," \
-         "VOTES            INTEGER     DEFAULT 0," \
-         "GROUP       INTEGER     DEFAULT 0," \
-         "RATING            INTEGER     DEFAULT 0);");
-
-
-  sql.push_back("CREATE TABLE TRANSACTIONS(" \
-            "    ID INTEGER PRIMARY KEY AUTOINCREMENT," \
-            "    HASH TEXT," \
-            "    BLOCKNUM INTEGER);");
-
   sql.push_back("CREATE TABLE BLOCKS(" \
             "    ID INTEGER PRIMARY KEY AUTOINCREMENT," \
             "    HASH TEXT," \
             "    TIME INTEGER," \
             "    MINER TEXT);");
 
-  sql.push_back("CREATE TABLE OUTPUTS(" \
-            "    ID INTEGER PRIMARY KEY AUTOINCREMENT," \
-            "    TXID TEXT," \
-            "    DADDR TEXT," \
-            "    VALUE INTEGER," \
-            "    OFFSET INTEGER);");
-
-  sql.push_back("CREATE TABLE INPUTS(" \
-			"    ID INTEGER PRIMARY KEY AUTOINCREMENT," \
-            "    TXID TEXT ," \
-            "    SRCADD TEXT," \
-            "    VALUE INTEGER," \
-            "    OFFSET INTEGER);");
 
    /* Execute SQL statements */
 	for (unsigned int i =0;i < sql.size();i++){
