@@ -98,7 +98,7 @@ CScript RESERVE_SCRIPT;
 CScript PUBKEY_SCRIPT;
 CScript PUBKEY2_SCRIPT;
 const string strMessageMagic = "Bitcredit Signed Message:\n";
-boost::circular_buffer<string> last40blocks(39);
+boost::circular_buffer<string> last40blocks(40);
 boost::circular_buffer<string>::iterator  l40i;
 // Internal stuff
 namespace {
@@ -2132,12 +2132,9 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
 			}
 		}
 
-		if (pindex->nHeight>258900) {
-			
-			if (std::find(last40blocks.begin(), last40blocks.end(), newAddressString) != last40blocks.end()){		
-				if(fDebug)LogPrintf("ConnectBlock(): coinbase key detected in last 40 blocks %s\n",newAddressString);	
-				return state.DoS(100, error("ConnectBlock(): coinbase key detected in last 40 blocks"), REJECT_INVALID, "consecutive-40-coinbase");
-			}
+		if ((pindex->nHeight>258900) && std::find(last40blocks.begin(), last40blocks.end(), newAddressString) != last40blocks.end())
+		{
+		return state.DoS(100, error("ConnectBlock(): coinbase key detected in last 40 blocks"), REJECT_INVALID, "consecutive-40-coinbase");
 		}		
 		
 		LOCK(grantdb);
@@ -3700,11 +3697,9 @@ bool CVerifyDB::VerifyDB(CCoinsView *coinsview, int nCheckLevel, int nCheckDepth
         if (pindex->nHeight < chainActive.Height()-nCheckDepth)
             break;
         CBlock block;
-
         // check level 0: read from disk
         if (!ReadBlockFromDisk(block, pindex))
             return error("VerifyDB(): *** ReadBlockFromDisk failed at %d, hash=%s", pindex->nHeight, pindex->GetBlockHash().ToString());
-	    
         // check level 1: verify block validity
         if (nCheckLevel >= 1 && !CheckBlock(block, state))
             return error("VerifyDB(): *** found bad block at %d, hash=%s\n", pindex->nHeight, pindex->GetBlockHash().ToString());
@@ -3718,20 +3713,11 @@ bool CVerifyDB::VerifyDB(CCoinsView *coinsview, int nCheckLevel, int nCheckDepth
             }
         }
 
-
 		CTxDestination m;
 		ExtractDestination(block.vtx[0].vout[0].scriptPubKey, m);
 		string miner = CBitcreditAddress(m).ToString().c_str();
 		last40blocks.push_back(miner);
-		
-		ofstream last40blocksfile;
-		
-		last40blocksfile.open ((GetDataDir() / "ratings/miners.dat" ).string().c_str(), std::ofstream::trunc);
-		for(l40i = last40blocks.begin();l40i != last40blocks.end();++l40i){
-		last40blocksfile << *l40i << endl;
-		}
-		last40blocksfile.close();
-		
+
         // check level 3: check for inconsistencies during memory-only disconnect of tip blocks
         if (nCheckLevel >= 3 && pindex == pindexState && (coins.GetCacheSize() + pcoinsTip->GetCacheSize()) <= nCoinCacheSize) {
             bool fClean = true;
