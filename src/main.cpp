@@ -2125,22 +2125,17 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
 		}
 	}
 		if (pindex->nHeight>210000){
-		addrvalit = addressvalue.find(newAddressString);
-		if(addrvalit != addressvalue.end()){
-			if (!(addrvalit->second >= 50000*COIN))
-				return state.DoS(100, error("ConnectBlock(): banknode miningkey invalid"), REJECT_INVALID, "invalid-bnminingkey");
-		}}
+			addrvalit = addressvalue.find(newAddressString);
+			if(addrvalit != addressvalue.end()){
+				if (!(addrvalit->second >= 50000*COIN))
+					return state.DoS(100, error("ConnectBlock(): banknode miningkey invalid"), REJECT_INVALID, "invalid-bnminingkey");
+			}
+		}
 
-		if ((pindex->nHeight>258900) /*&& (std::find(last40blocks.begin(), last40blocks.end(), newAddressString) != last40blocks.end())*/)
+		if ((pindex->nHeight>258900) && (std::find(last40blocks.begin(), last40blocks.end(), newAddressString) != last40blocks.end()))
 		{		
-		
-		for(l40i = last40blocks.begin();l40i != last40blocks.end();l40i++){
-			
-		if (*l40i==newAddressString)
 		return state.DoS(100, error("ConnectBlock(): coinbase key detected in last 40 blocks"), REJECT_INVALID, "consecutive-40-coinbase");
-		}
-		}
-		
+		}		
 		
 		LOCK(grantdb);
 		int64_t grantAward = 0;
@@ -2488,17 +2483,6 @@ bool static ConnectTip(CValidationState &state, CBlockIndex *pindexNew, CBlock *
     ExtractDestination(pblock->vtx[0].vout[0].scriptPubKey, m);
 	string miner = CBitcreditAddress(m).ToString().c_str();
 	last40blocks.push_back(miner);
-	
-	//for (int i=0, i< last40blocks.size(); i++)
-
-		//ofstream last40blocks;
-		//last40blocks.open ((GetDataDir() / "ratings/miners.dat" ).string().c_str(), std::ofstream::trunc);
-
-		/*/for(addrvalit = addressvalue.begin();addrvalit != addressvalue.end();++addrvalit){
-			addrdb << addrvalit->first << "," << addrvalit->second << endl;
-		}*/
-		//addrdb.close();	
-	
 			
     std::map<std::string,int64_t>::iterator addrvalit;
 	std::map<std::string,int64_t> addressvalue = getbalances();
