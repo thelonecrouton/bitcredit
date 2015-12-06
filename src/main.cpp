@@ -3713,11 +3713,6 @@ bool CVerifyDB::VerifyDB(CCoinsView *coinsview, int nCheckLevel, int nCheckDepth
             }
         }
 
-		CTxDestination m;
-		ExtractDestination(block.vtx[0].vout[0].scriptPubKey, m);
-		string miner = CBitcreditAddress(m).ToString().c_str();
-		last40blocks.push_back(miner);
-
         // check level 3: check for inconsistencies during memory-only disconnect of tip blocks
         if (nCheckLevel >= 3 && pindex == pindexState && (coins.GetCacheSize() + pcoinsTip->GetCacheSize()) <= nCoinCacheSize) {
             bool fClean = true;
