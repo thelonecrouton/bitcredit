@@ -157,17 +157,9 @@ public:
         assert(hashGenesisBlock == uint256("0x0df7a63994eb66317fd82c16ee5160adb83acb45f72d5bf359b88e635d7301b8"));
         assert(genesis.hashMerkleRoot == uint256("0x5cc3c0d3e08ea84f86235607e33f6153a9396e1a129fda4c671595817a5d7f9d"));
 
-        vSeeds.push_back(CDNSSeedData("91.230.123.11", "91.230.123.11"));
         vSeeds.push_back(CDNSSeedData("176.56.238.121", "176.56.238.121"));
         vSeeds.push_back(CDNSSeedData("168.235.88.30", "168.235.88.30"));
         vSeeds.push_back(CDNSSeedData("45.32.235.149", "45.32.235.149"));
-        vSeeds.push_back(CDNSSeedData("82.211.1.181", "82.211.1.181"));
-        vSeeds.push_back(CDNSSeedData("91.230.123.81", "91.230.123.81"));
-        vSeeds.push_back(CDNSSeedData("91.230.123.82", "91.230.123.82"));
-        vSeeds.push_back(CDNSSeedData("91.230.123.83", "91.230.123.83"));
-        vSeeds.push_back(CDNSSeedData("91.230.123.84", "91.230.123.84"));
-        vSeeds.push_back(CDNSSeedData("91.230.123.85", "91.230.123.85"));
-        vSeeds.push_back(CDNSSeedData("109.166.154.210", "109.166.154.210"));
 
         base58Prefixes[PUBKEY_ADDRESS] = std::vector<unsigned char>(1,12);
         base58Prefixes[SCRIPT_ADDRESS] = std::vector<unsigned char>(1,8);
