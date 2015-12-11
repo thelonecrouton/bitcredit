@@ -2612,13 +2612,13 @@ bool static ConnectTip(CValidationState &state, CBlockIndex *pindexNew, CBlock *
 		if (fDebug)LogPrintf( "database closed successfully\n");
 		}
     }
-		ofstream addrdb;
-		addrdb.open ((GetDataDir() / "ratings/balances.dat" ).string().c_str(), std::ofstream::trunc);
+	ofstream addrdb;
+	addrdb.open ((GetDataDir() / "ratings/balances.dat" ).string().c_str(), std::ofstream::trunc);
 
-		for(addrvalit = addressvalue.begin();addrvalit != addressvalue.end();++addrvalit){
-			addrdb << addrvalit->first << "," << addrvalit->second << endl;
-		}
-		addrdb.close();
+	for(addrvalit = addressvalue.begin();addrvalit != addressvalue.end();++addrvalit){
+		addrdb << addrvalit->first << "," << addrvalit->second << endl;
+	}
+	addrdb.close();
 
     int64_t nTime6 = GetTimeMicros(); nTimePostConnect += nTime6 - nTime5; nTimeTotal += nTime6 - nTime1;
     LogPrint("bench", "  - Connect postprocess: %.2fms [%.2fs]\n", (nTime6 - nTime5) * 0.001, nTimePostConnect * 0.000001);

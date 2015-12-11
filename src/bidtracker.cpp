@@ -406,12 +406,13 @@ void sortbidtracker(){
 			finalbids[strs[0]]+=strtoll(strs[1].c_str(),&pEnd,10);
 		}
 	}
-
+	
 	ofstream myfile;
 	myfile.open((GetDataDir() /"bidtracker/final.dat").string().c_str(), std::ofstream::trunc);
 	myfile << std::fixed << setprecision(8);
 	for(brit = finalbids.begin();brit != finalbids.end(); ++brit){
-		myfile << brit->first << "," << (brit->second)/totalbid << endl;
+		if (!(brit->second ==0 || totalbid == 0) )
+			myfile << brit->first << "," << (brit->second)/totalbid << endl;
 	}
 
 	myfile2.close();
