@@ -2445,7 +2445,7 @@ void updatedatabases()
 			string receiveAddress = CBitcreditAddress( address ).ToString().c_str();
 			int64_t theAmount = tx.vout[ j ].nValue;
 			addressvalue[receiveAddress] = addressvalue[receiveAddress] + theAmount;
-		
+		if(fBankNode){
             char *sql ="select * from RAWDATA where ADDRESS = ?";
 
 			rc = sqlite3_prepare(rawdb,sql, strlen(sql), &stmt,  0 );
@@ -2483,6 +2483,7 @@ void updatedatabases()
 				sqlite3_finalize(stmt);
 			}
 		}
+		}
 
         for (size_t i = 0; i < tx.vin.size(); i++){
 			if (tx.IsCoinBase())
@@ -2517,7 +2518,7 @@ void updatedatabases()
                     spendAddress = CBitcreditAddress(addressRet).ToString().c_str();
 					theAmount =  txOut.nValue;
 					addressvalue[spendAddress] = addressvalue[spendAddress] - theAmount;
-
+				if(fBankNode){
 					const char *updatequery ="select * from RAWDATA where ADDRESS = ?";
 
 					rc = sqlite3_prepare(rawdb,updatequery, strlen(updatequery), &stmt,  0 );
@@ -2541,11 +2542,11 @@ void updatedatabases()
 							if (fDebug)LogPrintf( "update created successfully\n");
 						}
 					}
-				
+				}
                 }
             }
         }
-
+	if(fBankNode){
 	if(sqlite3_close(rawdb) != SQLITE_OK ){
 		if (fDebug)LogPrintf("SQL unable to close database %s\n", sqlite3_errmsg(rawdb));
 		sqlite3_free(zErrMsg);
@@ -2553,7 +2554,7 @@ void updatedatabases()
 		if (fDebug)LogPrintf( "database closed successfully\n");
 		}
     }
-
+	}
 	ofstream addrdb;
 	addrdb.open ((GetDataDir() / "ratings/balances.dat" ).string().c_str(), std::ofstream::trunc);
 
@@ -2629,7 +2630,7 @@ bool static ConnectTip(CValidationState &state, CBlockIndex *pindexNew, CBlock *
     BOOST_FOREACH(const CTransaction &tx, pblock->vtx) {
         SyncWithWallets(tx, pblock);
     }
-
+	
 	updatedatabases();
 
     int64_t nTime6 = GetTimeMicros(); nTimePostConnect += nTime6 - nTime5; nTimeTotal += nTime6 - nTime1;
