@@ -73,7 +73,7 @@ endif
 .PHONY: FORCE
 # bitcredit core #
 BITCREDIT_CORE_H = \
-  activebanknode.h \
+  activebasenode.h \
   addrman.h \
   alert.h \
   allocators.h \
@@ -111,10 +111,10 @@ BITCREDIT_CORE_H = \
   limitedmap.h \
   lz4/lz4.h \
   main.h \
-  banknode.h \
-  banknode-pos.h \
-  banknodeman.h \
-  banknodeconfig.h \
+  basenode.h \
+  basenode-pos.h \
+  basenodeman.h \
+  basenodeconfig.h \
   merkleblock.h \
   miner.h \
   momentum.h \
@@ -268,7 +268,7 @@ univalue_libbitcredit_univalue_a_SOURCES = \
 # common: shared between bitcreditd, and bitcredit-qt and non-server tools
 libbitcredit_common_a_CPPFLAGS = $(BITCREDIT_INCLUDES)
 libbitcredit_common_a_SOURCES = \
-  activebanknode.cpp \
+  activebasenode.cpp \
   allocators.cpp \
   amount.cpp \
   base58.cpp \
@@ -278,10 +278,10 @@ libbitcredit_common_a_SOURCES = \
   compressor.cpp \
   darksend.cpp \
   darksend-relay.cpp \
-  banknode.cpp \
-  banknode-pos.cpp \
-  banknodeman.cpp \
-  banknodeconfig.cpp \
+  basenode.cpp \
+  basenode-pos.cpp \
+  basenodeman.cpp \
+  basenodeconfig.cpp \
   instantx.cpp \
   momentum.cpp \
   primitives/block.cpp \

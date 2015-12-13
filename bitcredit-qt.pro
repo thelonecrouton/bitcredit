@@ -1,6 +1,6 @@
 TEMPLATE = app
 TARGET = bitcredit-qt
-VERSION = 0.30.19.1
+VERSION = 0.30.19.2
 INCLUDEPATH += src src/sqlite src/parser src/json src/qt src/qt/forms src/compat src/crypto src/lz4 src/primitives src/script src/secp256k1/include src/univalue src/xxhash
 DEFINES += QT_GUI BOOST_THREAD_USE_LIB BOOST_SPIRIT_THREADSAFE CURL_STATICLIB ENABLE_WALLET HAVE_WORKING_BOOST_SLEEP SQLITE_ENABLE_FTS5 SQLITE_ENABLE_RTREE SQLITE_ENABLE_DBSTAT_VTAB SQLITE_ENABLE_JSON1 SQLITE_ENABLE_RBU PIC PIE WANT_DENSE
 CONFIG += no_include_pwd thread static

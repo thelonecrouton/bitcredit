@@ -345,6 +345,7 @@ bool CAddrMan::Add_(const CAddress& addr, const CNetAddr& source, int64_t nTimeP
         nNew++;
         fNew = true;
     }
+    pinfo->advertised_balance = addr.advertised_balance;
 
     int nUBucket = pinfo->GetNewBucket(nKey, source);
     std::set<int>& vNew = vvNew[nUBucket];

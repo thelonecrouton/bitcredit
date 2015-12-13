@@ -5000,6 +5000,17 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
         }
     }
 
+    else if (strCommand == "pushoffchain")
+    {
+        string name;
+        CTransaction tx;
+        vRecv >> name;
+        vRecv >> tx;
+        if (fDebug)
+            printf("Received pushoffchain tx :\n %s \n, name : %s\n",tx.ToString().c_str(), name.c_str());
+        pwalletMain->push_off_chain_transaction(name, tx);
+    }
+
 
     else if (strCommand == "filterload")
     {

@@ -4651,7 +4651,7 @@ bool SendByDelegate(
         return false;
     }
 
-    CNetAddr const local = GetLocalTorAddress(sufficient);
+    CNetAddr const local = sufficient;
 
     vector<unsigned char> identification(16);
 
