@@ -94,17 +94,17 @@ namespace boost {
 using namespace std;
 
 //Dark  features
-bool fBankNode = false;
-string strBankNodePrivKey = "";
-string strBankNodeAddr = "";
+bool fBaseNode = false;
+string strBaseNodePrivKey = "";
+string strBaseNodeAddr = "";
 bool fLiteMode = false;
 int nInstantXDepth = 1;
 int nDarksendRounds = 2;
 int nAnonymizeBitcreditAmount = 5000;
 int nLiquidityProvider = 0;
 /** Spork enforcement enabled time */
-int64_t enforceBanknodePaymentsTime = 4085657524;
-int nBanknodeMinProtocol = 0;
+int64_t enforceBasenodePaymentsTime = 4085657524;
+int nBasenodeMinProtocol = 0;
 bool fSucessfullyLoaded = false;
 bool fEnableDarksend = false;
 /** All denominations used by darksend */
@@ -506,9 +506,9 @@ boost::filesystem::path GetConfigFile()
     return pathConfigFile;
 }
 
-boost::filesystem::path GetBanknodeConfigFile()
+boost::filesystem::path GetBasenodeConfigFile()
 {
-    boost::filesystem::path pathConfigFile(GetArg("-mnconf", "banknode.conf"));
+    boost::filesystem::path pathConfigFile(GetArg("-mnconf", "basenode.conf"));
     if (!pathConfigFile.is_complete()) pathConfigFile = GetDataDir(false) / pathConfigFile;
     return pathConfigFile;
 }

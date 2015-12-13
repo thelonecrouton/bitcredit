@@ -730,7 +730,7 @@ void SendDarkSendElectionEntry(const CTxIn vin, const CService addr, const std::
 void RelayDarkSendElectionEntryPing(const CTxIn vin, const std::vector<unsigned char> vchSig, const int64_t nNow, const bool stop);
 void SendDarkSendElectionEntryPing(const CTxIn vin, const std::vector<unsigned char> vchSig, const int64_t nNow, const bool stop);
 void RelayDarkSendCompletedTransaction(const int sessionID, const bool error, const std::string errorMessage);
-void RelayDarkSendBankNodeContestant();
+void RelayDarkSendBaseNodeContestant();
 
 
 /** Access to the (IP) address database (peers.dat) */

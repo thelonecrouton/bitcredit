@@ -25,7 +25,7 @@ static const char* ppszTypeName[] =
     "tx lock request",
     "tx lock vote",
     "spork",
-    "banknode winner",
+    "basenode winner",
     "unknown",
     "unknown",
     "unknown",

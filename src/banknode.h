@@ -3,8 +3,8 @@
 // Copyright (c) 2014-2015 The Bitcredit developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
-#ifndef BANKNODE_H
-#define BANKNODE_H
+#ifndef BASENODE_H
+#define BASENODE_H
 
 #include "uint256.h"
 #include "uint256.h"
@@ -18,44 +18,44 @@
 #include "base58.h"
 #include "main.h"
 #include "timedata.h"
-#include "banknode-pos.h"
+#include "basenode-pos.h"
 
-#define BANKNODE_NOT_PROCESSED               0 // initial state
-#define BANKNODE_IS_CAPABLE                  1
-#define BANKNODE_NOT_CAPABLE                 2
-#define BANKNODE_STOPPED                     3
-#define BANKNODE_INPUT_TOO_NEW               4
-#define BANKNODE_PORT_NOT_OPEN               6
-#define BANKNODE_PORT_OPEN                   7
-#define BANKNODE_SYNC_IN_PROCESS             8
-#define BANKNODE_REMOTELY_ENABLED            9
+#define BASENODE_NOT_PROCESSED               0 // initial state
+#define BASENODE_IS_CAPABLE                  1
+#define BASENODE_NOT_CAPABLE                 2
+#define BASENODE_STOPPED                     3
+#define BASENODE_INPUT_TOO_NEW               4
+#define BASENODE_PORT_NOT_OPEN               6
+#define BASENODE_PORT_OPEN                   7
+#define BASENODE_SYNC_IN_PROCESS             8
+#define BASENODE_REMOTELY_ENABLED            9
 
-#define BANKNODE_MIN_CONFIRMATIONS           15
-#define BANKNODE_MIN_DSEEP_SECONDS           (30*60)
-#define BANKNODE_MIN_DSEE_SECONDS            (5*60)
-#define BANKNODE_PING_SECONDS                (1*60)
-#define BANKNODE_EXPIRATION_SECONDS          (65*60)
-#define BANKNODE_REMOVAL_SECONDS             (70*60)
+#define BASENODE_MIN_CONFIRMATIONS           15
+#define BASENODE_MIN_DSEEP_SECONDS           (30*60)
+#define BASENODE_MIN_DSEE_SECONDS            (5*60)
+#define BASENODE_PING_SECONDS                (1*60)
+#define BASENODE_EXPIRATION_SECONDS          (65*60)
+#define BASENODE_REMOVAL_SECONDS             (70*60)
 
 using namespace std;
 
-class CBanknode;
-class CBanknodePayments;
-class CBanknodePaymentWinner;
+class CBasenode;
+class CBasenodePayments;
+class CBasenodePaymentWinner;
 
-extern CCriticalSection cs_banknodepayments;
-extern map<uint256, CBanknodePaymentWinner> mapSeenBanknodeVotes;
+extern CCriticalSection cs_basenodepayments;
+extern map<uint256, CBasenodePaymentWinner> mapSeenBasenodeVotes;
 extern map<int64_t, uint256> mapCacheBlockHashes;
-extern CBanknodePayments banknodePayments;
+extern CBasenodePayments basenodePayments;
 
-void ProcessMessageBanknodePayments(CNode* pfrom, std::string& strCommand, CDataStream& vRecv);
+void ProcessMessageBasenodePayments(CNode* pfrom, std::string& strCommand, CDataStream& vRecv);
 bool GetBlockHash(uint256& hash, int nBlockHeight);
 
 //
-// The Banknode Class. For managing the Darksend process. It contains the input of the 1000DRK, signature to prove
+// The Basenode Class. For managing the Darksend process. It contains the input of the 1000DRK, signature to prove
 // it's the one who own that ip address and code for calculating the payment election.
 //
-class CBanknode
+class CBasenode
 {
 private:
     // critical section to protect the inner data structures
@@ -63,11 +63,11 @@ private:
 
 public:
     enum state {
-        BANKNODE_ENABLED = 1,
-        BANKNODE_EXPIRED = 2,
-        BANKNODE_VIN_SPENT = 3,
-        BANKNODE_REMOVE = 4,
-        BANKNODE_POS_ERROR = 5
+        BASENODE_ENABLED = 1,
+        BASENODE_EXPIRED = 2,
+        BASENODE_VIN_SPENT = 3,
+        BASENODE_REMOVE = 4,
+        BASENODE_POS_ERROR = 5
     };
 
     CTxIn vin;
@@ -90,11 +90,11 @@ public:
     int nScanningErrorCount;
     int nLastScanningErrorBlockHeight;
 
-    CBanknode();
-    CBanknode(const CBanknode& other);
-    CBanknode(CService newAddr, CTxIn newVin, CPubKey newPubkey, std::vector<unsigned char> newSig, int64_t newSigTime, CPubKey newPubkey2, int protocolVersionIn);
+    CBasenode();
+    CBasenode(const CBasenode& other);
+    CBasenode(CService newAddr, CTxIn newVin, CPubKey newPubkey, std::vector<unsigned char> newSig, int64_t newSigTime, CPubKey newPubkey2, int protocolVersionIn);
 
-    void swap(CBanknode& first, CBanknode& second) // nothrow
+    void swap(CBasenode& first, CBasenode& second) // nothrow
     {
         // enable ADL (not necessary in our case, but good practice)
         using std::swap;
@@ -122,16 +122,16 @@ public:
         swap(first.nLastScanningErrorBlockHeight, second.nLastScanningErrorBlockHeight);
     }
 
-    CBanknode& operator=(CBanknode from)
+    CBasenode& operator=(CBasenode from)
     {
         swap(*this, from);
         return *this;
     }
-    friend bool operator==(const CBanknode& a, const CBanknode& b)
+    friend bool operator==(const CBasenode& a, const CBasenode& b)
     {
         return a.vin == b.vin;
     }
-    friend bool operator!=(const CBanknode& a, const CBanknode& b)
+    friend bool operator!=(const CBasenode& a, const CBasenode& b)
     {
         return !(a.vin == b.vin);
     }
@@ -203,10 +203,10 @@ public:
 
     bool IsEnabled()
     {
-        return activeState == BANKNODE_ENABLED;
+        return activeState == BASENODE_ENABLED;
     }
 
-    int GetBanknodeInputAge()
+    int GetBasenodeInputAge()
     {
         if(chainActive.Tip() == NULL) return 0;
 
@@ -218,7 +218,7 @@ public:
         return cacheInputAge+(chainActive.Tip()->nHeight-cacheInputAgeBlock);
     }
 
-    void ApplyScanningError(CBanknodeScanningError& mnse)
+    void ApplyScanningError(CBasenodeScanningError& mnse)
     {
         if(!mnse.IsValid()) return;
 
@@ -230,18 +230,18 @@ public:
             if(nScanningErrorCount < 0) nScanningErrorCount = 0;
         } else { //all other codes are equally as bad
             nScanningErrorCount++;
-            if(nScanningErrorCount > BANKNODE_SCANNING_ERROR_THESHOLD*2) nScanningErrorCount = BANKNODE_SCANNING_ERROR_THESHOLD*2;
+            if(nScanningErrorCount > BASENODE_SCANNING_ERROR_THESHOLD*2) nScanningErrorCount = BASENODE_SCANNING_ERROR_THESHOLD*2;
         }
     }
 
     std::string Status() {
         std::string strStatus = "ACTIVE";
 
-        if(activeState == CBanknode::BANKNODE_ENABLED) strStatus   = "ENABLED";
-        if(activeState == CBanknode::BANKNODE_EXPIRED) strStatus   = "EXPIRED";
-        if(activeState == CBanknode::BANKNODE_VIN_SPENT) strStatus = "VIN_SPENT";
-        if(activeState == CBanknode::BANKNODE_REMOVE) strStatus    = "REMOVE";
-        if(activeState == CBanknode::BANKNODE_POS_ERROR) strStatus = "POS_ERROR";
+        if(activeState == CBasenode::BASENODE_ENABLED) strStatus   = "ENABLED";
+        if(activeState == CBasenode::BASENODE_EXPIRED) strStatus   = "EXPIRED";
+        if(activeState == CBasenode::BASENODE_VIN_SPENT) strStatus = "VIN_SPENT";
+        if(activeState == CBasenode::BASENODE_REMOVE) strStatus    = "REMOVE";
+        if(activeState == CBasenode::BASENODE_POS_ERROR) strStatus = "POS_ERROR";
 
         return strStatus;
     }
@@ -249,7 +249,7 @@ public:
 };
 
 // for storing the winning payments
-class CBanknodePaymentWinner
+class CBasenodePaymentWinner
 {
 public:
     int nBlockHeight;
@@ -258,7 +258,7 @@ public:
     std::vector<unsigned char> vchSig;
     uint64_t score;
 
-    CBanknodePaymentWinner() {
+    CBasenodePaymentWinner() {
         nBlockHeight = 0;
         score = 0;
         vin = CTxIn();
@@ -285,14 +285,14 @@ public:
 };
 
 //
-// Banknode Payments Class
+// Basenode Payments Class
 // Keeps track of who should get paid for which blocks
 //
 
-class CBanknodePayments
+class CBasenodePayments
 {
 private:
-    std::vector<CBanknodePaymentWinner> vWinning;
+    std::vector<CBasenodePaymentWinner> vWinning;
     int nSyncedFromPeer;
     std::string strMasterPrivKey;
     std::string strTestPubKey;
@@ -302,29 +302,29 @@ private:
 
 public:
 
-    CBanknodePayments() {
+    CBasenodePayments() {
         strMainPubKey = "04549ac134f694c0243f503e8c8a9a986f5de6610049c40b07816809b0d1d06a21b07be27b9bb555931773f62ba6cf35a25fd52f694d4e1106ccd237a7bb899fdd";
         strTestPubKey = "046f78dcf911fbd61910136f7f0f8d90578f68d0b3ac973b5040fb7afb501b5939f39b108b0569dca71488f5bbf498d92e4d1194f6f941307ffd95f75e76869f0e";
         enabled = false;
     }
 
     bool SetPrivKey(std::string strPrivKey);
-    bool CheckSignature(CBanknodePaymentWinner& winner);
-    bool Sign(CBanknodePaymentWinner& winner);
+    bool CheckSignature(CBasenodePaymentWinner& winner);
+    bool Sign(CBasenodePaymentWinner& winner);
 
-    // Deterministically calculate a given "score" for a banknode depending on how close it's hash is
+    // Deterministically calculate a given "score" for a basenode depending on how close it's hash is
     // to the blockHeight. The further away they are the better, the furthest will win the election
     // and get paid this block
     //
 
     uint64_t CalculateScore(uint256 blockHash, CTxIn& vin);
-    bool GetWinningBanknode(int nBlockHeight, CTxIn& vinOut);
-    bool AddWinningBanknode(CBanknodePaymentWinner& winner);
+    bool GetWinningBasenode(int nBlockHeight, CTxIn& vinOut);
+    bool AddWinningBasenode(CBasenodePaymentWinner& winner);
     bool ProcessBlock(int nBlockHeight);
-    void Relay(CBanknodePaymentWinner& winner);
+    void Relay(CBasenodePaymentWinner& winner);
     void Sync(CNode* node);
     void CleanPaymentList();
-    int LastPayment(CBanknode& mn);
+    int LastPayment(CBasenode& mn);
 
     //slow
     bool GetBlockPayee(int nBlockHeight, CScript& payee);

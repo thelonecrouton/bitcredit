@@ -18,7 +18,7 @@
 
 class ClientModel;
 class WalletModel;
-class CBanknodeMan;
+class CBasenodeMan;
 
 namespace Ui {
     class RPCConsole;
@@ -85,7 +85,7 @@ public slots:
     void setNumConnections(int count);
     /** Set number of blocks shown in the UI */
     void setNumBlocks(int count);
-    void setBanknodeCount(const QString &strBanknodes);
+    void setBasenodeCount(const QString &strBasenodes);
     /** Go forward or back in history */
     void browseHistory(int offset);
     /** Scroll console view to end */

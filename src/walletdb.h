@@ -80,7 +80,7 @@ public:
     std::string sAlias;
     std::string sAddress;
     std::string sCollateralAddress;
-    std::string sBanknodePrivKey;
+    std::string sBasenodePrivKey;
 
     CAdrenalineNodeConfig()
     {
@@ -95,7 +95,7 @@ public:
         READWRITE(sAlias);
         READWRITE(sAddress);
         READWRITE(sCollateralAddress);
-	READWRITE(sBanknodePrivKey);
+	READWRITE(sBasenodePrivKey);
 	}
 };
 

@@ -29,16 +29,16 @@
 #include <boost/thread/exceptions.hpp>
 //Dark features
 
-extern bool fBankNode;
+extern bool fBaseNode;
 extern bool fLiteMode;
 extern int nInstantXDepth;
 extern int nDarksendRounds;
 extern int nAnonymizeBitcreditAmount;
 extern int nLiquidityProvider;
 extern bool fEnableDarksend;
-extern int64_t enforceBanknodePaymentsTime;
-extern std::string strBankNodeAddr;
-extern int nBanknodeMinProtocol;
+extern int64_t enforceBasenodePaymentsTime;
+extern std::string strBaseNodeAddr;
+extern int nBasenodeMinProtocol;
 extern int keysLoaded;
 extern int64_t nAdvertisedBalance;
 extern bool fSucessfullyLoaded;
@@ -122,7 +122,7 @@ bool TryCreateDirectory(const boost::filesystem::path& p);
 boost::filesystem::path GetDefaultDataDir();
 const boost::filesystem::path &GetDataDir(bool fNetSpecific = true);
 boost::filesystem::path GetConfigFile();
-boost::filesystem::path GetBanknodeConfigFile();
+boost::filesystem::path GetBasenodeConfigFile();
 
 #ifndef WIN32
 boost::filesystem::path GetPidFile();

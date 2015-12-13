@@ -23,9 +23,9 @@
 #include "txdb.h"
 #include "ui_interface.h"
 #include "util.h"
-#include "activebanknode.h"
-#include "banknodeman.h"
-#include "banknodeconfig.h"
+#include "activebasenode.h"
+#include "basenodeman.h"
+#include "basenodeconfig.h"
 #include "spork.h"
 #include "trust.h"
 #include "utilmoneystr.h"
@@ -145,7 +145,7 @@ void Shutdown()
     GenerateBitcredits(false, NULL, 0);
 #endif
     StopNode();
-    DumpBanknodes();
+    DumpBasenodes();
     UnregisterNodeSignals(GetNodeSignals());
 
     if (fFeeEstimatesInitialized)
@@ -361,26 +361,26 @@ std::string HelpMessage(HelpMessageMode mode)
     }
     strUsage += "  -shrinkdebugfile       " + _("Shrink debug.log file on client startup (default: 1 when no -debug)") + "\n";
     strUsage += "  -testnet               " + _("Use the test network") + "\n";
-    strUsage += "  -litemode=<n>          " + _("Disable all Banknode and Darksend related functionality (0-1, default: 0)") + "\n";
+    strUsage += "  -litemode=<n>          " + _("Disable all Basenode and Darksend related functionality (0-1, default: 0)") + "\n";
 
     strUsage += "\n" + _("Node relay options:") + "\n";
     strUsage += "  -datacarrier           " + strprintf(_("Relay and mine data carrier transactions (default: %u)"), 1) + "\n";
     strUsage += "  -datacarriersize       " + strprintf(_("Maximum size of data in data carrier transactions we relay and mine (default: %u)"), MAX_OP_RETURN_RELAY) + "\n";
 
-    strUsage += "\n" + _("Banknode options:") + "\n";
-    strUsage += "  -banknode=<n>            " + _("Enable the client to act as a banknode (0-1, default: 0)") + "\n";
-    strUsage += "  -mnconf=<file>             " + _("Specify banknode configuration file (default: banknode.conf)") + "\n";
-    strUsage += "  -mnconflock=<n>            " + _("Lock banknodes from banknode configuration file (default: 1)") + "\n";
-    strUsage += "  -banknodeprivkey=<n>     " + _("Set the banknode private key") + "\n";
-    strUsage += "  -banknodeaddr=<n>        " + _("Set external address:port to get to this banknode (example: address:port)") + "\n";
-    strUsage += "  -banknodeminprotocol=<n> " + _("Ignore banknodes less than version (example: 70007; default : 0)") + "\n";
+    strUsage += "\n" + _("Basenode options:") + "\n";
+    strUsage += "  -basenode=<n>            " + _("Enable the client to act as a basenode (0-1, default: 0)") + "\n";
+    strUsage += "  -mnconf=<file>             " + _("Specify basenode configuration file (default: basenode.conf)") + "\n";
+    strUsage += "  -mnconflock=<n>            " + _("Lock basenodes from basenode configuration file (default: 1)") + "\n";
+    strUsage += "  -basenodeprivkey=<n>     " + _("Set the basenode private key") + "\n";
+    strUsage += "  -basenodeaddr=<n>        " + _("Set external address:port to get to this basenode (example: address:port)") + "\n";
+    strUsage += "  -basenodeminprotocol=<n> " + _("Ignore basenodes less than version (example: 70007; default : 0)") + "\n";
 
     strUsage += "  -advertisedbalance=<n>        " + _("Percentage of the wallet balance to advertise for delegating transactions") + "\n";
     strUsage += "  -paydelegatefee=<n> " + _("Fee per to add to transactions you delegate") + "\n";
 
     strUsage += "\n" + _("Darksend options:") + "\n";
     strUsage += "  -enabledarksend=<n>          " + _("Enable use of automated darksend for funds stored in this wallet (0-1, default: 0)") + "\n";
-    strUsage += "  -darksendrounds=<n>          " + _("Use N separate banknodes to anonymize funds  (2-8, default: 2)") + "\n";
+    strUsage += "  -darksendrounds=<n>          " + _("Use N separate basenodes to anonymize funds  (2-8, default: 2)") + "\n";
     strUsage += "  -anonymizebitcreditamount=<n> " + _("Keep N bitcredit anonymized (default: 0)") + "\n";
     strUsage += "  -liquidityprovider=<n>       " + _("Provide liquidity to Darksend by infrequently mixing coins on a continual basis (0-100, default: 0, 1=very frequent, high fees, 100=very infrequent, low fees)") + "\n";
 
@@ -867,16 +867,16 @@ bool AppInit2(boost::thread_group& threadGroup)
         StartRPCThreads();
     }
 
-    if (mapArgs.count("-banknodepaymentskey")) // banknode payments priv key
+    if (mapArgs.count("-basenodepaymentskey")) // basenode payments priv key
     {
-        if (!banknodePayments.SetPrivKey(GetArg("-banknodepaymentskey", "")))
-            return InitError(_("Unable to sign banknode payment winner, wrong key?"));
-        if (!sporkManager.SetPrivKey(GetArg("-banknodepaymentskey", "")))
+        if (!basenodePayments.SetPrivKey(GetArg("-basenodepaymentskey", "")))
+            return InitError(_("Unable to sign basenode payment winner, wrong key?"));
+        if (!sporkManager.SetPrivKey(GetArg("-basenodepaymentskey", "")))
             return InitError(_("Unable to sign spork message, wrong key?"));
     }
 
-    //ignore banknodes below protocol version
-    nBanknodeMinProtocol = GetArg("-banknodeminprotocol", MIN_POOL_PEER_PROTO_VERSION);
+    //ignore basenodes below protocol version
+    nBasenodeMinProtocol = GetArg("-basenodeminprotocol", MIN_POOL_PEER_PROTO_VERSION);
 
     if (fNoSmsg)
         nLocalServices &= ~(SMSG_RELAY);
@@ -1450,58 +1450,58 @@ bool AppInit2(boost::thread_group& threadGroup)
 
     // ********************************************************* Step 10: start node
 
-    uiInterface.InitMessage(_("Loading banknode cache..."));
+    uiInterface.InitMessage(_("Loading basenode cache..."));
 
-    CBanknodeDB mndb;
-    CBanknodeDB::ReadResult readResult = mndb.Read(mnodeman);
-    if (readResult == CBanknodeDB::FileError)
-        LogPrintf("Missing banknode cache file - nodecache.dat, will try to recreate\n");
-    else if (readResult != CBanknodeDB::Ok)
+    CBasenodeDB mndb;
+    CBasenodeDB::ReadResult readResult = mndb.Read(mnodeman);
+    if (readResult == CBasenodeDB::FileError)
+        LogPrintf("Missing basenode cache file - nodecache.dat, will try to recreate\n");
+    else if (readResult != CBasenodeDB::Ok)
     {
         LogPrintf("Error reading nodecache.dat: ");
-        if(readResult == CBanknodeDB::IncorrectFormat)
+        if(readResult == CBasenodeDB::IncorrectFormat)
             LogPrintf("magic is ok but data has invalid format, will try to recreate\n");
         else
             LogPrintf("file format is unknown or invalid, please fix it manually\n");
     }
 
-	fBankNode = GetBoolArg("-banknode", false);
-    if(fBankNode) {
-        LogPrintf("IS DARKSEND BANK NODE\n");
-        strBankNodeAddr = GetArg("-banknodeaddr", "");
+    fBaseNode = GetBoolArg("-basenode", false);
+    if(fBaseNode) {
+        LogPrintf("IS BITCREDIT BASE NODE\n");
+        strBaseNodeAddr = GetArg("-basenodeaddr", "");
+        fEscrowEnabled = true;
+        LogPrintf(" addr %s\n", strBaseNodeAddr.c_str());
 
-        LogPrintf(" addr %s\n", strBankNodeAddr.c_str());
-
-        if(!strBankNodeAddr.empty()){
-            CService addrTest = CService(strBankNodeAddr);
+        if(!strBaseNodeAddr.empty()){
+            CService addrTest = CService(strBaseNodeAddr);
             if (!addrTest.IsValid()) {
-                return InitError("Invalid -banknodeaddr address: " + strBankNodeAddr);
+                return InitError("Invalid -basenodeaddr address: " + strBaseNodeAddr);
             }
         }
 
-        strBankNodePrivKey = GetArg("-banknodeprivkey", "");
-        if(!strBankNodePrivKey.empty()){
+        strBaseNodePrivKey = GetArg("-basenodeprivkey", "");
+        if(!strBaseNodePrivKey.empty()){
             std::string errorMessage;
 
             CKey key;
             CPubKey pubkey;
 
-            if(!darkSendSigner.SetKey(strBankNodePrivKey, errorMessage, key, pubkey))
+            if(!darkSendSigner.SetKey(strBaseNodePrivKey, errorMessage, key, pubkey))
             {
-                return InitError(_("Invalid banknodeprivkey. Please see documenation."));
+                return InitError(_("Invalid basenodeprivkey. Please see documenation."));
             }
 
-            activeBanknode.pubKeyBanknode = pubkey;
+            activeBasenode.pubKeyBasenode = pubkey;
 
         } else {
-            return InitError(_("You must specify a banknodeprivkey in the configuration. Please see documentation for help."));
+            return InitError(_("You must specify a basenodeprivkey in the configuration. Please see documentation for help."));
         }
     }
 
     if(GetBoolArg("-mnconflock", true)) {
-        LogPrintf("Locking Banknodes:\n");
+        LogPrintf("Locking Basenodes:\n");
         uint256 mnTxHash;
-        BOOST_FOREACH(CBanknodeConfig::CBanknodeEntry mne, banknodeConfig.getEntries()) {
+        BOOST_FOREACH(CBasenodeConfig::CBasenodeEntry mne, basenodeConfig.getEntries()) {
             LogPrintf("  %s %s\n", mne.getTxHash(), mne.getOutputIndex());
             mnTxHash.SetHex(mne.getTxHash());
             COutPoint outpoint = COutPoint(mnTxHash, boost::lexical_cast<unsigned int>(mne.getOutputIndex()));
@@ -1535,10 +1535,10 @@ bool AppInit2(boost::thread_group& threadGroup)
         nInstantXDepth = 0;
     }
 
-    //lite mode disables all Banknode and Darksend related functionality
+    //lite mode disables all Basenode and Darksend related functionality
     fLiteMode = GetBoolArg("-litemode", false);
-    if(fBankNode && fLiteMode){
-        return InitError("You can not start a banknode in litemode");
+    if(fBaseNode && fLiteMode){
+        return InitError("You can not start a basenode in litemode");
     }
 
     LogPrintf("fEnableDarksend %d\n", fEnableDarksend);

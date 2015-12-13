@@ -1704,7 +1704,7 @@ void StartNode(boost::thread_group& threadGroup)
     // Set our local services appropriately
     nLocalServices = NODE_NETWORK;
 
-    if(activeBanknode.status == BANKNODE_IS_CAPABLE && GetBoolArg("-escrow", false))
+    if(activeBasenode.status == BASENODE_IS_CAPABLE && GetBoolArg("-escrow", false))
         nLocalServices |= NODE_ESCROW;
 
     if(GetBoolArg("-assets", false))
@@ -1713,10 +1713,10 @@ void StartNode(boost::thread_group& threadGroup)
     if(GetBoolArg("-meganet", false))
         nLocalServices |= NODE_IBTP;
 
-    if(activeBanknode.status == BANKNODE_IS_CAPABLE)
+    if(activeBasenode.status == BASENODE_IS_CAPABLE)
         nLocalServices |= BANK_NODE;
 
-    if((GetBoolArg("-meganet", false)) && activeBanknode.status == BANKNODE_IS_CAPABLE)
+    if((GetBoolArg("-meganet", false)) && activeBasenode.status == BASENODE_IS_CAPABLE)
         nLocalServices |= NODE_BRIDGE;
 
     if (semOutbound == NULL) {
@@ -1757,8 +1757,8 @@ void StartNode(boost::thread_group& threadGroup)
     // Dump network addresses
     threadGroup.create_thread(boost::bind(&LoopForever<void (*)()>, "dumpaddr", &DumpAddresses, DUMP_ADDRESSES_INTERVAL * 1000));
 
-    // Dump Banknodes 
-    threadGroup.create_thread(boost::bind(&LoopForever<void (*)()>, "banknodedump", &DumpBanknodes, DUMP_BN_INTERVAL * 1000));
+    // Dump Basenodes 
+    threadGroup.create_thread(boost::bind(&LoopForever<void (*)()>, "basenodedump", &DumpBasenodes, DUMP_BN_INTERVAL * 1000));
 
     // Update Bids 
     threadGroup.create_thread(boost::bind(&LoopForever<void (*)()>, "updatebids", &getbids, UPDATE_BID_INTERVAL * 1000));

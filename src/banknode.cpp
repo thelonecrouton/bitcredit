@@ -2,31 +2,31 @@
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#include "banknode.h"
-#include "banknodeman.h"
+#include "basenode.h"
+#include "basenodeman.h"
 #include "darksend.h"
 #include "primitives/transaction.h"
 #include "util.h"
 #include "addrman.h"
 #include <boost/lexical_cast.hpp>
 
-CCriticalSection cs_banknodepayments;
+CCriticalSection cs_basenodepayments;
 
 /** Object for who's going to get paid on which blocks */
-CBanknodePayments banknodePayments;
-// keep track of Banknode votes I've seen
-map<uint256, CBanknodePaymentWinner> mapSeenBanknodeVotes;
+CBasenodePayments basenodePayments;
+// keep track of Basenode votes I've seen
+map<uint256, CBasenodePaymentWinner> mapSeenBasenodeVotes;
 // keep track of the scanning errors I've seen
-map<uint256, int> mapSeenBanknodeScanningErrors;
+map<uint256, int> mapSeenBasenodeScanningErrors;
 // cache block hashes as we calculate them
 std::map<int64_t, uint256> mapCacheBlockHashes;
 
-void ProcessMessageBanknodePayments(CNode* pfrom, std::string& strCommand, CDataStream& vRecv)
+void ProcessMessageBasenodePayments(CNode* pfrom, std::string& strCommand, CDataStream& vRecv)
 {
     if(IsInitialBlockDownload()) return;
 
-    if (strCommand == "mnget") { //Banknode Payments Request Sync
-        if(fLiteMode) return; //disable all Darksend/Banknode related functionality
+    if (strCommand == "mnget") { //Basenode Payments Request Sync
+        if(fLiteMode) return; //disable all Darksend/Basenode related functionality
 
         if(pfrom->HasFulfilledRequest("mnget")) {
             LogPrintf("mnget - peer already asked me for the list\n");
@@ -35,15 +35,15 @@ void ProcessMessageBanknodePayments(CNode* pfrom, std::string& strCommand, CData
         }
 
         pfrom->FulfilledRequest("mnget");
-        banknodePayments.Sync(pfrom);
-        LogPrintf("mnget - Sent Banknode winners to %s\n", pfrom->addr.ToString().c_str());
+        basenodePayments.Sync(pfrom);
+        LogPrintf("mnget - Sent Basenode winners to %s\n", pfrom->addr.ToString().c_str());
     }
-    else if (strCommand == "mnw") { //Banknode Payments Declare Winner
+    else if (strCommand == "mnw") { //Basenode Payments Declare Winner
 
-        LOCK(cs_banknodepayments);
+        LOCK(cs_basenodepayments);
 
         //this is required in litemode
-        CBanknodePaymentWinner winner;
+        CBasenodePaymentWinner winner;
         vRecv >> winner;
 
         if(chainActive.Tip() == NULL) return;
@@ -53,7 +53,7 @@ void ProcessMessageBanknodePayments(CNode* pfrom, std::string& strCommand, CData
         CBitcreditAddress address2(address1);
 
         uint256 hash = winner.GetHash();
-        if(mapSeenBanknodeVotes.count(hash)) {
+        if(mapSeenBasenodeVotes.count(hash)) {
             if(fDebug) LogPrintf("mnw - seen vote %s Addr %s Height %d bestHeight %d\n", hash.ToString().c_str(), address2.ToString().c_str(), winner.nBlockHeight, chainActive.Tip()->nHeight);
             return;
         }
@@ -71,16 +71,16 @@ void ProcessMessageBanknodePayments(CNode* pfrom, std::string& strCommand, CData
 
         LogPrintf("mnw - winning vote - Vin %s Addr %s Height %d bestHeight %d\n", winner.vin.ToString().c_str(), address2.ToString().c_str(), winner.nBlockHeight, chainActive.Tip()->nHeight);
 
-        if(!banknodePayments.CheckSignature(winner)){
+        if(!basenodePayments.CheckSignature(winner)){
             LogPrintf("mnw - invalid signature\n");
             Misbehaving(pfrom->GetId(), 100);
             return;
         }
 
-        mapSeenBanknodeVotes.insert(make_pair(hash, winner));
+        mapSeenBasenodeVotes.insert(make_pair(hash, winner));
 
-        if(banknodePayments.AddWinningBanknode(winner)){
-            banknodePayments.Relay(winner);
+        if(basenodePayments.AddWinningBasenode(winner)){
+            basenodePayments.Relay(winner);
         }
     }
 }
@@ -132,7 +132,7 @@ bool GetBlockHash(uint256& hash, int nBlockHeight)
     return false;
 }
 
-CBanknode::CBanknode()
+CBasenode::CBasenode()
 {
     LOCK(cs);
     vin = CTxIn();
@@ -140,7 +140,7 @@ CBanknode::CBanknode()
     pubkey = CPubKey();
     pubkey2 = CPubKey();
     sig = std::vector<unsigned char>();
-    activeState = BANKNODE_ENABLED;
+    activeState = BASENODE_ENABLED;
     sigTime = GetAdjustedTime();
     lastDseep = 0;
     lastTimeSeen = 0;
@@ -156,7 +156,7 @@ CBanknode::CBanknode()
     nLastScanningErrorBlockHeight = 0;
 }
 
-CBanknode::CBanknode(const CBanknode& other)
+CBasenode::CBasenode(const CBasenode& other)
 {
     LOCK(cs);
     vin = other.vin;
@@ -180,7 +180,7 @@ CBanknode::CBanknode(const CBanknode& other)
     nLastScanningErrorBlockHeight = other.nLastScanningErrorBlockHeight;
 }
 
-CBanknode::CBanknode(CService newAddr, CTxIn newVin, CPubKey newPubkey, std::vector<unsigned char> newSig, int64_t newSigTime, CPubKey newPubkey2, int protocolVersionIn)
+CBasenode::CBasenode(CService newAddr, CTxIn newVin, CPubKey newPubkey, std::vector<unsigned char> newSig, int64_t newSigTime, CPubKey newPubkey2, int protocolVersionIn)
 {
     LOCK(cs);
     vin = newVin;
@@ -188,7 +188,7 @@ CBanknode::CBanknode(CService newAddr, CTxIn newVin, CPubKey newPubkey, std::vec
     pubkey = newPubkey;
     pubkey2 = newPubkey2;
     sig = newSig;
-    activeState = BANKNODE_ENABLED;
+    activeState = BASENODE_ENABLED;
     sigTime = newSigTime;
     lastDseep = 0;
     lastTimeSeen = 0;
@@ -205,11 +205,11 @@ CBanknode::CBanknode(CService newAddr, CTxIn newVin, CPubKey newPubkey, std::vec
 }
 
 //
-// Deterministically calculate a given "score" for a Banknode depending on how close it's hash is to
+// Deterministically calculate a given "score" for a Basenode depending on how close it's hash is to
 // the proof of work for that block. The further away they are the better, the furthest will win the election
 // and get paid this block
 //
-uint256 CBanknode::CalculateScore(int mod, int64_t nBlockHeight)
+uint256 CBasenode::CalculateScore(int mod, int64_t nBlockHeight)
 {
     if(chainActive.Tip() == NULL) return 0;
 
@@ -226,29 +226,29 @@ uint256 CBanknode::CalculateScore(int mod, int64_t nBlockHeight)
     return r;
 }
 
-void CBanknode::Check()
+void CBasenode::Check()
 {
     //TODO: Random segfault with this line removed
     TRY_LOCK(cs_main, lockRecv);
     if(!lockRecv) return;
 
-    if(nScanningErrorCount >= BANKNODE_SCANNING_ERROR_THESHOLD)
+    if(nScanningErrorCount >= BASENODE_SCANNING_ERROR_THESHOLD)
     {
-        activeState = BANKNODE_POS_ERROR;
+        activeState = BASENODE_POS_ERROR;
         return;
     }
 
     //once spent, stop doing the checks
-    if(activeState == BANKNODE_VIN_SPENT) return;
+    if(activeState == BASENODE_VIN_SPENT) return;
 
 
-    if(!UpdatedWithin(BANKNODE_REMOVAL_SECONDS)){
-        activeState = BANKNODE_REMOVE;
+    if(!UpdatedWithin(BASENODE_REMOVAL_SECONDS)){
+        activeState = BASENODE_REMOVE;
         return;
     }
 
-    if(!UpdatedWithin(BANKNODE_EXPIRATION_SECONDS)){
-        activeState = BANKNODE_EXPIRED;
+    if(!UpdatedWithin(BASENODE_EXPIRATION_SECONDS)){
+        activeState = BASENODE_EXPIRED;
         return;
     }
 
@@ -267,15 +267,15 @@ void CBanknode::Check()
 
 
         if(!AcceptableInputs(mempool, state, tx)){
-            activeState = BANKNODE_VIN_SPENT;
+            activeState = BASENODE_VIN_SPENT;
             return;
         }
     }
 
-    activeState = BANKNODE_ENABLED; // OK
+    activeState = BASENODE_ENABLED; // OK
 }
 
-bool CBanknodePayments::CheckSignature(CBanknodePaymentWinner& winner)
+bool CBasenodePayments::CheckSignature(CBasenodePaymentWinner& winner)
 {
     //note: need to investigate why this is failing
     std::string strMessage = winner.vin.ToString().c_str() + boost::lexical_cast<std::string>(winner.nBlockHeight) + winner.payee.ToString();
@@ -290,7 +290,7 @@ bool CBanknodePayments::CheckSignature(CBanknodePaymentWinner& winner)
     return true;
 }
 
-bool CBanknodePayments::Sign(CBanknodePaymentWinner& winner)
+bool CBasenodePayments::Sign(CBasenodePaymentWinner& winner)
 {
     std::string strMessage = winner.vin.ToString().c_str() + boost::lexical_cast<std::string>(winner.nBlockHeight) + winner.payee.ToString();
 
@@ -300,40 +300,40 @@ bool CBanknodePayments::Sign(CBanknodePaymentWinner& winner)
 
     if(!darkSendSigner.SetKey(strMasterPrivKey, errorMessage, key2, pubkey2))
     {
-        LogPrintf("CBanknodePayments::Sign - ERROR: Invalid Banknodeprivkey: '%s'\n", errorMessage.c_str());
+        LogPrintf("CBasenodePayments::Sign - ERROR: Invalid Basenodeprivkey: '%s'\n", errorMessage.c_str());
         return false;
     }
 
     if(!darkSendSigner.SignMessage(strMessage, errorMessage, winner.vchSig, key2)) {
-        LogPrintf("CBanknodePayments::Sign - Sign message failed");
+        LogPrintf("CBasenodePayments::Sign - Sign message failed");
         return false;
     }
 
     if(!darkSendSigner.VerifyMessage(pubkey2, winner.vchSig, strMessage, errorMessage)) {
-        LogPrintf("CBanknodePayments::Sign - Verify message failed");
+        LogPrintf("CBasenodePayments::Sign - Verify message failed");
         return false;
     }
 
     return true;
 }
 
-uint64_t CBanknodePayments::CalculateScore(uint256 blockHash, CTxIn& vin)
+uint64_t CBasenodePayments::CalculateScore(uint256 blockHash, CTxIn& vin)
 {
     uint256 n1 = blockHash;
     uint256 n2 = Hash(BEGIN(n1), END(n1));
     uint256 n3 = Hash(BEGIN(vin.prevout.hash), END(vin.prevout.hash));
     uint256 n4 = n3 > n2 ? (n3 - n2) : (n2 - n3);
 
-    //printf(" -- CBanknodePayments CalculateScore() n2 = %d \n", n2.Get64());
-    //printf(" -- CBanknodePayments CalculateScore() n3 = %d \n", n3.Get64());
-    //printf(" -- CBanknodePayments CalculateScore() n4 = %d \n", n4.Get64());
+    //printf(" -- CBasenodePayments CalculateScore() n2 = %d \n", n2.Get64());
+    //printf(" -- CBasenodePayments CalculateScore() n3 = %d \n", n3.Get64());
+    //printf(" -- CBasenodePayments CalculateScore() n4 = %d \n", n4.Get64());
 
     return n4.Get64();
 }
 
-bool CBanknodePayments::GetBlockPayee(int nBlockHeight, CScript& payee)
+bool CBasenodePayments::GetBlockPayee(int nBlockHeight, CScript& payee)
 {
-    BOOST_FOREACH(CBanknodePaymentWinner& winner, vWinning){
+    BOOST_FOREACH(CBasenodePaymentWinner& winner, vWinning){
         if(winner.nBlockHeight == nBlockHeight) {
             payee = winner.payee;
             return true;
@@ -343,9 +343,9 @@ bool CBanknodePayments::GetBlockPayee(int nBlockHeight, CScript& payee)
     return false;
 }
 
-bool CBanknodePayments::GetWinningBanknode(int nBlockHeight, CTxIn& vinOut)
+bool CBasenodePayments::GetWinningBasenode(int nBlockHeight, CTxIn& vinOut)
 {
-    BOOST_FOREACH(CBanknodePaymentWinner& winner, vWinning){
+    BOOST_FOREACH(CBasenodePaymentWinner& winner, vWinning){
         if(winner.nBlockHeight == nBlockHeight) {
             vinOut = winner.vin;
             return true;
@@ -355,7 +355,7 @@ bool CBanknodePayments::GetWinningBanknode(int nBlockHeight, CTxIn& vinOut)
     return false;
 }
 
-bool CBanknodePayments::AddWinningBanknode(CBanknodePaymentWinner& winnerIn)
+bool CBasenodePayments::AddWinningBasenode(CBasenodePaymentWinner& winnerIn)
 {
     uint256 blockHash = 0;
     if(!GetBlockHash(blockHash, winnerIn.nBlockHeight-576)) {
@@ -365,7 +365,7 @@ bool CBanknodePayments::AddWinningBanknode(CBanknodePaymentWinner& winnerIn)
     winnerIn.score = CalculateScore(blockHash, winnerIn.vin);
 
     bool foundBlock = false;
-    BOOST_FOREACH(CBanknodePaymentWinner& winner, vWinning){
+    BOOST_FOREACH(CBasenodePaymentWinner& winner, vWinning){
         if(winner.nBlockHeight == winnerIn.nBlockHeight) {
             foundBlock = true;
             if(winner.score < winnerIn.score){
@@ -374,7 +374,7 @@ bool CBanknodePayments::AddWinningBanknode(CBanknodePaymentWinner& winnerIn)
                 winner.payee = winnerIn.payee;
                 winner.vchSig = winnerIn.vchSig;
 
-                mapSeenBanknodeVotes.insert(make_pair(winnerIn.GetHash(), winnerIn));
+                mapSeenBasenodeVotes.insert(make_pair(winnerIn.GetHash(), winnerIn));
 
                 return true;
             }
@@ -384,7 +384,7 @@ bool CBanknodePayments::AddWinningBanknode(CBanknodePaymentWinner& winnerIn)
     // if it's not in the vector
     if(!foundBlock){
         vWinning.push_back(winnerIn);
-        mapSeenBanknodeVotes.insert(make_pair(winnerIn.GetHash(), winnerIn));
+        mapSeenBasenodeVotes.insert(make_pair(winnerIn.GetHash(), winnerIn));
 
         return true;
     }
@@ -392,31 +392,31 @@ bool CBanknodePayments::AddWinningBanknode(CBanknodePaymentWinner& winnerIn)
     return false;
 }
 
-void CBanknodePayments::CleanPaymentList()
+void CBasenodePayments::CleanPaymentList()
 {
-    LOCK(cs_banknodepayments);
+    LOCK(cs_basenodepayments);
 
     if(chainActive.Tip() == NULL) return;
 
     int nLimit = std::max(((int)mnodeman.size())*2, 1000);
 
-    vector<CBanknodePaymentWinner>::iterator it;
+    vector<CBasenodePaymentWinner>::iterator it;
     for(it=vWinning.begin();it<vWinning.end();it++){
         if(chainActive.Tip()->nHeight - (*it).nBlockHeight > nLimit){
-            if(fDebug) LogPrintf("CBanknodePayments::CleanPaymentList - Removing old Banknode payment - block %d\n", (*it).nBlockHeight);
+            if(fDebug) LogPrintf("CBasenodePayments::CleanPaymentList - Removing old Basenode payment - block %d\n", (*it).nBlockHeight);
             vWinning.erase(it);
             break;
         }
     }
 }
 
-bool CBanknodePayments::ProcessBlock(int nBlockHeight)
+bool CBasenodePayments::ProcessBlock(int nBlockHeight)
 {
-    LOCK(cs_banknodepayments);
+    LOCK(cs_basenodepayments);
 
     if(nBlockHeight <= nLastBlockHeight) return false;
     if(!enabled) return false;
-    CBanknodePaymentWinner newWinner;
+    CBasenodePaymentWinner newWinner;
     unsigned int nMinimumAge = mnodeman.CountEnabled();
     CScript payeeSource;
 
@@ -428,7 +428,7 @@ bool CBanknodePayments::ProcessBlock(int nBlockHeight)
     LogPrintf(" ProcessBlock Start nHeight %d. \n", nBlockHeight);
 
     std::vector<CTxIn> vecLastPayments;
-    BOOST_REVERSE_FOREACH(CBanknodePaymentWinner& winner, vWinning)
+    BOOST_REVERSE_FOREACH(CBasenodePaymentWinner& winner, vWinning)
     {
         //if we already have the same vin - we have one full payment cycle, break
         if(vecLastPayments.size() > nMinimumAge) break;
@@ -436,7 +436,7 @@ bool CBanknodePayments::ProcessBlock(int nBlockHeight)
     }
 
     // pay to the oldest MN that still had no payment but its input is old enough and it was active long enough
-    CBanknode *pmn = mnodeman.FindOldestNotInVec(vecLastPayments, nMinimumAge, 0);
+    CBasenode *pmn = mnodeman.FindOldestNotInVec(vecLastPayments, nMinimumAge, 0);
     if(pmn != NULL)
     {
         LogPrintf(" Found by FindOldestNotInVec \n");
@@ -458,7 +458,7 @@ bool CBanknodePayments::ProcessBlock(int nBlockHeight)
 
         BOOST_REVERSE_FOREACH(CTxIn& vinLP, vecLastPayments)
         {
-            CBanknode* pmn = mnodeman.Find(vinLP);
+            CBasenode* pmn = mnodeman.Find(vinLP);
             if(pmn != NULL)
             {
                 pmn->Check();
@@ -493,7 +493,7 @@ bool CBanknodePayments::ProcessBlock(int nBlockHeight)
 
     if(Sign(newWinner))
     {
-        if(AddWinningBanknode(newWinner))
+        if(AddWinningBasenode(newWinner))
         {
             Relay(newWinner);
             nLastBlockHeight = nBlockHeight;
@@ -504,9 +504,9 @@ bool CBanknodePayments::ProcessBlock(int nBlockHeight)
     return false;
 }
 
-void CBanknodePayments::Relay(CBanknodePaymentWinner& winner)
+void CBasenodePayments::Relay(CBasenodePaymentWinner& winner)
 {
-    CInv inv(MSG_BANKNODE_WINNER, winner.GetHash());
+    CInv inv(MSG_BASENODE_WINNER, winner.GetHash());
 
     vector<CInv> vInv;
     vInv.push_back(inv);
@@ -516,19 +516,19 @@ void CBanknodePayments::Relay(CBanknodePaymentWinner& winner)
     }
 }
 
-void CBanknodePayments::Sync(CNode* node)
+void CBasenodePayments::Sync(CNode* node)
 {
-    LOCK(cs_banknodepayments);
+    LOCK(cs_basenodepayments);
 
-    BOOST_FOREACH(CBanknodePaymentWinner& winner, vWinning)
+    BOOST_FOREACH(CBasenodePaymentWinner& winner, vWinning)
         if(winner.nBlockHeight >= chainActive.Tip()->nHeight-10 && winner.nBlockHeight <= chainActive.Tip()->nHeight + 20)
             node->PushMessage("mnw", winner);
 }
 
 
-bool CBanknodePayments::SetPrivKey(std::string strPrivKey)
+bool CBasenodePayments::SetPrivKey(std::string strPrivKey)
 {
-    CBanknodePaymentWinner winner;
+    CBasenodePaymentWinner winner;
 
     // Test signing successful, proceed
     strMasterPrivKey = strPrivKey;
@@ -536,7 +536,7 @@ bool CBanknodePayments::SetPrivKey(std::string strPrivKey)
     Sign(winner);
 
     if(CheckSignature(winner)){
-        LogPrintf("CBanknodePayments::SetPrivKey - Successfully initialized as Banknode payments master\n");
+        LogPrintf("CBasenodePayments::SetPrivKey - Successfully initialized as Basenode payments master\n");
         enabled = true;
         return true;
     } else {

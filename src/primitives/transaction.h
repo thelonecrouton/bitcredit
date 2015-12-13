@@ -15,8 +15,8 @@
 #include <boost/thread/mutex.hpp>
 
 
-#define START_BANKNODE_PAYMENTS_TESTNET 1425584204 //Fri, 09 Jan 2015 21:05:58 GMT
-#define START_BANKNODE_PAYMENTS 1427803200 //Wed, 5 Mar 2015 19:36:44 GMT
+#define START_BASENODE_PAYMENTS_TESTNET 1425584204 //Fri, 09 Jan 2015 21:05:58 GMT
+#define START_BASENODE_PAYMENTS 1427803200 //Wed, 5 Mar 2015 19:36:44 GMT
 
 static const int64_t DARKSEND_COLLATERAL = (0.1*COIN);
 static const int64_t DARKSEND_FEE = (0.0925*COIN);
@@ -24,29 +24,29 @@ static const int64_t DARKSEND_POOL_MAX = (49999.99*COIN);
 
 
 /*
-    At 15 signatures, 1/2 of the banknode network can be owned by
+    At 15 signatures, 1/2 of the basenode network can be owned by
     one party without comprimising the security of InstantX
     (1000/2150.0)**15 = 1.031e-05
 */
 #define INSTANTX_SIGNATURES_REQUIRED           20
 #define INSTANTX_SIGNATURES_TOTAL              30
 
-#define BANKNODE_NOT_PROCESSED               0 // initial state
-#define BANKNODE_IS_CAPABLE                  1
-#define BANKNODE_NOT_CAPABLE                 2
-#define BANKNODE_STOPPED                     3
-#define BANKNODE_INPUT_TOO_NEW               4
-#define BANKNODE_PORT_NOT_OPEN               6
-#define BANKNODE_PORT_OPEN                   7
-#define BANKNODE_SYNC_IN_PROCESS             8
-#define BANKNODE_REMOTELY_ENABLED            9
+#define BASENODE_NOT_PROCESSED               0 // initial state
+#define BASENODE_IS_CAPABLE                  1
+#define BASENODE_NOT_CAPABLE                 2
+#define BASENODE_STOPPED                     3
+#define BASENODE_INPUT_TOO_NEW               4
+#define BASENODE_PORT_NOT_OPEN               6
+#define BASENODE_PORT_OPEN                   7
+#define BASENODE_SYNC_IN_PROCESS             8
+#define BASENODE_REMOTELY_ENABLED            9
 
-#define BANKNODE_MIN_CONFIRMATIONS           15
-#define BANKNODE_MIN_DSEEP_SECONDS           (30*60)
-#define BANKNODE_MIN_DSEE_SECONDS            (5*60)
-#define BANKNODE_PING_SECONDS                (1*60)
-#define BANKNODE_EXPIRATION_SECONDS          (65*60)
-#define BANKNODE_REMOVAL_SECONDS             (70*60)
+#define BASENODE_MIN_CONFIRMATIONS           15
+#define BASENODE_MIN_DSEEP_SECONDS           (30*60)
+#define BASENODE_MIN_DSEE_SECONDS            (5*60)
+#define BASENODE_PING_SECONDS                (1*60)
+#define BASENODE_EXPIRATION_SECONDS          (65*60)
+#define BASENODE_REMOVAL_SECONDS             (70*60)
 
 
 /** An outpoint - a combination of a transaction hash and an index n into its vout */

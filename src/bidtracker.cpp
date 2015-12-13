@@ -1,5 +1,5 @@
 #include "bidtracker.h"
-#include "banknodeman.h"
+#include "basenodeman.h"
 #include "voting.h"
 #include "wallet.h"
 #include "base58.h"

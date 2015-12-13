@@ -7,20 +7,20 @@
 
 #include "primitives/transaction.h"
 #include "main.h"
-#include "banknode.h"
-#include "activebanknode.h"
-#include "banknodeman.h"
+#include "basenode.h"
+#include "activebasenode.h"
+#include "basenodeman.h"
 #include "darksend-relay.h"
 #include "version.h"
 
 class CTxIn;
 class CDarksendPool;
 class CDarkSendSigner;
-class CBankNodeVote;
+class CBaseNodeVote;
 class CBitcreditAddress;
 class CDarksendQueue;
 class CDarksendBroadcastTx;
-class CActiveBanknode;
+class CActiveBasenode;
 
 // pool states for mixing
 #define POOL_MAX_TRANSACTIONS                  3 // wait for X transactions to merge and publish
@@ -35,9 +35,9 @@ class CActiveBanknode;
 #define POOL_STATUS_SUCCESS                    8 // success
 
 // status update message constants
-#define BANKNODE_ACCEPTED                    1
-#define BANKNODE_REJECTED                    0
-#define BANKNODE_RESET                       -1
+#define BASENODE_ACCEPTED                    1
+#define BASENODE_REJECTED                    0
+#define BASENODE_RESET                       -1
 
 #define DARKSEND_QUEUE_TIMEOUT                 30
 #define DARKSEND_SIGNING_TIMEOUT               15
@@ -50,9 +50,9 @@ class CActiveBanknode;
 extern CDarksendPool darkSendPool;
 extern CDarkSendSigner darkSendSigner;
 extern std::vector<CDarksendQueue> vecDarksendQueue;
-extern std::string strBankNodePrivKey;
+extern std::string strBaseNodePrivKey;
 extern map<uint256, CDarksendBroadcastTx> mapDarksendBroadcastTxes;
-extern CActiveBanknode activeBanknode;
+extern CActiveBasenode activeBasenode;
 
 // get the Darksend chain depth for a given input
 int GetInputDarksendRounds(CTxIn in, int rounds=0);
@@ -187,7 +187,7 @@ public:
 
     bool GetAddress(CService &addr)
     {
-        CBanknode* pmn = mnodeman.Find(vin);
+        CBasenode* pmn = mnodeman.Find(vin);
         if(pmn != NULL)
         {
             addr = pmn->addr;
@@ -199,7 +199,7 @@ public:
     /// Get the protocol version
     bool GetProtocolVersion(int &protocolVersion)
     {
-        CBanknode* pmn = mnodeman.Find(vin);
+        CBasenode* pmn = mnodeman.Find(vin);
         if(pmn != NULL)
         {
             protocolVersion = pmn->protocolVersion;
@@ -210,8 +210,8 @@ public:
 
     /** Sign this Darksend transaction
      *  \return true if all conditions are met:
-     *     1) we have an active Banknode,
-     *     2) we have a valid Banknode private key,
+     *     1) we have an active Basenode,
+     *     2) we have a valid Basenode private key,
      *     3) we signed the message successfully, and
      *     4) we verified the message successfully
      */
@@ -225,7 +225,7 @@ public:
         return (GetTime() - time) > DARKSEND_QUEUE_TIMEOUT;// 120 seconds
     }
 
-    /// Check if we have a valid Banknode address
+    /// Check if we have a valid Basenode address
     bool CheckSignature();
 
 };
@@ -246,7 +246,7 @@ public:
 class CDarkSendSigner
 {
 public:
-    /// Is the inputs associated with this public key? (and there is 1000 DASH - checking if valid banknode)
+    /// Is the inputs associated with this public key? (and there is 1000 DASH - checking if valid basenode)
     bool IsVinAssociatedWithPubkey(CTxIn& vin, CPubKey& pubkey);
     /// Set the private/public key values, returns true if successful
     bool SetKey(std::string strSecret, std::string& errorMessage, CKey& key, CPubKey& pubkey);
@@ -263,7 +263,7 @@ class CDarksendPool
 public:
 
     std::vector<CDarkSendEntry> myEntries; // clients entries
-    std::vector<CDarkSendEntry> entries; // Banknode entries
+    std::vector<CDarkSendEntry> entries; // Basenode entries
     CMutableTransaction finalTransaction; // the finalized transaction ready for signing
 
     int64_t lastTimeChanged; // last time the 'state' changed, in UTC milliseconds
@@ -279,17 +279,17 @@ public:
 
     std::vector<CTxIn> lockedCoins;
 
-    uint256 bankNodeBlockHash;
+    uint256 baseNodeBlockHash;
 
     std::string lastMessage;
     bool completedTransaction;
     bool unitTest;
-    CBanknode* pSubmittedToBanknode;
+    CBasenode* pSubmittedToBasenode;
 
     int sessionID;
     int sessionDenom; //Users must submit an denom matching this
     int sessionUsers; //N Users have said they'll join
-    bool sessionFoundBanknode; //If we've found a compatible Banknode
+    bool sessionFoundBasenode; //If we've found a compatible Basenode
     int64_t sessionTotalValue; //used for autoDenom
     std::vector<CTransaction> vecSessionCollateral;
 
@@ -363,7 +363,7 @@ public:
 
     int GetEntriesCount() const
     {
-        if(fBankNode){
+        if(fBaseNode){
             return entries.size();
         } else {
             return entriesCount;
@@ -391,16 +391,16 @@ public:
     // Set the 'state' value, with some logging and capturing when the state changed
     void UpdateState(unsigned int newState)
     {
-        if (fBankNode && (newState == POOL_STATUS_ERROR || newState == POOL_STATUS_SUCCESS)){
-            LogPrintf("CDarksendPool::UpdateState() - Can't set state to ERROR or SUCCESS as a Banknode. \n");
+        if (fBaseNode && (newState == POOL_STATUS_ERROR || newState == POOL_STATUS_SUCCESS)){
+            LogPrintf("CDarksendPool::UpdateState() - Can't set state to ERROR or SUCCESS as a Basenode. \n");
             return;
         }
 
         LogPrintf("CDarksendPool::UpdateState() == %d | %d \n", state, newState);
         if(state != newState){
             lastTimeChanged = GetTimeMillis();
-            if(fBankNode) {
-                RelayStatus(darkSendPool.sessionID, darkSendPool.GetState(), darkSendPool.GetEntriesCount(), BANKNODE_RESET);
+            if(fBaseNode) {
+                RelayStatus(darkSendPool.sessionID, darkSendPool.GetState(), darkSendPool.GetEntriesCount(), BASENODE_RESET);
             }
         }
         state = newState;
@@ -448,9 +448,9 @@ public:
     bool AddScriptSig(const CTxIn& newVin);
     /// Check that all inputs are signed. (Are all inputs signed?)
     bool SignaturesComplete();
-    /// As a client, send a transaction to a Banknode to start the denomination process
+    /// As a client, send a transaction to a Basenode to start the denomination process
     void SendDarksendDenominate(std::vector<CTxIn>& vin, std::vector<CTxOut>& vout, int64_t amount);
-    /// Get Banknode updates about the progress of Darksend
+    /// Get Basenode updates about the progress of Darksend
     bool StatusUpdate(int newState, int newEntriesCount, int newAccepted, std::string& error, int newSessionID=0);
 
     /// As a client, check and sign the final transaction

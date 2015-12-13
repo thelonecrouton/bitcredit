@@ -4,8 +4,8 @@
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef SRC_BANKNODECONFIG_H_
-#define SRC_BANKNODECONFIG_H_
+#ifndef SRC_BASENODECONFIG_H_
+#define SRC_BASENODECONFIG_H_
 
 #include <string>
 #include <vector>
@@ -13,15 +13,15 @@
 #include <boost/filesystem.hpp>
 #include <boost/filesystem/fstream.hpp>
 
-class CBanknodeConfig;
-extern CBanknodeConfig banknodeConfig;
+class CBasenodeConfig;
+extern CBasenodeConfig basenodeConfig;
 
-class CBanknodeConfig
+class CBasenodeConfig
 {
 
 public:
 
-    class CBanknodeEntry {
+    class CBasenodeEntry {
 
     private:
         std::string alias;
@@ -32,7 +32,7 @@ public:
 
     public:
 
-        CBanknodeEntry(std::string alias, std::string ip, std::string privKey, std::string txHash, std::string outputIndex) {
+        CBasenodeEntry(std::string alias, std::string ip, std::string privKey, std::string txHash, std::string outputIndex) {
             this->alias = alias;
             this->ip = ip;
             this->privKey = privKey;
@@ -82,23 +82,23 @@ public:
 
     };
 
-    CBanknodeConfig() {
-        entries = std::vector<CBanknodeEntry>();
+    CBasenodeConfig() {
+        entries = std::vector<CBasenodeEntry>();
     }
 
     void clear();
     bool read(std::string& strErr);
 	void add(std::string alias, std::string ip, std::string privKey, std::string txHash, std::string outputIndex);
 
-    std::vector<CBanknodeEntry>& getEntries() {
+    std::vector<CBasenodeEntry>& getEntries() {
         return entries;
     }
 
 private:
-    std::vector<CBanknodeEntry> entries;
+    std::vector<CBasenodeEntry> entries;
 
 
 };
 
 
-#endif /* SRC_BANKNODECONFIG_H_ */
+#endif /* SRC_BASENODECONFIG_H_ */

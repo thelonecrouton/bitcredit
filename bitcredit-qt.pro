@@ -161,7 +161,7 @@ QMAKE_CXXFLAGS_WARN_ON = -fdiagnostics-show-option -Wall -Wextra -Wno-ignored-qu
 # Input
 DEPENDPATH += json qt
 HEADERS += src/qt/bitcreditgui.h \
-  src/activebanknode.h \
+  src/activebasenode.h \
   src/addrman.h \
   src/alert.h \
   src/allocators.h \
@@ -199,10 +199,10 @@ HEADERS += src/qt/bitcreditgui.h \
   src/limitedmap.h \
   src/lz4/lz4.h \
   src/main.h \
-  src/banknode.h \
-  src/banknode-pos.h \
-  src/banknodeman.h \
-  src/banknodeconfig.h \
+  src/basenode.h \
+  src/basenode-pos.h \
+  src/basenodeman.h \
+  src/basenodeconfig.h \
   src/merkleblock.h \
   src/miner.h \
   src/momentum.h \
@@ -414,7 +414,7 @@ SOURCES += src/qt/bitcredit.cpp src/qt/bitcreditgui.cpp \
   src/qt/bidpage.cpp \
   src/qt/votecoinsdialog.cpp \
   src/qt/votecoinsentry.cpp \
-  src/activebanknode.cpp \
+  src/activebasenode.cpp \
   src/rpcclient.cpp \
   src/addrman.cpp \
   src/alert.cpp \
@@ -478,10 +478,10 @@ SOURCES += src/qt/bitcredit.cpp src/qt/bitcreditgui.cpp \
   src/compressor.cpp \
   src/darksend.cpp \
   src/darksend-relay.cpp \
-  src/banknode.cpp \
-  src/banknode-pos.cpp \
-  src/banknodeconfig.cpp \
-  src/banknodeman.cpp \
+  src/basenode.cpp \
+  src/basenode-pos.cpp \
+  src/basenodeconfig.cpp \
+  src/basenodeman.cpp \
   src/instantx.cpp \
   src/momentum.cpp \
   src/primitives/block.cpp \

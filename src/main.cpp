@@ -14,7 +14,7 @@
 #include "init.h"
 #include "instantx.h"
 #include "darksend.h"
-#include "banknodeman.h"
+#include "basenodeman.h"
 #include "merkleblock.h"
 #include "net.h"
 #include "pow.h"
@@ -1498,7 +1498,7 @@ CAmount GetBlockValue(int nHeight, const CAmount& nFees)
     return nSubsidy + nFees;
 }
 
-CAmount GetBanknodePayment(int nHeight, int64_t blockValue)
+CAmount GetBasenodePayment(int nHeight, int64_t blockValue)
 {
     int64_t ret = blockValue/5;
 
@@ -2128,7 +2128,7 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
 			addrvalit = addressvalue.find(newAddressString);
 			if(addrvalit != addressvalue.end()){
 				if (!(addrvalit->second >= 50000*COIN))
-					return state.DoS(100, error("ConnectBlock(): banknode miningkey invalid"), REJECT_INVALID, "invalid-bnminingkey");
+					return state.DoS(100, error("ConnectBlock(): basenode miningkey invalid"), REJECT_INVALID, "invalid-bnminingkey");
 			}
 		}
 
@@ -2445,7 +2445,7 @@ void updatedatabases()
 			string receiveAddress = CBitcreditAddress( address ).ToString().c_str();
 			int64_t theAmount = tx.vout[ j ].nValue;
 			addressvalue[receiveAddress] = addressvalue[receiveAddress] + theAmount;
-		if(fBankNode){
+		if(fBaseNode){
             char *sql ="select * from RAWDATA where ADDRESS = ?";
 
 			rc = sqlite3_prepare(rawdb,sql, strlen(sql), &stmt,  0 );
@@ -2518,7 +2518,7 @@ void updatedatabases()
                     spendAddress = CBitcreditAddress(addressRet).ToString().c_str();
 					theAmount =  txOut.nValue;
 					addressvalue[spendAddress] = addressvalue[spendAddress] - theAmount;
-				if(fBankNode){
+				if(fBaseNode){
 					const char *updatequery ="select * from RAWDATA where ADDRESS = ?";
 
 					rc = sqlite3_prepare(rawdb,updatequery, strlen(updatequery), &stmt,  0 );
@@ -2546,7 +2546,7 @@ void updatedatabases()
                 }
             }
         }
-	if(fBankNode){
+	if(fBaseNode){
 	if(sqlite3_close(rawdb) != SQLITE_OK ){
 		if (fDebug)LogPrintf("SQL unable to close database %s\n", sqlite3_errmsg(rawdb));
 		sqlite3_free(zErrMsg);
@@ -3195,42 +3195,42 @@ bool CheckBlock(const CBlock& block, CValidationState& state, bool fCheckPOW, bo
        if(fDebug) LogPrintf("CheckBlock() : skipping transaction locking checks\n");
     }
 
-    // ----------- banknode payments -----------
+    // ----------- basenode payments -----------
 
-    bool BanknodePayments = false;
+    bool BasenodePayments = false;
 
-    if(block.nTime > 1443657600) BanknodePayments = true;
+    if(block.nTime > 1443657600) BasenodePayments = true;
 
-    if(BanknodePayments)
+    if(BasenodePayments)
     {
         LOCK2(cs_main, mempool.cs);
 
         CBlockIndex *pindex = chainActive.Tip();
         if(pindex != NULL){
             if(pindex->GetBlockHash() == block.hashPrevBlock){
-                CAmount banknodePaymentAmount = GetBanknodePayment(pindex->nHeight+1, block.vtx[0].GetValueOut());
+                CAmount basenodePaymentAmount = GetBasenodePayment(pindex->nHeight+1, block.vtx[0].GetValueOut());
                 bool fIsInitialDownload = IsInitialBlockDownload();
 
-                // If we don't already have its previous block, skip banknode payment step
+                // If we don't already have its previous block, skip basenode payment step
                 if (!fIsInitialDownload && pindex != NULL){
                     bool foundPaymentAmount = false;
                     bool foundPayee = false;
                     bool foundPaymentAndPayee = false;
 
                     CScript payee;
-                    if(!banknodePayments.GetBlockPayee(chainActive.Tip()->nHeight+1, payee) || payee == CScript()){
+                    if(!basenodePayments.GetBlockPayee(chainActive.Tip()->nHeight+1, payee) || payee == CScript()){
                         foundPayee = true; //doesn't require a specific payee
                         foundPaymentAmount = true;
                         foundPaymentAndPayee = true;
-                        if(fDebug)LogPrintf("CheckBlock() : Using non-specific banknode payments %d\n", chainActive.Tip()->nHeight+1);
+                        if(fDebug)LogPrintf("CheckBlock() : Using non-specific basenode payments %d\n", chainActive.Tip()->nHeight+1);
                     }
 
                     for (unsigned int i = 0; i < block.vtx[0].vout.size(); i++) {
-                        if(block.vtx[0].vout[i].nValue == banknodePaymentAmount )
+                        if(block.vtx[0].vout[i].nValue == basenodePaymentAmount )
                             foundPaymentAmount = true;
                         if(block.vtx[0].vout[i].scriptPubKey == payee )
                             foundPayee = true;
-                        if(block.vtx[0].vout[i].nValue == banknodePaymentAmount && block.vtx[0].vout[i].scriptPubKey == payee)
+                        if(block.vtx[0].vout[i].nValue == basenodePaymentAmount && block.vtx[0].vout[i].scriptPubKey == payee)
                             foundPaymentAndPayee = true;
                     }
 
@@ -3239,22 +3239,22 @@ bool CheckBlock(const CBlock& block, CValidationState& state, bool fCheckPOW, bo
                         ExtractDestination(payee, address1);
                         CBitcreditAddress address2(address1);
 
-                        LogPrintf("CheckBlock() : Couldn't find banknode payment(%d|%d) or payee(%d|%s) nHeight %d. \n", foundPaymentAmount, banknodePaymentAmount, foundPayee, address2.ToString().c_str(), chainActive.Tip()->nHeight+1);
-                        return state.DoS(100, error("CheckBlock() : Couldn't find banknode payment or payee"));
+                        LogPrintf("CheckBlock() : Couldn't find basenode payment(%d|%d) or payee(%d|%s) nHeight %d. \n", foundPaymentAmount, basenodePaymentAmount, foundPayee, address2.ToString().c_str(), chainActive.Tip()->nHeight+1);
+                        return state.DoS(100, error("CheckBlock() : Couldn't find basenode payment or payee"));
                     } else {
-                        if(fDebug)LogPrintf("CheckBlock() : Found banknode payment %d\n", chainActive.Tip()->nHeight+1);
+                        if(fDebug)LogPrintf("CheckBlock() : Found basenode payment %d\n", chainActive.Tip()->nHeight+1);
                     }
                 } else {
-                    if(fDebug)LogPrintf("CheckBlock() : Is initial download, skipping banknode payment check %d\n", chainActive.Tip()->nHeight+1);
+                    if(fDebug)LogPrintf("CheckBlock() : Is initial download, skipping basenode payment check %d\n", chainActive.Tip()->nHeight+1);
                 }
             } else {
-               if(fDebug) LogPrintf("CheckBlock() : Skipping banknode payment check - nHeight %d Hash %s\n", chainActive.Tip()->nHeight+1, block.GetHash().ToString().c_str());
+               if(fDebug) LogPrintf("CheckBlock() : Skipping basenode payment check - nHeight %d Hash %s\n", chainActive.Tip()->nHeight+1, block.GetHash().ToString().c_str());
             }
         } else {
-            if(fDebug)LogPrintf("CheckBlock() : pindex is null, skipping banknode payment check\n");
+            if(fDebug)LogPrintf("CheckBlock() : pindex is null, skipping basenode payment check\n");
         }
     } else {
-       if(fDebug) LogPrintf("CheckBlock() : skipping banknode payment checks\n");
+       if(fDebug) LogPrintf("CheckBlock() : skipping basenode payment checks\n");
     }
 
     // Check transactions
@@ -4018,10 +4018,10 @@ bool static AlreadyHave(const CInv& inv)
         return mapTxLockVote.count(inv.hash);
     case MSG_SPORK:
         return mapSporks.count(inv.hash);
-    case MSG_BANKNODE_WINNER:
-        return mapSeenBanknodeVotes.count(inv.hash);
-    case MSG_BANKNODE_SCANNING_ERROR:
-        return mapBanknodeScanningErrors.count(inv.hash);
+    case MSG_BASENODE_WINNER:
+        return mapSeenBasenodeVotes.count(inv.hash);
+    case MSG_BASENODE_SCANNING_ERROR:
+        return mapBasenodeScanningErrors.count(inv.hash);
     }
     // Don't know what it is, just say we already got one
     return true;
@@ -4173,20 +4173,20 @@ void static ProcessGetData(CNode* pfrom)
                         pushed = true;
                     }
                 }
-                if (!pushed && inv.type == MSG_BANKNODE_WINNER) {
-                    if(mapSeenBanknodeVotes.count(inv.hash)){
+                if (!pushed && inv.type == MSG_BASENODE_WINNER) {
+                    if(mapSeenBasenodeVotes.count(inv.hash)){
                         CDataStream ss(SER_NETWORK, PROTOCOL_VERSION);
                         ss.reserve(1000);
-                        ss << mapSeenBanknodeVotes[inv.hash];
+                        ss << mapSeenBasenodeVotes[inv.hash];
                         pfrom->PushMessage("mnw", ss);
                         pushed = true;
                     }
                 }
-                if (!pushed && inv.type == MSG_BANKNODE_SCANNING_ERROR) {
-                    if(mapBanknodeScanningErrors.count(inv.hash)){
+                if (!pushed && inv.type == MSG_BASENODE_SCANNING_ERROR) {
+                    if(mapBasenodeScanningErrors.count(inv.hash)){
                         CDataStream ss(SER_NETWORK, PROTOCOL_VERSION);
                         ss.reserve(1000);
-                        ss << mapBanknodeScanningErrors[inv.hash];
+                        ss << mapBasenodeScanningErrors[inv.hash];
                         pfrom->PushMessage("mnse", ss);
                         pushed = true;
                     }
@@ -4630,7 +4630,7 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
         vector<uint256> vEraseQueue;
         CTransaction tx;
 
-        //banknode signed transaction
+        //basenode signed transaction
         //bool allowFree = false;
         CTxIn vin;
         vector<unsigned char> vchSig;
@@ -4639,15 +4639,15 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
         if(strCommand == "tx") {
             vRecv >> tx;
         } else if (strCommand == "dstx") {
-            //these allow banknodes to publish a limited amount of free transactions
+            //these allow basenodes to publish a limited amount of free transactions
             vRecv >> tx >> vin >> vchSig >> sigTime;
 
-            CBanknode* pmn = mnodeman.Find(vin);
+            CBasenode* pmn = mnodeman.Find(vin);
             if(pmn != NULL)
             {
                 if(!pmn->allowFreeTx){
-                    //multiple peers can send us a valid banknode transaction
-                    if(fDebug) LogPrintf("dstx: Banknode sending too many transactions %s\n", tx.GetHash().ToString().c_str());
+                    //multiple peers can send us a valid basenode transaction
+                    if(fDebug) LogPrintf("dstx: Basenode sending too many transactions %s\n", tx.GetHash().ToString().c_str());
                     return true;
                 }
 
@@ -4655,12 +4655,12 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
 
                 std::string errorMessage = "";
                 if(!darkSendSigner.VerifyMessage(pmn->pubkey2, vchSig, strMessage, errorMessage)){
-                    LogPrintf("dstx: Got bad banknode address signature %s \n", vin.ToString().c_str());
+                    LogPrintf("dstx: Got bad basenode address signature %s \n", vin.ToString().c_str());
                     //pfrom->Misbehaving(20);
                     return false;
                 }
 
-                LogPrintf("dstx: Got Banknode transaction %s\n", tx.GetHash().ToString().c_str());
+                LogPrintf("dstx: Got Basenode transaction %s\n", tx.GetHash().ToString().c_str());
 
                 //allowFree = true;
                 pmn->allowFreeTx = false;
@@ -5080,10 +5080,10 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
 
         darkSendPool.ProcessMessageDarksend(pfrom, strCommand, vRecv);
         mnodeman.ProcessMessage(pfrom, strCommand, vRecv);
-        ProcessMessageBanknodePayments(pfrom, strCommand, vRecv);
+        ProcessMessageBasenodePayments(pfrom, strCommand, vRecv);
         ProcessMessageInstantX(pfrom, strCommand, vRecv);
         ProcessSpork(pfrom, strCommand, vRecv);
-        ProcessMessageBanknodePOS(pfrom, strCommand, vRecv);
+        ProcessMessageBasenodePOS(pfrom, strCommand, vRecv);
 
         // Ignore unknown commands for extensibility
         LogPrint("net", "Unknown command \"%s\" from peer=%d\n", SanitizeString(strCommand), pfrom->id);

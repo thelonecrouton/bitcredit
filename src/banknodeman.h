@@ -2,8 +2,8 @@
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef BANKNODEMAN_H
-#define BANKNODEMAN_H
+#ifndef BASENODEMAN_H
+#define BASENODEMAN_H
 
 //#include "bignum.h"
 #include "sync.h"
@@ -14,21 +14,21 @@
 #include "script/script.h"
 #include "base58.h"
 #include "main.h"
-#include "banknode.h"
+#include "basenode.h"
 
-#define BANKNODES_DUMP_SECONDS               (15*60)
-#define BANKNODES_DSEG_SECONDS               (3*60*60)
+#define BASENODES_DUMP_SECONDS               (15*60)
+#define BASENODES_DSEG_SECONDS               (3*60*60)
 
 using namespace std;
 
-class CBanknodeMan;
+class CBasenodeMan;
 
-extern CBanknodeMan mnodeman;
-void DumpBanknodes();
+extern CBasenodeMan mnodeman;
+void DumpBasenodes();
 
 /** Access to the MN database (nodecache.dat)
  */
-class CBanknodeDB
+class CBasenodeDB
 {
 private:
     boost::filesystem::path pathMN;
@@ -44,12 +44,12 @@ public:
         IncorrectFormat
     };
 
-    CBanknodeDB();
-    bool Write(const CBanknodeMan &mnodemanToSave);
-    ReadResult Read(CBanknodeMan& mnodemanToLoad);
+    CBasenodeDB();
+    bool Write(const CBasenodeMan &mnodemanToSave);
+    ReadResult Read(CBasenodeMan& mnodemanToLoad);
 };
 
-class CBanknodeMan
+class CBasenodeMan
 {
 private:
     // critical section to protect the inner data structures
@@ -57,18 +57,18 @@ private:
 
     // map to hold all MNs
 
-    // who's asked for the Banknode list and the last time
-    std::map<CNetAddr, int64_t> mAskedUsForBanknodeList;
-    // who we asked for the Banknode list and the last time
-    std::map<CNetAddr, int64_t> mWeAskedForBanknodeList;
-    // which Banknodes we've asked for
-    std::map<COutPoint, int64_t> mWeAskedForBanknodeListEntry;
+    // who's asked for the Basenode list and the last time
+    std::map<CNetAddr, int64_t> mAskedUsForBasenodeList;
+    // who we asked for the Basenode list and the last time
+    std::map<CNetAddr, int64_t> mWeAskedForBasenodeList;
+    // which Basenodes we've asked for
+    std::map<COutPoint, int64_t> mWeAskedForBasenodeListEntry;
 
 public:
-    // keep track of dsq count to prevent banknodes from gaming darksend queue
+    // keep track of dsq count to prevent basenodes from gaming darksend queue
     int64_t nDsqCount;
 
-    std::vector<CBanknode> vBanknodes;
+    std::vector<CBasenode> vBasenodes;
 
 ADD_SERIALIZE_METHODS;
 
@@ -77,74 +77,74 @@ ADD_SERIALIZE_METHODS;
 
         // serialized format:
         // * version byte (currently 0)
-        // * banknodes vector
+        // * basenodes vector
         {
                 LOCK(cs);
                 unsigned char nVersion = 0;
                 READWRITE(nVersion);
-                READWRITE(vBanknodes);
-                READWRITE(mAskedUsForBanknodeList);
-                READWRITE(mWeAskedForBanknodeList);
-                READWRITE(mWeAskedForBanknodeListEntry);
+                READWRITE(vBasenodes);
+                READWRITE(mAskedUsForBasenodeList);
+                READWRITE(mWeAskedForBasenodeList);
+                READWRITE(mWeAskedForBasenodeListEntry);
                 READWRITE(nDsqCount);
         }
  	}
 
-    CBanknodeMan();
-    CBanknodeMan(CBanknodeMan& other);
+    CBasenodeMan();
+    CBasenodeMan(CBasenodeMan& other);
 
     /// Add an entry
-    bool Add(CBanknode &mn);
+    bool Add(CBasenode &mn);
 
-    /// Check all Banknodes
+    /// Check all Basenodes
     void Check();
 
-    /// Check all Banknodes and remove inactive
+    /// Check all Basenodes and remove inactive
     void CheckAndRemove();
 
-    /// Clear Banknode vector
+    /// Clear Basenode vector
     void Clear();
 
     int CountEnabled();
 
-    int CountBanknodesAboveProtocol(int protocolVersion);
+    int CountBasenodesAboveProtocol(int protocolVersion);
 
     void DsegUpdate(CNode* pnode);
 
     /// Find an entry
-    CBanknode* Find(const CTxIn& vin);
-    CBanknode* Find(const CPubKey& pubKeyBanknode);
+    CBasenode* Find(const CTxIn& vin);
+    CBasenode* Find(const CPubKey& pubKeyBasenode);
 
     /// Find an entry thta do not match every entry provided vector
-    CBanknode* FindOldestNotInVec(const std::vector<CTxIn> &vVins, int nMinimumAge, int nMinimumActiveSeconds);
+    CBasenode* FindOldestNotInVec(const std::vector<CTxIn> &vVins, int nMinimumAge, int nMinimumActiveSeconds);
 
     /// Find a random entry
-    CBanknode* FindRandom();
+    CBasenode* FindRandom();
 
     /// Get the current winner for this block
-    CBanknode* GetCurrentBankNode(int mod=1, int64_t nBlockHeight=0, int minProtocol=0);
+    CBasenode* GetCurrentBaseNode(int mod=1, int64_t nBlockHeight=0, int minProtocol=0);
 
-    std::vector<CBanknode> GetFullBanknodeVector() { Check(); return vBanknodes; }
+    std::vector<CBasenode> GetFullBasenodeVector() { Check(); return vBasenodes; }
 
-    std::vector<pair<int, CBanknode> > GetBanknodeRanks(int64_t nBlockHeight, int minProtocol=0);
-    int GetBanknodeRank(const CTxIn &vin, int64_t nBlockHeight, int minProtocol=0, bool fOnlyActive=true);
-    CBanknode* GetBanknodeByRank(int nRank, int64_t nBlockHeight, int minProtocol=0, bool fOnlyActive=true);
+    std::vector<pair<int, CBasenode> > GetBasenodeRanks(int64_t nBlockHeight, int minProtocol=0);
+    int GetBasenodeRank(const CTxIn &vin, int64_t nBlockHeight, int minProtocol=0, bool fOnlyActive=true);
+    CBasenode* GetBasenodeByRank(int nRank, int64_t nBlockHeight, int minProtocol=0, bool fOnlyActive=true);
 
-    void ProcessBanknodeConnections();
+    void ProcessBasenodeConnections();
 
     void ProcessMessage(CNode* pfrom, std::string& strCommand, CDataStream& vRecv);
 
-    /// Return the number of (unique) Banknodes
-    int size() { return vBanknodes.size(); }
+    /// Return the number of (unique) Basenodes
+    int size() { return vBasenodes.size(); }
 
     std::string ToString() const;
 
     //
-    // Relay Banknode Messages
+    // Relay Basenode Messages
     //
 
-    void RelayBanknodeEntry(const CTxIn vin, const CService addr, const std::vector<unsigned char> vchSig, const int64_t nNow, const CPubKey pubkey, const CPubKey pubkey2, const int count, const int current, const int64_t lastUpdated, const int protocolVersion);
-    void RelayBanknodeEntryPing(const CTxIn vin, const std::vector<unsigned char> vchSig, const int64_t nNow, const bool stop);
+    void RelayBasenodeEntry(const CTxIn vin, const CService addr, const std::vector<unsigned char> vchSig, const int64_t nNow, const CPubKey pubkey, const CPubKey pubkey2, const int count, const int current, const int64_t lastUpdated, const int protocolVersion);
+    void RelayBasenodeEntryPing(const CTxIn vin, const std::vector<unsigned char> vchSig, const int64_t nNow, const bool stop);
 
     void Remove(CTxIn vin);
 
