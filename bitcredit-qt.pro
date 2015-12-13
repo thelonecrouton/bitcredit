@@ -347,7 +347,7 @@ HEADERS += src/qt/bitcreditgui.h \
   src/qt/votecoinsentry.h \
   src/qt/databasebrowser.h \
   src/qt/databaseconnectionwidget.h \
-    src/qt/forms/utilitypage.h
+  src/qt/utilitypage.h
 
 SOURCES += src/qt/bitcredit.cpp src/qt/bitcreditgui.cpp \
   src/qt/bitcreditaddressvalidator.cpp \
@@ -524,7 +524,7 @@ SOURCES += src/qt/bitcredit.cpp src/qt/bitcreditgui.cpp \
   src/voting.cpp \
   src/qt/databasebrowser.cpp \
   src/qt/databaseconnectionwidget.cpp \
-    src/qt/forms/utilitypage.cpp
+  src/qt/utilitypage.cpp
 
 RESOURCES += \
     src/qt/bitcredit.qrc\
