@@ -1536,7 +1536,7 @@ std::map<CAddress, uint64_t> ListAdvertisedBalances()
 
         if (0 < address->advertised_balance) {
             BOOST_FOREACH(CNode* pnode, vNodesCopy) {
-                if (pnode->addrName == address->ToStringIPPort() /*&& pnode->fSuccessfullyConnected*/) {
+                if (pnode->addrName == address->ToStringIP() /*&& pnode->fSuccessfullyConnected*/) {
                     result[*address] = address->advertised_balance;
                     break;
                 }
