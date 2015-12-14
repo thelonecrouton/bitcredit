@@ -2480,7 +2480,7 @@ bool static ConnectTip(CValidationState &state, CBlockIndex *pindexNew, CBlock *
     }
 	
 	CTxDestination m;
-    ExtractDestination(block.vtx[0].vout[0].scriptPubKey, m);
+    ExtractDestination(pblock->vtx[0].vout[0].scriptPubKey, m);
 	string miner = CBitcreditAddress(m).ToString().c_str();
 	last40blocks.push_back(miner);
 	ofstream last40blocksfile;
@@ -2493,10 +2493,10 @@ bool static ConnectTip(CValidationState &state, CBlockIndex *pindexNew, CBlock *
 			
     std::map<std::string,int64_t>::iterator addrvalit;
 	std::map<std::string,int64_t> addressvalue = getbalances();
-    BOOST_FOREACH(const CTransaction& tx, block.vtx){
+    BOOST_FOREACH(const CTransaction& tx, pblock->vtx){
 	
 	sqlite3_open((GetDataDir() / "ratings/rawdata.db").string().c_str(), &rawdb);
-    char * insertquery = sqlite3_mprintf("insert into BLOCKS (ID, HASH, TIME, MINER) values (%lld,'%q',%lld,'%q')",chainActive.Tip()->nHeight, block.GetHash().ToString().c_str(), block.nTime, miner.c_str());
+    char * insertquery = sqlite3_mprintf("insert into BLOCKS (ID, HASH, TIME, MINER) values (%lld,'%q',%lld,'%q')",pindexNew->nHeight, pblock->GetHash().ToString().c_str(), pblock->nTime, miner.c_str());
 	rc = sqlite3_exec(rawdb, insertquery, callback, 0, &zErrMsg);
 	
         for (unsigned int j = 0; j < tx.vout.size();j++){
@@ -2530,7 +2530,7 @@ bool static ConnectTip(CValidationState &state, CBlockIndex *pindexNew, CBlock *
 				}
 
 			}else{
-                char * insertquery = sqlite3_mprintf("insert into RAWDATA (ADDRESS, BALANCE, FIRSTSEEN, TXOUTCOUNT, TOTALOUT) values ('%q',%lld,%lld,%lld,%lld)",receiveAddress.c_str(), theAmount, block.nTime, 1, theAmount );
+                char * insertquery = sqlite3_mprintf("insert into RAWDATA (ADDRESS, BALANCE, FIRSTSEEN, TXOUTCOUNT, TOTALOUT) values ('%q',%lld,%lld,%lld,%lld)",receiveAddress.c_str(), theAmount, pblock->nTime, 1, theAmount );
 				rc = sqlite3_exec(rawdb, insertquery, callback, 0, &zErrMsg);
 
 				if( rc != SQLITE_OK ){
@@ -2561,7 +2561,7 @@ bool static ConnectTip(CValidationState &state, CBlockIndex *pindexNew, CBlock *
                     CTransaction txOfPrevOutput;
                     if (!GetTransaction(prevoutHash, txOfPrevOutput, blockHash, true)){
                         if (fDebug)LogPrintf("AddrDB error Could not get transaction %s (output %d) referenced by input #%d of transaction %s in block %s\n"
-                        , prevoutHash.ToString().c_str(), tx.vin[i].prevout.n, (int) i, tx.GetHash().ToString().c_str(), block.GetHash().ToString().c_str());
+                        , prevoutHash.ToString().c_str(), tx.vin[i].prevout.n, (int) i, tx.GetHash().ToString().c_str(), pblock->GetHash().ToString().c_str());
                         continue;
                     }
                     unsigned int nOut = tx.vin[i].prevout.n;
@@ -2621,7 +2621,7 @@ bool static ConnectTip(CValidationState &state, CBlockIndex *pindexNew, CBlock *
 	for(addrvalit = addressvalue.begin();addrvalit != addressvalue.end();++addrvalit){
 		addrdb << addrvalit->first << "," << addrvalit->second << endl;
 	}
-	addrdb.close();	
+	addrdb.close();
 
     int64_t nTime6 = GetTimeMicros(); nTimePostConnect += nTime6 - nTime5; nTimeTotal += nTime6 - nTime1;
     LogPrint("bench", "  - Connect postprocess: %.2fms [%.2fs]\n", (nTime6 - nTime5) * 0.001, nTimePostConnect * 0.000001);
