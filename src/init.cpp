@@ -1471,7 +1471,7 @@ bool AppInit2(boost::thread_group& threadGroup)
     if(fBaseNode) {
         LogPrintf("IS BITCREDIT BASE NODE\n");
         strBaseNodeAddr = GetArg("-basenodeaddr", "");
-        
+
         LogPrintf(" addr %s\n", strBaseNodeAddr.c_str());
 
         if(!strBaseNodeAddr.empty()){
