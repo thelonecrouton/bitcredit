@@ -162,7 +162,6 @@ BITCREDIT_CORE_H = \
   xxhash/xxhash.h \
   ibtp.h \
   voting.h \
-  assets/coinspark.h \
   trust.h
 
 JSON_H = \
@@ -234,7 +233,6 @@ libbitcredit_wallet_a_SOURCES = \
   wallet_ismine.cpp \
   walletdb.cpp \
   keepass.cpp \
-  assets/coinspark.c \
   lz4/lz4.c \
   $(BITCREDIT_CORE_H)
 

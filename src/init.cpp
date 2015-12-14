@@ -1465,11 +1465,13 @@ bool AppInit2(boost::thread_group& threadGroup)
             LogPrintf("file format is unknown or invalid, please fix it manually\n");
     }
 
+    fEscrowEnabled = GetBoolArg("-escrow", false);
+    
     fBaseNode = GetBoolArg("-basenode", false);
     if(fBaseNode) {
         LogPrintf("IS BITCREDIT BASE NODE\n");
         strBaseNodeAddr = GetArg("-basenodeaddr", "");
-        fEscrowEnabled = true;
+        
         LogPrintf(" addr %s\n", strBaseNodeAddr.c_str());
 
         if(!strBaseNodeAddr.empty()){
