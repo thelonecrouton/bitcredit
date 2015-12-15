@@ -48,7 +48,7 @@ void AddEditAdrenalineNode::on_okButton_clicked()
 	c.sAddress = ui->addressLineEdit->text().toStdString();
         CKey secret;
         secret.MakeNewKey(false);
-        c.sBanknodePrivKey = CBitcreditSecret(secret).ToString();
+        c.sBasenodePrivKey = CBitcreditSecret(secret).ToString();
 	
         CWalletDB walletdb(pwalletMain->strWalletFile);
         CAccount account;

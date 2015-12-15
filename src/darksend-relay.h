@@ -8,14 +8,14 @@
 
 #include "core.h"
 #include "main.h"
-#include "activebanknode.h"
-#include "banknodeman.h"
+#include "activebasenode.h"
+#include "basenodeman.h"
 
 
 class CDarkSendRelay
 {
 public:
-    CTxIn vinBanknode;
+    CTxIn vinBasenode;
     vector<unsigned char> vchSig;
     vector<unsigned char> vchSig2;
     int nBlockHeight;
@@ -24,13 +24,13 @@ public:
     CTxOut out;
 
     CDarkSendRelay();
-    CDarkSendRelay(CTxIn& vinBanknodeIn, vector<unsigned char>& vchSigIn, int nBlockHeightIn, int nRelayTypeIn, CTxIn& in2, CTxOut& out2);
+    CDarkSendRelay(CTxIn& vinBasenodeIn, vector<unsigned char>& vchSigIn, int nBlockHeightIn, int nRelayTypeIn, CTxIn& in2, CTxOut& out2);
     
 	ADD_SERIALIZE_METHODS;
 
     template <typename Stream, typename Operation>
     inline void SerializationOp(Stream& s, Operation ser_action, int nType, int nVersion) {
-    	READWRITE(vinBanknode);
+    	READWRITE(vinBasenode);
         READWRITE(vchSig);
         READWRITE(vchSig2);
         READWRITE(nBlockHeight);

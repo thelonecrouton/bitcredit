@@ -148,7 +148,7 @@ Value getpeerinfo(const Array& params, bool fHelp)
             svcDesc = "NETWORK";
 
         if(SMSG_RELAY)
-            svcDesc = "MSG RELAY";
+            svcDesc += "MSG RELAY";
 
         if(NODE_ASSETS)
             svcDesc += " ASSETS";

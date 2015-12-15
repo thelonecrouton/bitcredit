@@ -15,7 +15,7 @@
 #include "net.h"
 #include "ui_interface.h"
 #include "util.h"
-#include "banknodeman.h"
+#include "basenodeman.h"
 
 #include <stdint.h>
 
@@ -30,7 +30,7 @@ ClientModel::ClientModel(OptionsModel *optionsModel, QObject *parent) :
     optionsModel(optionsModel),
     peerTableModel(0),
     cachedNumBlocks(0),
-    cachedBanknodeCountString(""),
+    cachedBasenodeCountString(""),
     cachedReindexing(0), cachedImporting(0),
     numBlocksAtStartup(-1), pollTimer(0)
 {
@@ -65,7 +65,7 @@ int ClientModel::getNumConnections(unsigned int flags) const
     return nNum;
 }
 
-QString ClientModel::getBanknodeCountString() const
+QString ClientModel::getBasenodeCountString() const
 {
     return QString::number((int)mnodeman.CountEnabled()) + " / " + QString::number((int)mnodeman.size());
 }
@@ -141,13 +141,13 @@ void ClientModel::updateMnTimer()
     TRY_LOCK(cs_main, lockMain);
     if(!lockMain)
         return;
-    QString newBanknodeCountString = getBanknodeCountString();
+    QString newBasenodeCountString = getBasenodeCountString();
 
-    if (cachedBanknodeCountString != newBanknodeCountString)
+    if (cachedBasenodeCountString != newBasenodeCountString)
     {
-        cachedBanknodeCountString = newBanknodeCountString;
+        cachedBasenodeCountString = newBasenodeCountString;
 
-        emit strBanknodesChanged(cachedBanknodeCountString);
+        emit strBasenodesChanged(cachedBasenodeCountString);
     }
 }
 

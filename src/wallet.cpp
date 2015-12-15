@@ -9,7 +9,7 @@
 #include "checkpoints.h"
 #include "coincontrol.h"
 #include "net.h"
-#include "banknode.h"
+#include "basenode.h"
 #include "darksend.h"
 #include "keepass.h"
 #include "instantx.h"
@@ -1766,9 +1766,9 @@ bool CWallet::SelectCoinsByDenominations(int nDenom, int64_t nValueMin, int64_t 
         //there's no reason to allow inputs less than 1 COIN into DS (other than denominations smaller than that amount)
         if(out.tx->vout[out.i].nValue < 1*COIN && out.tx->vout[out.i].nValue != (.1*COIN)+100) continue;
             if (chainActive.Tip()->nHeight<145000) {
-        if(fBankNode && out.tx->vout[out.i].nValue == 250000*COIN) continue; //banknode input
+        if(fBaseNode && out.tx->vout[out.i].nValue == 250000*COIN) continue; //basenode input
 	} else {
-        if(fBankNode && out.tx->vout[out.i].nValue == 50000*COIN) continue; //banknode input
+        if(fBaseNode && out.tx->vout[out.i].nValue == 50000*COIN) continue; //basenode input
 	}
         if(nValueRet + out.tx->vout[out.i].nValue <= nValueMax){
             bool fAccepted = false;
@@ -1846,9 +1846,9 @@ bool CWallet::SelectCoinsDark(int64_t nValueMin, int64_t nValueMax, std::vector<
         //there's no reason to allow inputs less than 1 COIN into DS (other than denominations smaller than that amount)
         if(out.tx->vout[out.i].nValue < 1*COIN && out.tx->vout[out.i].nValue != (.1*COIN)+100) continue;
     if (chainActive.Tip()->nHeight<145000) {        
-        if(fBankNode && out.tx->vout[out.i].nValue == 250000*COIN) continue; //banknode input
+        if(fBaseNode && out.tx->vout[out.i].nValue == 250000*COIN) continue; //basenode input
 	} else {        
-        if(fBankNode && out.tx->vout[out.i].nValue == 50000*COIN) continue; //banknode input
+        if(fBaseNode && out.tx->vout[out.i].nValue == 50000*COIN) continue; //basenode input
 	}
 	
         if(nValueRet + out.tx->vout[out.i].nValue <= nValueMax){
@@ -4651,7 +4651,7 @@ bool SendByDelegate(
         return false;
     }
 
-    CNetAddr const local = GetLocalTorAddress(sufficient);
+    CNetAddr const local = sufficient;
 
     vector<unsigned char> identification(16);
 

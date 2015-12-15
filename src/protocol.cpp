@@ -25,7 +25,7 @@ static const char* ppszTypeName[] =
     "tx lock request",
     "tx lock vote",
     "spork",
-    "banknode winner",
+    "basenode winner",
     "unknown",
     "unknown",
     "unknown",
@@ -109,6 +109,7 @@ void CAddress::Init()
     nServices = NODE_NETWORK;
     nTime = 100000000;
     nLastTry = 0;
+    advertised_balance = 0;
 }
 
 CInv::CInv()

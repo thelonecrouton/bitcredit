@@ -1,6 +1,6 @@
 TEMPLATE = app
 TARGET = bitcredit-qt
-VERSION = 0.30.19.1
+VERSION = 0.30.19.2
 INCLUDEPATH += src src/sqlite src/parser src/json src/qt src/qt/forms src/compat src/crypto src/lz4 src/primitives src/script src/secp256k1/include src/univalue src/xxhash
 DEFINES += QT_GUI BOOST_THREAD_USE_LIB BOOST_SPIRIT_THREADSAFE CURL_STATICLIB ENABLE_WALLET HAVE_WORKING_BOOST_SLEEP SQLITE_ENABLE_FTS5 SQLITE_ENABLE_RTREE SQLITE_ENABLE_DBSTAT_VTAB SQLITE_ENABLE_JSON1 SQLITE_ENABLE_RBU PIC PIE WANT_DENSE
 CONFIG += no_include_pwd thread static
@@ -161,7 +161,7 @@ QMAKE_CXXFLAGS_WARN_ON = -fdiagnostics-show-option -Wall -Wextra -Wno-ignored-qu
 # Input
 DEPENDPATH += json qt
 HEADERS += src/qt/bitcreditgui.h \
-  src/activebanknode.h \
+  src/activebasenode.h \
   src/addrman.h \
   src/alert.h \
   src/allocators.h \
@@ -199,10 +199,10 @@ HEADERS += src/qt/bitcreditgui.h \
   src/limitedmap.h \
   src/lz4/lz4.h \
   src/main.h \
-  src/banknode.h \
-  src/banknode-pos.h \
-  src/banknodeman.h \
-  src/banknodeconfig.h \
+  src/basenode.h \
+  src/basenode-pos.h \
+  src/basenodeman.h \
+  src/basenodeconfig.h \
   src/merkleblock.h \
   src/miner.h \
   src/momentum.h \
@@ -347,7 +347,7 @@ HEADERS += src/qt/bitcreditgui.h \
   src/qt/votecoinsentry.h \
   src/qt/databasebrowser.h \
   src/qt/databaseconnectionwidget.h \
-    src/qt/forms/utilitypage.h
+  src/qt/utilitypage.h
 
 SOURCES += src/qt/bitcredit.cpp src/qt/bitcreditgui.cpp \
   src/qt/bitcreditaddressvalidator.cpp \
@@ -414,7 +414,7 @@ SOURCES += src/qt/bitcredit.cpp src/qt/bitcreditgui.cpp \
   src/qt/bidpage.cpp \
   src/qt/votecoinsdialog.cpp \
   src/qt/votecoinsentry.cpp \
-  src/activebanknode.cpp \
+  src/activebasenode.cpp \
   src/rpcclient.cpp \
   src/addrman.cpp \
   src/alert.cpp \
@@ -478,10 +478,10 @@ SOURCES += src/qt/bitcredit.cpp src/qt/bitcreditgui.cpp \
   src/compressor.cpp \
   src/darksend.cpp \
   src/darksend-relay.cpp \
-  src/banknode.cpp \
-  src/banknode-pos.cpp \
-  src/banknodeconfig.cpp \
-  src/banknodeman.cpp \
+  src/basenode.cpp \
+  src/basenode-pos.cpp \
+  src/basenodeconfig.cpp \
+  src/basenodeman.cpp \
   src/instantx.cpp \
   src/momentum.cpp \
   src/primitives/block.cpp \
@@ -524,7 +524,7 @@ SOURCES += src/qt/bitcredit.cpp src/qt/bitcreditgui.cpp \
   src/voting.cpp \
   src/qt/databasebrowser.cpp \
   src/qt/databaseconnectionwidget.cpp \
-    src/qt/forms/utilitypage.cpp
+  src/qt/utilitypage.cpp
 
 RESOURCES += \
     src/qt/bitcredit.qrc\
@@ -567,7 +567,7 @@ FORMS += \
   src/qt/forms/votecoinsdialog.ui \
   src/qt/forms/databasebrowserwidget.ui \
   src/qt/forms/requestloan.ui \
-    src/qt/forms/utilitypage.ui
+  src/qt/forms/utilitypage.ui
 
 CODECFORTR = UTF-8
 

@@ -4,7 +4,7 @@
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include "miner.h"
-#include "activebanknode.h"
+#include "activebasenode.h"
 #include "amount.h"
 #include "base58.h"
 #include "bidtracker.h"
@@ -21,7 +21,7 @@
 #ifdef ENABLE_WALLET
 #include "wallet.h"
 #endif
-#include "banknodeman.h"
+#include "basenodeman.h"
 #include <boost/thread.hpp>
 #include <boost/tuple/tuple.hpp>
 #include <boost/filesystem.hpp>
@@ -132,12 +132,12 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn)
 
     if(GetTimeMicros() > 1427803200){
             hasPayment = true;
-            if(!banknodePayments.GetBlockPayee(chainActive.Tip()->nHeight+1, pblock->payee)){
-                CBanknode* winningNode = mnodeman.GetCurrentBankNode(1);
+            if(!basenodePayments.GetBlockPayee(chainActive.Tip()->nHeight+1, pblock->payee)){
+                CBasenode* winningNode = mnodeman.GetCurrentBaseNode(1);
                 if(winningNode){
                     pblock->payee =GetScriptForDestination(winningNode->pubkey.GetID());
                 } else {
-                    LogPrintf("CreateNewBlock: Failed to detect banknode to pay\n");
+                    LogPrintf("CreateNewBlock: Failed to detect basenode to pay\n");
                     hasPayment = false;
                 }
             }
@@ -483,7 +483,7 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn)
         nLastBlockSize = nBlockSize;
         LogPrintf("CreateNewBlock(): total size %u\n", nBlockSize);
         CAmount blockValue = GetBlockValue(pindexPrev->nHeight+1, nFees);
-        CAmount banknodePayment = GetBanknodePayment(pindexPrev->nHeight+1, blockValue);
+        CAmount basenodePayment = GetBasenodePayment(pindexPrev->nHeight+1, blockValue);
         CAmount bank = GetBlockValue(pindexPrev->nHeight+1, nFees) *(0.05);
 
         // Compute final coinbase transaction.
@@ -494,8 +494,8 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn)
 				txNew.vout[2].nValue = bank;
 				blockValue -= bank;
 				if (hasPayment && ispayoutblock && isgrantblock){
-					txNew.vout[2+ payments].nValue = banknodePayment;
-					blockValue -= banknodePayment;
+					txNew.vout[2+ payments].nValue = basenodePayment;
+					blockValue -= basenodePayment;
 					int j = 3 + payments;
 					for(gait = grantAwards.begin(); gait != grantAwards.end();gait++){
 						txNew.vout[j].nValue= gait->second;
@@ -529,8 +529,8 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn)
 					}
 				}
 				else if (hasPayment && ispayoutblock){
-					txNew.vout[2+ payments].nValue = banknodePayment;
-					blockValue -= banknodePayment;
+					txNew.vout[2+ payments].nValue = basenodePayment;
+					blockValue -= basenodePayment;
 					unsigned long int py = blockValue *0.9;
 					int i=3+payments;
 					for(balit = bidtracker.begin(); balit != bidtracker.end();balit++){
@@ -541,8 +541,8 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn)
 					}
 				}
 				else if (hasPayment && isgrantblock){
-					txNew.vout[2+ payments].nValue = banknodePayment;
-					blockValue -= banknodePayment;
+					txNew.vout[2+ payments].nValue = basenodePayment;
+					blockValue -= basenodePayment;
 					int i = 3+ payments;
 					for(gait = grantAwards.begin(); gait != grantAwards.end();gait++){
 						txNew.vout[i].nValue= gait->second;
@@ -569,8 +569,8 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn)
 					}
 				}
 				else if(hasPayment){
-					txNew.vout[2+ payments].nValue = banknodePayment;
-					blockValue -= banknodePayment;
+					txNew.vout[2+ payments].nValue = basenodePayment;
+					blockValue -= basenodePayment;
 				}
 				txNew.vout[0].nValue = blockValue;
 		}
@@ -660,7 +660,7 @@ CBlockTemplate* CreateNewBlockWithKey()
 		addrvalit = addressvalue.find(miningkeys[i]);
 		if(addrvalit != addressvalue.end()){
 			if (!(addrvalit->second > 50000*COIN))
-				LogPrintf("CreateNewBlockWithKey(): banknode miningkey 50K failed");
+				LogPrintf("CreateNewBlockWithKey(): basenode miningkey 50K failed");
 		}
 		
 		break;

@@ -7,9 +7,9 @@
 #include "primitives/transaction.h"
 #include "db.h"
 #include "init.h"
-#include "banknode.h"
-#include "activebanknode.h"
-#include "banknodeconfig.h"
+#include "basenode.h"
+#include "activebasenode.h"
+#include "basenodeconfig.h"
 #include "rpcserver.h"
 #include <boost/lexical_cast.hpp>
 #include "amount.h"
@@ -67,8 +67,8 @@ Value darksend(const Array& params, bool fHelp)
         throw JSONRPCError(RPC_WALLET_UNLOCK_NEEDED, "Error: Please enter the wallet passphrase with walletpassphrase first.");
 
     if(params[0].get_str() == "auto"){
-        if(fBankNode)
-            return "DarkSend is not supported from banknodes";
+        if(fBaseNode)
+            return "DarkSend is not supported from basenodes";
 
         darkSendPool.DoAutomaticDenominating();
         return "DoAutomaticDenominating";
@@ -110,7 +110,7 @@ Value getpoolinfo(const Array& params, bool fHelp)
             "Returns an object containing anonymous pool-related information.");
 
     Object obj;
-    obj.push_back(Pair("current_banknode",        mnodeman.GetCurrentBankNode()->addr.ToString()));
+    obj.push_back(Pair("current_basenode",        mnodeman.GetCurrentBaseNode()->addr.ToString()));
     obj.push_back(Pair("state",        darkSendPool.GetState()));
     obj.push_back(Pair("entries",      darkSendPool.GetEntriesCount()));
     obj.push_back(Pair("entries_accepted",      darkSendPool.GetCountEntriesAccepted()));
@@ -118,7 +118,7 @@ Value getpoolinfo(const Array& params, bool fHelp)
 }
 
 
-Value banknode(const Array& params, bool fHelp)
+Value basenode(const Array& params, bool fHelp)
 {
     string strCommand;
     if (params.size() >= 1)
@@ -128,27 +128,27 @@ Value banknode(const Array& params, bool fHelp)
         (strCommand != "start" && strCommand != "start-alias" && strCommand != "start-many" && strCommand != "stop" && strCommand != "stop-alias" && strCommand != "stop-many" && strCommand != "list" && strCommand != "list-conf" && strCommand != "count"  && strCommand != "enforce"
             && strCommand != "debug" && strCommand != "current" && strCommand != "winners" && strCommand != "genkey" && strCommand != "connect" && strCommand != "outputs" && strCommand != "vote-many" && strCommand != "vote"))
         throw runtime_error(
-                "banknode \"command\"... ( \"passphrase\" )\n"
-                "Set of commands to execute banknode related actions\n"
+                "basenode \"command\"... ( \"passphrase\" )\n"
+                "Set of commands to execute basenode related actions\n"
                 "\nArguments:\n"
                 "1. \"command\"        (string or set of strings, required) The command to execute\n"
                 "2. \"passphrase\"     (string, optional) The wallet passphrase\n"
                 "\nAvailable commands:\n"
-                "  count        - Print number of all known banknodes (optional: 'enabled', 'both')\n"
-                "  current      - Print info on current banknode winner\n"
-                "  debug        - Print banknode status\n"
-                "  genkey       - Generate new banknodeprivkey\n"
-                "  enforce      - Enforce banknode payments\n"
-                "  outputs      - Print banknode compatible outputs\n"
-                "  start        - Start banknode configured in dash.conf\n"
-                "  start-alias  - Start single banknode by assigned alias configured in banknode.conf\n"
-                "  start-many   - Start all banknodes configured in banknode.conf\n"
-                "  stop         - Stop banknode configured in dash.conf\n"
-                "  stop-alias   - Stop single banknode by assigned alias configured in banknode.conf\n"
-                "  stop-many    - Stop all banknodes configured in banknode.conf\n"
-                "  list         - Print list of all known banknodes (see banknodelist for more info)\n"
-                "  list-conf    - Print banknode.conf in JSON format\n"
-                "  winners      - Print list of banknode winners\n"
+                "  count        - Print number of all known basenodes (optional: 'enabled', 'both')\n"
+                "  current      - Print info on current basenode winner\n"
+                "  debug        - Print basenode status\n"
+                "  genkey       - Generate new basenodeprivkey\n"
+                "  enforce      - Enforce basenode payments\n"
+                "  outputs      - Print basenode compatible outputs\n"
+                "  start        - Start basenode configured in dash.conf\n"
+                "  start-alias  - Start single basenode by assigned alias configured in basenode.conf\n"
+                "  start-many   - Start all basenodes configured in basenode.conf\n"
+                "  stop         - Stop basenode configured in dash.conf\n"
+                "  stop-alias   - Stop single basenode by assigned alias configured in basenode.conf\n"
+                "  stop-many    - Stop all basenodes configured in basenode.conf\n"
+                "  list         - Print list of all known basenodes (see basenodelist for more info)\n"
+                "  list-conf    - Print basenode.conf in JSON format\n"
+                "  winners      - Print list of basenode winners\n"
                 "  vote-many    - Vote on a BCR initiative\n"
                 "  vote         - Vote on a BCR initiative\n"
                 );
@@ -156,7 +156,7 @@ Value banknode(const Array& params, bool fHelp)
 
     if (strCommand == "stop")
     {
-        if(!fBankNode) return "you must set banknode=1 in the configuration";
+        if(!fBaseNode) return "you must set basenode=1 in the configuration";
 
         if(pwalletMain->IsLocked()) {
             SecureString strWalletPass;
@@ -175,13 +175,13 @@ Value banknode(const Array& params, bool fHelp)
         }
 
         std::string errorMessage;
-        if(!activeBanknode.StopBankNode(errorMessage)) {
+        if(!activeBasenode.StopBaseNode(errorMessage)) {
         	return "stop failed: " + errorMessage;
         }
         pwalletMain->Lock();
 
-        if(activeBanknode.status == BANKNODE_STOPPED) return "successfully stopped banknode";
-        if(activeBanknode.status == BANKNODE_NOT_CAPABLE) return "not capable banknode";
+        if(activeBasenode.status == BASENODE_STOPPED) return "successfully stopped basenode";
+        if(activeBasenode.status == BASENODE_NOT_CAPABLE) return "not capable basenode";
 
         return "unknown";
     }
@@ -216,11 +216,11 @@ Value banknode(const Array& params, bool fHelp)
 		Object statusObj;
 		statusObj.push_back(Pair("alias", alias));
 
-    	BOOST_FOREACH(CBanknodeConfig::CBanknodeEntry mne, banknodeConfig.getEntries()) {
+    	BOOST_FOREACH(CBasenodeConfig::CBasenodeEntry mne, basenodeConfig.getEntries()) {
     		if(mne.getAlias() == alias) {
     			found = true;
     			std::string errorMessage;
-    			bool result = activeBanknode.StopBankNode(mne.getIp(), mne.getPrivKey(), errorMessage);
+    			bool result = activeBasenode.StopBaseNode(mne.getIp(), mne.getPrivKey(), errorMessage);
 
 				statusObj.push_back(Pair("result", result ? "successful" : "failed"));
     			if(!result) {
@@ -264,11 +264,11 @@ Value banknode(const Array& params, bool fHelp)
 
 		Object resultsObj;
 
-		BOOST_FOREACH(CBanknodeConfig::CBanknodeEntry mne, banknodeConfig.getEntries()) {
+		BOOST_FOREACH(CBasenodeConfig::CBasenodeEntry mne, basenodeConfig.getEntries()) {
 			total++;
 
 			std::string errorMessage;
-			bool result = activeBanknode.StopBankNode(mne.getIp(), mne.getPrivKey(), errorMessage);
+			bool result = activeBasenode.StopBaseNode(mne.getIp(), mne.getPrivKey(), errorMessage);
 
 			Object statusObj;
 			statusObj.push_back(Pair("alias", mne.getAlias()));
@@ -286,7 +286,7 @@ Value banknode(const Array& params, bool fHelp)
 		pwalletMain->Lock();
 
 		Object returnObj;
-		returnObj.push_back(Pair("overall", "Successfully stopped " + boost::lexical_cast<std::string>(successful) + " banknodes, failed to stop " +
+		returnObj.push_back(Pair("overall", "Successfully stopped " + boost::lexical_cast<std::string>(successful) + " basenodes, failed to stop " +
 				boost::lexical_cast<std::string>(fail) + ", total " + boost::lexical_cast<std::string>(total)));
 		returnObj.push_back(Pair("detail", resultsObj));
 
@@ -298,7 +298,7 @@ Value banknode(const Array& params, bool fHelp)
     {
         Array newParams(params.size() - 1);
         std::copy(params.begin() + 1, params.end(), newParams.begin());
-        return banknodelist(newParams, fHelp);
+        return basenodelist(newParams, fHelp);
     }
 
     if (strCommand == "count")
@@ -317,7 +317,7 @@ Value banknode(const Array& params, bool fHelp)
 
     if (strCommand == "start")
     {
-        if(!fBankNode) return "you must set banknode=1 in the configuration";
+        if(!fBaseNode) return "you must set basenode=1 in the configuration";
 
         if(pwalletMain->IsLocked()) {
             SecureString strWalletPass;
@@ -335,19 +335,19 @@ Value banknode(const Array& params, bool fHelp)
             }
         }
 
-        if(activeBanknode.status != BANKNODE_REMOTELY_ENABLED && activeBanknode.status != BANKNODE_IS_CAPABLE){
-            activeBanknode.status = BANKNODE_NOT_PROCESSED; // TODO: consider better way
+        if(activeBasenode.status != BASENODE_REMOTELY_ENABLED && activeBasenode.status != BASENODE_IS_CAPABLE){
+            activeBasenode.status = BASENODE_NOT_PROCESSED; // TODO: consider better way
             std::string errorMessage;
-            activeBanknode.ManageStatus();
+            activeBasenode.ManageStatus();
             pwalletMain->Lock();
         }
 
-        if(activeBanknode.status == BANKNODE_REMOTELY_ENABLED) return "banknode started remotely";
-        if(activeBanknode.status == BANKNODE_INPUT_TOO_NEW) return "banknode input must have at least 15 confirmations";
-        if(activeBanknode.status == BANKNODE_STOPPED) return "banknode is stopped";
-        if(activeBanknode.status == BANKNODE_IS_CAPABLE) return "successfully started banknode";
-        if(activeBanknode.status == BANKNODE_NOT_CAPABLE) return "not capable banknode: " + activeBanknode.notCapableReason;
-        if(activeBanknode.status == BANKNODE_SYNC_IN_PROCESS) return "sync in process. Must wait until client is synced to start.";
+        if(activeBasenode.status == BASENODE_REMOTELY_ENABLED) return "basenode started remotely";
+        if(activeBasenode.status == BASENODE_INPUT_TOO_NEW) return "basenode input must have at least 15 confirmations";
+        if(activeBasenode.status == BASENODE_STOPPED) return "basenode is stopped";
+        if(activeBasenode.status == BASENODE_IS_CAPABLE) return "successfully started basenode";
+        if(activeBasenode.status == BASENODE_NOT_CAPABLE) return "not capable basenode: " + activeBasenode.notCapableReason;
+        if(activeBasenode.status == BASENODE_SYNC_IN_PROCESS) return "sync in process. Must wait until client is synced to start.";
 
         return "unknown";
     }
@@ -382,11 +382,11 @@ Value banknode(const Array& params, bool fHelp)
 		Object statusObj;
 		statusObj.push_back(Pair("alias", alias));
 
-    	BOOST_FOREACH(CBanknodeConfig::CBanknodeEntry mne, banknodeConfig.getEntries()) {
+    	BOOST_FOREACH(CBasenodeConfig::CBasenodeEntry mne, basenodeConfig.getEntries()) {
     		if(mne.getAlias() == alias) {
     			found = true;
     			std::string errorMessage;
-    			bool result = activeBanknode.Register(mne.getIp(), mne.getPrivKey(), mne.getTxHash(), mne.getOutputIndex(), errorMessage);
+    			bool result = activeBasenode.Register(mne.getIp(), mne.getPrivKey(), mne.getTxHash(), mne.getOutputIndex(), errorMessage);
 
     			statusObj.push_back(Pair("result", result ? "successful" : "failed"));
     			if(!result) {
@@ -424,8 +424,8 @@ Value banknode(const Array& params, bool fHelp)
 			}
 		}
 
-		std::vector<CBanknodeConfig::CBanknodeEntry> mnEntries;
-		mnEntries = banknodeConfig.getEntries();
+		std::vector<CBasenodeConfig::CBasenodeEntry> mnEntries;
+		mnEntries = basenodeConfig.getEntries();
 
 		int total = 0;
 		int successful = 0;
@@ -433,11 +433,11 @@ Value banknode(const Array& params, bool fHelp)
 
 		Object resultsObj;
 
-		BOOST_FOREACH(CBanknodeConfig::CBanknodeEntry mne, banknodeConfig.getEntries()) {
+		BOOST_FOREACH(CBasenodeConfig::CBasenodeEntry mne, basenodeConfig.getEntries()) {
 			total++;
 
 			std::string errorMessage;
-			bool result = activeBanknode.Register(mne.getIp(), mne.getPrivKey(), mne.getTxHash(), mne.getOutputIndex(), errorMessage);
+			bool result = activeBasenode.Register(mne.getIp(), mne.getPrivKey(), mne.getTxHash(), mne.getOutputIndex(), errorMessage);
 
 			Object statusObj;
 			statusObj.push_back(Pair("alias", mne.getAlias()));
@@ -455,7 +455,7 @@ Value banknode(const Array& params, bool fHelp)
 		pwalletMain->Lock();
 
 		Object returnObj;
-		returnObj.push_back(Pair("overall", "Successfully started " + boost::lexical_cast<std::string>(successful) + " banknodes, failed to start " +
+		returnObj.push_back(Pair("overall", "Successfully started " + boost::lexical_cast<std::string>(successful) + " basenodes, failed to start " +
 				boost::lexical_cast<std::string>(fail) + ", total " + boost::lexical_cast<std::string>(total)));
 		returnObj.push_back(Pair("detail", resultsObj));
 
@@ -464,19 +464,19 @@ Value banknode(const Array& params, bool fHelp)
 
     if (strCommand == "debug")
     {
-        if(activeBanknode.status == BANKNODE_REMOTELY_ENABLED) return "banknode started remotely";
-        if(activeBanknode.status == BANKNODE_INPUT_TOO_NEW) return "banknode input must have at least 15 confirmations";
-        if(activeBanknode.status == BANKNODE_IS_CAPABLE) return "successfully started banknode";
-        if(activeBanknode.status == BANKNODE_STOPPED) return "banknode is stopped";
-        if(activeBanknode.status == BANKNODE_NOT_CAPABLE) return "not capable banknode: " + activeBanknode.notCapableReason;
-        if(activeBanknode.status == BANKNODE_SYNC_IN_PROCESS) return "sync in process. Must wait until client is synced to start.";
+        if(activeBasenode.status == BASENODE_REMOTELY_ENABLED) return "basenode started remotely";
+        if(activeBasenode.status == BASENODE_INPUT_TOO_NEW) return "basenode input must have at least 15 confirmations";
+        if(activeBasenode.status == BASENODE_IS_CAPABLE) return "successfully started basenode";
+        if(activeBasenode.status == BASENODE_STOPPED) return "basenode is stopped";
+        if(activeBasenode.status == BASENODE_NOT_CAPABLE) return "not capable basenode: " + activeBasenode.notCapableReason;
+        if(activeBasenode.status == BASENODE_SYNC_IN_PROCESS) return "sync in process. Must wait until client is synced to start.";
 
         CTxIn vin = CTxIn();
         CPubKey pubkey = CScript();
         CKey key;
-        bool found = activeBanknode.GetBankNodeVin(vin, pubkey, key);
+        bool found = activeBasenode.GetBaseNodeVin(vin, pubkey, key);
         if(!found){
-            return "Missing banknode input, please look at the documentation for instructions on banknode creation";
+            return "Missing basenode input, please look at the documentation for instructions on basenode creation";
         } else {
             return "No problems were found";
         }
@@ -485,12 +485,12 @@ Value banknode(const Array& params, bool fHelp)
     if (strCommand == "create")
     {
 
-        return "Not implemented yet, please look at the documentation for instructions on banknode creation";
+        return "Not implemented yet, please look at the documentation for instructions on basenode creation";
     }
 
     if (strCommand == "current")
     {
-        CBanknode* winner = mnodeman.GetCurrentBankNode(1);
+        CBasenode* winner = mnodeman.GetCurrentBaseNode(1);
         if(winner) {
             Object obj;
             CScript pubkey;
@@ -526,7 +526,7 @@ Value banknode(const Array& params, bool fHelp)
         for(int nHeight = chainActive.Tip()->nHeight-10; nHeight < chainActive.Tip()->nHeight+20; nHeight++)
         {
             CScript payee;
-            if(banknodePayments.GetBlockPayee(nHeight, payee)){
+            if(basenodePayments.GetBlockPayee(nHeight, payee)){
                 CTxDestination address1;
                 ExtractDestination(payee, address1);
                 CBitcreditAddress address2(address1);
@@ -541,7 +541,7 @@ Value banknode(const Array& params, bool fHelp)
 
     if(strCommand == "enforce")
     {
-        return (uint64_t)enforceBanknodePaymentsTime;
+        return (uint64_t)enforceBasenodePaymentsTime;
     }
 
     if(strCommand == "connect")
@@ -551,7 +551,7 @@ Value banknode(const Array& params, bool fHelp)
             strAddress = params[1].get_str().c_str();
         } else {
             throw runtime_error(
-                "Banknode address required\n");
+                "Basenode address required\n");
         }
 
         CService addr = CService(strAddress);
@@ -565,19 +565,19 @@ Value banknode(const Array& params, bool fHelp)
 
     if(strCommand == "list-conf")
     {
-    	std::vector<CBanknodeConfig::CBanknodeEntry> mnEntries;
-    	mnEntries = banknodeConfig.getEntries();
+    	std::vector<CBasenodeConfig::CBasenodeEntry> mnEntries;
+    	mnEntries = basenodeConfig.getEntries();
 
         Object resultObj;
 
-        BOOST_FOREACH(CBanknodeConfig::CBanknodeEntry mne, banknodeConfig.getEntries()) {
+        BOOST_FOREACH(CBasenodeConfig::CBasenodeEntry mne, basenodeConfig.getEntries()) {
     		Object mnObj;
     		mnObj.push_back(Pair("alias", mne.getAlias()));
     		mnObj.push_back(Pair("address", mne.getIp()));
     		mnObj.push_back(Pair("privateKey", mne.getPrivKey()));
     		mnObj.push_back(Pair("txHash", mne.getTxHash()));
     		mnObj.push_back(Pair("outputIndex", mne.getOutputIndex()));
-    		resultObj.push_back(Pair("banknode", mnObj));
+    		resultObj.push_back(Pair("basenode", mnObj));
     	}
 
         return resultObj;
@@ -585,7 +585,7 @@ Value banknode(const Array& params, bool fHelp)
 
     if (strCommand == "outputs"){
         // Find possible candidates
-        vector<COutput> possibleCoins = activeBanknode.SelectCoinsBanknode();
+        vector<COutput> possibleCoins = activeBasenode.SelectCoinsBasenode();
 
         Object obj;
         BOOST_FOREACH(COutput& out, possibleCoins) {
@@ -598,8 +598,8 @@ Value banknode(const Array& params, bool fHelp)
 
     if(strCommand == "vote-many")
     {
-        std::vector<CBanknodeConfig::CBanknodeEntry> mnEntries;
-        mnEntries = banknodeConfig.getEntries();
+        std::vector<CBasenodeConfig::CBasenodeEntry> mnEntries;
+        mnEntries = basenodeConfig.getEntries();
 
         if (params.size() != 2)
             throw runtime_error("You can only vote 'yea' or 'nay'");
@@ -616,39 +616,39 @@ Value banknode(const Array& params, bool fHelp)
 
         Object resultObj;
 
-        BOOST_FOREACH(CBanknodeConfig::CBanknodeEntry mne, banknodeConfig.getEntries()) {
+        BOOST_FOREACH(CBasenodeConfig::CBasenodeEntry mne, basenodeConfig.getEntries()) {
             std::string errorMessage;
-            std::vector<unsigned char> vchBankNodeSignature;
-            std::string strBankNodeSignMessage;
+            std::vector<unsigned char> vchBaseNodeSignature;
+            std::string strBaseNodeSignMessage;
 
             CPubKey pubKeyCollateralAddress;
             CKey keyCollateralAddress;
-            CPubKey pubKeyBanknode;
-            CKey keyBanknode;
+            CPubKey pubKeyBasenode;
+            CKey keyBasenode;
 
-            if(!darkSendSigner.SetKey(mne.getPrivKey(), errorMessage, keyBanknode, pubKeyBanknode)){
+            if(!darkSendSigner.SetKey(mne.getPrivKey(), errorMessage, keyBasenode, pubKeyBasenode)){
                 printf(" Error upon calling SetKey for %s\n", mne.getAlias().c_str());
                 failed++;
                 continue;
             }
 
-            CBanknode* pmn = mnodeman.Find(pubKeyBanknode);
+            CBasenode* pmn = mnodeman.Find(pubKeyBasenode);
             if(pmn == NULL)
             {
-                printf("Can't find banknode by pubkey for %s\n", mne.getAlias().c_str());
+                printf("Can't find basenode by pubkey for %s\n", mne.getAlias().c_str());
                 failed++;
                 continue;
             }
 
             std::string strMessage = pmn->vin.ToString() + boost::lexical_cast<std::string>(nVote);
 
-            if(!darkSendSigner.SignMessage(strMessage, errorMessage, vchBankNodeSignature, keyBanknode)){
+            if(!darkSendSigner.SignMessage(strMessage, errorMessage, vchBaseNodeSignature, keyBasenode)){
                 printf(" Error upon calling SignMessage for %s\n", mne.getAlias().c_str());
                 failed++;
                 continue;
             }
 
-            if(!darkSendSigner.VerifyMessage(pubKeyBanknode, vchBankNodeSignature, strMessage, errorMessage)){
+            if(!darkSendSigner.VerifyMessage(pubKeyBasenode, vchBaseNodeSignature, strMessage, errorMessage)){
                 printf(" Error upon calling VerifyMessage for %s\n", mne.getAlias().c_str());
                 failed++;
                 continue;
@@ -659,7 +659,7 @@ Value banknode(const Array& params, bool fHelp)
             //send to all peers
             LOCK(cs_vNodes);
             BOOST_FOREACH(CNode* pnode, vNodes)
-                pnode->PushMessage("mvote", pmn->vin, vchBankNodeSignature, nVote);
+                pnode->PushMessage("mvote", pmn->vin, vchBaseNodeSignature, nVote);
         }
 
         return("Voted successfully " + boost::lexical_cast<std::string>(success) + " time(s) and failed " + boost::lexical_cast<std::string>(failed) + " time(s).");
@@ -667,8 +667,8 @@ Value banknode(const Array& params, bool fHelp)
 
     if(strCommand == "vote")
     {
-        std::vector<CBanknodeConfig::CBanknodeEntry> mnEntries;
-        mnEntries = banknodeConfig.getEntries();
+        std::vector<CBasenodeConfig::CBasenodeEntry> mnEntries;
+        mnEntries = basenodeConfig.getEntries();
 
         if (params.size() != 2)
             throw runtime_error("You can only vote 'yea' or 'nay'");
@@ -682,33 +682,33 @@ Value banknode(const Array& params, bool fHelp)
         // Choose coins to use
         CPubKey pubKeyCollateralAddress;
         CKey keyCollateralAddress;
-        CPubKey pubKeyBanknode;
-        CKey keyBanknode;
+        CPubKey pubKeyBasenode;
+        CKey keyBasenode;
 
         std::string errorMessage;
-        std::vector<unsigned char> vchBankNodeSignature;
-        std::string strMessage = activeBanknode.vin.ToString() + boost::lexical_cast<std::string>(nVote);
+        std::vector<unsigned char> vchBaseNodeSignature;
+        std::string strMessage = activeBasenode.vin.ToString() + boost::lexical_cast<std::string>(nVote);
 
-        if(!darkSendSigner.SetKey(strBankNodePrivKey, errorMessage, keyBanknode, pubKeyBanknode))
+        if(!darkSendSigner.SetKey(strBaseNodePrivKey, errorMessage, keyBasenode, pubKeyBasenode))
             return(" Error upon calling SetKey");
 
-        if(!darkSendSigner.SignMessage(strMessage, errorMessage, vchBankNodeSignature, keyBanknode))
+        if(!darkSendSigner.SignMessage(strMessage, errorMessage, vchBaseNodeSignature, keyBasenode))
             return(" Error upon calling SignMessage");
 
-        if(!darkSendSigner.VerifyMessage(pubKeyBanknode, vchBankNodeSignature, strMessage, errorMessage))
+        if(!darkSendSigner.VerifyMessage(pubKeyBasenode, vchBaseNodeSignature, strMessage, errorMessage))
             return(" Error upon calling VerifyMessage");
 
         //send to all peers
         LOCK(cs_vNodes);
         BOOST_FOREACH(CNode* pnode, vNodes)
-            pnode->PushMessage("mvote", activeBanknode.vin, vchBankNodeSignature, nVote);
+            pnode->PushMessage("mvote", activeBasenode.vin, vchBaseNodeSignature, nVote);
 
     }
 
     return Value::null;
 }
 
-Value banknodelist(const Array& params, bool fHelp)
+Value basenodelist(const Array& params, bool fHelp)
 {
     std::string strMode = "status";
     std::string strFilter = "";
@@ -721,37 +721,37 @@ Value banknodelist(const Array& params, bool fHelp)
                 && strMode != "protocol" && strMode != "full" && strMode != "votes" && strMode != "donation" && strMode != "pose"))
     {
         throw runtime_error(
-                "banknodelist ( \"mode\" \"filter\" )\n"
-                "Get a list of banknodes in different modes\n"
+                "basenodelist ( \"mode\" \"filter\" )\n"
+                "Get a list of basenodes in different modes\n"
                 "\nArguments:\n"
                 "1. \"mode\"      (string, optional/required to use filter, defaults = status) The mode to run list in\n"
                 "2. \"filter\"    (string, optional) Filter results. Partial match by IP by default in all modes, additional matches in some modes\n"
                 "\nAvailable modes:\n"
-                "  activeseconds  - Print number of seconds banknode recognized by the network as enabled\n"
+                "  activeseconds  - Print number of seconds basenode recognized by the network as enabled\n"
                 "  donation       - Show donation settings\n"
                 "  full           - Print info in format 'status protocol pubkey vin lastseen activeseconds' (can be additionally filtered, partial match)\n"
-                "  lastseen       - Print timestamp of when a banknode was last seen on the network\n"
+                "  lastseen       - Print timestamp of when a basenode was last seen on the network\n"
                 "  pose           - Print Proof-of-Service score\n"
-                "  protocol       - Print protocol of a banknode (can be additionally filtered, exact match))\n"
-                "  pubkey         - Print public key associated with a banknode (can be additionally filtered, partial match)\n"
-                "  rank           - Print rank of a banknode based on current block\n"
-                "  status         - Print banknode status: ENABLED / EXPIRED / VIN_SPENT / REMOVE / POS_ERROR (can be additionally filtered, partial match)\n"
-                "  vin            - Print vin associated with a banknode (can be additionally filtered, partial match)\n"
-                "  votes          - Print all banknode votes for a Dash initiative (can be additionally filtered, partial match)\n"
+                "  protocol       - Print protocol of a basenode (can be additionally filtered, exact match))\n"
+                "  pubkey         - Print public key associated with a basenode (can be additionally filtered, partial match)\n"
+                "  rank           - Print rank of a basenode based on current block\n"
+                "  status         - Print basenode status: ENABLED / EXPIRED / VIN_SPENT / REMOVE / POS_ERROR (can be additionally filtered, partial match)\n"
+                "  vin            - Print vin associated with a basenode (can be additionally filtered, partial match)\n"
+                "  votes          - Print all basenode votes for a Dash initiative (can be additionally filtered, partial match)\n"
                 );
     }
 
     Object obj;
     if (strMode == "rank") {
-        std::vector<pair<int, CBanknode> > vBanknodeRanks = mnodeman.GetBanknodeRanks(chainActive.Tip()->nHeight);
-        BOOST_FOREACH(PAIRTYPE(int, CBanknode)& s, vBanknodeRanks) {
+        std::vector<pair<int, CBasenode> > vBasenodeRanks = mnodeman.GetBasenodeRanks(chainActive.Tip()->nHeight);
+        BOOST_FOREACH(PAIRTYPE(int, CBasenode)& s, vBasenodeRanks) {
             std::string strAddr = s.second.addr.ToString();
             if(strFilter !="" && strAddr.find(strFilter) == string::npos) continue;
             obj.push_back(Pair(strAddr,       s.first));
         }
     } else {
-        std::vector<CBanknode> vBanknodes = mnodeman.GetFullBanknodeVector();
-        BOOST_FOREACH(CBanknode& mn, vBanknodes) {
+        std::vector<CBasenode> vBasenodes = mnodeman.GetFullBasenodeVector();
+        BOOST_FOREACH(CBasenode& mn, vBasenodes) {
             std::string strAddr = mn.addr.ToString();
             if (strMode == "activeseconds") {
                 if(strFilter !="" && strAddr.find(strFilter) == string::npos) continue;

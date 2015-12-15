@@ -8,9 +8,9 @@
 #include "adrenalinenodeconfigdialog.h"
 
 #include "walletmodel.h"
-#include "activebanknode.h"
-#include "banknodeconfig.h"
-#include "banknodeman.h"
+#include "activebasenode.h"
+#include "basenodeconfig.h"
+#include "basenodeman.h"
 #include "walletdb.h"
 #include "wallet.h"
 #include "clientmodel.h"
@@ -27,7 +27,7 @@
 #include "chainparams.h"
 #include "rpcserver.h"
 #include "rpcclient.h"
-#include "banknode.h"
+#include "basenode.h"
 
 #include <boost/filesystem.hpp>
 
@@ -286,7 +286,7 @@ RPCConsole::RPCConsole(QWidget *parent) :
     
     BOOST_FOREACH(PAIRTYPE(std::string, CAdrenalineNodeConfig) adrenaline, pwalletMain->mapMyAdrenalineNodes)
     {
-        updateAdrenalineNode(QString::fromStdString(adrenaline.second.sAlias), QString::fromStdString(adrenaline.second.sAddress), QString::fromStdString(adrenaline.second.sBanknodePrivKey), QString::fromStdString(adrenaline.second.sCollateralAddress));
+        updateAdrenalineNode(QString::fromStdString(adrenaline.second.sAlias), QString::fromStdString(adrenaline.second.sAddress), QString::fromStdString(adrenaline.second.sBasenodePrivKey), QString::fromStdString(adrenaline.second.sCollateralAddress));
     }*/
 
     updateNodeList();
@@ -349,8 +349,8 @@ void RPCConsole::setClientModel(ClientModel *model)
         setNumBlocks(model->getNumBlocks());
         connect(model, SIGNAL(numBlocksChanged(int)), this, SLOT(setNumBlocks(int)));
 
-        setBanknodeCount(model->getBanknodeCountString());
-        connect(model, SIGNAL(strBanknodesChanged(QString)), this, SLOT(setBanknodeCount(QString)));
+        setBasenodeCount(model->getBasenodeCountString());
+        connect(model, SIGNAL(strBasenodesChanged(QString)), this, SLOT(setBasenodeCount(QString)));
 
         updateTrafficStats(model->getTotalBytesRecv(), model->getTotalBytesSent());
         connect(model, SIGNAL(bytesChanged(quint64,quint64)), this, SLOT(updateTrafficStats(quint64, quint64)));
@@ -467,9 +467,9 @@ void RPCConsole::setNumBlocks(int count)
         ui->lastBlockTime->setText(clientModel->getLastBlockDate().toString());
 }
 
-void RPCConsole::setBanknodeCount(const QString &strBanknodes)
+void RPCConsole::setBasenodeCount(const QString &strBasenodes)
 {
-    ui->banknodeCount->setText(strBanknodes);
+    ui->basenodeCount->setText(strBasenodes);
 }
 
 void RPCConsole::on_lineEdit_returnPressed()
@@ -727,7 +727,7 @@ static void NotifyAdrenalineNodeUpdated(RPCConsole *page, CAdrenalineNodeConfig 
     // alias, address, privkey, collateral address
     QString alias = QString::fromStdString(nodeConfig.sAlias);
     QString addr = QString::fromStdString(nodeConfig.sAddress);
-    QString privkey = QString::fromStdString(nodeConfig.sBanknodePrivKey);
+    QString privkey = QString::fromStdString(nodeConfig.sBasenodePrivKey);
     QString collateral = QString::fromStdString(nodeConfig.sCollateralAddress);
     
     QMetaObject::invokeMethod(page, "updateAdrenalineNode", Qt::QueuedConnection,
@@ -809,14 +809,14 @@ static QString seconds_to_DHMS(quint32 duration)
 
 void RPCConsole::updateNodeList()
 {
-    TRY_LOCK(cs_banknodepayments, lockBanknodes);
-    if(!lockBanknodes)
+    TRY_LOCK(cs_basenodepayments, lockBasenodes);
+    if(!lockBasenodes)
         return;
 
     ui->countLabel->setText("Updating...");
     ui->tableWidget->clearContents();
     ui->tableWidget->setRowCount(0);
-    BOOST_FOREACH(CBanknode mn, mnodeman.vBanknodes) 
+    BOOST_FOREACH(CBasenode mn, mnodeman.vBasenodes) 
     {
         int mnRow = 0;
         ui->tableWidget->insertRow(0);
@@ -825,7 +825,7 @@ void RPCConsole::updateNodeList()
 	// Address, Rank, Active, Active Seconds, Last Seen, Pub Key
 	QTableWidgetItem *activeItem = new QTableWidgetItem(QString::number(mn.IsEnabled()));
 	QTableWidgetItem *addressItem = new QTableWidgetItem(QString::fromStdString(mn.addr.ToString()));
-	QTableWidgetItem *rankItem = new QTableWidgetItem(QString::number(mnodeman.GetBanknodeRank(mn.vin, chainActive.Tip()->nHeight)));
+	QTableWidgetItem *rankItem = new QTableWidgetItem(QString::number(mnodeman.GetBasenodeRank(mn.vin, chainActive.Tip()->nHeight)));
 	QTableWidgetItem *activeSecondsItem = new QTableWidgetItem(seconds_to_DHMS((qint64)(mn.lastTimeSeen - mn.sigTime)));
 	QTableWidgetItem *lastSeenItem = new QTableWidgetItem(seconds_to_DHMS((qint64)(GetTime()-mn.lastTimeSeen)));
 
@@ -846,9 +846,9 @@ void RPCConsole::updateNodeList()
     }
 
     
-    // get default datadir and set path to mybanknodes.txt
+    // get default datadir and set path to mybasenodes.txt
     QString dataDir = getDefaultDataDirectory();
-    QString path = QDir(dataDir).filePath("mybanknodes.txt");
+    QString path = QDir(dataDir).filePath("mybasenodes.txt");
         
     theme = GetArg("-theme", "");
     themestring = QString::fromUtf8(theme.c_str());  
@@ -997,7 +997,7 @@ void RPCConsole::on_getConfigButton_clicked()
     int r = index.row();
     std::string sAddress = ui->tableWidget_2->item(r, 1)->text().toStdString();
     CAdrenalineNodeConfig c = pwalletMain->mapMyAdrenalineNodes[sAddress];
-    std::string sPrivKey = c.sBanknodePrivKey;
+    std::string sPrivKey = c.sBasenodePrivKey;
     AdrenalineNodeConfigDialog* d = new AdrenalineNodeConfigDialog(this, QString::fromStdString(sAddress), QString::fromStdString(sPrivKey));
     d->exec();
 }
@@ -1010,7 +1010,7 @@ void RPCConsole::on_removeButton_clicked()
         return;
 
     QMessageBox::StandardButton confirm;
-    confirm = QMessageBox::question(this, "Delete Banknode?", "Are you sure you want to delete this Banknode configuration?", QMessageBox::Yes|QMessageBox::No);
+    confirm = QMessageBox::question(this, "Delete Basenode?", "Are you sure you want to delete this Basenode configuration?", QMessageBox::Yes|QMessageBox::No);
 
     if(confirm == QMessageBox::Yes)
     {
@@ -1025,7 +1025,7 @@ void RPCConsole::on_removeButton_clicked()
         ui->tableWidget_2->setRowCount(0);
         BOOST_FOREACH(PAIRTYPE(std::string, CAdrenalineNodeConfig) adrenaline, pwalletMain->mapMyAdrenalineNodes)
         {
-            updateAdrenalineNode(QString::fromStdString(adrenaline.second.sAlias), QString::fromStdString(adrenaline.second.sAddress), QString::fromStdString(adrenaline.second.sBanknodePrivKey), QString::fromStdString(adrenaline.second.sCollateralAddress));
+            updateAdrenalineNode(QString::fromStdString(adrenaline.second.sAlias), QString::fromStdString(adrenaline.second.sAddress), QString::fromStdString(adrenaline.second.sBasenodePrivKey), QString::fromStdString(adrenaline.second.sCollateralAddress));
         }
     }
 }
@@ -1044,11 +1044,11 @@ void RPCConsole::on_startButton_clicked()
     CAdrenalineNodeConfig c = pwalletMain->mapMyAdrenalineNodes[sAddress];
 
     std::string errorMessage;
-    bool result = activeBanknode.RegisterByPubKey(c.sAddress, c.sBanknodePrivKey, c.sCollateralAddress, errorMessage);
+    bool result = activeBasenode.RegisterByPubKey(c.sAddress, c.sBasenodePrivKey, c.sCollateralAddress, errorMessage);
 
     QMessageBox msg;
     if(result)
-        msg.setText("Banknode at " + QString::fromStdString(c.sAddress) + " started.");
+        msg.setText("Basenode at " + QString::fromStdString(c.sAddress) + " started.");
     else
         msg.setText("Error: " + QString::fromStdString(errorMessage));
 
@@ -1069,11 +1069,11 @@ void RPCConsole::on_stopButton_clicked()
     CAdrenalineNodeConfig c = pwalletMain->mapMyAdrenalineNodes[sAddress];
 
     std::string errorMessage;
-    bool result = activeBanknode.StopBankNode(c.sAddress, c.sBanknodePrivKey, errorMessage);
+    bool result = activeBasenode.StopBaseNode(c.sAddress, c.sBasenodePrivKey, errorMessage);
     QMessageBox msg;
     if(result)
     {
-        msg.setText("Banknode at " + QString::fromStdString(c.sAddress) + " stopped.");
+        msg.setText("Basenode at " + QString::fromStdString(c.sAddress) + " stopped.");
     }
     else
     {
@@ -1089,7 +1089,7 @@ void RPCConsole::on_startAllButton_clicked()
     {
         CAdrenalineNodeConfig c = adrenaline.second;
 	std::string errorMessage;
-        bool result = activeBanknode.RegisterByPubKey(c.sAddress, c.sBanknodePrivKey, c.sCollateralAddress, errorMessage);
+        bool result = activeBasenode.RegisterByPubKey(c.sAddress, c.sBasenodePrivKey, c.sCollateralAddress, errorMessage);
 	if(result)
 	{
    	    results += c.sAddress + ": STARTED\n";
@@ -1112,7 +1112,7 @@ void RPCConsole::on_stopAllButton_clicked()
     {
         CAdrenalineNodeConfig c = adrenaline.second;
 	std::string errorMessage;
-        bool result = activeBanknode.StopBankNode(c.sAddress, c.sBanknodePrivKey, errorMessage);
+        bool result = activeBasenode.StopBaseNode(c.sAddress, c.sBasenodePrivKey, errorMessage);
 	if(result)
 	{
    	    results += c.sAddress + ": STOPPED\n";

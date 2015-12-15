@@ -9,8 +9,8 @@
 #include "base58.h"
 #include "protocol.h"
 #include "instantx.h"
-#include "activebanknode.h"
-#include "banknodeman.h"
+#include "activebasenode.h"
+#include "basenodeman.h"
 #include "darksend.h"
 #include "spork.h"
 #include <boost/lexical_cast.hpp>
@@ -29,12 +29,12 @@ int nCompleteTXLocks;
 //txlock - Locks transaction
 //
 //step 1.) Broadcast intention to lock transaction inputs, "txlreg", CTransaction
-//step 2.) Top 10 banknodes, open connect to top 1 banknode. Send "txvote", CTransaction, Signature, Approve
-//step 3.) Top 1 banknode, waits for 10 messages. Upon success, sends "txlock'
+//step 2.) Top 10 basenodes, open connect to top 1 basenode. Send "txvote", CTransaction, Signature, Approve
+//step 3.) Top 1 basenode, waits for 10 messages. Upon success, sends "txlock'
 
 void ProcessMessageInstantX(CNode* pfrom, std::string& strCommand, CDataStream& vRecv)
 {
-    if(fLiteMode) return; //disable all darksend/banknode related functionality
+    if(fLiteMode) return; //disable all darksend/basenode related functionality
 
 
     if (strCommand == "txlreq")
@@ -138,24 +138,24 @@ void ProcessMessageInstantX(CNode* pfrom, std::string& strCommand, CDataStream& 
         if(ProcessConsensusVote(ctx)){
             //Spam/Dos protection
             /*
-                Banknodes will sometimes propagate votes before the transaction is known to the client.
+                Basenodes will sometimes propagate votes before the transaction is known to the client.
                 This tracks those messages and allows it at the same rate of the rest of the network, if
                 a peer violates it, it will simply be ignored
             */
             if(!mapTxLockReq.count(ctx.txHash) && !mapTxLockReqRejected.count(ctx.txHash)){
-                if(!mapUnknownVotes.count(ctx.vinBanknode.prevout.hash)){
-                    mapUnknownVotes[ctx.vinBanknode.prevout.hash] = GetTime()+(60*10);
+                if(!mapUnknownVotes.count(ctx.vinBasenode.prevout.hash)){
+                    mapUnknownVotes[ctx.vinBasenode.prevout.hash] = GetTime()+(60*10);
                 }
 
-                if(mapUnknownVotes[ctx.vinBanknode.prevout.hash] > GetTime() &&
-                    mapUnknownVotes[ctx.vinBanknode.prevout.hash] - GetAverageVoteTime() > 60*10){
-                        LogPrintf("ProcessMessageInstantX::txlreq - banknode is spamming transaction votes: %s %s\n",
-                            ctx.vinBanknode.ToString().c_str(),
+                if(mapUnknownVotes[ctx.vinBasenode.prevout.hash] > GetTime() &&
+                    mapUnknownVotes[ctx.vinBasenode.prevout.hash] - GetAverageVoteTime() > 60*10){
+                        LogPrintf("ProcessMessageInstantX::txlreq - basenode is spamming transaction votes: %s %s\n",
+                            ctx.vinBasenode.ToString().c_str(),
                             ctx.txHash.ToString().c_str()
                         );
                         return;
                 } else {
-                    mapUnknownVotes[ctx.vinBanknode.prevout.hash] = GetTime()+(60*10);
+                    mapUnknownVotes[ctx.vinBasenode.prevout.hash] = GetTime()+(60*10);
                 }
             }
             vector<CInv> vInv;
@@ -231,7 +231,7 @@ int64_t CreateNewLock(CTransaction tx)
 
     /*
         Use a blockheight newer than the input.
-        This prevents attackers from using transaction mallibility to predict which banknodes
+        This prevents attackers from using transaction mallibility to predict which basenodes
         they'll use.
     */
     int nBlockHeight = (chainActive.Tip()->nHeight - nTxAge)+4;
@@ -258,19 +258,19 @@ int64_t CreateNewLock(CTransaction tx)
 // check if we need to vote on this transaction
 void DoConsensusVote(CTransaction& tx, int64_t nBlockHeight)
 {
-    if(!fBankNode) return;
+    if(!fBaseNode) return;
 
-    int n = mnodeman.GetBanknodeRank(activeBanknode.vin, nBlockHeight, MIN_INSTANTX_PROTO_VERSION);
+    int n = mnodeman.GetBasenodeRank(activeBasenode.vin, nBlockHeight, MIN_INSTANTX_PROTO_VERSION);
 
     if(n == -1)
     {
-        if(fDebug) LogPrintf("InstantX::DoConsensusVote - Unknown Banknode\n");
+        if(fDebug) LogPrintf("InstantX::DoConsensusVote - Unknown Basenode\n");
         return;
     }
 
     if(n > INSTANTX_SIGNATURES_TOTAL)
     {
-        if(fDebug) LogPrintf("InstantX::DoConsensusVote - Banknode not in the top %d (%d)\n", INSTANTX_SIGNATURES_TOTAL, n);
+        if(fDebug) LogPrintf("InstantX::DoConsensusVote - Basenode not in the top %d (%d)\n", INSTANTX_SIGNATURES_TOTAL, n);
         return;
     }
     /*
@@ -280,7 +280,7 @@ void DoConsensusVote(CTransaction& tx, int64_t nBlockHeight)
     if(fDebug) LogPrintf("InstantX::DoConsensusVote - In the top %d (%d)\n", INSTANTX_SIGNATURES_TOTAL, n);
 
     CConsensusVote ctx;
-    ctx.vinBanknode = activeBanknode.vin;
+    ctx.vinBasenode = activeBasenode.vin;
     ctx.txHash = tx.GetHash();
     ctx.nBlockHeight = nBlockHeight;
     if(!ctx.Sign()){
@@ -308,30 +308,30 @@ void DoConsensusVote(CTransaction& tx, int64_t nBlockHeight)
 //received a consensus vote
 bool ProcessConsensusVote(CConsensusVote& ctx)
 {
-    int n = mnodeman.GetBanknodeRank(ctx.vinBanknode, ctx.nBlockHeight, MIN_INSTANTX_PROTO_VERSION);
+    int n = mnodeman.GetBasenodeRank(ctx.vinBasenode, ctx.nBlockHeight, MIN_INSTANTX_PROTO_VERSION);
 
-    CBanknode* pmn = mnodeman.Find(ctx.vinBanknode);
+    CBasenode* pmn = mnodeman.Find(ctx.vinBasenode);
     if(pmn != NULL)
     {
-        if(fDebug) LogPrintf("InstantX::ProcessConsensusVote - Banknode ADDR %s %d\n", pmn->addr.ToString().c_str(), n);
+        if(fDebug) LogPrintf("InstantX::ProcessConsensusVote - Basenode ADDR %s %d\n", pmn->addr.ToString().c_str(), n);
     }
 
     if(n == -1)
     {
         //can be caused by past versions trying to vote with an invalid protocol
-        if(fDebug) LogPrintf("InstantX::ProcessConsensusVote - Unknown Banknode\n");
+        if(fDebug) LogPrintf("InstantX::ProcessConsensusVote - Unknown Basenode\n");
         return false;
     }
 
     if(n > INSTANTX_SIGNATURES_TOTAL)
     {
-        if(fDebug) LogPrintf("InstantX::ProcessConsensusVote - Banknode not in the top %d (%d) - %s\n", INSTANTX_SIGNATURES_TOTAL, n, ctx.GetHash().ToString().c_str());
+        if(fDebug) LogPrintf("InstantX::ProcessConsensusVote - Basenode not in the top %d (%d) - %s\n", INSTANTX_SIGNATURES_TOTAL, n, ctx.GetHash().ToString().c_str());
         return false;
     }
 
     if(!ctx.SignatureValid()) {
         LogPrintf("InstantX::ProcessConsensusVote - Signature invalid\n");
-        //don't ban, it could just be a non-synced banknode
+        //don't ban, it could just be a non-synced basenode
         return false;
     }
 
@@ -449,23 +449,23 @@ void CleanTransactionLocksList()
         if(GetTime() > it->second.nExpiration){ //keep them for an hour
             LogPrintf("Removing old transaction lock %s\n", it->second.txHash.ToString().c_str());
 
-            // loop through banknodes that responded
+            // loop through basenodes that responded
             for(int nRank = 0; nRank <= INSTANTX_SIGNATURES_TOTAL; nRank++)
             {
-                CBanknode* pmn = mnodeman.GetBanknodeByRank(nRank, it->second.nBlockHeight, MIN_INSTANTX_PROTO_VERSION);
+                CBasenode* pmn = mnodeman.GetBasenodeByRank(nRank, it->second.nBlockHeight, MIN_INSTANTX_PROTO_VERSION);
                 if(!pmn) continue;
 
                 bool fFound = false;
                 BOOST_FOREACH(CConsensusVote& v, it->second.vecConsensusVotes)
                 {
-                    if(pmn->vin == v.vinBanknode){ //Banknode responded
+                    if(pmn->vin == v.vinBasenode){ //Basenode responded
                         fFound = true;
                     }
                 }
 
                 if(!fFound){
                     //increment a scanning error
-                    CBanknodeScanningError mnse(pmn->vin, SCANNING_ERROR_IX_NO_RESPONSE, it->second.nBlockHeight);
+                    CBasenodeScanningError mnse(pmn->vin, SCANNING_ERROR_IX_NO_RESPONSE, it->second.nBlockHeight);
                     pmn->ApplyScanningError(mnse);
                 }
             }
@@ -493,7 +493,7 @@ void CleanTransactionLocksList()
 
 uint256 CConsensusVote::GetHash() const
 {
-    return vinBanknode.prevout.hash + vinBanknode.prevout.n + txHash;
+    return vinBasenode.prevout.hash + vinBasenode.prevout.n + txHash;
 }
 
 
@@ -503,17 +503,17 @@ bool CConsensusVote::SignatureValid()
     std::string strMessage = txHash.ToString().c_str() + boost::lexical_cast<std::string>(nBlockHeight);
     //LogPrintf("verify strMessage %s \n", strMessage.c_str());
 
-    CBanknode* pmn = mnodeman.Find(vinBanknode);
+    CBasenode* pmn = mnodeman.Find(vinBasenode);
 
     if(pmn == NULL)
     {
-        LogPrintf("InstantX::CConsensusVote::SignatureValid() - Unknown Banknode\n");
+        LogPrintf("InstantX::CConsensusVote::SignatureValid() - Unknown Basenode\n");
         return false;
     }
 
-    //LogPrintf("verify addr %s \n", vecBanknodes[0].addr.ToString().c_str());
-    //LogPrintf("verify addr %s \n", vecBanknodes[1].addr.ToString().c_str());
-    //LogPrintf("verify addr %d %s \n", n, vecBanknodes[n].addr.ToString().c_str());
+    //LogPrintf("verify addr %s \n", vecBasenodes[0].addr.ToString().c_str());
+    //LogPrintf("verify addr %s \n", vecBasenodes[1].addr.ToString().c_str());
+    //LogPrintf("verify addr %d %s \n", n, vecBasenodes[n].addr.ToString().c_str());
 
     CScript pubkey;
     pubkey =GetScriptForDestination(pmn->pubkey2.GetID());
@@ -522,7 +522,7 @@ bool CConsensusVote::SignatureValid()
     CBitcreditAddress address2(address1);
     //LogPrintf("verify pubkey2 %s \n", address2.ToString().c_str());
 
-    if(!darkSendSigner.VerifyMessage(pmn->pubkey2, vchBankNodeSignature, strMessage, errorMessage)) {
+    if(!darkSendSigner.VerifyMessage(pmn->pubkey2, vchBaseNodeSignature, strMessage, errorMessage)) {
         LogPrintf("InstantX::CConsensusVote::SignatureValid() - Verify message failed\n");
         return false;
     }
@@ -538,11 +538,11 @@ bool CConsensusVote::Sign()
     CPubKey pubkey2;
     std::string strMessage = txHash.ToString().c_str() + boost::lexical_cast<std::string>(nBlockHeight);
     //LogPrintf("signing strMessage %s \n", strMessage.c_str());
-    //LogPrintf("signing privkey %s \n", strBankNodePrivKey.c_str());
+    //LogPrintf("signing privkey %s \n", strBaseNodePrivKey.c_str());
 
-    if(!darkSendSigner.SetKey(strBankNodePrivKey, errorMessage, key2, pubkey2))
+    if(!darkSendSigner.SetKey(strBaseNodePrivKey, errorMessage, key2, pubkey2))
     {
-        LogPrintf("CActiveBanknode::RegisterAsBankNode() - ERROR: Invalid banknodeprivkey: '%s'\n", errorMessage.c_str());
+        LogPrintf("CActiveBasenode::RegisterAsBaseNode() - ERROR: Invalid basenodeprivkey: '%s'\n", errorMessage.c_str());
         return false;
     }
 
@@ -553,13 +553,13 @@ bool CConsensusVote::Sign()
     CBitcreditAddress address2(address1);
     //LogPrintf("signing pubkey2 %s \n", address2.ToString().c_str());
 
-    if(!darkSendSigner.SignMessage(strMessage, errorMessage, vchBankNodeSignature, key2)) {
-        LogPrintf("CActiveBanknode::RegisterAsBankNode() - Sign message failed");
+    if(!darkSendSigner.SignMessage(strMessage, errorMessage, vchBaseNodeSignature, key2)) {
+        LogPrintf("CActiveBasenode::RegisterAsBaseNode() - Sign message failed");
         return false;
     }
 
-    if(!darkSendSigner.VerifyMessage(pubkey2, vchBankNodeSignature, strMessage, errorMessage)) {
-        LogPrintf("CActiveBanknode::RegisterAsBankNode() - Verify message failed");
+    if(!darkSendSigner.VerifyMessage(pubkey2, vchBaseNodeSignature, strMessage, errorMessage)) {
+        LogPrintf("CActiveBasenode::RegisterAsBaseNode() - Verify message failed");
         return false;
     }
 
@@ -572,17 +572,17 @@ bool CTransactionLock::SignaturesValid()
 
     BOOST_FOREACH(CConsensusVote vote, vecConsensusVotes)
     {
-        int n = mnodeman.GetBanknodeRank(vote.vinBanknode, vote.nBlockHeight, MIN_INSTANTX_PROTO_VERSION);
+        int n = mnodeman.GetBasenodeRank(vote.vinBasenode, vote.nBlockHeight, MIN_INSTANTX_PROTO_VERSION);
 
         if(n == -1)
         {
-            LogPrintf("InstantX::DoConsensusVote - Unknown Banknode\n");
+            LogPrintf("InstantX::DoConsensusVote - Unknown Basenode\n");
             return false;
         }
 
         if(n > INSTANTX_SIGNATURES_TOTAL)
         {
-            LogPrintf("InstantX::DoConsensusVote - Banknode not in the top %s\n", INSTANTX_SIGNATURES_TOTAL);
+            LogPrintf("InstantX::DoConsensusVote - Basenode not in the top %s\n", INSTANTX_SIGNATURES_TOTAL);
             return false;
         }
 

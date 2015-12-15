@@ -546,8 +546,8 @@ Value getblocktemplate(const Array& params, bool fHelp)
             "        { ... }                       (json object) vote candidate\n"
             "        ,...\n"
             "  ],\n"
-            "  \"banknode_payments\" : true|false,         (boolean) true, if banknode payments are enabled"
-            "  \"enforce_banknode_payments\" : true|false  (boolean) true, if banknode payments are enforced"
+            "  \"basenode_payments\" : true|false,         (boolean) true, if basenode payments are enabled"
+            "  \"enforce_basenode_payments\" : true|false  (boolean) true, if basenode payments are enforced"
             "  \"bidders_count\" : \"xxx\",                (string) # of bidders receiving payout @ days' end\n"
             "  \"bids_value\" : n,               (numeric) BTC value of day's bid \n"
             "  \"bidders\" : [\n                     (array) show bidders\n"
@@ -814,18 +814,18 @@ Value getblocktemplate(const Array& params, bool fHelp)
         ExtractDestination(pblock->payee, address1);
         CBitcreditAddress address2(address1);
         result.push_back(Pair("payee", address2.ToString().c_str()));
-        result.push_back(Pair("payee_amount", (int64_t)GetBanknodePayment(pindexPrev->nHeight+1, pblock->vtx[0].GetValueOut())));
+        result.push_back(Pair("payee_amount", (int64_t)GetBasenodePayment(pindexPrev->nHeight+1, pblock->vtx[0].GetValueOut())));
     } else {
         result.push_back(Pair("payee", ""));
         result.push_back(Pair("payee_amount", ""));
     }
 
-	bool BanknodePayments = false;
+	bool BasenodePayments = false;
 	
-    if(pblock->nTime > 1427803200) BanknodePayments = true;
+    if(pblock->nTime > 1427803200) BasenodePayments = true;
    
-    result.push_back(Pair("banknode_payments", BanknodePayments));
-    result.push_back(Pair("enforce_banknode_payments", true));
+    result.push_back(Pair("basenode_payments", BasenodePayments));
+    result.push_back(Pair("enforce_basenode_payments", true));
 
     if ((chainActive.Tip()->nHeight+1)%900==0){
 		result.push_back(Pair("bidders_count", bidders_count));

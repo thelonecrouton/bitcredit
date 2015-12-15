@@ -1,5 +1,4 @@
 DIST_SUBDIRS = secp256k1
-DIST_SUBDIRS += sqlite
 AM_LDFLAGS = $(PTHREAD_CFLAGS) $(LIBTOOL_LDFLAGS)
 LIBS = -lcurl -lanl -lsqlite3
 if EMBEDDED_LEVELDB
@@ -20,7 +19,7 @@ endif
 BITCREDIT_CONFIG_INCLUDES=-I$(builddir)/config
 BITCREDIT_INCLUDES=-I$(builddir) -I$(builddir)/obj -I$(builddir)/json $(BOOST_CPPFLAGS) $(LEVELDB_CPPFLAGS) $(CRYPTO_CFLAGS) $(SSL_CFLAGS)
 
-BITCREDIT_INCLUDES += -I$(srcdir)/secp256k1/include -I$(srcdir)/sqlite
+BITCREDIT_INCLUDES += -I$(srcdir)/secp256k1/include
 
 LIBBITCREDIT_SERVER=libbitcredit_server.a
 LIBBITCREDIT_WALLET=libbitcredit_wallet.a
@@ -31,12 +30,9 @@ LIBBITCREDIT_CRYPTO=crypto/libbitcredit_crypto.a
 LIBBITCREDIT_UNIVALUE=univalue/libbitcredit_univalue.a
 LIBBITCREDITQT=qt/libbitcreditqt.a
 LIBSECP256K1=secp256k1/libsecp256k1.la
-#LIBSQLITE=sqlite/libsqlite3.la
 
 $(LIBSECP256K1): $(wildcard secp256k1/src/*) $(wildcard secp256k1/include/*)
 	$(AM_V_at)$(MAKE) $(AM_MAKEFLAGS) -C $(@D) $(@F)
-
-#$(LIBSQLITE): $(wildcard sqlite/*) $(AM_V_at)$(MAKE) $(AM_MAKEFLAGS) -C $(@D) $(@F)
 
 # Make is not made aware of per-object dependencies to avoid limiting building parallelization
 # But to build the less dependent modules first, we manually select their order here:
@@ -73,7 +69,7 @@ endif
 .PHONY: FORCE
 # bitcredit core #
 BITCREDIT_CORE_H = \
-  activebanknode.h \
+  activebasenode.h \
   addrman.h \
   alert.h \
   allocators.h \
@@ -111,10 +107,10 @@ BITCREDIT_CORE_H = \
   limitedmap.h \
   lz4/lz4.h \
   main.h \
-  banknode.h \
-  banknode-pos.h \
-  banknodeman.h \
-  banknodeconfig.h \
+  basenode.h \
+  basenode-pos.h \
+  basenodeman.h \
+  basenodeconfig.h \
   merkleblock.h \
   miner.h \
   momentum.h \
@@ -162,7 +158,6 @@ BITCREDIT_CORE_H = \
   xxhash/xxhash.h \
   ibtp.h \
   voting.h \
-  assets/coinspark.h \
   trust.h
 
 JSON_H = \
@@ -234,7 +229,6 @@ libbitcredit_wallet_a_SOURCES = \
   wallet_ismine.cpp \
   walletdb.cpp \
   keepass.cpp \
-  assets/coinspark.c \
   lz4/lz4.c \
   $(BITCREDIT_CORE_H)
 
@@ -268,7 +262,7 @@ univalue_libbitcredit_univalue_a_SOURCES = \
 # common: shared between bitcreditd, and bitcredit-qt and non-server tools
 libbitcredit_common_a_CPPFLAGS = $(BITCREDIT_INCLUDES)
 libbitcredit_common_a_SOURCES = \
-  activebanknode.cpp \
+  activebasenode.cpp \
   allocators.cpp \
   amount.cpp \
   base58.cpp \
@@ -278,10 +272,10 @@ libbitcredit_common_a_SOURCES = \
   compressor.cpp \
   darksend.cpp \
   darksend-relay.cpp \
-  banknode.cpp \
-  banknode-pos.cpp \
-  banknodeman.cpp \
-  banknodeconfig.cpp \
+  basenode.cpp \
+  basenode-pos.cpp \
+  basenodeman.cpp \
+  basenodeconfig.cpp \
   instantx.cpp \
   momentum.cpp \
   primitives/block.cpp \
@@ -348,8 +342,7 @@ bitcreditd_LDADD = \
   $(LIBBITCREDIT_CRYPTO) \
   $(LIBLEVELDB) \
   $(LIBMEMENV) \
-  $(LIBSECP256K1) \
-  $(LIBSQLITE)
+  $(LIBSECP256K1) 
 
 if ENABLE_WALLET
 bitcreditd_LDADD += libbitcredit_wallet.a
@@ -388,8 +381,7 @@ bitcredit_tx_LDADD = \
   $(LIBBITCREDIT_CRYPTO) \
   $(LIBSECP256K1) \
   $(BOOST_LIBS) \
-  $(CRYPTO_LIBS) \
-  $(LIBSQLITE)
+  $(CRYPTO_LIBS) 
 
 bitcredit_tx_SOURCES = bitcredit-tx.cpp
 bitcredit_tx_CPPFLAGS = $(BITCREDIT_INCLUDES)
@@ -444,7 +436,6 @@ EXTRA_DIST = leveldb
 clean-local:
 	-$(MAKE) -C leveldb clean
 	-$(MAKE) -C secp256k1 clean
-	-$(MAKE) -C sqlite clean
 	rm -f leveldb/*/*.gcno leveldb/helpers/memenv/*.gcno
 	-rm -f config.h
 

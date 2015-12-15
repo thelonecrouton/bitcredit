@@ -1,6 +1,6 @@
 #include "statisticspage.h"
 #include "bidtracker.h"
-#include "banknodeman.h"
+#include "basenodeman.h"
 #include "ui_statisticspage.h"
 #include "main.h"
 #include "wallet.h"

@@ -5,7 +5,7 @@
 #include "utilstrencodings.h"
 #include "chain.h"
 #include "main.h"
-#include "activebanknode.h"
+#include "activebasenode.h"
 #include <string>
 #include <map>
 #include <iostream>

@@ -283,7 +283,7 @@
      </size>
     </property>
     <property name="statusTip">
-     <string>The denominations you submitted to the Banknode. To mix, other users must submit the exact same denominations.</string>
+     <string>The denominations you submitted to the Basenode. To mix, other users must submit the exact same denominations.</string>
     </property>
     <property name="styleSheet">
      <string notr="true">color: rgb(255, 255, 255);border: none;</string>

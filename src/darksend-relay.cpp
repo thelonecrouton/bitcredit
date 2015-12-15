@@ -4,16 +4,16 @@
 
 CDarkSendRelay::CDarkSendRelay()
 {
-    vinBanknode = CTxIn();
+    vinBasenode = CTxIn();
     nBlockHeight = 0;
     nRelayType = 0;
     in = CTxIn();
     out = CTxOut();
 }
 
-CDarkSendRelay::CDarkSendRelay(CTxIn& vinBanknodeIn, vector<unsigned char>& vchSigIn, int nBlockHeightIn, int nRelayTypeIn, CTxIn& in2, CTxOut& out2)
+CDarkSendRelay::CDarkSendRelay(CTxIn& vinBasenodeIn, vector<unsigned char>& vchSigIn, int nBlockHeightIn, int nRelayTypeIn, CTxIn& in2, CTxOut& out2)
 {
-    vinBanknode = vinBanknodeIn;
+    vinBasenode = vinBasenodeIn;
     vchSig = vchSigIn;
     nBlockHeight = nBlockHeightIn;
     nRelayType = nRelayTypeIn;
@@ -25,7 +25,7 @@ std::string CDarkSendRelay::ToString()
 {
     std::ostringstream info;
 
-    info << "vin: " << vinBanknode.ToString() <<
+    info << "vin: " << vinBasenode.ToString() <<
         " nBlockHeight: " << (int)nBlockHeight <<
         " nRelayType: "  << (int)nRelayType <<
         " in " << in.ToString() <<
@@ -101,7 +101,7 @@ void CDarkSendRelay::Relay()
 
 void CDarkSendRelay::RelayThroughNode(int nRank)
 {
-    CBanknode* pmn = mnodeman.GetBanknodeByRank(nRank, nBlockHeight, MIN_POOL_PEER_PROTO_VERSION);
+    CBasenode* pmn = mnodeman.GetBasenodeByRank(nRank, nBlockHeight, MIN_POOL_PEER_PROTO_VERSION);
 
     if(pmn != NULL){
         //printf("RelayThroughNode %s\n", pmn->addr.ToString().c_str());
