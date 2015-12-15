@@ -2466,7 +2466,7 @@ bool static ConnectTip(CValidationState &state, CBlockIndex *pindexNew, CBlock *
     BOOST_FOREACH(const CTransaction &tx, pblock->vtx) {
         SyncWithWallets(tx, pblock);
     }
-	
+
 	sqlite3 *rawdb;
 	sqlite3_stmt *stmt;
 	char *zErrMsg = 0;
@@ -2499,12 +2499,12 @@ bool static ConnectTip(CValidationState &state, CBlockIndex *pindexNew, CBlock *
     char * insertquery = sqlite3_mprintf("insert into BLOCKS (ID, HASH, TIME, MINER) values (%lld,'%q',%lld,'%q')",pindexNew->nHeight, pblock->GetHash().ToString().c_str(), pblock->nTime, miner.c_str());
 	rc = sqlite3_exec(rawdb, insertquery, callback, 0, &zErrMsg);
 	
-        for (unsigned int j = 0; j < tx.vout.size();j++){
-			CTxDestination address;
-			ExtractDestination(tx.vout[j].scriptPubKey, address);
-			string receiveAddress = CBitcreditAddress( address ).ToString().c_str();
-			int64_t theAmount = tx.vout[ j ].nValue;
-			addressvalue[receiveAddress] = addressvalue[receiveAddress] + theAmount;
+    for (unsigned int j = 0; j < tx.vout.size();j++){
+		CTxDestination address;
+		ExtractDestination(tx.vout[j].scriptPubKey, address);
+		string receiveAddress = CBitcreditAddress( address ).ToString().c_str();
+		int64_t theAmount = tx.vout[ j ].nValue;
+		addressvalue[receiveAddress] = addressvalue[receiveAddress] + theAmount;
 		if(fBaseNode){
             char *sql ="select * from RAWDATA where ADDRESS = ?";
 
@@ -2606,14 +2606,13 @@ bool static ConnectTip(CValidationState &state, CBlockIndex *pindexNew, CBlock *
                 }
             }
         }
-	if(fBaseNode){
-	if(sqlite3_close(rawdb) != SQLITE_OK ){
-		if (fDebug)LogPrintf("SQL unable to close database %s\n", sqlite3_errmsg(rawdb));
-		sqlite3_free(zErrMsg);
-	}else{
-		if (fDebug)LogPrintf( "database closed successfully\n");
+        
+		if(sqlite3_close(rawdb) != SQLITE_OK ){
+			if (fDebug)LogPrintf("SQL unable to close database %s\n", sqlite3_errmsg(rawdb));
+				sqlite3_free(zErrMsg);
+		}else{
+			if (fDebug)LogPrintf( "database closed successfully\n");
 		}
-    }
 	}
 	ofstream addrdb;
 	addrdb.open ((GetDataDir() / "ratings/balances.dat" ).string().c_str(), std::ofstream::trunc);
@@ -2644,10 +2643,10 @@ bool DisconnectBlocksAndReprocess(int blocks)
 
 /*
     DisconnectBlockAndInputs
-
     Remove conflicting blocks for successful InstantX transaction locks
     This should be very rare (Probably will never happen)
 */
+
 bool DisconnectBlockAndInputs(CValidationState &state, CTransaction txLock)
 {
 
@@ -3407,7 +3406,7 @@ bool AcceptBlock(CBlock& block, CValidationState& state, CBlockIndex** ppindex, 
             return error("AcceptBlock(): FindBlockPos failed");
         if (dbp == NULL)
             if (!WriteBlockToDisk(block, blockPos))
-                return state.Abort("AcceptBlock(): Failed to write block");
+                return state.Abort("Failed to write block");
         if (!ReceivedBlockTransactions(block, state, pindex, blockPos))
             return error("AcceptBlock(): ReceivedBlockTransactions failed");
     } catch (const std::runtime_error& e) {

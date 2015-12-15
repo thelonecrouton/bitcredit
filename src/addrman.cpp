@@ -347,7 +347,6 @@ bool CAddrMan::Add_(const CAddress& addr, const CNetAddr& source, int64_t nTimeP
         fNew = true;
     }
 
-
     int nUBucket = pinfo->GetNewBucket(nKey, source);
     std::set<int>& vNew = vvNew[nUBucket];
     if (!vNew.count(nId)) {

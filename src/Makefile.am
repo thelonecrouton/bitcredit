@@ -342,7 +342,7 @@ bitcreditd_LDADD = \
   $(LIBBITCREDIT_CRYPTO) \
   $(LIBLEVELDB) \
   $(LIBMEMENV) \
-  $(LIBSECP256K1)
+  $(LIBSECP256K1) 
 
 if ENABLE_WALLET
 bitcreditd_LDADD += libbitcredit_wallet.a
@@ -381,7 +381,7 @@ bitcredit_tx_LDADD = \
   $(LIBBITCREDIT_CRYPTO) \
   $(LIBSECP256K1) \
   $(BOOST_LIBS) \
-  $(CRYPTO_LIBS)
+  $(CRYPTO_LIBS) 
 
 bitcredit_tx_SOURCES = bitcredit-tx.cpp
 bitcredit_tx_CPPFLAGS = $(BITCREDIT_INCLUDES)
@@ -462,4 +462,3 @@ endif
 if ENABLE_QT_TESTS
 include Makefile.qttest.include
 endif
-

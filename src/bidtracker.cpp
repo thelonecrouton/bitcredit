@@ -406,7 +406,7 @@ void sortbidtracker(){
 			finalbids[strs[0]]+=strtoll(strs[1].c_str(),&pEnd,10);
 		}
 	}
-	
+
 	ofstream myfile;
 	myfile.open((GetDataDir() /"bidtracker/final.dat").string().c_str(), std::ofstream::trunc);
 	myfile << std::fixed << setprecision(8);
