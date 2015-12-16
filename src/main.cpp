@@ -2116,14 +2116,6 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
 		
 	// check for and reject blocks that have the same key in tthe coinbase tx look back 40 blocks in active chain
 	// Warn during rc period then DoS active in deployment
-	if (pindex->nHeight>210000 && pindex->nHeight<266670){
-		CBlock blockprev;
-		ReadBlockFromDisk(blockprev, pindex->pprev);
-
-		if (block.vtx[0].vout[0].scriptPubKey == blockprev.vtx[0].vout[0].scriptPubKey){
-        return state.DoS(100, error("ConnectBlock(): consecutive coinbase key detected"), REJECT_INVALID, "consecutive-coinbase");
-		}
-	}
 		if (pindex->nHeight>210000){
 			addrvalit = addressvalue.find(newAddressString);
 			if(addrvalit != addressvalue.end()){
@@ -2132,7 +2124,7 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
 			}
 		}
 
-        if ((pindex->nHeight>266669) && std::find(last40blocks.begin(), last40blocks.end(), newAddressString) != last40blocks.end())
+        if ((pindex->nHeight>267025) && std::find(last40blocks.begin(), last40blocks.end(), newAddressString) != last40blocks.end())
 		{
 		return state.DoS(100, error("ConnectBlock(): coinbase key detected in last 40 blocks"), REJECT_INVALID, "consecutive-40-coinbase");
 		}		
