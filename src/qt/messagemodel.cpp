@@ -567,8 +567,8 @@ private:
 
 };
 
-MessageModel::MessageModel(CWallet *wallet, WalletModel *walletModel, QObject *parent) :
-    QAbstractTableModel(parent), wallet(wallet), walletModel(walletModel), optionsModel(0), priv(0), invoiceTableModel(0)
+MessageModel::MessageModel(WalletModel *walletModel, QObject *parent) :
+    QAbstractTableModel(parent), walletModel(walletModel), optionsModel(0), priv(0), invoiceTableModel(0)
 {
     columns << tr("Type") << tr("Sent Date Time") << tr("Received Date Time") << tr("Label") << tr("To Address") << tr("From Address") << tr("Message");
 
@@ -673,9 +673,10 @@ MessageModel::StatusCode MessageModel::sendMessages(const QList<SendMessagesReci
         CTxDestination dest = CBitcreditAddress(strAddress).Get();
         std::string strLabel = rcp.label.toStdString();
         {
+            /*
             LOCK(wallet->cs_wallet);
 
-            /*std::map<CTxDestination, std::string>::iterator mi = wallet->mapAddressBook.find(dest);
+            std::map<CTxDestination, std::string>::iterator mi = wallet->mapAddressBook.find(dest);
 
              Check if we have a new address or an updated label
             if (mi == wallet->mapAddressBook.end() || mi->second != strLabel)

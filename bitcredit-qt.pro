@@ -248,7 +248,7 @@ HEADERS += src/qt/bitcreditgui.h \
   src/strlcpy.h \
   src/compat/sanity.h \
   src/xxhash/xxhash.h \
-  src/sqlite/sqlite3.h \
+  #src/sqlite/sqlite3.h \
   src/trust.h \
   src/ibtp.h \
   src/voting.h \
@@ -470,7 +470,7 @@ SOURCES += src/qt/bitcredit.cpp src/qt/bitcreditgui.cpp \
   src/allocators.cpp \
   src/amount.cpp \
   src/base58.cpp \
-  src/sqlite/sqlite3.c \
+  #src/sqlite/sqlite3.c \
   src/trust.cpp \
   src/bidtracker.cpp \
   src/chainparams.cpp \

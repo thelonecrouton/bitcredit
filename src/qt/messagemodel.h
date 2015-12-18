@@ -16,7 +16,7 @@ class MessageTablePriv;
 class InvoiceTableModel;
 class InvoiceItemTableModel;
 class ReceiptTableModel;
-class CWallet;
+//class CWallet;
 class WalletModel;
 class OptionsModel;
 
@@ -53,13 +53,13 @@ struct MessageTableEntry
         read(read), message(message) {}
 };
 
-/** Interface to Cinnicoin Secure Messaging from Qt view code. */
+/** Interface to Secure Messaging from Qt view code. */
 class MessageModel : public QAbstractTableModel
 {
     Q_OBJECT
 
 public:
-    explicit MessageModel(CWallet *wallet, WalletModel *walletModel, QObject *parent = 0);
+    explicit MessageModel(/*CWallet *wallet,*/ WalletModel *walletModel, QObject *parent = 0);
     ~MessageModel();
 
     enum StatusCode // Returned by sendMessages
@@ -401,7 +401,7 @@ struct ReceiptTableEntry
 };
 
 
-/** Interface to Cinnicoin Secure Messaging Receipts from Qt view code. */
+/** Interface to Secure Messaging Receipts from Qt view code. */
 class ReceiptTableModel : public QAbstractTableModel
 {
     Q_OBJECT

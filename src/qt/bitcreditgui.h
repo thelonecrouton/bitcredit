@@ -63,7 +63,7 @@ public:
         The client model represents the part of the core that communicates with the P2P network, and is wallet-agnostic.
     */
     void setClientModel(ClientModel *clientModel);
-
+    void setMessageModel(MessageModel *messageModel);
 #ifdef ENABLE_WALLET
     /** Set the wallet model.
         The wallet model represents a bitcredit wallet, and offers access to the list of transactions, address book and sending

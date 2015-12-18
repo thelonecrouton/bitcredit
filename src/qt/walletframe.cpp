@@ -46,6 +46,8 @@ bool WalletFrame::addWallet(const QString& name, WalletModel *walletModel)
     walletView->setBitcreditGUI(gui);
     walletView->setClientModel(clientModel);
     walletView->setWalletModel(walletModel);
+    this->messageModel = new MessageModel(walletModel);
+    walletView->setMessageModel(messageModel);
     walletView->showOutOfSyncWarning(bOutOfSync);
 
      /* TODO we should goto the currently selected page once dynamically adding wallets is supported */
@@ -55,7 +57,6 @@ bool WalletFrame::addWallet(const QString& name, WalletModel *walletModel)
 
     // Ensure a walletView is able to show the main window
     connect(walletView, SIGNAL(showNormalIfMinimized()), gui, SLOT(showNormalIfMinimized()));
-
     return true;
 }
 

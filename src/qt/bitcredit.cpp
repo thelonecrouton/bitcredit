@@ -17,6 +17,7 @@
 #include "splashscreen.h"
 #include "utilitydialog.h"
 #include "winshutdownmonitor.h"
+#include "messagemodel.h"
 
 #ifdef ENABLE_WALLET
 #include "paymentserver.h"
@@ -229,6 +230,7 @@ private:
 #ifdef ENABLE_WALLET
     PaymentServer* paymentServer;
     WalletModel *walletModel;
+    MessageModel *messageModel;
 #endif
     int returnValue;
 
@@ -296,6 +298,7 @@ BitcreditApplication::BitcreditApplication(int &argc, char **argv):
 #ifdef ENABLE_WALLET
     paymentServer(0),
     walletModel(0),
+    messageModel(0),
 #endif
     returnValue(0)
 {
@@ -317,6 +320,8 @@ BitcreditApplication::~BitcreditApplication()
 #ifdef ENABLE_WALLET
     delete paymentServer;
     paymentServer = 0;
+    delete messageModel;
+    messageModel = 0;
 #endif
     delete optionsModel;
     optionsModel = 0;
@@ -327,6 +332,8 @@ void BitcreditApplication::createPaymentServer()
 {
     paymentServer = new PaymentServer(this);
 }
+
+
 #endif
 
 void BitcreditApplication::createOptionsModel()
@@ -423,7 +430,6 @@ void BitcreditApplication::initializeResult(int retval)
         if(pwalletMain)
         {
             walletModel = new WalletModel(pwalletMain, optionsModel);
-
             window->addWallet(BitcreditGUI::DEFAULT_WALLET, walletModel);
             window->setCurrentWallet(BitcreditGUI::DEFAULT_WALLET);
 
@@ -595,6 +601,7 @@ int main(int argc, char *argv[])
     // Start up the payment server early, too, so impatient users that click on
     // bitcredit: links repeatedly have their payment requests routed to this process:
     app.createPaymentServer();
+
 #endif
 
     /// 9. Main GUI initialization
@@ -613,7 +620,6 @@ int main(int argc, char *argv[])
 #endif
     // Load GUI settings from QSettings
     app.createOptionsModel();
-
     // Subscribe to global signals from core
     uiInterface.InitMessage.connect(InitMessage);
 

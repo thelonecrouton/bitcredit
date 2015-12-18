@@ -7,12 +7,14 @@
 
 #include <QFrame>
 #include <QMap>
+#include "messagemodel.h"
 
 class BitcreditGUI;
 class ClientModel;
 class SendCoinsRecipient;
 class WalletModel;
 class WalletView;
+class MessageModel;
 class BlockExplorer;
 class StatisticsPage;
 
@@ -29,7 +31,6 @@ public:
     ~WalletFrame();
 
     void setClientModel(ClientModel *clientModel);
-
     bool addWallet(const QString& name, WalletModel *walletModel);
     bool setCurrentWallet(const QString& name);
     bool removeWallet(const QString &name);
@@ -43,6 +44,7 @@ private:
     QStackedWidget *walletStack;
     BitcreditGUI *gui;
     ClientModel *clientModel;
+    MessageModel *messageModel;
     QMap<QString, WalletView*> mapWalletViews;
 
     bool bOutOfSync;
