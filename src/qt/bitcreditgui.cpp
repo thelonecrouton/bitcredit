@@ -99,7 +99,6 @@ const QString BitcreditGUI::DEFAULT_WALLET = "~Default";
 BitcreditGUI::BitcreditGUI(const NetworkStyle *networkStyle, QWidget *parent) :
     QMainWindow(parent),
     clientModel(0),
-    messageModel(0),
     walletFrame(0),
     unitDisplayControl(0),
     labelEncryptionIcon(0),

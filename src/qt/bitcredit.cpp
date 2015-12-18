@@ -17,7 +17,7 @@
 #include "splashscreen.h"
 #include "utilitydialog.h"
 #include "winshutdownmonitor.h"
-#include "messagemodel.h"
+
 
 #ifdef ENABLE_WALLET
 #include "paymentserver.h"
@@ -230,7 +230,7 @@ private:
 #ifdef ENABLE_WALLET
     PaymentServer* paymentServer;
     WalletModel *walletModel;
-    MessageModel *messageModel;
+
 #endif
     int returnValue;
 
@@ -298,7 +298,7 @@ BitcreditApplication::BitcreditApplication(int &argc, char **argv):
 #ifdef ENABLE_WALLET
     paymentServer(0),
     walletModel(0),
-    messageModel(0),
+
 #endif
     returnValue(0)
 {
@@ -320,8 +320,7 @@ BitcreditApplication::~BitcreditApplication()
 #ifdef ENABLE_WALLET
     delete paymentServer;
     paymentServer = 0;
-    delete messageModel;
-    messageModel = 0;
+
 #endif
     delete optionsModel;
     optionsModel = 0;
