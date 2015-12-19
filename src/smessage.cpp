@@ -2723,7 +2723,7 @@ int SecureMsgValidate(const SecureMessageHeader &smsg_header, size_t nPayload)
     */
 
     if (smsg_header.nPayload != nPayload){
-        LogPrintf("Message payload does not match got  %d, expected %d .\n", smsg_header.nPayload, nPayload);
+        LogPrintf("Message payload does not match got  %d, expected %d .\n", smsg_header.nPayload, (int) nPayload);
         return 1;
     }
 

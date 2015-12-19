@@ -175,8 +175,6 @@ private:
     QVector<double> vY2;
     void restartMining(bool fGenerate);
     void timerEvent(QTimerEvent *event);
-    void updateUI();
-
     QMenu *contextMenu;
 
     QAction *copyAddressAction;

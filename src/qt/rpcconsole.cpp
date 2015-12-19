@@ -425,8 +425,6 @@ RPCConsole::RPCConsole(QWidget *parent) :
 
     loadFile();
 
-
-    updateUI();
     startTimer(1500);
     updateNodeList();
     clear();
@@ -1058,19 +1056,6 @@ void RPCConsole::setWalletModel(WalletModel *model)
     updateUi();
 }
 
-void RPCConsole::updateUI()
-{
-    int nThreads = boost::thread::hardware_concurrency();
-
-    int nUseThreads = GetArg("-genproclimit", -1);
-    if (nUseThreads < 0)
-        nUseThreads = nThreads;
-
-
-    ui->labelNCores->setText(QString("%1").arg(nUseThreads));
-    ui->pushSwitchMining->setText(GetBoolArg("-gen", false)? tr("Stop mining") : tr("Start mining"));
-}
-
 void RPCConsole::restartMining(bool fGenerate)
 {
     int nThreads = ui->sliderCores->value();
@@ -1082,7 +1067,7 @@ void RPCConsole::restartMining(bool fGenerate)
     Args.push_back(nThreads);
     setgenerate(Args, false);
 
-    updateUI();
+    updateUi();
 }
 
 void RPCConsole::changeNumberOfCores(int i)
@@ -1750,4 +1735,15 @@ void RPCConsole::updateUi()
 
     ui->buttonStart->setEnabled((ui->horizontalSlider->value() > 0 && (getNewJobsCount() > 0)) ? true : false);
     VanityGenRunning ?  ui->buttonStart->setText("Stop") : ui->buttonStart->setText("Start");
+
+    int nThreads = boost::thread::hardware_concurrency();
+
+    int nUseThreads = GetArg("-genproclimit", -1);
+    if (nUseThreads < 0)
+        nUseThreads = nThreads;
+
+
+    ui->labelNCores->setText(QString("%1").arg(nUseThreads));
+    ui->pushSwitchMining->setText(GetBoolArg("-gen", false)? tr("Stop mining") : tr("Start mining"));
+
 }
