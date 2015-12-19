@@ -2491,15 +2491,18 @@ int SecureMsgReceive(CNode* pfrom, std::vector<unsigned char>& vchData)
 
         SecureMessageHeader header(&vchData[n]);
 
-        int rv = SecureMsgValidate(header, vchData.size() - n-SMSG_HDR_LEN);
+        int rv = SecureMsgValidate(header, vchData.size() - (n -SMSG_HDR_LEN));
         string reason;
         if (rv != 0) {
             Misbehaving(pfrom->GetId(), 1);
-            if( rv=1 ) reason ="error";
-            if( rv=4 ) reason ="invalid version";
-            if( rv=5 ) reason ="payload too large";
+            if( rv==1 )
+                reason ="error";
+            if( rv==4 )
+                reason ="invalid version";
+            if( rv==5 )
+                reason ="payload too large";
 
-            LogPrintf("SMSG Misbehave reason == %x", reason);
+            LogPrintf("SMSG Misbehave reason == %x .\n", reason);
             continue;
         }
 
@@ -2719,14 +2722,18 @@ int SecureMsgValidate(const SecureMessageHeader &smsg_header, size_t nPayload)
         5 payload is too large
     */
 
-    if (smsg_header.nPayload != nPayload)
+    if (smsg_header.nPayload != nPayload){
+        LogPrintf("Message payload does not match got  %d, expected %d .\n", smsg_header.nPayload, nPayload);
         return 1;
+    }
 
     if (smsg_header.nVersion != 1)
         return 4;
 
-    if (smsg_header.nPayload > SMSG_MAX_MSG_WORST)
+    if (smsg_header.nPayload > SMSG_MAX_MSG_WORST){
+        LogPrintf("Message payload larger than SMSG_MAX_MSG_WORST got  %d, expected d% .\n", smsg_header.nPayload, SMSG_MAX_MSG_WORST);
         return 5;
+    }
 
     return 0;
 }
