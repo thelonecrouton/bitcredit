@@ -2731,7 +2731,7 @@ int SecureMsgValidate(const SecureMessageHeader &smsg_header, size_t nPayload)
         return 4;
 
     if (smsg_header.nPayload > SMSG_MAX_MSG_WORST){
-        LogPrintf("Message payload larger than SMSG_MAX_MSG_WORST got  %d, expected d% .\n", smsg_header.nPayload, SMSG_MAX_MSG_WORST);
+        LogPrintf("Message payload larger than SMSG_MAX_MSG_WORST got  %d, expected %d .\n", smsg_header.nPayload, SMSG_MAX_MSG_WORST);
         return 5;
     }
 
