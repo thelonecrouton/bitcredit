@@ -2494,7 +2494,7 @@ int SecureMsgReceive(CNode* pfrom, std::vector<unsigned char>& vchData)
         int rv = SecureMsgValidate(header, vchData.size() - (n -SMSG_HDR_LEN));
         string reason;
         if (rv != 0) {
-            Misbehaving(pfrom->GetId(), 1);
+            Misbehaving(pfrom->GetId(), 0);
             if( rv==1 )
                 reason ="error";
             if( rv==4 )
