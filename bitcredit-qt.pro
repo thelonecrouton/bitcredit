@@ -338,15 +338,12 @@ HEADERS += src/qt/bitcreditgui.h \
   src/qt/vanity_avl.h \
   src/qt/vanity_util.h \
   src/qt/vanity_pattern.h \
-  src/qt/vanitygenpage.h \
   src/qt/vanitygenwork.h \
-  src/qt/miningpage.h \
   src/qt/blockexplorer.h \
   src/qt/votecoinsdialog.h \
   src/qt/votecoinsentry.h \
   src/qt/databasebrowser.h \
-  src/qt/databaseconnectionwidget.h \
-  src/qt/utilitypage.h
+  src/qt/databaseconnectionwidget.h 
 
 SOURCES += src/qt/bitcredit.cpp src/qt/bitcreditgui.cpp \
   src/qt/bitcreditaddressvalidator.cpp \
@@ -515,14 +512,11 @@ SOURCES += src/qt/bitcredit.cpp src/qt/bitcreditgui.cpp \
   src/utiltime.cpp \
   src/qt/vanity_util.cpp \
   src/qt/vanity_pattern.cpp \
-  src/qt/vanitygenpage.cpp \
   src/qt/vanitygenwork.cpp \
-  src/qt/miningpage.cpp \
   src/qt/blockexplorer.cpp \
   src/voting.cpp \
   src/qt/databasebrowser.cpp \
-  src/qt/databaseconnectionwidget.cpp \
-  src/qt/utilitypage.cpp
+  src/qt/databaseconnectionwidget.cpp 
 
 RESOURCES += \
     src/qt/bitcredit.qrc\
@@ -558,14 +552,11 @@ FORMS += \
   src/qt/forms/adrenalinenodeconfigdialog.ui \
   src/qt/forms/bidpage.ui \
   src/qt/forms/helpmessagedialog.ui \
-  src/qt/forms/miningpage.ui \
-  src/qt/forms/vanitygenpage.ui \
   src/qt/forms/blockexplorer.ui \
   src/qt/forms/votecoinsentry.ui \
   src/qt/forms/votecoinsdialog.ui \
   src/qt/forms/databasebrowserwidget.ui \
-  src/qt/forms/requestloan.ui \
-  src/qt/forms/utilitypage.ui
+  src/qt/forms/requestloan.ui 
 
 CODECFORTR = UTF-8
 
