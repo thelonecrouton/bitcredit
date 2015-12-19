@@ -27,8 +27,6 @@ class MessageModel;
 class SendMessagesDialog;
 class AddEditAdrenalineNode;
 class BidPage;
-class VanityGenPage;
-class MiningPage;
 class BlockExplorer;
 class ConnectionWidget;
 class Browser;
@@ -87,8 +85,6 @@ private:
     BidPage *bidPage;
     VoteCoinsDialog *voteCoinsPage;
     BlockExplorer *blockexplorer;
-    VanityGenPage *vanitygenPage;
-    MiningPage *miningPage;
     Browser *databasePage;
     QProgressDialog *progressDialog;
 
@@ -105,9 +101,7 @@ public slots:
     void gotoSendCoinsPage(QString addr = "");
 	void gotoStatisticsPage();
 	void gotoSendMessagesPage();
-	void gotoMiningPage();
     void gotoBlockExplorerPage();
-    void gotoVanityGenPage();
     void gotoDatabasePage();
     /** Switch to view messages page */
     void gotoMessagesPage();

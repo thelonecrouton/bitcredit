@@ -36,7 +36,6 @@ class UnitDisplayStatusBarControl;
 class WalletFrame;
 class WalletModel;
 class BidPage;
-class VanityGenPage;
 class CWallet;
 
 QT_BEGIN_NAMESPACE
@@ -135,8 +134,6 @@ private:
     QAction *actionSendReceiveinv;
     QAction *actionSendReceivestats;
     QAction *bidAction;
-    QAction *vanityAction;
-    QAction *miningAction;
     QAction *dataAction;
 
     QSystemTrayIcon *trayIcon;
@@ -230,8 +227,6 @@ private slots:
     /** Switch to receipt page */
     void gotoReceiptPage();
     void gotoBidPage();
-    void gotoMiningPage();
-    void gotoVanityGenPage();
     void gotoBlockExplorerPage();
     void gotoDatabasePage();
     /** Switch to vote page */

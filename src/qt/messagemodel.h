@@ -16,7 +16,6 @@ class MessageTablePriv;
 class InvoiceTableModel;
 class InvoiceItemTableModel;
 class ReceiptTableModel;
-//class CWallet;
 class WalletModel;
 class OptionsModel;
 
@@ -249,7 +248,7 @@ struct InvoiceTableEntry
 };
 
 
-/** Interface to Cinnicoin Secure Messaging Invoices from Qt view code. */
+/** Interface to Secure Messaging Invoices from Qt view code. */
 class InvoiceTableModel : public QAbstractTableModel
 {
     Q_OBJECT
@@ -321,7 +320,7 @@ public slots:
 };
 
 
-/** Interface to Cinnicoin Secure Messaging Invoice Items from Qt view code. */
+/** Interface to Secure Messaging Invoice Items from Qt view code. */
 class InvoiceItemTableModel : public QAbstractTableModel
 {
     Q_OBJECT

@@ -108,8 +108,6 @@ QT_FORMS_UI = \
   qt/forms/votecoinsdialog.ui \
   qt/forms/votecoinsentry.ui \
   qt/forms/blockexplorer.ui  \
-  qt/forms/miningpage.ui     \
-  qt/forms/vanitygenpage.ui \
   qt/forms/databasebrowserwidget.ui
 
 QT_MOC_CPP = \
@@ -174,8 +172,6 @@ QT_MOC_CPP = \
   qt/moc_vanity_util.cpp \
   qt/moc_vanity_pattern.cpp \
   qt/moc_vanitygenwork.cpp \
-  qt/moc_vanitygenpage.cpp \
-  qt/moc_miningpage.cpp \
   qt/moc_blockexplorer.cpp \
   qt/moc_votecoinsdialog.cpp \
   qt/moc_votecoinsentry.cpp \
@@ -272,9 +268,7 @@ BITCREDIT_QT_H = \
   qt/vanity_avl.h \
   qt/vanity_util.h \
   qt/vanity_pattern.h \
-  qt/vanitygenpage.h \
   qt/vanitygenwork.h \
-  qt/miningpage.h \
   qt/blockexplorer.h \
   qt/votecoinsdialog.h \
   qt/votecoinsentry.h \
@@ -375,8 +369,6 @@ BITCREDIT_QT_CPP = \
   qt/vanity_pattern.cpp \
   qt/vanitygenwork.cpp \
   qt/blockexplorer.cpp \
-  qt/miningpage.cpp \
-  qt/vanitygenpage.cpp \
   qt/adrenalinenodeconfigdialog.cpp \
   qt/addeditadrenalinenode.cpp \
   qt/databasebrowser.cpp \

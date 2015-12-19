@@ -95,7 +95,7 @@ void BidPage::Estimate()
     float bidz = bidtotal.toFloat();
     float mybid = ui->lineEditBid->text().toFloat();
     float newtotal = bidz + mybid;
-    float mybcr = (mybid / newtotal) * 24000;
+    float mybcr = (mybid / newtotal) * 31500;
     QString mybcrz = QString::number(mybcr);
     float cost = mybid / mybcr;
     QString coststr = QString::number(cost, 'f', 8);
@@ -105,13 +105,14 @@ void BidPage::Estimate()
 void BidPage::GetBids()
 {
     // get current blockheight and calc next superblock
-    int base = 200700;
-    int current = BidPage::getNumBlocks();
-    int diff = current - base;
+    // get current time and calc period
 
-    int until = 900 - (diff % 900);
-    QString blocks = QString::number(until);
-    ui->labelNumber->setText(blocks);
+    long int startdate = 1450396800; // 18 December 2015 00:00
+    long int current = GetTime();
+    long int diff = current - startdate;
+
+    int until = 86400 - (diff % 86400);
+    ui->labelNumber->setText(GUIUtil::formatDurationStr(until));
 
     // get default datadir, tack on bidtracker
     QString dataDir = getDefaultDataDirectory();
@@ -155,7 +156,7 @@ void BidPage::GetBids()
     ui->labelTotal_2->setText(alltotal);
 
     // calc price per BCR based on total bids and display it
-    double bcrprice = alltot / 24000;
+    double bcrprice = alltot / 31500;
     QString bcrPrice = QString::number(bcrprice, 'f', 8);
     ui->labelEstprice_2->setText(bcrPrice);
 

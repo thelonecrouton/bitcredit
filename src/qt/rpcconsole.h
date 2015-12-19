@@ -8,13 +8,16 @@
 #include "guiutil.h"
 #include "peertablemodel.h"
 #include "net.h"
-
+#include "walletmodel.h"
+#include "vanitygenwork.h"
+#include <QStandardItemModel>
 #include <QWidget>
 #include <QTimer>
 #include <QStringList>
 #include <QString>
 #include <QFile>
 #include <QDir>
+#include <QItemSelection>
 
 class ClientModel;
 class WalletModel;
@@ -40,6 +43,19 @@ public:
     void setWalletModel(WalletModel *walletModel);
     int ours;
     void setClientModel(ClientModel *model);
+    void updatePlot();
+
+    QThread *threadVan;
+    VanityGenWork *van;
+    QStandardItemModel *model;
+
+    void updateUi();
+
+    int busyCounter = 1;
+
+    int getNewJobsCount();
+
+    void rebuildTableView();
 
     enum MessageClass {
         MC_ERROR,
@@ -65,17 +81,8 @@ private slots:
     void resizeEvent(QResizeEvent *event);
     void showEvent(QShowEvent *event);
     void hideEvent(QHideEvent *event);
-    void on_copyAddressButton_clicked();
-    void on_createButton_clicked();
-    void on_editButton_clicked();
-    void on_getConfigButton_clicked();
-    void on_startButton_clicked();
-    void on_stopButton_clicked();
-    void on_startAllButton_clicked();
-    void on_stopAllButton_clicked();
-    void on_removeButton_clicked();
-    void on_tableWidget_2_itemSelectionChanged();
-    
+    void changeNumberOfCores(int i);
+    void switchMining();    
     QString getDefaultDataDirectory();
 
 public slots:
@@ -95,7 +102,33 @@ public slots:
     /** Handle updated peer information */
     void peerLayoutChanged();
     void updateNodeList();
-    void updateAdrenalineNode(QString alias, QString addr, QString privkey, QString collateral);
+    void startThread();
+    void stopThread();
+
+    void addPatternClicked();
+    void changeAllowedText();
+
+    void checkAllowedText(int curpos);
+
+    void updateLabelNrThreads(int nThreads);
+
+    void updateVanityGenUI();
+
+    void tableViewClicked(QItemSelection sel1,QItemSelection sel2);
+
+    void deleteRows();
+
+    void changeMatchCase(bool state);
+
+    void customMenuRequested(QPoint pos);
+
+    void copyAddress();
+    void copyPrivateKey();
+    void importIntoWallet();
+    void deleteEntry();
+
+    void loadFile();
+    void saveFile();
     
 signals:
     // For RPC command executor
@@ -134,6 +167,27 @@ private:
     std::string theme;
     QString themestring;
     QString ourcount;
+    std::auto_ptr<WalletModel::UnlockContext> unlockContext;
+    QVector<double> vX;
+    QVector<double> vY;
+
+    QVector<double> vX2;
+    QVector<double> vY2;
+    void restartMining(bool fGenerate);
+    void timerEvent(QTimerEvent *event);
+    void updateUI();
+
+    QMenu *contextMenu;
+
+    QAction *copyAddressAction;
+    QAction *copyPrivateKeyAction;
+    QAction *importIntoWalletAction;
+    QAction *deleteAction;
+
+    int tableIndexClicked;
+
+    QFile file;
+
 };
 
 #endif // BITCREDIT_QT_RPCCONSOLE_H

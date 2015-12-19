@@ -22,8 +22,6 @@
 #include "utilitydialog.h"
 #include "exchangebrowser.h"
 #include "util.h"
-#include "vanitygenpage.h"
-#include "miningpage.h"
 #include "blockexplorer.h"
 #ifdef ENABLE_WALLET
 #include "walletframe.h"
@@ -443,18 +441,9 @@ void BitcreditGUI::createActions(const NetworkStyle *networkStyle)
     QToolBar *toolbarstats = addToolBar(tr("Block Browser"));
     QToolBar *toolbarstats2 = addToolBar(tr("Market"));
     QToolBar *toolbarstats3 = addToolBar(tr("Bank Statistics"));
-    QToolBar *toolbarutils = addToolBar(tr("Mining"));
-    QToolBar *toolbarutils2 = addToolBar(tr("Vanity"));
     QToolBar *toolbarutils3 = addToolBar(tr("Vote"));
 
-    toolbarutils->setIconSize(QSize(100, 35));
-    toolbarutils2->setIconSize(QSize(100, 35));
     toolbarutils3->setIconSize(QSize(100, 35));
-    toolbarutils->setObjectName("toolbar12");
-    toolbarutils2->setObjectName("toolbar13");
-    toolbarutils2->setObjectName("toolbar14");
-    toolbarutils->setFixedSize(100, 35);
-    toolbarutils2->setFixedSize(100, 35);
     toolbarutils3->setFixedSize(100, 35);
     toolbarstats->setIconSize(QSize(100, 35));
     toolbarstats2->setIconSize(QSize(100, 35));
@@ -471,8 +460,6 @@ void BitcreditGUI::createActions(const NetworkStyle *networkStyle)
     vbox5->addWidget(toolbarstats2);
     vbox5->addWidget(toolbarstats);
     vbox5->addWidget(toolbarstats3);
-    vbox5->addWidget(toolbarutils2);
-    vbox5->addWidget(toolbarutils);
     vbox5->addWidget(toolbarutils3);
     wId4 = new QWidget(this);
     wId4->setContentsMargins(0, 0, 0, 0);
@@ -481,16 +468,6 @@ void BitcreditGUI::createActions(const NetworkStyle *networkStyle)
     wId4->setLayout(vbox5);
     wId4->setFocus();
     wId4->hide();
-
-    vanityAction = new QAction(QIcon(":/icons/null"), tr("&Vanity"), this);
-    vanityAction->setCheckable(true);
-    toolbarutils2->addAction(vanityAction);
-    tabGroup->addAction(vanityAction);
-
-    miningAction = new QAction(QIcon(":/icons/null"), tr("&Mining"), this);
-    miningAction->setCheckable(true);
-    toolbarutils->addAction(miningAction);
-    tabGroup->addAction(miningAction);
 
     blockAction = new QAction(QIcon(":/icons/null"), tr("&Block Crawler"), this);
     blockAction->setCheckable(true);
@@ -596,10 +573,6 @@ void BitcreditGUI::createActions(const NetworkStyle *networkStyle)
     connect(receiptAction, SIGNAL(triggered()), this, SLOT(gotoReceiptPage()));
     connect(bidAction, SIGNAL(triggered()), this, SLOT(gotoBidPage()));
     connect(bidAction, SIGNAL(triggered()), this, SLOT(showNormalIfMinimized()));
-    connect(vanityAction, SIGNAL(triggered()), this, SLOT(gotoVanityGenPage()));
-    connect(vanityAction, SIGNAL(triggered()), this, SLOT(showNormalIfMinimized()));
-    connect(miningAction, SIGNAL(triggered()), this, SLOT(gotoMiningPage()));
-    connect(miningAction, SIGNAL(triggered()), this, SLOT(showNormalIfMinimized()));
 
 #endif // ENABLE_WALLET
 
@@ -859,8 +832,6 @@ void BitcreditGUI::setWalletActionsEnabled(bool enabled)
     invoiceAction->setEnabled(enabled);
     receiptAction->setEnabled(enabled);
     bidAction->setEnabled(enabled);
-    vanityAction->setEnabled(enabled);
-    miningAction->setEnabled(enabled);
     dataAction->setEnabled(enabled);
 }
 
@@ -963,22 +934,6 @@ void BitcreditGUI::openClicked()
     }
 }
 
-void BitcreditGUI::gotoMiningPage()
-{
-    miningAction->setChecked(true);
-    actionSendReceive->setChecked(false);
-    actionSendReceiveMess->setChecked(false);
-    actionSendReceiveinv->setChecked(false);
-    actionSendReceivestats->setChecked(false);
-    dataAction->setChecked(false);
-    if (walletFrame) walletFrame->gotoMiningPage();
-
-    wId2->hide();
-    wId->hide();
-    wId3->hide();
-    wId4->hide();
-}
-
 void BitcreditGUI::gotoBlockExplorerPage()
 {
     blockAction->setChecked(true);
@@ -1005,22 +960,6 @@ void BitcreditGUI::gotoDatabasePage()
     actionSendReceiveinv->setChecked(false);
     actionSendReceivestats->setChecked(false);
     if (walletFrame) walletFrame->gotoDatabasePage();
-
-    wId2->hide();
-    wId->hide();
-    wId3->hide();
-    wId4->hide();
-}
-
-void BitcreditGUI::gotoVanityGenPage()
-{
-    vanityAction->setChecked(true);
-    actionSendReceive->setChecked(false);
-    actionSendReceiveMess->setChecked(false);
-    actionSendReceiveinv->setChecked(false);
-    actionSendReceivestats->setChecked(false);
-    dataAction->setChecked(false);
-    if (walletFrame) walletFrame->gotoVanityGenPage();
 
     wId2->hide();
     wId->hide();

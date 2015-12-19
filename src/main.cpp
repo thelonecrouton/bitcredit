@@ -5067,9 +5067,8 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
 
     else
     {
-        if (!pfrom->fForeignNode && fSecMsgEnabled)
-            SecureMsgReceiveData(pfrom, strCommand, vRecv);
-
+        //if (!pfrom->fForeignNode && fSecMsgEnabled)
+        SecureMsgReceiveData(pfrom, strCommand, vRecv);
         darkSendPool.ProcessMessageDarksend(pfrom, strCommand, vRecv);
         mnodeman.ProcessMessage(pfrom, strCommand, vRecv);
         ProcessMessageBasenodePayments(pfrom, strCommand, vRecv);

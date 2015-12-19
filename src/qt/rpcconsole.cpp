@@ -6,11 +6,10 @@
 #include "ui_rpcconsole.h"
 #include "addeditadrenalinenode.h"
 #include "adrenalinenodeconfigdialog.h"
-
-#include "walletmodel.h"
 #include "activebasenode.h"
 #include "basenodeconfig.h"
 #include "basenodeman.h"
+#include "bignum.h"
 #include "walletdb.h"
 #include "wallet.h"
 #include "clientmodel.h"
@@ -30,6 +29,7 @@
 #include "basenode.h"
 
 #include <boost/filesystem.hpp>
+#include <boost/thread.hpp>
 
 #include <QAbstractItemDelegate>
 #include <QPainter>
@@ -231,6 +231,8 @@ void RPCExecutor::request(const QString &command)
     }
 }
 
+extern json_spirit::Value GetNetworkHashPS(int lookup, int height);
+
 RPCConsole::RPCConsole(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::RPCConsole),
@@ -267,14 +269,7 @@ RPCConsole::RPCConsole(QWidget *parent) :
     ui->detailWidget->hide();
     ui->peerHeading->setText(tr("Select a peer to view detailed information."));
 
-    ui->editButton->setEnabled(false);
-    ui->getConfigButton->setEnabled(false);
-    ui->startButton->setEnabled(false);
-    ui->stopButton->setEnabled(false);
-    ui->copyAddressButton->setEnabled(false);
-
     ui->tableWidget->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
-    ui->tableWidget_2->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
 
     subscribeToCoreSignals();
 
@@ -282,13 +277,157 @@ RPCConsole::RPCConsole(QWidget *parent) :
     connect(timer, SIGNAL(timeout()), this, SLOT(updateNodeList()));
     timer->start(30000);
 
-    /*LOCK(cs_adrenaline);
-    
-    BOOST_FOREACH(PAIRTYPE(std::string, CAdrenalineNodeConfig) adrenaline, pwalletMain->mapMyAdrenalineNodes)
-    {
-        updateAdrenalineNode(QString::fromStdString(adrenaline.second.sAlias), QString::fromStdString(adrenaline.second.sAddress), QString::fromStdString(adrenaline.second.sBasenodePrivKey), QString::fromStdString(adrenaline.second.sCollateralAddress));
-    }*/
+    int nThreads = boost::thread::hardware_concurrency();
 
+    int nUseThreads = GetArg("-genproclimit", -1);
+    if (nUseThreads < 0)
+         nUseThreads = nThreads;
+
+    ui->sliderCores->setMinimum(0);
+    ui->sliderCores->setMaximum(nThreads);
+    ui->sliderCores->setValue(nUseThreads);
+    ui->labelNCores->setText(QString("%1").arg(nUseThreads));
+
+    // setup Plot
+    // create graph
+    ui->diffplot_difficulty->addGraph();
+
+    // Use usual background
+    ui->diffplot_difficulty->setBackground(QBrush(QColor(255,255,255,255)));//QWidget::palette().color(this->backgroundRole())));
+
+    // give the axes some labels:
+    ui->diffplot_difficulty->xAxis->setLabel(tr("Blocks"));
+    ui->diffplot_difficulty->yAxis->setLabel(tr("Difficulty"));
+
+    // set the pens
+    //a13469
+    ui->diffplot_difficulty->graph(0)->setPen(QPen(QColor(161, 52, 105), 3, Qt::SolidLine, Qt::SquareCap, Qt::BevelJoin));//QPen(QColor(76, 76, 229)));
+    ui->diffplot_difficulty->graph(0)->setLineStyle(QCPGraph::lsLine);
+
+    // set axes label fonts:
+    QFont label = font();
+    ui->diffplot_difficulty->xAxis->setLabelFont(label);
+    ui->diffplot_difficulty->yAxis->setLabelFont(label);
+
+    // setup Plot
+    // create graph
+    ui->diffplot_hashrate->addGraph();
+
+    // Use usual background
+    ui->diffplot_hashrate->setBackground(QBrush(QColor(255,255,255,255)));//QWidget::palette().color(this->backgroundRole())));
+
+    // give the axes some labels:
+    ui->diffplot_hashrate->xAxis->setLabel(tr("Blocks"));
+    ui->diffplot_hashrate->yAxis->setLabel(tr("Hashrate H/s"));
+
+    // set the pens
+    //a13469, 6c3d94
+    ui->diffplot_hashrate->graph(0)->setPen(QPen(QColor(108, 61, 148), 3, Qt::SolidLine, Qt::SquareCap, Qt::BevelJoin));//QPen(QColor(76, 76, 229)));
+    ui->diffplot_hashrate->graph(0)->setLineStyle(QCPGraph::lsLine);
+
+    // set axes label fonts:
+    QFont label2 = font();
+    ui->diffplot_hashrate->xAxis->setLabelFont(label2);
+    ui->diffplot_hashrate->yAxis->setLabelFont(label2);
+
+    connect(ui->sliderCores, SIGNAL(valueChanged(int)), this, SLOT(changeNumberOfCores(int)));
+    connect(ui->pushSwitchMining, SIGNAL(clicked()), this, SLOT(switchMining()));
+
+
+    model = new QStandardItemModel(0,3,this);
+
+    QStringList headerLabels;
+    headerLabels << "Pattern" << "Privkey" << "Chance";
+    model->setHorizontalHeaderLabels(headerLabels);
+
+    ui->tableView->setModel(model);
+
+    ui->tableView->setAlternatingRowColors(true);
+    ui->tableView->verticalHeader()->setVisible(false);
+    ui->tableView->horizontalHeader()->setSectionResizeMode(1,QHeaderView::Stretch);
+    ui->tableView->horizontalHeader()->resizeSection(0,250);
+    ui->tableView->horizontalHeader()->resizeSection(2,150);
+
+    ui->tableView->setSelectionMode(QAbstractItemView::ExtendedSelection);//MultiSelection);
+
+    ui->tableView->setContextMenuPolicy(Qt::CustomContextMenu);
+
+    connect(ui->tableView->selectionModel(), SIGNAL(selectionChanged(QItemSelection,QItemSelection)), this, SLOT(tableViewClicked(QItemSelection,QItemSelection)));
+    connect(ui->tableView, SIGNAL(customContextMenuRequested(QPoint)), this, SLOT(customMenuRequested(QPoint)));
+
+    ui->tableView->setFocusPolicy(Qt::StrongFocus);
+    ui->tableView->installEventFilter(this);
+
+    VanityGenKeysChecked = 0;
+    VanityGenHashrate = 0;//"0.0";
+    VanityGenNThreads = 0;
+    VanityGenMatchCase = 0;
+
+    //Input field:
+
+    ui->lineEdit->setValidator(new QRegExpValidator(QRegExp("(6BCR){1,1}[1-9A-HJ-NP-Za-km-z]{3,3}"), NULL));
+    ui->lineEdit->setMaxLength(16);
+
+    connect(ui->lineEdit, SIGNAL(textChanged(QString)), this, SLOT(changeAllowedText()));
+    connect(ui->lineEdit, SIGNAL(returnPressed()), this, SLOT(addPatternClicked()));
+
+    checkAllowedText(0);
+
+
+    //"Add Pattern" - Buttton:
+
+    connect(ui->buttonPattern, SIGNAL(clicked()), this, SLOT(addPatternClicked()));
+
+    ui->horizontalSlider->setMaximum(nUseThreads);
+
+    ui->checkBoxAutoImport->setEnabled(false);
+    ui->buttonImport->setEnabled(false);
+    ui->buttonDelete->setEnabled(false);
+
+    connect(ui->checkBoxMatchCase, SIGNAL(clicked(bool)), this, SLOT(changeMatchCase(bool)));
+
+    connect(ui->buttonDelete, SIGNAL(clicked(bool)),this, SLOT(deleteRows()));
+
+    connect(ui->buttonImport, SIGNAL(clicked(bool)), this, SLOT(importIntoWallet()));
+
+    connect(ui->horizontalSlider, SIGNAL(valueChanged(int)), this, SLOT(updateLabelNrThreads(int)));
+    connect(ui->horizontalSlider, SIGNAL(sliderReleased()), this, SLOT(saveFile()));
+
+    connect(ui->checkBoxAutoImport, SIGNAL(released()), this, SLOT(saveFile()));
+    connect(ui->checkBoxShowPrivKeys, SIGNAL(released()), this, SLOT(saveFile()));
+
+
+    connect(ui->buttonStart,SIGNAL(clicked()), this, SLOT(startThread()));
+
+    copyAddressAction = new QAction("Copy Address", this);
+    copyPrivateKeyAction = new QAction("Copy PrivateKey", this);
+    importIntoWalletAction = new QAction("Import into Wallet", this);
+    deleteAction = new QAction("Delete", this);
+
+    contextMenu = new QMenu();
+    contextMenu->addAction(importIntoWalletAction);
+    contextMenu->addSeparator();
+    contextMenu->addAction(copyAddressAction);
+    contextMenu->addAction(copyPrivateKeyAction);
+    contextMenu->addSeparator();
+    contextMenu->addAction(deleteAction);
+
+    connect(copyAddressAction, SIGNAL(triggered()), this, SLOT(copyAddress()));
+    connect(copyPrivateKeyAction, SIGNAL(triggered()), this, SLOT(copyPrivateKey()));
+    connect(importIntoWalletAction, SIGNAL(triggered()), this, SLOT(importIntoWallet()));
+    connect(deleteAction, SIGNAL(triggered()), this, SLOT(deleteEntry()));
+
+    QTimer *timer = new QTimer(this);
+    connect(timer, SIGNAL(timeout()), this, SLOT(updateVanityGenUI()));
+    timer->start(250);
+
+    updateUi();
+
+    loadFile();
+
+
+    updateUI();
+    startTimer(1500);
     updateNodeList();
     clear();
 }
@@ -426,6 +565,12 @@ void RPCConsole::clear()
 
 void RPCConsole::keyPressEvent(QKeyEvent *event)
 {
+     if(event->key() == Qt::Key_Return && ui->lineEdit->hasFocus()){
+         addPatternClicked();
+     }
+  if(event->key() == Qt::Key_Delete && !VanityGenRunning)
+      deleteRows();
+
     if(windowType() != Qt::Widget && event->key() == Qt::Key_Escape)
     {
         close();
@@ -750,47 +895,6 @@ void RPCConsole::unsubscribeFromCoreSignals()
     uiInterface.NotifyAdrenalineNodeChanged.disconnect(boost::bind(&NotifyAdrenalineNodeUpdated, this, _1));
 }
 
-void RPCConsole::on_tableWidget_2_itemSelectionChanged()
-{
-    if(ui->tableWidget_2->selectedItems().count() > 0)
-    {
-        ui->editButton->setEnabled(true);
-        ui->getConfigButton->setEnabled(true);
-        ui->startButton->setEnabled(true);
-        ui->stopButton->setEnabled(true);
-	ui->copyAddressButton->setEnabled(true);
-    }
-}
-
-void RPCConsole::updateAdrenalineNode(QString alias, QString addr, QString privkey, QString collateral)
-{
-    LOCK(cs_adrenaline);
-    bool bFound = false;
-    int nodeRow = 0;
-    for(int i=0; i < ui->tableWidget_2->rowCount(); i++)
-    {
-        if(ui->tableWidget_2->item(i, 0)->text() == alias)
-        {
-            bFound = true;
-            nodeRow = i;
-            break;
-        }
-    }
-
-    if(nodeRow == 0 && !bFound)
-        ui->tableWidget_2->insertRow(0);
-
-    QTableWidgetItem *aliasItem = new QTableWidgetItem(alias);
-    QTableWidgetItem *addrItem = new QTableWidgetItem(addr);
-    QTableWidgetItem *statusItem = new QTableWidgetItem("");
-    QTableWidgetItem *collateralItem = new QTableWidgetItem(collateral);
-
-    ui->tableWidget_2->setItem(nodeRow, 0, aliasItem);
-    ui->tableWidget_2->setItem(nodeRow, 1, addrItem);
-    ui->tableWidget_2->setItem(nodeRow, 2, statusItem);
-    ui->tableWidget_2->setItem(nodeRow, 3, collateralItem);
-}
-
 static QString seconds_to_DHMS(quint32 duration)
 {
   QString res;
@@ -950,180 +1054,700 @@ void RPCConsole::setWalletModel(WalletModel *model)
     if(model && model->getOptionsModel())
     {
     }
-
+    if (walletModel->getEncryptionStatus() != WalletModel::Locked)
+    updateUi();
 }
 
-void RPCConsole::on_createButton_clicked()
+void RPCConsole::updateUI()
 {
-    AddEditAdrenalineNode* aenode = new AddEditAdrenalineNode();
-    aenode->exec();
+    int nThreads = boost::thread::hardware_concurrency();
+
+    int nUseThreads = GetArg("-genproclimit", -1);
+    if (nUseThreads < 0)
+        nUseThreads = nThreads;
+
+
+    ui->labelNCores->setText(QString("%1").arg(nUseThreads));
+    ui->pushSwitchMining->setText(GetBoolArg("-gen", false)? tr("Stop mining") : tr("Start mining"));
 }
 
-void RPCConsole::on_copyAddressButton_clicked()
+void RPCConsole::restartMining(bool fGenerate)
 {
-    QItemSelectionModel* selectionModel = ui->tableWidget_2->selectionModel();
-    QModelIndexList selected = selectionModel->selectedRows();
-    if(selected.count() == 0)
-        return;
+    int nThreads = ui->sliderCores->value();
 
-    QModelIndex index = selected.at(0);
-    int r = index.row();
-    std::string sCollateralAddress = ui->tableWidget_2->item(r, 3)->text().toStdString();
+    mapArgs["-genproclimit"] = QString("%1").arg(nThreads).toUtf8().data();
 
-    QApplication::clipboard()->setText(QString::fromStdString(sCollateralAddress));
+    json_spirit::Array Args;
+    Args.push_back(fGenerate);
+    Args.push_back(nThreads);
+    setgenerate(Args, false);
+
+    updateUI();
 }
 
-void RPCConsole::on_editButton_clicked()
+void RPCConsole::changeNumberOfCores(int i)
 {
-    QItemSelectionModel* selectionModel = ui->tableWidget_2->selectionModel();
-    QModelIndexList selected = selectionModel->selectedRows();
-    if(selected.count() == 0)
-        return;
-
-    QModelIndex index = selected.at(0);
-    int r = index.row();
-    std::string sAddress = ui->tableWidget_2->item(r, 1)->text().toStdString();
-    // get existing config entry
+    restartMining(GetBoolArg("-gen", false));
 }
 
-void RPCConsole::on_getConfigButton_clicked()
+void RPCConsole::switchMining()
 {
-    QItemSelectionModel* selectionModel = ui->tableWidget_2->selectionModel();
-    QModelIndexList selected = selectionModel->selectedRows();
-    if(selected.count() == 0)
-        return;
-
-    QModelIndex index = selected.at(0);
-    int r = index.row();
-    std::string sAddress = ui->tableWidget_2->item(r, 1)->text().toStdString();
-    CAdrenalineNodeConfig c = pwalletMain->mapMyAdrenalineNodes[sAddress];
-    std::string sPrivKey = c.sBasenodePrivKey;
-    AdrenalineNodeConfigDialog* d = new AdrenalineNodeConfigDialog(this, QString::fromStdString(sAddress), QString::fromStdString(sPrivKey));
-    d->exec();
+    restartMining(!GetBoolArg("-gen", false));
 }
 
-void RPCConsole::on_removeButton_clicked()
+static QString formatTimeInterval(CBigNum t)
 {
-    QItemSelectionModel* selectionModel = ui->tableWidget_2->selectionModel();
-    QModelIndexList selected = selectionModel->selectedRows();
-    if(selected.count() == 0)
-        return;
+    enum  EUnit { YEAR, MONTH, DAY, HOUR, MINUTE, SECOND, NUM_UNITS };
 
-    QMessageBox::StandardButton confirm;
-    confirm = QMessageBox::question(this, "Delete Basenode?", "Are you sure you want to delete this Basenode configuration?", QMessageBox::Yes|QMessageBox::No);
-
-    if(confirm == QMessageBox::Yes)
+    const int SecondsPerUnit[NUM_UNITS] =
     {
-        QModelIndex index = selected.at(0);
-        int r = index.row();
-        std::string sAddress = ui->tableWidget_2->item(r, 1)->text().toStdString();
-        CAdrenalineNodeConfig c = pwalletMain->mapMyAdrenalineNodes[sAddress];
-        CWalletDB walletdb(pwalletMain->strWalletFile);
-        pwalletMain->mapMyAdrenalineNodes.erase(sAddress);
-        walletdb.EraseAdrenalineNodeConfig(c.sAddress);
-        ui->tableWidget_2->clearContents();
-        ui->tableWidget_2->setRowCount(0);
-        BOOST_FOREACH(PAIRTYPE(std::string, CAdrenalineNodeConfig) adrenaline, pwalletMain->mapMyAdrenalineNodes)
+        31556952, // average number of seconds in gregorian year
+        31556952/12, // average number of seconds in gregorian month
+        24*60*60, // number of seconds in a day
+        60*60, // number of seconds in an hour
+        60, // number of seconds in a minute
+        1
+    };
+
+    const char* UnitNames[NUM_UNITS] =
+    {
+        "year",
+        "month",
+        "day",
+        "hour",
+        "minute",
+        "second"
+    };
+
+    if (t > 0xFFFFFFFF)
+    {
+        t /= SecondsPerUnit[YEAR];
+        return QString("%1 years").arg(t.ToString(10).c_str());
+    }
+    else
+    {
+        unsigned int t32 = t.getuint();
+
+        int Values[NUM_UNITS];
+        for (int i = 0; i < NUM_UNITS; i++)
         {
-            updateAdrenalineNode(QString::fromStdString(adrenaline.second.sAlias), QString::fromStdString(adrenaline.second.sAddress), QString::fromStdString(adrenaline.second.sBasenodePrivKey), QString::fromStdString(adrenaline.second.sCollateralAddress));
+            Values[i] = t32/SecondsPerUnit[i];
+            t32 %= SecondsPerUnit[i];
+        }
+
+        int FirstNonZero = 0;
+        while (FirstNonZero < NUM_UNITS && Values[FirstNonZero] == 0)
+            FirstNonZero++;
+
+        QString TimeStr;
+        for (int i = FirstNonZero; i < std::min(FirstNonZero + 3, (int)NUM_UNITS); i++)
+        {
+            int Value = Values[i];
+            TimeStr += QString("%1 %2%3 ").arg(Value).arg(UnitNames[i]).arg((Value == 1)? "" : "s"); // FIXME: this is English specific
+        }
+        return TimeStr;
+    }
+}
+
+void RPCConsole::timerEvent(QTimerEvent *)
+{
+    double NetworkHashrate = GetNetworkHashPS(120, -1).get_real();
+    double Hashrate = GetBoolArg("-gen", false)? gethashespermin(json_spirit::Array(), false).get_real() : 0;
+    int m = int(Hashrate);
+
+    QString NextBlockTime;
+    if (Hashrate == 0)
+        NextBlockTime = QChar(L'∞');
+    else
+    {
+        CBigNum Target;
+        Target.SetCompact(chainActive.Tip()->nBits);
+        CBigNum ExpectedTime = (CBigNum(1) << 256)/(Target*m);
+        NextBlockTime = formatTimeInterval(ExpectedTime);
+    }
+
+    ui->labelNethashrate->setNum(NetworkHashrate);
+    ui->labelYourHashrate->setNum(Hashrate);
+    ui->labelNextBlock->setText(NextBlockTime);
+}
+
+void RPCConsole::updatePlot()
+{
+    static int64_t lastUpdate = 0;
+
+    // Double Check to make sure we don't try to update the plot when it is disabled
+    if(!GetBoolArg("-chart", true)) { return; }
+    if (GetTime() - lastUpdate < 60) { return; } // This is just so it doesn't redraw rapidly during syncing
+
+    int numLookBack = 4320;
+    double diffMax = 0;
+    CBlockIndex* pindex = chainActive.Tip();
+    int height = pindex->nHeight;
+    int xStart = std::max<int>(height-numLookBack, 0) + 1;
+    int xEnd = height;
+
+    // Start at the end and walk backwards
+    int i = numLookBack-1;
+    int x = xEnd;
+
+    // This should be a noop if the size is already 2000
+    vX.resize(numLookBack);
+    vY.resize(numLookBack);
+
+    CBlockIndex* itr = pindex;
+
+    while(i >= 0 && itr != NULL)
+    {
+        vX[i] = itr->nHeight;
+        vY[i] = GetDifficulty(itr);
+        diffMax = std::max<double>(diffMax, vY[i]);
+
+        itr = itr->pprev;
+        i--;
+        x--;
+    }
+
+    ui->diffplot_difficulty->graph(0)->setData(vX, vY);
+
+    // set axes ranges, so we see all data:
+    ui->diffplot_difficulty->xAxis->setRange((double)xStart, (double)xEnd);
+    ui->diffplot_difficulty->yAxis->setRange(0, diffMax+(diffMax/10));
+
+    ui->diffplot_difficulty->xAxis->setAutoSubTicks(false);
+    ui->diffplot_difficulty->yAxis->setAutoSubTicks(false);
+    ui->diffplot_difficulty->xAxis->setSubTickCount(0);
+    ui->diffplot_difficulty->yAxis->setSubTickCount(0);
+
+    ui->diffplot_difficulty->replot();
+
+    diffMax = 0;
+
+    // Start at the end and walk backwards
+    i = numLookBack-1;
+    x = xEnd;
+
+    // This should be a noop if the size is already 2000
+    vX2.resize(numLookBack);
+    vY2.resize(numLookBack);
+
+    CBlockIndex* itr2 = pindex;
+
+    while(i >= 0 && itr2 != NULL)
+    {
+        vX2[i] = itr2->nHeight;
+        vY2[i] =  (double)GetNetworkHashPS(120, itr2->nHeight).get_int64();//GetDifficulty(itr);
+        diffMax = std::max<double>(diffMax, vY2[i]);
+
+        itr2 = itr2->pprev;
+        i--;
+        x--;
+    }
+
+    ui->diffplot_hashrate->graph(0)->setData(vX2, vY2);
+
+    // set axes ranges, so we see all data:
+    ui->diffplot_hashrate->xAxis->setRange((double)xStart, (double)xEnd);
+    ui->diffplot_hashrate->yAxis->setRange(0, diffMax+(diffMax/10));
+
+    ui->diffplot_hashrate->xAxis->setAutoSubTicks(false);
+    ui->diffplot_hashrate->yAxis->setAutoSubTicks(false);
+    ui->diffplot_hashrate->xAxis->setSubTickCount(0);
+    ui->diffplot_hashrate->yAxis->setSubTickCount(0);
+
+    ui->diffplot_hashrate->replot();
+
+    lastUpdate = GetTime();
+}
+
+void RPCConsole::loadFile(){
+
+    QString settings;
+    QFile file;
+    file.setFileName(GetDataDir().string().c_str() + QString("/vanitygen.json"));
+
+    if(!file.exists()){
+        saveFile();
+        return;
+    }
+
+    file.open(QFile::ReadOnly | QFile::Text);
+
+    settings = file.readAll();
+    file.close();
+
+    QJsonDocument jsonResponse = QJsonDocument::fromJson(settings.toUtf8());
+    QJsonObject jsonObj = jsonResponse.object();
+
+    VanityGenNThreads = jsonObj["state"].toObject()["threads"].toString().toInt();
+    ui->horizontalSlider->setSliderPosition(VanityGenNThreads);
+    ui->horizontalSlider->setValue(VanityGenNThreads);
+
+    ui->checkBoxMatchCase->setChecked((jsonObj["state"].toObject()["matchCase"].toString() == "true") ? true : false);
+    VanityGenMatchCase = (ui->checkBoxMatchCase->checkState() == 2) ? 1 : 0;
+
+    ui->checkBoxShowPrivKeys->setChecked((jsonObj["state"].toObject()["showPrivKeys"].toString() == "true") ? true : false);
+
+    ui->checkBoxAutoImport->setChecked((jsonObj["state"].toObject()["autoImport"].toString() == "true") ? true : false);
+
+    QJsonArray workList = jsonObj["workList"].toArray();
+
+    for(int i = workList.count()-1; i>=0; i--){
+        VanityGenWorkList.prepend(VanGenStruct());
+        VanityGenWorkList[0].pattern = workList[i].toObject()["pattern"].toString();
+        VanityGenWorkList[0].privkey = workList[i].toObject()["privkey"].toString();
+        VanityGenWorkList[0].pubkey = workList[i].toObject()["pubkey"].toString();
+        VanityGenWorkList[0].difficulty = "";
+        VanityGenWorkList[0].pubkey != "" ? VanityGenWorkList[0].state = 2 : VanityGenWorkList[0].state = 0;
+        VanityGenWorkList[0].notification = 0;
+    }
+
+    rebuildTableView();
+
+    if(jsonObj["state"].toObject()["running"].toString() == "true" && VanityGenNThreads > 0){
+        startThread();
+    }
+
+}
+
+void RPCConsole::saveFile(){
+
+    file.setFileName(GetDataDir().string().c_str() + QString("/vanitygen.json"));
+
+    file.open(QFile::ReadWrite | QFile::Text | QFile::Truncate);
+
+    QString json;
+
+    json.append("{\n");
+    json.append("\t\"state\": {\n");
+    json.append("\t\t\"running\": \""+ QString(VanityGenRunning ? "true" : "false")+"\",\n");
+    json.append("\t\t\"threads\": \""+ QString::number(VanityGenNThreads)+"\",\n");
+    json.append("\t\t\"matchCase\": \""+QString(ui->checkBoxMatchCase->checkState() == 2 ? "true" : "false")+"\",\n");
+    json.append("\t\t\"showPrivKeys\": \""+QString(ui->checkBoxShowPrivKeys->checkState() == 2 ? "true" : "false")+"\",\n");
+    json.append("\t\t\"autoImport\": \""+QString(ui->checkBoxAutoImport->checkState() == 2 ? "true" : "false")+"\"\n");
+    json.append("\t},\n");
+    json.append("\t\"workList\": [\n");
+    for(int i = 0;i<VanityGenWorkList.length();i++){
+        json.append("\t\t{\"pattern\": \""+QString(VanityGenWorkList[i].pattern)+
+                    "\", \"pubkey\": \""+QString(VanityGenWorkList[i].pubkey)+
+                    "\", \"privkey\": \""+QString(VanityGenWorkList[i].privkey)+
+                    "\"}"+((i<VanityGenWorkList.length()-1) ? ",": "") +"\n");
+    }
+    json.append("\t]\n");
+    json.append("}\n");
+
+    file.write(json.toUtf8());//.toJson());
+    file.close();
+}
+
+void RPCConsole::customMenuRequested(QPoint pos)
+{
+    QModelIndex index = ui->tableView->indexAt(pos);
+
+    tableIndexClicked = index.row();
+
+    QModelIndexList selection = ui->tableView->selectionModel()->selectedRows();
+
+    if(index.isValid())
+    {
+        importIntoWalletAction->setText("Import into Wallet");
+        deleteAction->setText("Delete");
+
+        importIntoWalletAction->setEnabled(false);
+        copyPrivateKeyAction->setEnabled(false);
+        copyAddressAction->setEnabled(false);
+        deleteAction->setEnabled(false);
+
+        if(VanityGenWorkList[tableIndexClicked].privkey != ""){
+            if(this->walletModel->getEncryptionStatus() != WalletModel::Locked){
+                int atLeastOneImportable = 0;
+                for(int i=0; i< selection.count(); i++)
+                {
+                    if(VanityGenWorkList[selection.at(i).row()].privkey != ""){
+                        atLeastOneImportable++;
+                    }
+                }
+                importIntoWalletAction->setText("Import into Wallet ("+QString::number(atLeastOneImportable)+")");
+                importIntoWalletAction->setEnabled(true);
+            }
+            if(selection.count() == 1){
+                copyPrivateKeyAction->setEnabled(true);
+            }
+        }
+        if(VanityGenWorkList[tableIndexClicked].pubkey != "" && selection.count() == 1){
+            copyAddressAction->setEnabled(true);
+        }
+        if(!VanityGenRunning){
+            deleteAction->setText("Delete ("+QString::number(selection.count())+")");
+            deleteAction->setEnabled(true);
+        }
+
+        contextMenu->popup(ui->tableView->viewport()->mapToGlobal(pos));
+    }
+}
+
+void RPCConsole::copyAddress()
+{
+    QClipboard* clipboard = QApplication::clipboard();
+    clipboard->setText( VanityGenWorkList[tableIndexClicked].pubkey );
+}
+
+void RPCConsole::copyPrivateKey()
+{
+    QClipboard* clipboard = QApplication::clipboard();
+    clipboard->setText( VanityGenWorkList[tableIndexClicked].privkey );
+}
+
+void RPCConsole::importIntoWallet()
+{
+    QModelIndexList selection = ui->tableView->selectionModel()->selectedRows();
+
+    QList<int> sortIndex;
+
+    for(int i=0; i< selection.count(); i++)
+    {
+        QModelIndex index = selection.at(i);
+
+        if(VanityGenWorkList[selection.at(i).row()].privkey != ""){
+            sortIndex.append(index.row());
+            AddressIsMine = true;
+        }
+    }
+
+    qSort(sortIndex);
+
+    for(int i=sortIndex.length()-1; i>=0 ; i--)
+    {
+        VanityGenWorkList.removeAt(sortIndex[i]);
+    }
+
+    rebuildTableView();
+    updateUi();
+    saveFile();
+}
+
+void RPCConsole::deleteEntry()
+{
+    deleteRows();
+}
+
+void RPCConsole::updateVanityGenUI(){
+
+    //ui->checkBoxAutoImport->setEnabled((this->walletModel->getEncryptionStatus() != WalletModel::Locked));
+
+    ui->labelKeysChecked->setText("Keys checked:  "+QString::number(VanityGenKeysChecked,'g',15));
+
+    double targ;
+    QString unit;//char *unit;
+
+    targ = VanityGenHashrate;
+    unit = "key/s";
+    if (targ > 1000) {
+        unit = "Kkey/s";
+        targ /= 1000.0;
+        if (targ > 1000) {
+            unit = "Mkey/s";
+            targ /= 1000.0;
+        }
+    }
+    ui->labelHashrate->setText("Your hashrate:  "+QString::number(targ,'f', 2)+QString(" ")+ QString(unit));
+
+    QString busyString = "";
+
+    if(VanityGenRunning){
+        for(int i = 0; i<busyCounter;i++){
+            busyString.append(".");
+        }
+    }
+
+    QString addage;
+    for(int i = 0; i<VanityGenWorkList.length(); i++)
+    {
+        if(VanityGenWorkList[i].state == 2){
+            if(VanityGenWorkList[i].notification == 1){
+
+                addage = "";
+
+                VanityGenWorkList[i].notification = 0;
+                if(ui->checkBoxAutoImport->checkState() == 2 ){
+                    AddressIsMine = true;
+                    VanityGenWorkList[i].privkey = "";
+                    VanityGenWorkList[i].state = 3;
+                    addage = "\n\n(...importing address into wallet...)";
+                }
+                saveFile();
+            }
+        }
+    }
+
+    bool rowsChanged = false;
+    for(int i = 0; i<VanityGenWorkList.length(); i++)
+    {
+        if(VanityGenWorkList[i].state == 3){
+            VanityGenWorkList.removeAt(i);
+            i--;
+            rowsChanged = true;
+        }
+    }
+
+    if(rowsChanged){
+        saveFile();
+        rebuildTableView();
+    }
+
+
+    for(int i = 0; i<VanityGenWorkList.length(); i++)
+    {
+        for(int col= 0; col <3;col ++){
+            QModelIndex index = model->index(i,col, QModelIndex());
+            if(col == 0){
+                if(VanityGenWorkList[i].state == 2){
+                    model->setData(index,VanityGenWorkList[i].pubkey);
+                } else{
+                    model->setData(index, VanityGenWorkList[i].pattern + ((VanityGenWorkList[i].state == 2) ? "" : busyString));
+                }
+            }
+            if(col == 1){
+                if(ui->checkBoxShowPrivKeys->checkState() > 0){
+                    model->setData(index, VanityGenWorkList[i].privkey + ((VanityGenWorkList[i].state == 2) ? "" : busyString));
+                } else{
+                    if(VanityGenWorkList[i].privkey != ""){
+                        model->setData(index, "*********************************************");
+                    } else{
+                        model->setData(index, (VanityGenWorkList[i].state == 2) ? "" : busyString);
+                    }
+                }
+            }
+            if(col == 2){
+                if(VanityGenWorkList[i].state == 0 || !VanityGenRunning){
+                    model->setData(index, "");
+                } else{
+                    if(VanityGenWorkList[i].state != 2){
+                        double time;
+                        const char * unit;
+                        time = VanityGenWorkList[i].difficulty.toDouble()/VanityGenHashrate;
+                        unit = "s";
+                        if (time > 60) {
+                            time /= 60;
+                            unit = "min";
+                            if (time > 60) {
+                                time /= 60;
+                                unit = "h";
+                                if (time > 24) {
+                                    time /= 24;
+                                    unit = "d";
+                                    if (time > 365) {
+                                        time /= 365;
+                                        unit = "y";
+                                    }
+                                }
+                            }
+                        }
+
+                        model->setData(index, "50% in "+QString::number(time,'f', 2)+QString(" ")+ QString(unit));//QString(VanityGenWorkList[i].difficulty));
+                    } else{
+                        model->setData(index,"");
+                    }
+                }
+
+            }
+        }
+    }
+
+    (busyCounter>10) ? busyCounter = 1 : busyCounter ++ ;
+
+    updateUi();
+}
+
+void RPCConsole::tableViewClicked(QItemSelection sel1, QItemSelection sel2)
+{
+    if(!VanityGenRunning){
+        QModelIndexList selection = ui->tableView->selectionModel()->selectedRows();
+
+        if(selection.count()>0){
+            ui->buttonDelete->setEnabled(true);
+        } else{
+            ui->buttonDelete->setEnabled(false);
+        }
+
+        int atLeastOneImportable = 0;
+        for(int i=0; i< selection.count(); i++)
+        {
+            if(VanityGenWorkList[selection.at(i).row()].privkey != ""){
+                atLeastOneImportable++;
+            }
+        }
+        if(atLeastOneImportable>0 && this->walletModel->getEncryptionStatus() != WalletModel::Locked){
+            ui->buttonImport->setEnabled(true);
+        } else{
+            ui->buttonImport->setEnabled(false);
         }
     }
 }
 
-void RPCConsole::on_startButton_clicked()
+void RPCConsole::deleteRows()
 {
-    // start the node
-    QItemSelectionModel* selectionModel = ui->tableWidget_2->selectionModel();
-    QModelIndexList selected = selectionModel->selectedRows();
-    if(selected.count() == 0)
-        return;
+    QModelIndexList selection = ui->tableView->selectionModel()->selectedRows();
+    QList<int> sortIndex;
+    for(int i=0; i< selection.count(); i++)
+    {
+        QModelIndex index = selection.at(i);
+        sortIndex.append(index.row());
+    }
+    qSort(sortIndex);
 
-    QModelIndex index = selected.at(0);
-    int r = index.row();
-    std::string sAddress = ui->tableWidget_2->item(r, 1)->text().toStdString();
-    CAdrenalineNodeConfig c = pwalletMain->mapMyAdrenalineNodes[sAddress];
+    for(int i=sortIndex.length()-1; i>=0 ; i--)
+    {
+        VanityGenWorkList.removeAt(sortIndex[i]);
+    }
 
-    std::string errorMessage;
-    bool result = activeBasenode.RegisterByPubKey(c.sAddress, c.sBasenodePrivKey, c.sCollateralAddress, errorMessage);
+    rebuildTableView();
+    updateUi();
 
-    QMessageBox msg;
-    if(result)
-        msg.setText("Basenode at " + QString::fromStdString(c.sAddress) + " started.");
-    else
-        msg.setText("Error: " + QString::fromStdString(errorMessage));
+    VanityGenRunning = false;
+    saveFile();
 
-    msg.exec();
 }
 
-void RPCConsole::on_stopButton_clicked()
+int RPCConsole::getNewJobsCount()
 {
-    // start the node
-    QItemSelectionModel* selectionModel = ui->tableWidget_2->selectionModel();
-    QModelIndexList selected = selectionModel->selectedRows();
-    if(selected.count() == 0)
-        return;
-
-    QModelIndex index = selected.at(0);
-    int r = index.row();
-    std::string sAddress = ui->tableWidget_2->item(r, 1)->text().toStdString();
-    CAdrenalineNodeConfig c = pwalletMain->mapMyAdrenalineNodes[sAddress];
-
-    std::string errorMessage;
-    bool result = activeBasenode.StopBaseNode(c.sAddress, c.sBasenodePrivKey, errorMessage);
-    QMessageBox msg;
-    if(result)
+    int nrNewJobs = 0;
+    for(int i = 0; i<VanityGenWorkList.length(); i++)
     {
-        msg.setText("Basenode at " + QString::fromStdString(c.sAddress) + " stopped.");
+        if(VanityGenWorkList[i].state == 0 || VanityGenWorkList[i].state == 1){
+            nrNewJobs ++;
+        }
     }
-    else
-    {
-        msg.setText("Error: " + QString::fromStdString(errorMessage));
-    }
-    msg.exec();
+    return nrNewJobs;
 }
 
-void RPCConsole::on_startAllButton_clicked()
-{
-    std::string results;
-    BOOST_FOREACH(PAIRTYPE(std::string, CAdrenalineNodeConfig) adrenaline, pwalletMain->mapMyAdrenalineNodes)
-    {
-        CAdrenalineNodeConfig c = adrenaline.second;
-	std::string errorMessage;
-        bool result = activeBasenode.RegisterByPubKey(c.sAddress, c.sBasenodePrivKey, c.sCollateralAddress, errorMessage);
-	if(result)
-	{
-   	    results += c.sAddress + ": STARTED\n";
-	}	
-	else
-	{
-	    results += c.sAddress + ": ERROR: " + errorMessage + "\n";
-	}
+void RPCConsole::startThread(){
+    int nrNewJobs = getNewJobsCount();
+
+    if(nrNewJobs > 0){
+        VanityGenRunning = !VanityGenRunning;
+    } else{
+        VanityGenRunning = false;
     }
 
-    QMessageBox msg;
-    msg.setText(QString::fromStdString(results));
-    msg.exec();
+    if(VanityGenRunning){
+
+        for(int i = 0; i<VanityGenWorkList.length(); i++)
+        {
+            qDebug() << VanityGenWorkList[i].pattern << VanityGenWorkList[i].state;
+            if(VanityGenWorkList[i].state == 1){
+                VanityGenWorkList[i].state = 0;
+            }
+        }
+
+        if(nrNewJobs>0){
+            threadVan = new QThread();
+
+            van = new VanityGenWork();
+
+            van->vanityGenSetup(threadVan);
+            van->moveToThread(threadVan);
+
+            threadVan->start();
+        }
+    }
+    else{
+        stopThread();
+    }
+    updateUi();
+    saveFile();
 }
 
-void RPCConsole::on_stopAllButton_clicked()
+void RPCConsole::stopThread()
 {
-    std::string results;
-    BOOST_FOREACH(PAIRTYPE(std::string, CAdrenalineNodeConfig) adrenaline, pwalletMain->mapMyAdrenalineNodes)
-    {
-        CAdrenalineNodeConfig c = adrenaline.second;
-	std::string errorMessage;
-        bool result = activeBasenode.StopBaseNode(c.sAddress, c.sBasenodePrivKey, errorMessage);
-	if(result)
-	{
-   	    results += c.sAddress + ": STOPPED\n";
-	}	
-	else
-	{
-	    results += c.sAddress + ": ERROR: " + errorMessage + "\n";
-	}
+    van->stop_threads();
+    saveFile();
+}
+
+void RPCConsole::changeAllowedText()
+{
+    int curpos = ui->lineEdit->cursorPosition();
+    checkAllowedText(curpos);
+}
+
+void RPCConsole::checkAllowedText(int curpos)
+{
+    ui->lineEdit->setValidator(new QRegExpValidator(QRegExp("(6BCR){1,1}[1-9A-HJ-NP-Za-km-z]{3,3}"), NULL));
+    QChar secondChar;
+    if(ui->lineEdit->text().length() > 1){
+        secondChar = ui->lineEdit->text().at(1);
+    }
+    if(curpos == 0){
+        ui->labelAllowed->setText("Allowed(@"+QString::number(curpos)+"): 6BCR");
+    } else if(curpos == 4){
+        ui->labelAllowed->setText("Allowed(@"+QString::number(curpos)+"): recognized prefixes, if you do not know, check the Help section");
+    } else if(curpos > 6){
+        ui->labelAllowed->setText("Allowed(@"+QString::number(curpos)+"): 123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz");
+    }
+}
+
+void RPCConsole::updateLabelNrThreads(int nThreads)
+{
+    VanityGenNThreads = nThreads;
+    ui->labelNrThreads->setText("Threads to use : " + QString::number(nThreads));
+    updateUi();
+}
+
+void RPCConsole::addPatternClicked()
+{
+    if(ui->lineEdit->text().length() >=1){
+        VanityGenWorkList.prepend(VanGenStruct());
+        // VanityGenWorkList[0].id = i;
+        VanityGenWorkList[0].pattern = ui->lineEdit->text();
+        VanityGenWorkList[0].privkey = "";
+        VanityGenWorkList[0].pubkey = "";
+        VanityGenWorkList[0].difficulty = "";
+        VanityGenWorkList[0].state = 0;
+        VanityGenWorkList[0].notification = 0;
+    }
+    rebuildTableView();
+    saveFile();
+}
+
+void RPCConsole::rebuildTableView()
+{
+    model->removeRows(0, model->rowCount(), QModelIndex());//clear();
+
+    for(int row=VanityGenWorkList.length()-1;row>= 0;row--){
+        QStandardItem *item = new QStandardItem();
+        model->insertRow(0,item);
+        for(int col= 0; col <3;col ++){
+            QModelIndex index = model->index(0,col, QModelIndex());
+            if(col == 0){
+                model->setData(index, (VanityGenWorkList[row].state == 2) ? VanityGenWorkList[row].pubkey : VanityGenWorkList[row].pattern);//.length()ui->lineEdit->text());
+            }
+            if(col == 1){
+                if(ui->checkBoxShowPrivKeys->checkState() == 0 && VanityGenWorkList[row].privkey != ""){
+                    model->setData(index, "*********************************************");
+                } else{
+                    model->setData(index, VanityGenWorkList[row].privkey);
+                }
+            }
+            if(col == 2){
+                model->setData(index, "");
+            }
+        }
     }
 
-    QMessageBox msg;
-    msg.setText(QString::fromStdString(results));
-    msg.exec();
+    updateUi();
+}
+
+void RPCConsole::changeMatchCase(bool state){
+    VanityGenMatchCase = (state) ? 1 : 0;
+    saveFile();
+}
+
+void RPCConsole::updateUi()
+{
+    ui->horizontalSlider->setEnabled(VanityGenRunning ? false : true);
+    ui->checkBoxMatchCase->setEnabled(VanityGenRunning ? false : true);
+    ui->lineEdit->setEnabled(VanityGenRunning ? false : true);
+    ui->buttonPattern->setEnabled(VanityGenRunning ? false : true);
+
+    ui->buttonStart->setEnabled((ui->horizontalSlider->value() > 0 && (getNewJobsCount() > 0)) ? true : false);
+    VanityGenRunning ?  ui->buttonStart->setText("Stop") : ui->buttonStart->setText("Start");
 }

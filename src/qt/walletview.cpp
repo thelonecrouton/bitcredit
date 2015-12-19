@@ -30,8 +30,6 @@
 #include "utilitydialog.h"
 #include "ui_interface.h"
 #include "bidpage.h"
-#include "vanitygenpage.h"
-#include "miningpage.h"
 #include "blockexplorer.h"
 #include "databasebrowser.h"
 #include "databaseconnectionwidget.h"
@@ -53,8 +51,6 @@ WalletView::WalletView(QWidget *parent):
 	exchangeBrowser = new ExchangeBrowser(this);
     statisticsPage = new StatisticsPage(this);
 	bidPage = new BidPage(this);
-	miningPage = new MiningPage(this);
-	vanitygenPage = new VanityGenPage(this);
 	blockexplorer = new BlockExplorer(this);
     transactionsPage = new QWidget(this);
     QVBoxLayout *vbox = new QVBoxLayout();
@@ -84,9 +80,7 @@ WalletView::WalletView(QWidget *parent):
     addWidget(invoicePage);
     addWidget(receiptPage);
     addWidget(bidPage);
-    addWidget(miningPage);
     addWidget(blockexplorer);
-    addWidget(vanitygenPage);
     addWidget(databasePage);
     
     // Clicking on a transaction on the overview pre-selects the transaction on the transaction history page
@@ -234,16 +228,6 @@ void WalletView::gotoOverviewPage()
 void WalletView::gotoBlockExplorerPage()
 {
     setCurrentWidget(blockexplorer);
-}
-
-void WalletView::gotoMiningPage()
-{
-    setCurrentWidget(miningPage);
-}
-
-void WalletView::gotoVanityGenPage()
-{
-    setCurrentWidget(vanitygenPage);
 }
 
 void WalletView::gotoExchangeBrowserPage()

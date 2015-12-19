@@ -78,10 +78,8 @@ public slots:
     void gotoInvoicesPage();
     /** Switch to receipt page */
     void gotoReceiptPage();
-    void gotoMiningPage();
     void gotoBlockExplorerPage();
 	void gotoVoteCoinsPage(QString addr = "");
-	void gotoVanityGenPage();
     /** Encrypt the wallet */
     void encryptWallet(bool status);
     /** Backup the wallet */

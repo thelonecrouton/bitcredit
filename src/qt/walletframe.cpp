@@ -197,25 +197,11 @@ void WalletFrame::gotoVoteCoinsPage(QString addr)
         i.value()->gotoVoteCoinsPage(addr);
 }
 
-void WalletFrame::gotoMiningPage()
-{
-    QMap<QString, WalletView*>::const_iterator i;
-    for (i = mapWalletViews.constBegin(); i != mapWalletViews.constEnd(); ++i)
-        i.value()->gotoMiningPage();
-}
-
 void WalletFrame::gotoBlockExplorerPage()
 {
     QMap<QString, WalletView*>::const_iterator i;
     for (i = mapWalletViews.constBegin(); i != mapWalletViews.constEnd(); ++i)
         i.value()->gotoBlockExplorerPage();
-}
-
-void WalletFrame::gotoVanityGenPage()
-{
-    QMap<QString, WalletView*>::const_iterator i;
-    for (i = mapWalletViews.constBegin(); i != mapWalletViews.constEnd(); ++i)
-        i.value()->gotoVanityGenPage();
 }
 
 void WalletFrame::gotoSignMessageTab(QString addr)

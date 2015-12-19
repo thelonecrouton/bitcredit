@@ -1136,7 +1136,8 @@ bool SecureMsgReceiveData(CNode* pfrom, std::string strCommand, CDataStream& vRe
 
         if (vchData.size() < 4)
         {
-            Misbehaving(pfrom->id, 1);
+            Misbehaving(pfrom->GetId(), 1);
+
             return false; // not enough data received to be a valid smsgInv
         }
 
@@ -1161,14 +1162,14 @@ bool SecureMsgReceiveData(CNode* pfrom, std::string strCommand, CDataStream& vRe
         if (nInvBuckets > (SMSG_RETENTION / SMSG_BUCKET_LEN) + 1) // +1 for some leeway
         {
             LogPrintf("Peer sent more bucket headers than possible %u, %u.\n", nInvBuckets, (SMSG_RETENTION / SMSG_BUCKET_LEN));
-            Misbehaving(pfrom->id, 1);
+            Misbehaving(pfrom->GetId(), 1);
             return false;
         }
 
         if (vchData.size() < 4 + nInvBuckets*16)
         {
             LogPrintf("Remote node did not send enough data.\n");
-            Misbehaving(pfrom->id, 1);
+            Misbehaving(pfrom->GetId(), 1);
             return false;
         }
 
@@ -1195,15 +1196,16 @@ bool SecureMsgReceiveData(CNode* pfrom, std::string strCommand, CDataStream& vRe
                 if (fDebugSmsg)
                     LogPrintf("Not interested in peer bucket %d, has expired.\n", (int) time);
 
-                if (time < now - SMSG_RETENTION - SMSG_TIME_LEEWAY)
-                    Misbehaving(pfrom->id, 1);
+                if (time < now - SMSG_RETENTION - SMSG_TIME_LEEWAY){
+                    Misbehaving(pfrom->GetId(), 1);
+                }
                 continue;
             }
             if (time > now + SMSG_TIME_LEEWAY)
             {
                 if (fDebugSmsg)
                     LogPrintf("Not interested in peer bucket %d, in the future.\n", (int) time);
-                Misbehaving(pfrom->id, 1);
+                Misbehaving(pfrom->GetId(), 1);
                 continue;
             }
 
@@ -1223,7 +1225,8 @@ bool SecureMsgReceiveData(CNode* pfrom, std::string strCommand, CDataStream& vRe
             if (smsgBuckets[time].nLockCount > 0)
             {
                 if (fDebugSmsg)
-                    std::cout << "Bucket is locked " << smsgBuckets[time].nLockCount << " waiting for peer " << smsgBuckets[time].nLockPeerId << " to send data." << std::endl;
+                    //std::cout << "Bucket is locked " << smsgBuckets[time].nLockCount << " waiting for peer " << smsgBuckets[time].nLockPeerId << " to send data." << std::endl;
+                    LogPrintf("Bucket is locked  %d, waiting for peer %d  to send data.\n", smsgBuckets[time].nLockCount, smsgBuckets[time].nLockPeerId);
                 nLocked++;
                 continue;
             }
@@ -1346,7 +1349,7 @@ bool SecureMsgReceiveData(CNode* pfrom, std::string strCommand, CDataStream& vRe
         {
             if (fDebugSmsg)
                 LogPrintf("Not interested in peer bucket %d, in the future.\n", (int32_t) time);
-            Misbehaving(pfrom->id, 1);
+            Misbehaving(pfrom->GetId(), 1);
             return false;
         }
 
@@ -1505,7 +1508,7 @@ bool SecureMsgReceiveData(CNode* pfrom, std::string strCommand, CDataStream& vRe
         if (vchData.size() < 8)
         {
             LogPrintf("smsgMatch, not enough data %d.\n", (int) vchData.size());
-            Misbehaving(pfrom->id, 1);
+            Misbehaving(pfrom->GetId(), 1);
             return false;
         }
 
@@ -1559,7 +1562,7 @@ bool SecureMsgReceiveData(CNode* pfrom, std::string strCommand, CDataStream& vRe
         if (vchData.size() < 8)
         {
             LogPrintf("smsgIgnore, not enough data %d.\n", (int) vchData.size());
-            Misbehaving(pfrom->id, 1);
+            Misbehaving(pfrom->GetId(), 1);
             return false;
         }
 
@@ -2469,7 +2472,7 @@ int SecureMsgReceive(CNode* pfrom, std::vector<unsigned char>& vchData)
 
     if (nBunch == 0 || nBunch > 500) {
         LogPrintf("Error: Invalid no. messages received in bunch %u, for bucket %d.\n", nBunch, (int32_t) bktTime);
-        Misbehaving(pfrom->id, 1);
+        Misbehaving(pfrom->GetId(), 1);
 
         // -- release lock on bucket if it exists
         itb = smsgBuckets.find(bktTime);
@@ -2489,8 +2492,14 @@ int SecureMsgReceive(CNode* pfrom, std::vector<unsigned char>& vchData)
         SecureMessageHeader header(&vchData[n]);
 
         int rv = SecureMsgValidate(header, vchData.size() - n-SMSG_HDR_LEN);
+        string reason;
         if (rv != 0) {
-            Misbehaving(pfrom->id, 1);
+            Misbehaving(pfrom->GetId(), 1);
+            if( rv=1 ) reason ="error";
+            if( rv=4 ) reason ="invalid version";
+            if( rv=5 ) reason ="payload too large";
+
+            LogPrintf("SMSG Misbehave reason == %x", reason);
             continue;
         }
 
