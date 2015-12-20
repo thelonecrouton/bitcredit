@@ -23,7 +23,7 @@ Value gettrust(const Array& params, bool fHelp)
 	string search =params[0].get_str().c_str();
 	Object o;
 	TrustEngine t;
-	string g = t.getidtrust(search);
+	string g = t.gettrust(search);
    
 	o.push_back(Pair(params[0].get_str().c_str(),g));
 	

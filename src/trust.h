@@ -26,24 +26,8 @@ class TrustEngine
 public:
 
 	void createdb();
-
-	void deletedb();
-
-	void insertdb(string address);
-
-	void selectfulldb();
-
-	void selectrecorddb(string address);
-
-	void showbncandidatesdb(string address);
-
-	void updatedb();
+	string gettrust(std::string chainID);
 	
-	void buildrawdb();
-
-	void sortclientdata(string clientAddress);
-	
-	string getidtrust(string search);
 };
 
 #endif
