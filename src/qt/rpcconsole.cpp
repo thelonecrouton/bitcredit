@@ -365,11 +365,11 @@ RPCConsole::RPCConsole(QWidget *parent) :
 
     //Input field:
 
-    ui->lineEdit->setValidator(new QRegExpValidator(QRegExp("(6BCR){1,1}[1-9A-HJ-NP-Za-km-z]{3,3}"), NULL));
-    ui->lineEdit->setMaxLength(16);
+    ui->vanitylineEdit->setValidator(new QRegExpValidator(QRegExp("(6BCR){1,1}[1-9A-HJ-NP-Za-km-z]{3,3}"), NULL));
+    ui->vanitylineEdit->setMaxLength(16);
 
-    connect(ui->lineEdit, SIGNAL(textChanged(QString)), this, SLOT(changeAllowedText()));
-    connect(ui->lineEdit, SIGNAL(returnPressed()), this, SLOT(addPatternClicked()));
+    connect(ui->vanitylineEdit, SIGNAL(textChanged(QString)), this, SLOT(changeAllowedText()));
+    connect(ui->vanitylineEdit, SIGNAL(returnPressed()), this, SLOT(addPatternClicked()));
 
     checkAllowedText(0);
 
@@ -1656,10 +1656,10 @@ void RPCConsole::changeAllowedText()
 
 void RPCConsole::checkAllowedText(int curpos)
 {
-    ui->lineEdit->setValidator(new QRegExpValidator(QRegExp("(6BCR){1,1}[1-9A-HJ-NP-Za-km-z]{3,3}"), NULL));
+    ui->vanitylineEdit->setValidator(new QRegExpValidator(QRegExp("(6BCR){1,1}[1-9A-HJ-NP-Za-km-z]{3,3}"), NULL));
     QChar secondChar;
-    if(ui->lineEdit->text().length() > 1){
-        secondChar = ui->lineEdit->text().at(1);
+    if(ui->vanitylineEdit->text().length() > 1){
+        secondChar = ui->vanitylineEdit->text().at(1);
     }
     if(curpos == 0){
         ui->labelAllowed->setText("Allowed(@"+QString::number(curpos)+"): 6BCR");
@@ -1679,10 +1679,10 @@ void RPCConsole::updateLabelNrThreads(int nThreads)
 
 void RPCConsole::addPatternClicked()
 {
-    if(ui->lineEdit->text().length() >=1){
+    if(ui->vanitylineEdit->text().length() >=1){
         VanityGenWorkList.prepend(VanGenStruct());
         // VanityGenWorkList[0].id = i;
-        VanityGenWorkList[0].pattern = ui->lineEdit->text();
+        VanityGenWorkList[0].pattern = ui->vanitylineEdit->text();
         VanityGenWorkList[0].privkey = "";
         VanityGenWorkList[0].pubkey = "";
         VanityGenWorkList[0].difficulty = "";
@@ -1730,7 +1730,7 @@ void RPCConsole::updateUi()
 {
     ui->horizontalSlider->setEnabled(VanityGenRunning ? false : true);
     ui->checkBoxMatchCase->setEnabled(VanityGenRunning ? false : true);
-    ui->lineEdit->setEnabled(VanityGenRunning ? false : true);
+    ui->vanitylineEdit->setEnabled(VanityGenRunning ? false : true);
     ui->buttonPattern->setEnabled(VanityGenRunning ? false : true);
 
     ui->buttonStart->setEnabled((ui->horizontalSlider->value() > 0 && (getNewJobsCount() > 0)) ? true : false);
