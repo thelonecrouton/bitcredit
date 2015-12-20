@@ -2487,11 +2487,9 @@ bool static ConnectTip(CValidationState &state, CBlockIndex *pindexNew, CBlock *
 	std::map<std::string,int64_t> addressvalue = getbalances();
     BOOST_FOREACH(const CTransaction& tx, pblock->vtx){
 	
-	if(fBaseNode){	
-		sqlite3_open((GetDataDir() / "ratings/rawdata.db").string().c_str(), &rawdb);
-		char * insertquery = sqlite3_mprintf("insert into BLOCKS (ID, HASH, TIME, MINER) values (%lld,'%q',%lld,'%q')",pindexNew->nHeight, pblock->GetHash().ToString().c_str(), pblock->nTime, miner.c_str());
-		rc = sqlite3_exec(rawdb, insertquery, callback, 0, &zErrMsg);
-	}
+	sqlite3_open((GetDataDir() / "ratings/rawdata.db").string().c_str(), &rawdb);
+    char * insertquery = sqlite3_mprintf("insert into BLOCKS (ID, HASH, TIME, MINER) values (%lld,'%q',%lld,'%q')",pindexNew->nHeight, pblock->GetHash().ToString().c_str(), pblock->nTime, miner.c_str());
+	rc = sqlite3_exec(rawdb, insertquery, callback, 0, &zErrMsg);
 	
     for (unsigned int j = 0; j < tx.vout.size();j++){
 		CTxDestination address;
