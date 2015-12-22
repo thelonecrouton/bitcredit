@@ -49,7 +49,8 @@ Browser::~Browser()
 void Browser::exec()
 {
     QSqlQueryModel *model = new QSqlQueryModel(table);
-    //QString b = "INSERT INTO table VALUE "% sqlEdit->toPlainText();
+    QString b = "select * from RAWDATA WHERE ADDRESS = ? "% sqlEdit->toPlainText();
+
     model->setQuery(QSqlQuery(sqlEdit->toPlainText(), connectionWidget->currentDatabase()));
     table->setModel(model);
 

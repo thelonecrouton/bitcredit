@@ -987,9 +987,7 @@ void RPCConsole::updateNodeList()
             //if showMineOnlychecked, hide everything else
             if ((!listitems.contains(str1)) && ui->showMineOnly->isChecked())
             {
-            	ui->tableWidget->setRowHidden(i, true);
-            	
-            	
+            	ui->tableWidget->setRowHidden(i, true);            	
             }	
             //else just change background colour
             else if (listitems.contains(str1))
