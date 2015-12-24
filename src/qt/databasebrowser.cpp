@@ -205,13 +205,6 @@ void Browser::updateActions()
     }
 }
 
-void Browser::about()
-{
-    QMessageBox::about(this, tr("About"), tr("The SQL Browser demonstration "
-        "shows how a data browser can be used to visualize the results of SQL"
-                                             "statements on a live database"));
-}
-
 void Browser::on_fieldStrategyAction_triggered()
 {
     QSqlTableModel * tm = qobject_cast<QSqlTableModel *>(table->model());

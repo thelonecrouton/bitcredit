@@ -33,7 +33,7 @@ public slots:
     void showMetaData(const QString &table);
     void addConnection();
     void currentChanged();
-    void about();
+
 
     void on_insertRowAction_triggered();
     void on_deleteRowAction_triggered();
