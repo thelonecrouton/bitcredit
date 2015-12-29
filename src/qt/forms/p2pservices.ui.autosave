@@ -17,7 +17,7 @@
    <property name="geometry">
     <rect>
      <x>10</x>
-     <y>339</y>
+     <y>340</y>
      <width>841</width>
      <height>141</height>
     </rect>
@@ -65,6 +65,16 @@
      </layout>
     </item>
    </layout>
+  </widget>
+  <widget class="QTableWidget" name="tableWidget">
+   <property name="geometry">
+    <rect>
+     <x>20</x>
+     <y>20</y>
+     <width>831</width>
+     <height>301</height>
+    </rect>
+   </property>
   </widget>
  </widget>
  <resources/>

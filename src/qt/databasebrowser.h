@@ -4,7 +4,16 @@
 #include <QWidget>
 #include <QSqlTableModel>
 #include <QMessageBox>
-
+#include <QWidget>
+#include <QDir>
+#include <QFile>
+#include <QProcess>
+#include <QTime>
+#include <QTimer>
+#include <QStringList>
+#include <QMap>
+#include <QSettings>
+#include <QSlider>
 #include "ui_databasebrowserwidget.h"
 
 #include "walletmodel.h"

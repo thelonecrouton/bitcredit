@@ -15,9 +15,11 @@ public:
     explicit p2pservices(QWidget *parent = 0);
     ~p2pservices();
 
+public slots:
+    //void on_addressBookButton_clicked();
 private:
     Ui::p2pservices *ui;
-    void gettrust(std::string chainID);
+    void gettrust();
 };
 
 #endif // P2PSERVICES_H
