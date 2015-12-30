@@ -57,7 +57,7 @@ void Browser::exec()
     QSqlQuery q(db);
     q.prepare("SELECT * from RAWDATA WHERE ADDRESS = ?");
     q.addBindValue(sqlEdit->toPlainText());
-    unsigned long int balance, outgoingtx, firstuse, incomingtx, totalinputs, totaloutputs;
+    unsigned long int balance, outgoingtx, firstuse, incomingtx, totalinputs, totaloutputs, credit, votes;
 	double avedailyincome;
 	double trust=0;
     if(q.exec())
@@ -178,15 +178,15 @@ void Browser::exec()
     QString ntrust = QString::number(trust, 'f', 6);
     QString navedailyincome = QString::number(avedailyincome, 'f', 6);
     QString nbalance = QString::number(balance, 'f', 8);
-    //QString ncredit = QString::number(credit, 'f', 8);
-    //QString nvotes = QString::number(votes, 'f', 8);
+    QString ncredit = QString::number(credit, 'f', 8);
+    QString nvotes = QString::number(votes, 'f', 8);
     QString addr =sqlEdit->toPlainText();
 	trustrating->setText(ntrust);
 	income->setText(navedailyincome);
-    //balancer->setText(nbalance);
+    balancer->setText(nbalance);
 	address->setText(addr);	
-	//ui->creditrating->setText(ncredit);
-	//ui->votes->setText(nvotes);
+    creditrating->setText(ncredit);
+    votess->setText(nvotes);
 
     updateActions();
 }

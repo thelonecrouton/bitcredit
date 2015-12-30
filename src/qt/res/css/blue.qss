@@ -358,8 +358,3 @@ QMainWindow QToolBar#toolbar11 QToolButton:hover
 background-image:url(:/icons/bankstatstr);
 border: 1px solid #031cd7;
 }
-
-
-
-
-

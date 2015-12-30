@@ -43,17 +43,6 @@ void TrustEngine::createdb()
          "TOTALIN           INTEGER     DEFAULT 0," \
          "TOTALOUT          INTEGER     DEFAULT 0);");
 
-  sql.push_back("CREATE TABLE PEERS("  \
-         "ADDRESS TEXT PRIMARY KEY      NOT NULL," \
-         "CREDIT            INTEGER     DEFAULT 0," \
-         "DEBIT             INTEGER     DEFAULT 0," \
-         "TXCOUNT       	INTEGER     DEFAULT 0," \
-         "TRUST             INTEGER     DEFAULT 0," \
-         "CREDITSCORE       INTEGER     DEFAULT 0," \
-         "RATING       		INTEGER     DEFAULT 0," \
-         "TXDATE       		INTEGER     DEFAULT 0," \
-         "DUEDATE      		INTEGER     DEFAULT 0);");
-
   sql.push_back("CREATE TABLE BLOCKS(" \
             "    ID INTEGER PRIMARY KEY AUTOINCREMENT," \
             "    HASH TEXT," \
@@ -80,5 +69,3 @@ void TrustEngine::createdb()
 		if (fDebug)LogPrintf( "database closed successfully\n");
 	}
 }
-
-
