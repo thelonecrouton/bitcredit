@@ -16,7 +16,7 @@ public:
     ~p2pservices();
 
 public slots:
-    //void on_addressBookButton_clicked();
+    void on_addressBookButton_clicked();
 private:
     Ui::p2pservices *ui;
     void gettrust();
