@@ -108,7 +108,8 @@ QT_FORMS_UI = \
   qt/forms/votecoinsentry.ui \
   qt/forms/blockexplorer.ui  \
   qt/forms/databasebrowserwidget.ui \
-  qt/forms/p2pservices.ui
+  qt/forms/p2pservices.ui \
+  qt/forms/assetspage.ui
 
 QT_MOC_CPP = \
   qt/moc_addressbookpage.cpp \
@@ -178,7 +179,8 @@ QT_MOC_CPP = \
   qt/moc_adrenalinenodeconfigdialog.cpp \
   qt/moc_databasebrowser.cpp \
   qt/moc_databaseconnectionwidget.cpp \
-  qt/moc_p2pservices.cpp
+  qt/moc_p2pservices.cpp \
+  qt/moc_assetspage.cpp
 
 BITCREDIT_MM = \
   qt/macdockiconhandler.mm \
@@ -275,7 +277,8 @@ BITCREDIT_QT_H = \
   qt/adrenalinenodeconfigdialog.h \
   qt/databasebrowser.h \
   qt/databaseconnectionwidget.h \
-  qt/p2pservices.h
+  qt/p2pservices.h \
+  qt/assetspage.h
 
 RES_ICONS = \
   qt/res/icons/add.png \
@@ -411,7 +414,8 @@ BITCREDIT_QT_CPP += \
   qt/invoiceviewpage.cpp \
   qt/invoicepage.cpp \
   qt/votecoinsdialog.cpp \
-  qt/votecoinsentry.cpp
+  qt/votecoinsentry.cpp \
+  qt/assetspage.cpp
 
 endif
 

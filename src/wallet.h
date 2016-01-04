@@ -160,7 +160,7 @@ private:
             >
         > delegate_attempts;
 
-    //std::vector<std::string> retrieval_strings;
+    std::vector<std::string> retrieval_strings;
 
 
     int64_t nNextResend;
@@ -859,7 +859,7 @@ public:
     char fFromMe;
     std::string strFromAccount;
     int64_t nOrderPos; //! position in ordered transaction list
-
+	txnouttype IsEscrow() const;
     // memory only
     mutable bool fDebitCached;
     mutable bool fCreditCached;

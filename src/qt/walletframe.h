@@ -71,6 +71,7 @@ public slots:
 	void gotoStatisticsPage();
 	void gotoDatabasePage();
 	void gotoSendMessagesPage();
+	void gotoAssetsPage();
     /** Switch to send anonymous messages page */
     /** Switch to view messages page */
     void gotoMessagesPage();

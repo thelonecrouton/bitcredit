@@ -3,6 +3,11 @@
 
 #include <QWidget>
 #include <string>
+
+#include "walletmodel.h"
+
+class WalletModel;
+
 namespace Ui {
 class p2pservices;
 }
@@ -14,12 +19,15 @@ class p2pservices : public QWidget
 public:
     explicit p2pservices(QWidget *parent = 0);
     ~p2pservices();
+    void setModel(WalletModel *model);
 
-public slots:
+private slots:
     void on_addressBookButton_clicked();
+    void on_pasteButton_clicked();
 private:
     Ui::p2pservices *ui;
     void gettrust();
+    WalletModel *model;
 };
 
 #endif // P2PSERVICES_H

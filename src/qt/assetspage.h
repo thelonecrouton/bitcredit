@@ -1,7 +1,7 @@
-#ifndef MAINWINDOW_H
-#define MAINWINDOW_H
+#ifndef ASSETSPAGE_H
+#define ASSETSPAGE_H
 
-#include <QMainWindow>
+#include <QWidget>
 #include <QStringListModel>
 #include <QFile>
 #include <QProcess>
@@ -9,28 +9,32 @@
 #include <QUrl>
 #include <QNetworkRequest>
 #include <QNetworkReply>
+#include <QTableWidget>
 
 namespace Ui {
-class Assets;
+class AssetsPage;
 }
 
-class Assets : public QWidget
+class AssetsPage : public QWidget
 {
     Q_OBJECT
 
 public:
-    explicit Assets(QWidget *parent = 0);
-    ~Assets();
+    explicit AssetsPage(QWidget *parent = 0);
+    ~AssetsPage();
     //bool colorQuery(QString cmd);
     bool runColorCore();
     bool sendRequest(QString cmd, QString &result);
-
+	void listunspent();
     void getBalance();
 private slots:
     void readPyOut();
+public slots:
+    void update();
+
 private:
     QStringListModel *model;
-    Ui::MainWindow *ui;
+    Ui::AssetsPage *ui;
 
     QProcess *serverProc;
 };

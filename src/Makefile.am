@@ -220,6 +220,7 @@ libbitcredit_server_a_SOURCES = \
 # when wallet enabled
 libbitcredit_wallet_a_CPPFLAGS = $(BITCREDIT_INCLUDES)
 libbitcredit_wallet_a_SOURCES = \
+  activebasenode.cpp \
   db.cpp \
   crypter.cpp \
   rpcdump.cpp \
@@ -230,6 +231,14 @@ libbitcredit_wallet_a_SOURCES = \
   walletdb.cpp \
   keepass.cpp \
   lz4/lz4.c \
+  darksend.cpp \
+  darksend-relay.cpp \
+  basenode.cpp \
+  basenode-pos.cpp \
+  basenodeman.cpp \
+  basenodeconfig.cpp \
+  instantx.cpp \
+  bidtracker.cpp \
   $(BITCREDIT_CORE_H)
 
 # crypto primitives library
@@ -262,21 +271,12 @@ univalue_libbitcredit_univalue_a_SOURCES = \
 # common: shared between bitcreditd, and bitcredit-qt and non-server tools
 libbitcredit_common_a_CPPFLAGS = $(BITCREDIT_INCLUDES)
 libbitcredit_common_a_SOURCES = \
-  activebasenode.cpp \
   allocators.cpp \
   amount.cpp \
   base58.cpp \
-  bidtracker.cpp \
   chainparams.cpp \
   coins.cpp \
   compressor.cpp \
-  darksend.cpp \
-  darksend-relay.cpp \
-  basenode.cpp \
-  basenode-pos.cpp \
-  basenodeman.cpp \
-  basenodeconfig.cpp \
-  instantx.cpp \
   momentum.cpp \
   primitives/block.cpp \
   primitives/transaction.cpp \
@@ -290,12 +290,12 @@ libbitcredit_common_a_SOURCES = \
   netbase.cpp \
   protocol.cpp \
   pubkey.cpp \
-  ibtp.cpp \
   script/interpreter.cpp \
   script/script.cpp \
   script/sign.cpp \
   script/standard.cpp \
   script/script_error.cpp \
+  ibtp.cpp \
   $(BITCREDIT_CORE_H)
 
 # util: shared between all executables.

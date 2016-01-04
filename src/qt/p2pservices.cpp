@@ -11,6 +11,9 @@
 
 #include <QtSql>
 #include <QMessageBox>
+#include <QApplication>
+#include <QClipboard>
+
 
 p2pservices::p2pservices(QWidget *parent) :
     QWidget(parent),
@@ -185,6 +188,11 @@ void p2pservices::gettrust()
     ui->votess->setText(nvotes);
 }
 
+void p2pservices::setModel(WalletModel *model)
+{
+    this->model = model;
+}
+
 void p2pservices::on_addressBookButton_clicked()
 {
     if(!model)
@@ -193,6 +201,12 @@ void p2pservices::on_addressBookButton_clicked()
     dlg.setModel(model->getAddressTableModel());
     if(dlg.exec())
     {
-        sqlEdit->setText(dlg.getReturnValue());
+        ui->sqlEdit->setText(dlg.getReturnValue());
     }
+}
+
+void p2pservices::on_pasteButton_clicked()
+{
+    // Paste text from clipboard into field
+    ui->sqlEdit->setText(QApplication::clipboard()->text());
 }

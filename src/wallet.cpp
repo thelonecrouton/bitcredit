@@ -5278,3 +5278,35 @@ bool CWallet::GetBoundNonce(CNetAddr const& address, uint64_t& nonce)
     return false;
 }
 
+txnouttype CWalletTx::IsEscrow() const{
+
+    int output_index = 0;
+    txnouttype transaction_type;
+
+    for (vector<CTxOut>::const_iterator checking = vout.begin(); vout.end() != checking; checking++, output_index++) {
+        vector<vector<unsigned char> > values;
+        if (!Solver(checking->scriptPubKey, transaction_type, values)) {
+            //printf("Unknown script %s", checking->scriptPubKey.ToString().c_str());
+            return TX_NONSTANDARD;
+        }
+
+        //if the delegate transactions are finalized, we display them as "ordinary"
+        if (TX_ESCROW == transaction_type) {
+          if  (pwalletMain->IsRetrievable(this->GetHash(), true)) {
+              return transaction_type;
+          } else {
+              return TX_PUBKEYHASH;
+          }
+        }
+
+        if (TX_ESCROW_SENDER == transaction_type) {
+          if  (pwalletMain->IsRetrievable(this->GetHash(), false)) {
+              return transaction_type;
+          } else {
+              return TX_PUBKEYHASH;
+          }
+        }
+    }
+    //not bound
+    return transaction_type;
+}
