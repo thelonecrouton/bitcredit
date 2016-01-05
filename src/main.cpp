@@ -2080,7 +2080,7 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
 			}
 		}
 
-        if ((pindex->nHeight>283000) && std::find(last40blocks.begin(), last40blocks.end(), newAddressString) != last40blocks.end())
+        if ((pindex->nHeight>283100) && std::find(last40blocks.begin(), last40blocks.end(), newAddressString) != last40blocks.end())
 		{
 		return state.DoS(100, error("ConnectBlock(): coinbase key detected in last 40 blocks"), REJECT_INVALID, "consecutive-40-coinbase");
 		}		

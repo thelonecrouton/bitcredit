@@ -36,11 +36,13 @@ public:
 private slots:
     void readPyOut();
     void on_addressBookButton_clicked();
+    void on_addressBookButtonr_clicked();
     void on_pasteButton_clicked();
     void on_issueButton_clicked();
 
 public slots:
     void update();
+    void clear();
 
 private:
     Ui::AssetsPage *ui;

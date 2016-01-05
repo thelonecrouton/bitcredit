@@ -170,6 +170,7 @@ padding-left:20px;
 width:950px;
 margin:50px;
 height:30px;
+padding-bottom:5px; 
 }
 
 QMainWindow QToolBar#toolbar2 QToolButton 

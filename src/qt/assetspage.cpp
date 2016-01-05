@@ -61,6 +61,27 @@ void AssetsPage::on_addressBookButton_clicked()
     }
 }
 
+void AssetsPage::on_addressBookButtonr_clicked()
+{
+    if(!model)
+        return;
+    AddressBookPage dlg(AddressBookPage::ForSelection, AddressBookPage::ReceivingTab, this);
+    dlg.setModel(model->getAddressTableModel());
+    if(dlg.exec())
+    {
+        ui->chainID->setText(dlg.getReturnValue());
+        ui->amount->setFocus();
+    }
+}
+
+void AssetsPage::clear()
+{
+    // clear UI elements 
+    ui->chainID->clear();
+    ui->amount->clear();
+    ui->metadata->clear();
+}
+
 void AssetsPage::listunspent()
 {
     QString response;
