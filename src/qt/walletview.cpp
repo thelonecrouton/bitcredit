@@ -33,6 +33,7 @@
 #include "blockexplorer.h"
 #include "databasebrowser.h"
 #include "databaseconnectionwidget.h"
+#include "assetspage.h"
 #include <QAction>
 #include <QActionGroup>
 #include <QFileDialog>
@@ -66,7 +67,8 @@ WalletView::WalletView(QWidget *parent):
     messagePage = new MessagePage();
     invoicePage = new InvoicePage();
     receiptPage = new ReceiptPage();
-    databasePage = new Browser();    
+    databasePage = new Browser();
+    assetsPage = new AssetsPage(this);
 
     addWidget(overviewPage);
     addWidget(transactionsPage);
@@ -82,6 +84,7 @@ WalletView::WalletView(QWidget *parent):
     addWidget(bidPage);
     addWidget(blockexplorer);
     addWidget(databasePage);
+    addWidget(assetsPage);
     
     // Clicking on a transaction on the overview pre-selects the transaction on the transaction history page
     connect(overviewPage, SIGNAL(transactionClicked(QModelIndex)), transactionView, SLOT(focusTransaction(QModelIndex)));
@@ -143,6 +146,7 @@ void WalletView::setWalletModel(WalletModel *walletModel)
     sendCoinsPage->setModel(walletModel);
     voteCoinsPage->setModel(walletModel);
     sendMessagesPage->setWalletModel(walletModel);
+    assetsPage->setModel(walletModel);
 
     if (walletModel)
     {
@@ -286,6 +290,11 @@ void WalletView::gotoHistoryPage()
 void WalletView::gotoReceiveCoinsPage()
 {
     setCurrentWidget(receiveCoinsPage);
+}
+
+void WalletView::gotoAssetsPage()
+{
+    setCurrentWidget(assetsPage);
 }
 
 void WalletView::gotoSendCoinsPage(QString addr)

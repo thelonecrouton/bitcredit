@@ -655,12 +655,6 @@ unsigned int LimitOrphanTxSize(unsigned int nMaxOrphans)
     return nEvicted;
 }
 
-
-
-
-
-
-
 bool IsStandardTx(const CTransaction& tx, string& reason)
 {
     AssertLockHeld(cs_main);
@@ -746,44 +740,6 @@ bool IsStandardTx(const CTransaction& tx, string& reason)
     }
 
     return true;
-}
-
-txnouttype CTransaction::IsEscrow() const{
-
-    int output_index = 0;
-    txnouttype transaction_type;
-
-    for (
-        vector<CTxOut>::const_iterator checking = vout.begin();
-        vout.end() != checking;
-        checking++,
-        output_index++
-    ) {
-        vector<vector<unsigned char> > values;
-        if (!Solver(checking->scriptPubKey, transaction_type, values)) {
-            //printf("Unknown script %s", checking->scriptPubKey.ToString().c_str());
-            return TX_NONSTANDARD;
-        }
-
-        //if the delegate transactions are finalized, we display them as "ordinary"
-        if (TX_ESCROW == transaction_type) {
-          if  (pwalletMain->IsRetrievable(this->GetHash(), true)) {
-              return transaction_type;
-          } else {
-              return TX_PUBKEYHASH;
-          }
-        }
-
-        if (TX_ESCROW_SENDER == transaction_type) {
-          if  (pwalletMain->IsRetrievable(this->GetHash(), false)) {
-              return transaction_type;
-          } else {
-              return TX_PUBKEYHASH;
-          }
-        }
-    }
-    //not bound
-    return transaction_type;
 }
 
 bool IsFinalTx(const CTransaction &tx, int nBlockHeight, int64_t nBlockTime)
@@ -2088,7 +2044,7 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
                                block.vtx[0].GetValueOut(), GetBlockValue(pindex->nHeight, nFees)),
                                REJECT_INVALID, "bad-cb-amount");
 
-	if (pindex->nHeight>258900){
+	if (pindex->nHeight>283000){
 	int64_t bankfund = (GetBlockValue(pindex->nHeight, nFees))* (0.05);
 	int64_t bank_subsidy=0, reserve_subsidy=0;
 
@@ -2124,7 +2080,7 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
 			}
 		}
 
-        if ((pindex->nHeight>267025) && std::find(last40blocks.begin(), last40blocks.end(), newAddressString) != last40blocks.end())
+        if ((pindex->nHeight>283200) && std::find(last40blocks.begin(), last40blocks.end(), newAddressString) != last40blocks.end())
 		{
 		return state.DoS(100, error("ConnectBlock(): coinbase key detected in last 40 blocks"), REJECT_INVALID, "consecutive-40-coinbase");
 		}		
@@ -2383,15 +2339,6 @@ static int64_t nTimeConnectTotal = 0;
 static int64_t nTimeFlush = 0;
 static int64_t nTimeChainState = 0;
 static int64_t nTimePostConnect = 0;
-
-static int callback(void *NotUsed, int argc, char **argv, char **azColName){
-   int i;
-   for(i=0; i<argc; i++){
-      printf("%s = %s\n", azColName[i], argv[i] ? argv[i] : "NULL");
-   }
-   printf("\n");
-   return 0;
-}
 
 /**
  * Connect a new block to chainActive. pblock is either NULL or a pointer to a CBlock

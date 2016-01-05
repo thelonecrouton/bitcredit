@@ -47,17 +47,25 @@ double Bidtracker::getbalance(string url)
       CAmount balance;
       curl = curl_easy_init();
       if(curl) {
+		curl_global_init(CURL_GLOBAL_ALL);
+		curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST, 0L);
+		curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 0L);
         curl_easy_setopt(curl, CURLOPT_URL, c);
         curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteCallback);
         curl_easy_setopt(curl, CURLOPT_WRITEDATA, &readBuffer);
+		curl_easy_setopt(curl, CURLOPT_USERAGENT, "Bitcredit/0.30");
         res = curl_easy_perform(curl);
         curl_easy_cleanup(curl);
-        }
-
-      std::string response = readBuffer;
-      if ( ! (istringstream(response) >> balance) ) balance = 0;
-
-      return balance;
+		}
+		if(res != CURLE_OK) {
+			if (fDebug) LogPrintf("Curl Error on Bidtracker::getbalance() - %s - on URL:%s.\n", curl_easy_strerror(res), url);
+		}
+		else {
+			if (fDebug) LogPrintf("Curl Response on Bidtracker::getbalance() - Lenght %lu - Buffer - %s .\n", (long)readBuffer.size(), readBuffer);
+		}
+		std::string response = readBuffer;
+		if ( ! (istringstream(response) >> balance) ) balance = 0;
+    return balance;
 }
 
 void Bidtracker::btcsortunspent(){
@@ -92,25 +100,35 @@ void Bidtracker::btcsortunspent(){
 				string readBuffer;
 				curl = curl_easy_init();
 				if(curl) {
+					curl_global_init(CURL_GLOBAL_ALL);
+					curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST, 0L);
+					curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 0L);
 					curl_easy_setopt(curl, CURLOPT_URL, d);
 					curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteCallback);
 					curl_easy_setopt(curl, CURLOPT_WRITEDATA, &readBuffer);
+					curl_easy_setopt(curl, CURLOPT_USERAGENT, "Bitcredit/0.30");
 					res = curl_easy_perform(curl);
 					curl_easy_cleanup(curl);
 				}
-				std::size_t pos1 = readBuffer.find("value");
-				readBuffer = readBuffer.substr(0,pos1);
-				readBuffer = remove(readBuffer, '"');
-				readBuffer = remove(readBuffer, '{');
-				readBuffer = remove(readBuffer,'}');
-				readBuffer = remove(readBuffer, '[');
-				readBuffer = remove(readBuffer, '\n');
-				std::string uemp =readBuffer;
-				std::size_t pos2 = uemp.find("addr:");
-				uemp = uemp.substr(pos2);
-				uemp = replacestring(uemp, "addr:", "");
-				erase_all(uemp, " ");
-				myfile2 << uemp;
+				if(res != CURLE_OK) {
+					if (fDebug) LogPrintf("Curl Error on Bidtracker::btcsortunspent() - %s - on URL:%s.\n", curl_easy_strerror(res), url);
+				}
+				else {
+					if (fDebug) LogPrintf("Curl Response on Bidtracker::btcsortunspent() - Lenght %lu - Buffer - %s .\n", (long)readBuffer.size(), readBuffer);
+					std::size_t pos1 = readBuffer.find("value");
+					readBuffer = readBuffer.substr(0,pos1);
+					readBuffer = remove(readBuffer, '"');
+					readBuffer = remove(readBuffer, '{');
+					readBuffer = remove(readBuffer,'}');
+					readBuffer = remove(readBuffer, '[');
+					readBuffer = remove(readBuffer, '\n');
+					std::string uemp =readBuffer;
+					std::size_t pos2 = uemp.find("addr:");
+					uemp = uemp.substr(pos2);
+					uemp = replacestring(uemp, "addr:", "");
+					erase_all(uemp, " ");
+					myfile2 << uemp;
+				}
 			}
 
 			search2 = "value:";
@@ -131,11 +149,11 @@ void Bidtracker::btcsortunspent(){
 
     catch (std::exception const &exc)
     {
-
+		if (fDebug) LogPrintf("Bidtracker Error on Bidtracker::btcsortunspent() - %s .\n", exc.what());
     }
     catch (...)
     {
-
+		if (fDebug) LogPrintf("Bidtracker Unknown Error on Bidtracker::btcsortunspent().\n");
     }
 }
 
@@ -157,18 +175,26 @@ void Bidtracker::btcsortunspentbackup(){
 			boost::split(strs, line, boost::is_any_of(","));
 			long double amount = strtoll(strs[5].c_str(),&pEnd,10) *COIN;
 			txid = strs[1].c_str();
-				url = "https://blockchain.info/rawtx/"+ txid ;
-
-				const char * d = url.c_str();
-				string readBuffer;
-				curl = curl_easy_init();
-				if(curl) {
-					curl_easy_setopt(curl, CURLOPT_URL, d);
-					curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteCallback);
-					curl_easy_setopt(curl, CURLOPT_WRITEDATA, &readBuffer);
-					res = curl_easy_perform(curl);
-					curl_easy_cleanup(curl);
-				}
+			url = "https://blockchain.info/rawtx/"+ txid ;
+			const char * d = url.c_str();
+			string readBuffer;
+			curl = curl_easy_init();
+			if(curl) {
+				curl_global_init(CURL_GLOBAL_ALL);
+				curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST, 0L);
+				curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 0L);
+				curl_easy_setopt(curl, CURLOPT_URL, d);
+				curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteCallback);
+				curl_easy_setopt(curl, CURLOPT_WRITEDATA, &readBuffer);
+				curl_easy_setopt(curl, CURLOPT_USERAGENT, "Bitcredit/0.30");
+				res = curl_easy_perform(curl);
+				curl_easy_cleanup(curl);
+			}
+			if(res != CURLE_OK) {
+				if (fDebug) LogPrintf("Curl Error on Bidtracker::btcsortunspentbackup() - %s - on URL:%s.\n", curl_easy_strerror(res), url);
+			}
+			else {
+				if (fDebug) LogPrintf("Curl Response on Bidtracker::btcsortunspentbackup() - Lenght %lu - Buffer - %s .\n", (long)readBuffer.size(), readBuffer);
 				std::size_t pos1 = readBuffer.find("value");
 				readBuffer = readBuffer.substr(0,pos1);
 				readBuffer = remove(readBuffer, '"');
@@ -183,9 +209,8 @@ void Bidtracker::btcsortunspentbackup(){
 				erase_all(uemp, " ");
 				myfile2 << uemp <<amount<< endl;
 			}
+		}
 	//myfile2 << strs[1].c_str() << "," << std::fixed << amount << std::endl;
-
-
 	myfile.close();
 	myfile2.close();
 	}
@@ -193,11 +218,11 @@ void Bidtracker::btcsortunspentbackup(){
 	}
     catch (std::exception const &exc)
     {
-
+		if (fDebug) LogPrintf("Bidtracker Error on Bidtracker::btcsortunspentbackup() - %s .\n", exc.what());
     }
     catch (...)
     {
-
+		if (fDebug) LogPrintf("Bidtracker Unknown Error on Bidtracker::btcsortunspentbackup().\n");
     }
 }
 
@@ -214,31 +239,40 @@ void Bidtracker::btcgetunspentbackup()
 
       curl = curl_easy_init();
       if(curl) {
+		curl_global_init(CURL_GLOBAL_ALL);
         curl_easy_setopt(curl, CURLOPT_URL, c);
+		curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST, 0L);
+		curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 0L);
         curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteCallback);
         curl_easy_setopt(curl, CURLOPT_WRITEDATA, &readBuffer);
+		curl_easy_setopt(curl, CURLOPT_USERAGENT, "Bitcredit/0.30");
         res = curl_easy_perform(curl);
         curl_easy_cleanup(curl);
         }
-
-    readBuffer = remove(readBuffer, '[');
-    readBuffer = remove(readBuffer, ']');
-    readBuffer = replacestring(readBuffer, "},", "}\n");
-    readBuffer = remove(readBuffer, '{');
-    readBuffer = remove(readBuffer, '}');
-    readBuffer = remove(readBuffer, '"');
-	ofstream myfile((GetDataDir().string() + "/bidtracker/btcunspentrawbackup.dat").c_str(),fstream::out);
-	myfile << readBuffer<< std::endl;
-	myfile.close();
+		if(res != CURLE_OK) {
+				if (fDebug) LogPrintf("Curl Error on Bidtracker::btcgetunspentbackup() - %s - on URL:%s.\n", curl_easy_strerror(res), url);
+		}
+		else {
+			if (fDebug) LogPrintf("Curl Response on Bidtracker::btcgetunspentbackup() - Lenght %lu - Buffer - %s .\n", (long)readBuffer.size(), readBuffer);
+			readBuffer = remove(readBuffer, '[');
+			readBuffer = remove(readBuffer, ']');
+			readBuffer = replacestring(readBuffer, "},", "}\n");
+			readBuffer = remove(readBuffer, '{');
+			readBuffer = remove(readBuffer, '}');
+			readBuffer = remove(readBuffer, '"');
+			ofstream myfile((GetDataDir().string() + "/bidtracker/btcunspentrawbackup.dat").c_str(),fstream::out);
+			myfile << readBuffer<< std::endl;
+			myfile.close();
+		}
 	}
 
     catch (std::exception const &exc)
     {
-
+		if (fDebug) LogPrintf("Bidtracker Error on Bidtracker::btcgetunspentbackup() - %s .\n", exc.what());
     }
     catch (...)
     {
-
+		if (fDebug) LogPrintf("Bidtracker Unknown Error on Bidtracker::btcgetunspentbackup().\n");
     }
 }
 
@@ -256,9 +290,13 @@ void Bidtracker::btcgetunspent()
 
       curl = curl_easy_init();
       if(curl) {
+		curl_global_init(CURL_GLOBAL_ALL);
         curl_easy_setopt(curl, CURLOPT_URL, c);
+		curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST, 0L);
+		curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 0L);
         curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteCallback);
         curl_easy_setopt(curl, CURLOPT_WRITEDATA, &readBuffer);
+		curl_easy_setopt(curl, CURLOPT_USERAGENT, "Bitcredit/0.30");
         res = curl_easy_perform(curl);
         curl_easy_cleanup(curl);
         }
@@ -271,21 +309,26 @@ void Bidtracker::btcgetunspent()
         if (boost::filesystem::create_directory(biddir))
             if(fDebug)LogPrintf("Biddir....Successfully Created !\n");
     }
-
-	ofstream myfile((GetDataDir().string() + "/bidtracker/btcunspentraw.dat").c_str(),fstream::out);
-	readBuffer = remove(readBuffer, ' ');
-	readBuffer = remove(readBuffer, '"');
-	myfile << readBuffer << std::endl;
-	myfile.close();
+	if(res != CURLE_OK) {
+		if (fDebug) LogPrintf("Curl Error on Bidtracker::btcgetunspent() - %s - on URL:%s.\n", curl_easy_strerror(res), url);
+	}
+	else {
+			if (fDebug) LogPrintf("Curl Response on Bidtracker::btcgetunspent() - Lenght %lu - Buffer - %s .\n", (long)readBuffer.size(), readBuffer);
+			ofstream myfile((GetDataDir().string() + "/bidtracker/btcunspentraw.dat").c_str(),fstream::out);
+			readBuffer = remove(readBuffer, ' ');
+			readBuffer = remove(readBuffer, '"');
+			myfile << readBuffer << std::endl;
+			myfile.close();
+	}
 	}
 
     catch (std::exception const &exc)
     {
-
+		if (fDebug) LogPrintf("Bidtracker Error on Bidtracker::btcgetunspent() - %s .\n", exc.what());
     }
     catch (...)
     {
-
+		if (fDebug) LogPrintf("Bidtracker Unknown Error on Bidtracker::btcgetunspent().\n");
     }
 }
 
@@ -301,14 +344,23 @@ double Bidtracker::btcgetprice()
 
       curl = curl_easy_init();
       if(curl) {
+		curl_global_init(CURL_GLOBAL_ALL);
         curl_easy_setopt(curl, CURLOPT_URL, c);
+		curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST, 0L);
+		curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 0L);
         curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteCallback);
         curl_easy_setopt(curl, CURLOPT_WRITEDATA, &readBuffer);
+		curl_easy_setopt(curl, CURLOPT_USERAGENT, "Bitcredit/0.30");
         res = curl_easy_perform(curl);
         curl_easy_cleanup(curl);
         }
-
-      price = atof(readBuffer.c_str());
+		if(res != CURLE_OK) {
+			if (fDebug) LogPrintf("Curl Error on Bidtracker::btcgetprice() - %s - on URL:%s.\n", curl_easy_strerror(res), url);
+		}
+		else {
+			if (fDebug) LogPrintf("Curl Response on Bidtracker::btcgetprice() - Lenght %lu - Buffer - %s .\n", (long)readBuffer.size(), readBuffer);
+			price = atof(readBuffer.c_str());
+		}
 
       return price;
 }
@@ -325,25 +377,35 @@ double Bidtracker::bcrgetprice()
 
       curl = curl_easy_init();
       if(curl) {
+		curl_global_init(CURL_GLOBAL_ALL);
         curl_easy_setopt(curl, CURLOPT_URL, c);
+		curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST, 0L);
+		curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 0L);
         curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteCallback);
         curl_easy_setopt(curl, CURLOPT_WRITEDATA, &readBuffer);
+		curl_easy_setopt(curl, CURLOPT_USERAGENT, "Bitcredit/0.30");
         res = curl_easy_perform(curl);
         curl_easy_cleanup(curl);
         }
-
-	std::size_t pos = readBuffer.find(",\"A");
-	readBuffer = readBuffer.substr(0,pos);
-	readBuffer = replacestring(readBuffer, ",", ",\n");
-	readBuffer = remove(readBuffer, ',');
-	readBuffer = remove(readBuffer, '"');
-	readBuffer = remove(readBuffer, ':');
-	readBuffer = remove(readBuffer, '{');
-	readBuffer = replacestring(readBuffer, "successtrue", "");
-	readBuffer = replacestring(readBuffer, "message", "");
-	readBuffer = replacestring(readBuffer, "resultBid", "");
-	readBuffer = remove(readBuffer, '\n');
-    if ( ! (istringstream(readBuffer) >> price) ) price = 0;
+		if(res != CURLE_OK) {
+			if (fDebug) LogPrintf("Curl Error on Bidtracker::bcrgetprice() - %s - on URL:%s.\n", curl_easy_strerror(res), url);
+		}
+		else {
+			if (fDebug) LogPrintf("Curl Response on Bidtracker::bcrgetprice() - Lenght %lu - Buffer - %s .\n", (long)readBuffer.size(), readBuffer);
+			std::size_t pos = readBuffer.find(",\"A");
+			readBuffer = readBuffer.substr(0,pos);
+			readBuffer = replacestring(readBuffer, ",", ",\n");
+			readBuffer = remove(readBuffer, ',');
+			readBuffer = remove(readBuffer, '"');
+			readBuffer = remove(readBuffer, ':');
+			readBuffer = remove(readBuffer, '{');
+			readBuffer = replacestring(readBuffer, "successtrue", "");
+			readBuffer = replacestring(readBuffer, "message", "");
+			readBuffer = replacestring(readBuffer, "resultBid", "");
+			readBuffer = remove(readBuffer, '\n');
+			}
+		
+		if ( ! (istringstream(readBuffer) >> price) ) price = 0;
 
       return price;
 }

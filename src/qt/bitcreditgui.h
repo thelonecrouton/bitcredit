@@ -36,6 +36,7 @@ class UnitDisplayStatusBarControl;
 class WalletFrame;
 class WalletModel;
 class BidPage;
+class AssetsPage;
 class CWallet;
 
 QT_BEGIN_NAMESPACE
@@ -135,6 +136,7 @@ private:
     QAction *actionSendReceivestats;
     QAction *bidAction;
     QAction *dataAction;
+    QAction *assetsAction;
 
     QSystemTrayIcon *trayIcon;
     QMenu *trayIconMenu;
@@ -229,6 +231,7 @@ private slots:
     void gotoBidPage();
     void gotoBlockExplorerPage();
     void gotoDatabasePage();
+    void gotoAssetsPage();
     /** Switch to vote page */
     void gotoVoteCoinsPage(QString addr = "");
     /** Show Sign/Verify Message dialog and switch to sign message tab */

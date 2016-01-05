@@ -4,7 +4,16 @@
 #include <QWidget>
 #include <QSqlTableModel>
 #include <QMessageBox>
-
+#include <QWidget>
+#include <QDir>
+#include <QFile>
+#include <QProcess>
+#include <QTime>
+#include <QTimer>
+#include <QStringList>
+#include <QMap>
+#include <QSettings>
+#include <QSlider>
 #include "ui_databasebrowserwidget.h"
 
 #include "walletmodel.h"
@@ -33,7 +42,7 @@ public slots:
     void showMetaData(const QString &table);
     void addConnection();
     void currentChanged();
-    void about();
+
 
     void on_insertRowAction_triggered();
     void on_deleteRowAction_triggered();

@@ -3,6 +3,7 @@
 #include "util.h"
 #include "addressbookpage.h"
 #include <QtWidgets>
+#include <QVariant>
 #include <QtSql>
 
 Browser::Browser(QWidget *parent)
@@ -48,9 +49,9 @@ Browser::~Browser()
 
 void Browser::exec()
 {
-    QSqlQueryModel *model = new QSqlQueryModel(table);
-    QString b = "select * from RAWDATA WHERE ADDRESS = ? "% sqlEdit->toPlainText();
 
+    QSqlQueryModel *model = new QSqlQueryModel(table);
+    //QString b = "INSERT INTO table VALUE "% sqlEdit->toPlainText();
     model->setQuery(QSqlQuery(sqlEdit->toPlainText(), connectionWidget->currentDatabase()));
     table->setModel(model);
 
@@ -63,6 +64,7 @@ void Browser::exec()
                            model->query().numRowsAffected()));
 
     updateActions();
+
 }
 
 QSqlError Browser::addConnection(const QString &driver, const QString &dbName, const QString &host,
@@ -203,13 +205,6 @@ void Browser::updateActions()
         rowStrategyAction->setChecked(es == QSqlTableModel::OnRowChange);
         manualStrategyAction->setChecked(es == QSqlTableModel::OnManualSubmit);
     }
-}
-
-void Browser::about()
-{
-    QMessageBox::about(this, tr("About"), tr("The SQL Browser demonstration "
-        "shows how a data browser can be used to visualize the results of SQL"
-                                             "statements on a live database"));
 }
 
 void Browser::on_fieldStrategyAction_triggered()

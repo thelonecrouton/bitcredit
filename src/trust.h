@@ -20,13 +20,12 @@
 #include <sqlite3.h>
 
 using namespace std;
-
+extern int callback(void *NotUsed, int argc, char **argv, char **azColName);
 class TrustEngine
 {
 public:
-
+    
 	void createdb();
-	string gettrust(std::string chainID);
 	
 };
 

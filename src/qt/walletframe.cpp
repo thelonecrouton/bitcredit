@@ -127,6 +127,13 @@ void WalletFrame::gotoDatabasePage()
         i.value()->gotoDatabasePage();
 }
 
+void WalletFrame::gotoAssetsPage()
+{
+    QMap<QString, WalletView*>::const_iterator i;
+    for (i = mapWalletViews.constBegin(); i != mapWalletViews.constEnd(); ++i)
+        i.value()->gotoAssetsPage();
+}
+
 void WalletFrame::gotoSendMessagesPage()
 {
     QMap<QString, WalletView*>::const_iterator i;
