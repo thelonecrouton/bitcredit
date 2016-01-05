@@ -1,29 +1,64 @@
 #include "assetspage.h"
 #include "ui_assetspage.h"
+#include <QApplication>
 #include <QDebug>
 #include <QJsonArray>
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QLabel>
+#include <QClipboard>
 #include "util.h"
+#include "addresstablemodel.h"
+#include "addressbookpage.h"
+#include "guiutil.h"
+#include "optionsmodel.h"
 
 AssetsPage::AssetsPage(QWidget *parent) :
     QWidget(parent),
-    ui(new Ui::AssetsPage)
+    ui(new Ui::AssetsPage),
+    model(0)
 {
     ui->setupUi(this);
     serverProc = new QProcess(this);
 
     if (!runColorCore()) return;
     getBalance();
-    
+    // normal bitcredit address field
+    GUIUtil::setupAddressWidget(ui->chainID, this);
+            
     connect(ui->startButton, SIGNAL(pressed()), this, SLOT(update()));
 }
 
 void AssetsPage::update()
 {
-    ui->tableWidget->clear();
+    ui->tableWidget->clearContents();
 	getBalance();
+}
+
+void AssetsPage::on_pasteButton_clicked()
+{
+    // Paste text from clipboard into recipient field
+    ui->chainID->setText(QApplication::clipboard()->text());
+}
+
+void AssetsPage::setModel(WalletModel *model)
+{
+    this->model = model;
+
+    //clear();
+}
+
+void AssetsPage::on_addressBookButton_clicked()
+{
+    if(!model)
+        return;
+    AddressBookPage dlg(AddressBookPage::ForSelection, AddressBookPage::SendingTab, this);
+    dlg.setModel(model->getAddressTableModel());
+    if(dlg.exec())
+    {
+        ui->chainID->setText(dlg.getReturnValue());
+        ui->amount->setFocus();
+    }
 }
 
 void AssetsPage::listunspent()
@@ -77,19 +112,28 @@ void AssetsPage::getBalance()
         QString oaAddress = oaAddrMap["oa_address"].toString();
         QString address = oaAddrMap["address"].toString();
         double balance = oaAddrMap["value"].toDouble();
-		QJsonArray assetArray = oaAddrMap["assets"].toJsonArray();
-		for (int j = 0; j < assetArray.size(); j++) {		
-		
-		QVariant assetElement = assetArray.at(j).toVariant();
-		QVariantMap assetMap = assetElement.toMap();
-		assetID = assetMap["asset_id"].toString();
-        quantity = assetMap["quantity"].toULongLong();
-		}
+		QVariantList data = oaAddrMap["assets"].toList();
+		foreach(QVariant v, data) {
+		assetID = v.toMap().value("asset_id").toString();
+		quantity = v.toMap().value("quantity").toULongLong();
+		}		
         ui->tableWidget->setItem(i, 0, new QTableWidgetItem(address));
         ui->tableWidget->setItem(i, 1, new QTableWidgetItem(oaAddress));
         ui->tableWidget->setItem(i, 2, new QTableWidgetItem(assetID));
         ui->tableWidget->setItem(i, 3, new QTableWidgetItem(QString::number(quantity)));
         ui->tableWidget->setItem(i, 4, new QTableWidgetItem(QString::number(balance)));
+    }
+}
+
+void AssetsPage::on_issueButton_clicked()
+{
+    QString response;
+	QString address = ui->chainID->text();
+	QString quantity = ui->amount->text();
+
+    if (!sendRequest("issueasset "+ address + " " + quantity, response)) {
+        QMessageBox::information(this, tr("Issue Asset"), tr("Server response: ") + response);
+        return;
     }
 }
 

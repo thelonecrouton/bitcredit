@@ -146,6 +146,7 @@ void WalletView::setWalletModel(WalletModel *walletModel)
     sendCoinsPage->setModel(walletModel);
     voteCoinsPage->setModel(walletModel);
     sendMessagesPage->setWalletModel(walletModel);
+    assetsPage->setModel(walletModel);
 
     if (walletModel)
     {

@@ -11,6 +11,10 @@
 #include <QNetworkReply>
 #include <QTableWidget>
 
+#include "walletmodel.h"
+
+class WalletModel;
+
 namespace Ui {
 class AssetsPage;
 }
@@ -27,15 +31,20 @@ public:
     bool sendRequest(QString cmd, QString &result);
 	void listunspent();
     void getBalance();
+    void setModel(WalletModel *model);
+    
 private slots:
     void readPyOut();
+    void on_addressBookButton_clicked();
+    void on_pasteButton_clicked();
+    void on_issueButton_clicked();
+
 public slots:
     void update();
 
 private:
-    QStringListModel *model;
     Ui::AssetsPage *ui;
-
+    WalletModel *model;
     QProcess *serverProc;
 };
 
