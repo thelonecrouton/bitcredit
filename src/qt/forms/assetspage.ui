@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>786</width>
-    <height>548</height>
+    <height>537</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -87,7 +87,7 @@
      <x>10</x>
      <y>310</y>
      <width>761</width>
-     <height>221</height>
+     <height>214</height>
     </rect>
    </property>
    <layout class="QVBoxLayout" name="verticalLayout">
@@ -137,23 +137,6 @@
        </widget>
       </item>
       <item>
-       <widget class="QToolButton" name="addressBookButtonr">
-        <property name="toolTip">
-         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; color:#ffffff;&quot;&gt;Choose address from address book&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-        </property>
-        <property name="text">
-         <string/>
-        </property>
-        <property name="icon">
-         <iconset resource="../bitcredit.qrc">
-          <normaloff>:/icons/address-book</normaloff>:/icons/address-book</iconset>
-        </property>
-        <property name="shortcut">
-         <string>Alt+A</string>
-        </property>
-       </widget>
-      </item>
-      <item>
        <widget class="QToolButton" name="pasteButton">
         <property name="toolTip">
          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; color:#ffffff;&quot;&gt;Paste address from clipboard&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
@@ -170,10 +153,6 @@
         </property>
        </widget>
       </item>
-     </layout>
-    </item>
-    <item>
-     <layout class="QHBoxLayout" name="horizontalLayout">
       <item>
        <widget class="QLabel" name="label_3">
         <property name="sizePolicy">
@@ -189,19 +168,6 @@
       </item>
       <item>
        <widget class="QLineEdit" name="amount"/>
-      </item>
-      <item>
-       <spacer name="horizontalSpacer_2">
-        <property name="orientation">
-         <enum>Qt::Horizontal</enum>
-        </property>
-        <property name="sizeHint" stdset="0">
-         <size>
-          <width>40</width>
-          <height>20</height>
-         </size>
-        </property>
-       </spacer>
       </item>
      </layout>
     </item>
@@ -220,17 +186,68 @@
       <item>
        <layout class="QHBoxLayout" name="horizontalLayout_3">
         <item>
-         <spacer name="horizontalSpacer">
-          <property name="orientation">
-           <enum>Qt::Horizontal</enum>
+         <layout class="QHBoxLayout" name="sendToLayout_2">
+          <property name="spacing">
+           <number>0</number>
           </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>40</width>
-            <height>20</height>
-           </size>
-          </property>
-         </spacer>
+          <item>
+           <widget class="QLabel" name="label_5">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="text">
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:12pt; font-weight:600;&quot;&gt;Send To :&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QValidatedLineEdit" name="sendTo">
+            <property name="toolTip">
+             <string>The address to send the payment to  (e.g. 4Zo1ga6xuKuQ7JV7M9rGDoxdbYwV5zgQJ5)</string>
+            </property>
+            <property name="maxLength">
+             <number>34</number>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QToolButton" name="addressBookButton2">
+            <property name="toolTip">
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; color:#ffffff;&quot;&gt;Choose address from address book&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+            <property name="icon">
+             <iconset resource="../bitcredit.qrc">
+              <normaloff>:/icons/address-book</normaloff>:/icons/address-book</iconset>
+            </property>
+            <property name="shortcut">
+             <string>Alt+A</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QToolButton" name="pasteButton2">
+            <property name="toolTip">
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; color:#ffffff;&quot;&gt;Paste address from clipboard&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+            <property name="icon">
+             <iconset resource="../bitcredit.qrc">
+              <normaloff>:/icons/editpaste</normaloff>:/icons/editpaste</iconset>
+            </property>
+            <property name="shortcut">
+             <string>Alt+P</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
         </item>
         <item>
          <widget class="QCheckBox" name="distribute">

@@ -41,6 +41,11 @@ void AssetsPage::on_pasteButton_clicked()
     ui->chainID->setText(QApplication::clipboard()->text());
 }
 
+void AssetsPage::on_pasteButton2_clicked()
+{
+    ui->sendTo->setText(QApplication::clipboard()->text());
+}
+
 void AssetsPage::setModel(WalletModel *model)
 {
     this->model = model;
@@ -61,7 +66,7 @@ void AssetsPage::on_addressBookButton_clicked()
     }
 }
 
-void AssetsPage::on_addressBookButtonr_clicked()
+void AssetsPage::on_addressBookButton2_clicked()
 {
     if(!model)
         return;
@@ -69,8 +74,8 @@ void AssetsPage::on_addressBookButtonr_clicked()
     dlg.setModel(model->getAddressTableModel());
     if(dlg.exec())
     {
-        ui->chainID->setText(dlg.getReturnValue());
-        ui->amount->setFocus();
+        ui->sendTo->setText(dlg.getReturnValue());
+        ui->transferButton->setFocus();
     }
 }
 
@@ -119,8 +124,8 @@ void AssetsPage::getBalance()
         return;
     }
 
-		QString assetID;
-        unsigned long int quantity=0;
+	QString assetID;
+    unsigned long int quantity=0;
 
     QJsonParseError err;
     QJsonDocument jsonDoc = QJsonDocument::fromJson(response.toUtf8(), &err);
@@ -149,11 +154,21 @@ void AssetsPage::getBalance()
 void AssetsPage::on_issueButton_clicked()
 {
     QString response;
-	QString address = ui->chainID->text();
-	QString quantity = ui->amount->text();
+	QString request= "issueasset " + ui->chainID->text()+" "+ ui->amount->text();
 
-    if (!sendRequest("issueasset "+ address + " " + quantity, response)) {
+    if (!sendRequest(request, response)) {
         QMessageBox::information(this, tr("Issue Asset"), tr("Server response: ") + response);
+        return;
+    }
+}
+
+void AssetsPage::on_transferButton_clicked()
+{
+    QString response;
+	QString request= "sendasset " + ui->chainID->text()+" "+ +" "+ ui->amount->text() + " "+ ui->sendTo->text();
+
+    if (!sendRequest(request, response)) {
+        QMessageBox::information(this, tr("Transfer Asset"), tr("Server response: ") + response);
         return;
     }
 }

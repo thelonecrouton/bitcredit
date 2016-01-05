@@ -36,9 +36,11 @@ public:
 private slots:
     void readPyOut();
     void on_addressBookButton_clicked();
-    void on_addressBookButtonr_clicked();
+    void on_addressBookButton2_clicked();
     void on_pasteButton_clicked();
+    void on_pasteButton2_clicked();
     void on_issueButton_clicked();
+    void on_transferButton_clicked();
 
 public slots:
     void update();
