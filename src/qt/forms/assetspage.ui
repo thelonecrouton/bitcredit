@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>786</width>
-    <height>537</height>
+    <width>783</width>
+    <height>542</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -19,7 +19,7 @@
      <x>10</x>
      <y>10</y>
      <width>761</width>
-     <height>251</height>
+     <height>341</height>
     </rect>
    </property>
    <property name="frameShape">
@@ -85,9 +85,9 @@
    <property name="geometry">
     <rect>
      <x>10</x>
-     <y>310</y>
+     <y>400</y>
      <width>761</width>
-     <height>214</height>
+     <height>111</height>
     </rect>
    </property>
    <layout class="QVBoxLayout" name="verticalLayout">
@@ -154,6 +154,22 @@
        </widget>
       </item>
       <item>
+       <spacer name="horizontalSpacer">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeType">
+         <enum>QSizePolicy::Fixed</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>20</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+      <item>
        <widget class="QLabel" name="label_3">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
@@ -167,12 +183,31 @@
        </widget>
       </item>
       <item>
-       <widget class="QLineEdit" name="amount"/>
+       <widget class="QLineEdit" name="amount">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="minimumSize">
+         <size>
+          <width>200</width>
+          <height>0</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>300</width>
+          <height>16777215</height>
+         </size>
+        </property>
+       </widget>
       </item>
      </layout>
     </item>
     <item>
-     <layout class="QVBoxLayout" name="verticalLayout_2">
+     <layout class="QHBoxLayout" name="horizontalLayout">
       <item>
        <widget class="QLabel" name="label_4">
         <property name="text">
@@ -181,8 +216,12 @@
        </widget>
       </item>
       <item>
-       <widget class="QPlainTextEdit" name="metadata"/>
+       <widget class="QLineEdit" name="metadata"/>
       </item>
+     </layout>
+    </item>
+    <item>
+     <layout class="QVBoxLayout" name="verticalLayout_2">
       <item>
        <layout class="QHBoxLayout" name="horizontalLayout_3">
         <item>
@@ -252,7 +291,7 @@
         <item>
          <widget class="QCheckBox" name="distribute">
           <property name="text">
-           <string>Auto Distribute</string>
+           <string>Distribute</string>
           </property>
          </widget>
         </item>
@@ -280,7 +319,7 @@
    <property name="geometry">
     <rect>
      <x>650</x>
-     <y>270</y>
+     <y>360</y>
      <width>120</width>
      <height>30</height>
     </rect>
