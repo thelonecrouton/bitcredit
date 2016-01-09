@@ -2418,12 +2418,20 @@ bool static ConnectTip(CValidationState &state, CBlockIndex *pindexNew, CBlock *
 	db.createdb();
     }
 	
-	CTxDestination m;
-    ExtractDestination(pblock->vtx[0].vout[0].scriptPubKey, m);
-	string miner = CBitcreditAddress(m).ToString().c_str();
-	last40blocks.push_back(miner);
+	CBlock blockr;	
+	string miner;
+	CBlockIndex * block40 =chainActive.Tip();
+	
+	for(int i = chainActive.Tip()->nHeight; i > (chainActive.Tip()->nHeight-40) ; i-- ){
+		ReadBlockFromDisk(blockr, block40);
+		CTxDestination m;
+		ExtractDestination(blockr.vtx[0].vout[0].scriptPubKey, m);
+		miner = CBitcreditAddress(m).ToString().c_str();
+		last40blocks.push_back(miner);
+		block40=block40->pprev;
+	}
+	
 	ofstream last40blocksfile;
-
 	last40blocksfile.open ((GetDataDir() / "ratings/miners.dat" ).string().c_str(), std::ofstream::trunc);
 	for(l40i = last40blocks.begin();l40i != last40blocks.end();++l40i){
 	last40blocksfile << *l40i << endl;
@@ -2861,7 +2869,7 @@ bool ReconsiderBlock(CValidationState& state, CBlockIndex *pindex) {
     AssertLockHeld(cs_main);
 
     int nHeight = pindex->nHeight;
-
+    last40blocks.clear();
     // Remove the invalidity flag from this block and all its descendants.
     BlockMap::iterator it = mapBlockIndex.begin();
     while (it != mapBlockIndex.end()) {
