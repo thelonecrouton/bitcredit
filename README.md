@@ -5,7 +5,7 @@ Bitcredit Core integration/staging tree
 
 https://www.bitcredit.org
 
-Copyright (c) 2009-2014 Bitcredit Core Developers
+Copyright (c) 2009-2015 Bitcoin Core Developers
 
 What is Bitcredit?
 ----------------

@@ -87,9 +87,9 @@ class BaseProxy(object):
             # Figure out the path to the lib.bitcoin.conf file
             if btc_conf_file is None:
                 if platform.system() == 'Darwin':
-                    btc_conf_file = os.path.expanduser('~/Library/Application Support/bicreditsnew/')
+                    btc_conf_file = os.path.expanduser('~/Library/Application Support/bitcredit/')
                 elif platform.system() == 'Windows':
-                    btc_conf_file = os.path.join(os.environ['APPDATA'], 'bicreditsnew')
+                    btc_conf_file = os.path.join(os.environ['APPDATA'], 'Bitcredit')
                 else:
                     btc_conf_file = os.path.expanduser('~/.bitcredit')
                 btc_conf_file = os.path.join(btc_conf_file, 'bitcredit.conf')

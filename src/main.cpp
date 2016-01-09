@@ -1,5 +1,5 @@
 // Copyright (c) 2009-2010 Satoshi Nakamoto
-// Copyright (c) 2009-2015 The Bitcredit Core developers
+// Copyright (c) 2009-2015 The Bitcoin Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -2422,13 +2422,15 @@ bool static ConnectTip(CValidationState &state, CBlockIndex *pindexNew, CBlock *
 	string miner;
 	CBlockIndex * block40 =chainActive.Tip();
 	
-	for(int i = chainActive.Tip()->nHeight; i > (chainActive.Tip()->nHeight-40) ; i-- ){
-		ReadBlockFromDisk(blockr, block40);
-		CTxDestination m;
-		ExtractDestination(blockr.vtx[0].vout[0].scriptPubKey, m);
-		miner = CBitcreditAddress(m).ToString().c_str();
-		last40blocks.push_back(miner);
-		block40=block40->pprev;
+	if(pindexNew->nHeight > 286759){
+		for(int i = chainActive.Tip()->nHeight; i > (chainActive.Tip()->nHeight-40) ; i-- ){
+			ReadBlockFromDisk(blockr, block40);
+			CTxDestination m;
+			ExtractDestination(blockr.vtx[0].vout[0].scriptPubKey, m);
+			miner = CBitcreditAddress(m).ToString().c_str();
+			last40blocks.push_back(miner);
+			block40=block40->pprev;
+		}
 	}
 	
 	ofstream last40blocksfile;
