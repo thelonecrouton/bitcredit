@@ -1,4 +1,4 @@
-// Copyright (c) 2014-2015 The Bitcredit developers
+// Copyright (c) 2014-2016 Section-32 Financial Instruments
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 

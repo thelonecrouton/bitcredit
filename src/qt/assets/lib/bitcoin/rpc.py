@@ -89,7 +89,7 @@ class BaseProxy(object):
                 if platform.system() == 'Darwin':
                     btc_conf_file = os.path.expanduser('~/Library/Application Support/bitcredit/')
                 elif platform.system() == 'Windows':
-                    btc_conf_file = os.path.join(os.environ['APPDATA'], 'bitcredit')
+                    btc_conf_file = os.path.join(os.environ['APPDATA'], 'Bitcredit')
                 else:
                     btc_conf_file = os.path.expanduser('~/.bitcredit')
                 btc_conf_file = os.path.join(btc_conf_file, 'bitcredit.conf')

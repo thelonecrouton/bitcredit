@@ -1,5 +1,5 @@
 // Copyright (c) 2009-2010 Satoshi Nakamoto
-// Copyright (c) 2014-2015 The Bitcredit developers
+// Copyright (c) 2014-2016 Section-32 Financial Instruments
 // Copyright (c) 2014-2015 The Darkcoin developers
 // Copyright (c) 2009-2015 The Bitcoin developers
 // Distributed under the MIT/X11 software license, see the accompanying
