@@ -41,6 +41,7 @@ private slots:
     void on_pasteButton2_clicked();
     void on_issueButton_clicked();
     void on_transferButton_clicked();
+    void cellSelected(int nRow, int nCol);
 
 public slots:
     void update();

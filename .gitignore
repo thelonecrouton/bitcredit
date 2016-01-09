@@ -7,6 +7,8 @@ src/bitcredit-cli
 src/bitcredit-tx
 src/test/test_bitcredit
 src/qt/test/test_bitcredit-qt
+src/qt/cache.db
+src/qt/assets/cache.db
 
 # autoreconf
 Makefile.in

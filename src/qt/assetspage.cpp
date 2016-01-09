@@ -7,6 +7,7 @@
 #include <QJsonObject>
 #include <QLabel>
 #include <QClipboard>
+#include <QStringList>
 #include "util.h"
 #include "addresstablemodel.h"
 #include "addressbookpage.h"
@@ -27,6 +28,7 @@ AssetsPage::AssetsPage(QWidget *parent) :
     GUIUtil::setupAddressWidget(ui->chainID, this);
             
     connect(ui->startButton, SIGNAL(pressed()), this, SLOT(update()));
+    connect(ui->tableWidget, SIGNAL(cellDoubleClicked (int, int) ), this, SLOT(cellSelected( int, int )));
 }
 
 void AssetsPage::update()
@@ -164,9 +166,23 @@ void AssetsPage::on_issueButton_clicked()
 
 void AssetsPage::on_transferButton_clicked()
 {
-    QString response;
-	QString request= "sendasset " + ui->chainID->text()+" "+ +" "+ ui->amount->text() + " "+ ui->sendTo->text();
+    QString response, request;
+	//QStringList strListItems= QStringList() <<"sendasset"<<ui->chainID->text()<<ui->asset->text()<<ui->amount->text()<< ui->sendTo->text();
+	//request = strListItems.join(" ");
+    request = " sendasset "+ ui->chainID->text()+ " "+ ui->asset->text() + " " +ui->amount->text() +" " + ui->sendTo->text();
 
+	QMessageBox msgBox;
+	msgBox.setWindowTitle("title");
+	msgBox.setText("Question");
+	msgBox.setStandardButtons(QMessageBox::Yes);
+	msgBox.addButton(QMessageBox::No);
+	msgBox.setDefaultButton(QMessageBox::No);
+	if(msgBox.exec() == QMessageBox::Yes){
+	// do something
+	}else {
+	// do something else
+	}   
+    
     if (!sendRequest(request, response)) {
         QMessageBox::information(this, tr("Transfer Asset"), tr("Server response: ") + response);
         return;
@@ -198,7 +214,7 @@ bool AssetsPage::sendRequest(QString cmd, QString& result)
 {
     QNetworkAccessManager mgr;
     QEventLoop eventLoop;
-
+	std::cout << cmd.toStdString() << std::endl;
     QObject::connect(&mgr, SIGNAL(finished(QNetworkReply*)), &eventLoop, SLOT(quit()));
     QNetworkRequest req(QUrl( QString("http://localhost:8080/"+cmd)));
     QNetworkReply *reply = mgr.get(req);
@@ -211,6 +227,17 @@ bool AssetsPage::sendRequest(QString cmd, QString& result)
     result = (QString)reply->errorString();
     delete reply;
     return false;
+}
+
+void AssetsPage::cellSelected(int nRow, int nCol)
+{
+	QAbstractItemModel* tmodel = ui->tableWidget->model();
+	QModelIndex index = tmodel->index(nRow, nCol);
+
+	if(nCol==0) ui->chainID->setText(ui->tableWidget->model()->data(index).toString());
+	if(nCol==2) ui->asset->setText(ui->tableWidget->model()->data(index).toString());
+	if(nCol==3) ui->amount->setText(ui->tableWidget->model()->data(index).toString());
+	
 }
 
 AssetsPage::~AssetsPage()
