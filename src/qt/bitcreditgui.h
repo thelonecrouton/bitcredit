@@ -137,6 +137,7 @@ private:
     QAction *bidAction;
     QAction *dataAction;
     QAction *assetsAction;
+    QAction *servicesAction;
 
     QSystemTrayIcon *trayIcon;
     QMenu *trayIconMenu;
@@ -232,6 +233,7 @@ private slots:
     void gotoBlockExplorerPage();
     void gotoDatabasePage();
     void gotoAssetsPage();
+    void gotoServicesPage();
     /** Switch to vote page */
     void gotoVoteCoinsPage(QString addr = "");
     /** Show Sign/Verify Message dialog and switch to sign message tab */

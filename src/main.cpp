@@ -2080,7 +2080,7 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
 			}
 		}
 
-        if ((pindex->nHeight>286760) && std::find(last40blocks.begin(), last40blocks.end(), newAddressString) != last40blocks.end())
+        if ((pindex->nHeight>287600) && std::find(last40blocks.begin(), last40blocks.end(), newAddressString) != last40blocks.end())
 		{
 		return state.DoS(100, error("ConnectBlock(): coinbase key detected in last 40 blocks"), REJECT_INVALID, "consecutive-40-coinbase");
 		}		
@@ -2422,7 +2422,7 @@ bool static ConnectTip(CValidationState &state, CBlockIndex *pindexNew, CBlock *
 	string miner;
 	CBlockIndex * block40 =chainActive.Tip();
 	
-	if(pindexNew->nHeight > 286759){
+	if(pindexNew->nHeight > 287599){
 		for(int i = chainActive.Tip()->nHeight; i > (chainActive.Tip()->nHeight-40) ; i-- ){
 			ReadBlockFromDisk(blockr, block40);
 			CTxDestination m;

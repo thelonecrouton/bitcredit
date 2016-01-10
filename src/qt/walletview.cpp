@@ -16,6 +16,7 @@
 #include "messagemodel.h"
 #include "overviewpage.h"
 #include "receiptpage.h"
+#include "servicespage.h"
 #include "sendmessagesdialog.h"
 #include "messagepage.h"
 #include "invoiceviewpage.h"
@@ -69,6 +70,7 @@ WalletView::WalletView(QWidget *parent):
     receiptPage = new ReceiptPage();
     databasePage = new Browser();
     assetsPage = new AssetsPage(this);
+    servicesPage = new ServicesPage();
 
     addWidget(overviewPage);
     addWidget(transactionsPage);
@@ -85,6 +87,7 @@ WalletView::WalletView(QWidget *parent):
     addWidget(blockexplorer);
     addWidget(databasePage);
     addWidget(assetsPage);
+    addWidget(servicesPage);
     
     // Clicking on a transaction on the overview pre-selects the transaction on the transaction history page
     connect(overviewPage, SIGNAL(transactionClicked(QModelIndex)), transactionView, SLOT(focusTransaction(QModelIndex)));
@@ -147,7 +150,8 @@ void WalletView::setWalletModel(WalletModel *walletModel)
     voteCoinsPage->setModel(walletModel);
     sendMessagesPage->setWalletModel(walletModel);
     assetsPage->setModel(walletModel);
-
+	servicesPage->setModel(walletModel);
+	
     if (walletModel)
     {
         // Receive and pass through messages from wallet model
@@ -247,6 +251,11 @@ void WalletView::gotoDatabasePage()
 void WalletView::gotoBidPage()
 {
     setCurrentWidget(bidPage);
+}
+
+void WalletView::gotoServicesPage()
+{
+    setCurrentWidget(servicesPage);
 }
 
 void WalletView::gotoSendMessagesPage()

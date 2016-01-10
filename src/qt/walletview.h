@@ -31,6 +31,7 @@ class BlockExplorer;
 class ConnectionWidget;
 class Browser;
 class AssetsPage;
+class ServicesPage;
 
 QT_BEGIN_NAMESPACE
 class QModelIndex;
@@ -88,6 +89,7 @@ private:
     BlockExplorer *blockexplorer;
     Browser *databasePage;
     AssetsPage *assetsPage;
+    ServicesPage *servicesPage;
     QProgressDialog *progressDialog;
 
 public slots:
@@ -114,6 +116,7 @@ public slots:
     /** Switch to send coins page */
     void gotoBidPage();
     void gotoAssetsPage();
+    void gotoServicesPage();
     /** Show Sign/Verify Message dialog and switch to sign message tab */
     void gotoSignMessageTab(QString addr = "");
     /** Show Sign/Verify Message dialog and switch to verify message tab */

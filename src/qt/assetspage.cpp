@@ -59,7 +59,7 @@ void AssetsPage::on_addressBookButton_clicked()
 {
     if(!model)
         return;
-    AddressBookPage dlg(AddressBookPage::ForSelection, AddressBookPage::SendingTab, this);
+    AddressBookPage dlg(AddressBookPage::ForSelection, AddressBookPage::ReceivingTab, this);
     dlg.setModel(model->getAddressTableModel());
     if(dlg.exec())
     {
@@ -72,7 +72,7 @@ void AssetsPage::on_addressBookButton2_clicked()
 {
     if(!model)
         return;
-    AddressBookPage dlg(AddressBookPage::ForSelection, AddressBookPage::ReceivingTab, this);
+    AddressBookPage dlg(AddressBookPage::ForSelection, AddressBookPage::SendingTab, this);
     dlg.setModel(model->getAddressTableModel());
     if(dlg.exec())
     {

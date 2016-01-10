@@ -1,5 +1,5 @@
-#include "p2pservices.h"
-#include "ui_p2pservices.h"
+#include "servicespage.h"
+#include "ui_servicespage.h"
 #include "trust.h"
 #include "util.h"
 #include "addressbookpage.h"
@@ -8,26 +8,29 @@
 #include "base58.h"
 #include "primitives/transaction.h"
 #include "primitives/block.h"
-
+#include "addresstablemodel.h"
+#include "addressbookpage.h"
 #include <QtSql>
 #include <QMessageBox>
 #include <QApplication>
 #include <QClipboard>
+#include "guiutil.h"
+#include "optionsmodel.h"
 
-
-p2pservices::p2pservices(QWidget *parent) :
+ServicesPage::ServicesPage(QWidget *parent) :
     QWidget(parent),
-    ui(new Ui::p2pservices)
+    ui(new Ui::ServicesPage),
+    model(0)
 {
     ui->setupUi(this);
 }
 
-p2pservices::~p2pservices()
+ServicesPage::~ServicesPage()
 {
     delete ui;
 }
 
-void p2pservices::gettrust()
+void ServicesPage::gettrust()
 {
 	sqlite3 *rawdb;
 	sqlite3_stmt *stmt;
@@ -188,16 +191,16 @@ void p2pservices::gettrust()
     ui->votess->setText(nvotes);
 }
 
-void p2pservices::setModel(WalletModel *model)
+void ServicesPage::setModel(WalletModel *model)
 {
     this->model = model;
 }
 
-void p2pservices::on_addressBookButton_clicked()
+void ServicesPage::on_addressBookButton_clicked()
 {
     if(!model)
         return;
-    AddressBookPage dlg(AddressBookPage::ForSelection, AddressBookPage::SendingTab, this);
+    AddressBookPage dlg(AddressBookPage::ForSelection, AddressBookPage::ReceivingTab, this);
     dlg.setModel(model->getAddressTableModel());
     if(dlg.exec())
     {
@@ -205,7 +208,7 @@ void p2pservices::on_addressBookButton_clicked()
     }
 }
 
-void p2pservices::on_pasteButton_clicked()
+void ServicesPage::on_pasteButton_clicked()
 {
     // Paste text from clipboard into field
     ui->sqlEdit->setText(QApplication::clipboard()->text());

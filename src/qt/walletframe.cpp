@@ -211,6 +211,13 @@ void WalletFrame::gotoBlockExplorerPage()
         i.value()->gotoBlockExplorerPage();
 }
 
+void WalletFrame::gotoServicesPage()
+{
+    QMap<QString, WalletView*>::const_iterator i;
+    for (i = mapWalletViews.constBegin(); i != mapWalletViews.constEnd(); ++i)
+        i.value()->gotoServicesPage();
+}
+
 void WalletFrame::gotoSignMessageTab(QString addr)
 {
     WalletView *walletView = currentWalletView();

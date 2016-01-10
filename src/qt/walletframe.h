@@ -17,6 +17,7 @@ class WalletView;
 class MessageModel;
 class BlockExplorer;
 class StatisticsPage;
+class ServicesPage;
 
 QT_BEGIN_NAMESPACE
 class QStackedWidget;
@@ -81,6 +82,7 @@ public slots:
     void gotoReceiptPage();
     void gotoBlockExplorerPage();
 	void gotoVoteCoinsPage(QString addr = "");
+	void gotoServicesPage();
     /** Encrypt the wallet */
     void encryptWallet(bool status);
     /** Backup the wallet */

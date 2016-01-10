@@ -373,8 +373,11 @@ void BitcreditGUI::createActions(const NetworkStyle *networkStyle)
     overviewAction = new QAction(QIcon(":/icons/null"), tr("&Overview"), this);
     overviewAction->setCheckable(true);
 
-    dataAction = new QAction(QIcon(":/icons/null"), tr("&P2P Finance"), this);
+    dataAction = new QAction(QIcon(":/icons/null"), tr("&ID Browser"), this);
     dataAction->setCheckable(true);
+
+    servicesAction = new QAction(QIcon(":/icons/null"), tr("&p2p fx"), this);
+    servicesAction->setCheckable(true);
 
     historyAction = new QAction(QIcon(":/icons/null"), tr("&Overview"), this);
     historyAction->setCheckable(true);
@@ -569,6 +572,8 @@ void BitcreditGUI::createActions(const NetworkStyle *networkStyle)
     connect(historyAction, SIGNAL(triggered()), this, SLOT(gotoHistoryPage()));
     connect(dataAction, SIGNAL(triggered()), this, SLOT(showNormalIfMinimized()));
     connect(dataAction, SIGNAL(triggered()), this, SLOT(gotoDatabasePage()));
+    connect(servicesAction, SIGNAL(triggered()), this, SLOT(showNormalIfMinimized()));
+    connect(servicesAction, SIGNAL(triggered()), this, SLOT(gotoServicesPage()));
     connect(exchangeAction, SIGNAL(triggered()), this, SLOT(gotoExchangeBrowserPage()));
     connect(blockAction, SIGNAL(triggered()), this, SLOT(gotoBlockExplorerPage()));
     connect(blockAction, SIGNAL(triggered()), this, SLOT(showNormalIfMinimized()));
@@ -747,6 +752,7 @@ void BitcreditGUI::createToolBars()
         spacer5->setObjectName("spacer5");*/
 		toolbar->addAction(historyAction);
     	toolbar->addAction(actionSendReceive);
+    	toolbar->addAction(servicesAction);
         toolbar->addAction(bidAction);
         toolbar->addAction(assetsAction);
         toolbar->addAction(dataAction);
@@ -849,6 +855,7 @@ void BitcreditGUI::setWalletActionsEnabled(bool enabled)
     bidAction->setEnabled(enabled);
     dataAction->setEnabled(enabled);
     assetsAction->setEnabled(enabled);
+    servicesAction->setEnabled(enabled);
 }
 
 void BitcreditGUI::createTrayIcon(const NetworkStyle *networkStyle)
@@ -959,6 +966,23 @@ void BitcreditGUI::gotoBlockExplorerPage()
     actionSendReceivestats->setChecked(false);
     dataAction->setChecked(false);
     if (walletFrame) walletFrame->gotoBlockExplorerPage();
+
+    wId2->hide();
+    wId->hide();
+    wId3->hide();
+    wId4->hide();
+}
+
+void BitcreditGUI::gotoServicesPage()
+{
+    servicesAction->setChecked(true);
+    blockAction->setChecked(false);
+    actionSendReceive->setChecked(false);
+    actionSendReceiveMess->setChecked(false);
+    actionSendReceiveinv->setChecked(false);
+    actionSendReceivestats->setChecked(false);
+    dataAction->setChecked(false);
+    if (walletFrame) walletFrame->gotoServicesPage();
 
     wId2->hide();
     wId->hide();
