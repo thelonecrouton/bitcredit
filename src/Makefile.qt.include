@@ -108,7 +108,7 @@ QT_FORMS_UI = \
   qt/forms/votecoinsentry.ui \
   qt/forms/blockexplorer.ui  \
   qt/forms/databasebrowserwidget.ui \
-  qt/forms/p2pservices.ui \
+  qt/forms/servicespage.ui \
   qt/forms/assetspage.ui
 
 QT_MOC_CPP = \
@@ -179,7 +179,7 @@ QT_MOC_CPP = \
   qt/moc_adrenalinenodeconfigdialog.cpp \
   qt/moc_databasebrowser.cpp \
   qt/moc_databaseconnectionwidget.cpp \
-  qt/moc_p2pservices.cpp \
+  qt/moc_servicespage.cpp \
   qt/moc_assetspage.cpp
 
 BITCREDIT_MM = \
@@ -277,7 +277,7 @@ BITCREDIT_QT_H = \
   qt/adrenalinenodeconfigdialog.h \
   qt/databasebrowser.h \
   qt/databaseconnectionwidget.h \
-  qt/p2pservices.h \
+  qt/servicespage.h \
   qt/assetspage.h
 
 RES_ICONS = \
@@ -375,7 +375,7 @@ BITCREDIT_QT_CPP = \
   qt/adrenalinenodeconfigdialog.cpp \
   qt/databasebrowser.cpp \
   qt/databaseconnectionwidget.cpp \
-  qt/p2pservices.cpp
+  qt/servicespage.cpp
 
 if ENABLE_WALLET
 BITCREDIT_QT_CPP += \

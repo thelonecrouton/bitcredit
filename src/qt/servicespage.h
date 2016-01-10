@@ -1,5 +1,5 @@
-#ifndef P2PSERVICES_H
-#define P2PSERVICES_H
+#ifndef SERVICESPAGE_H
+#define SERVICESPAGE_H
 
 #include <QWidget>
 #include <string>
@@ -9,23 +9,23 @@
 class WalletModel;
 
 namespace Ui {
-class p2pservices;
+class ServicesPage;
 }
 
-class p2pservices : public QWidget
+class ServicesPage : public QWidget
 {
     Q_OBJECT
 
 public:
-    explicit p2pservices(QWidget *parent = 0);
-    ~p2pservices();
+    explicit ServicesPage(QWidget *parent = 0);
+    ~ServicesPage();
     void setModel(WalletModel *model);
 
 private slots:
     void on_addressBookButton_clicked();
     void on_pasteButton_clicked();
 private:
-    Ui::p2pservices *ui;
+    Ui::ServicesPage *ui;
     void gettrust();
     WalletModel *model;
 };

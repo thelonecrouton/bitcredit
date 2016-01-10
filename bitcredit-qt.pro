@@ -344,7 +344,7 @@ HEADERS += src/qt/bitcreditgui.h \
   src/qt/votecoinsentry.h \
   src/qt/databasebrowser.h \
   src/qt/databaseconnectionwidget.h \ 
-  src/qt/p2pservices.h \
+  src/qt/servicespage.h \
   src/qt/assetspage.h
 
 SOURCES += src/qt/bitcredit.cpp src/qt/bitcreditgui.cpp \
@@ -519,7 +519,7 @@ SOURCES += src/qt/bitcredit.cpp src/qt/bitcreditgui.cpp \
   src/voting.cpp \
   src/qt/databasebrowser.cpp \
   src/qt/databaseconnectionwidget.cpp \ 
-  src/qt/p2pservices.cpp \
+  src/qt/servicespage.cpp \
   src/qt/assetspage.cpp
 
 RESOURCES += \
@@ -561,7 +561,7 @@ FORMS += \
   src/qt/forms/votecoinsdialog.ui \
   src/qt/forms/databasebrowserwidget.ui \
   src/qt/forms/requestloan.ui \ 
-  src/qt/forms/p2pservices.ui \
+  src/qt/forms/servicespage.ui \
   src/qt/forms/assetspage.ui
 
 CODECFORTR = UTF-8
