@@ -156,7 +156,6 @@ void AssetsPage::sendassets()
 		p.waitForFinished();	
 
 	}	
-
 		ui->chainID->clear();
 		ui->asset->clear();
 		ui->amount->clear();
