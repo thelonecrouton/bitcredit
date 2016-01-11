@@ -137,7 +137,9 @@ void AssetsPage::getBalance()
 void AssetsPage::sendassets()
 {
 	QProcess p;
-	QString sendCmd = QCoreApplication::applicationDirPath() + "/assets/colorcore.py sendasset " + ui->chainID->text()+ " "+ ui->asset->text() + " " +ui->amount->text() +" " + ui->sendTo->text();
+	p.setWorkingDirectory(QCoreApplication::applicationDirPath());
+	QString sendCmd,data;
+	data=ui->chainID->text()+ " "+ ui->asset->text() + " " +ui->amount->text() +" " + ui->sendTo->text(); 
 	QMessageBox msgBox;
 	msgBox.setWindowTitle("Transfer Asset");
 	msgBox.setText("Please confirm you wish to send " + ui->amount->text() + "units of " + ui->asset->text() + "to "+ ui->sendTo->text());
@@ -146,15 +148,15 @@ void AssetsPage::sendassets()
 	msgBox.setDefaultButton(QMessageBox::Cancel);
 	if(msgBox.exec() == QMessageBox::Yes){
 #ifdef WIN32
-		p.start("C:/windows/system32/cmd.exe",QStringList()<<"/C"<<"python.exe "<< sendCmd);
+		sendCmd ="cmd.exe /c python.exe assets/colorcore.py sendasset" + data;
 #else
-		p.start("python3.4 " + sendCmd);
+		sendCmd ="python3.4 /assets/colorcore.py sendasset " + data;
 #endif
+		p.start(sendCmd);
 		if (!p.waitForStarted()){
 			LogPrintf("Error: Could not send! \n");		
 		}
 		p.waitForFinished();	
-
 	}	
 		ui->chainID->clear();
 		ui->asset->clear();
@@ -165,13 +167,17 @@ void AssetsPage::sendassets()
 void AssetsPage::issueassets()
 {
 	QProcess d,m;
-	QString sendCmd = QCoreApplication::applicationDirPath() + "/assets/colorcore.py issueasset " + ui->chainID->text()+" "+ ui->amount->text();
+	QString sendCmd, data;
+	data =ui->chainID->text()+" "+ ui->amount->text();
+	d.setWorkingDirectory(QCoreApplication::applicationDirPath());
+	m.setWorkingDirectory(QCoreApplication::applicationDirPath());
 #ifdef WIN32
-		d.start("C:/windows/system32/cmd.exe",QStringList()<<"/C"<<"python.exe "<< sendCmd);
+	sendCmd = "cmd.exe /c python.exe assets/colorcore.py issueasset "+data ;
 #else
-		d.start("python3.4 " + sendCmd);
+	sendCmd = "python3.4 /assets/colorcore.py issueasset " + data;
 #endif
-	
+	d.start(sendCmd);
+
 	if (!d.waitForStarted()){
 		LogPrintf("Error: Could not issue! \n");
 		
@@ -179,14 +185,16 @@ void AssetsPage::issueassets()
 	d.waitForFinished();
 
 	if (ui->distribute->isChecked()){
-		sendCmd = QCoreApplication::applicationDirPath() + "/assets/colorcore.py distribute " + ui->chainID->text()+" "+ ui->sendTo->text()+" "+ ui->price->text();
+		data =ui->chainID->text()+" "+ ui->sendTo->text()+" "+ ui->price->text();
 #ifdef WIN32
-		m.start("C:/windows/system32/cmd.exe",QStringList()<<"/C"<<"python.exe "<< sendCmd);
+	sendCmd ="cmd.exe /c python.exe assets/colorcore.py distribute "+ data;
 #else
-		m.start("python3.4 " + sendCmd);
+	sendCmd ="python3.4 /assets/colorcore.py distribute " + data;
 #endif
-		if (!m.waitForStarted()){
-			LogPrintf("Error: Could not distribute! \n");		
+	m.start(sendCmd);
+
+	if (!m.waitForStarted()){
+		LogPrintf("Error: Could not distribute! \n");		
 	}
 	m.waitForFinished();
 	}
@@ -199,13 +207,15 @@ void AssetsPage::issueassets()
 
 bool AssetsPage::runColorCore()
 {
-    QString startCmd = QCoreApplication::applicationDirPath() + "/assets/colorcore.py server";
+    QString startCmd;
+    serverProc->setWorkingDirectory(QCoreApplication::applicationDirPath());
     QObject::connect(serverProc, SIGNAL(readyRead()), this, SLOT(readPyOut()));
 #ifdef WIN32
-		serverProc->start("C:/windows/system32/cmd.exe",QStringList()<<"/C"<<"python.exe "<< startCmd);
+	startCmd = "cmd.exe /c python.exe assets/colorcore.py server";
 #else
-		serverProc->start("python3.4 " + startCmd);
+	startCmd = "python3.4 /assets/colorcore.py server"
 #endif
+	serverProc->start(startCmd);
     if (!serverProc->waitForStarted()){
         LogPrintf("Error: Could not start! \n");
         return false;
