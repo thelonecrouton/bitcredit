@@ -36,16 +36,14 @@ public:
 private slots:
     void readPyOut();
     void on_addressBookButton_clicked();
-    void on_addressBookButton2_clicked();
     void on_pasteButton_clicked();
-    void on_pasteButton2_clicked();
-    void on_issueButton_clicked();
-    void on_transferButton_clicked();
     void cellSelected(int nRow, int nCol);
 
 public slots:
     void update();
     void clear();
+    void sendassets();
+    void issueassets();
 
 private:
     Ui::AssetsPage *ui;

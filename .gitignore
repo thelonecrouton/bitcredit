@@ -7,8 +7,6 @@ src/bitcredit-cli
 src/bitcredit-tx
 src/test/test_bitcredit
 src/qt/test/test_bitcredit-qt
-src/qt/cache.db
-src/qt/assets/cache.db
 
 # autoreconf
 Makefile.in
@@ -45,6 +43,8 @@ src/qt/forms/ui_*.h
 
 src/qt/test/moc*.cpp
 
+cache.db
+*__pycache__
 .deps
 .dirstamp
 .libs
