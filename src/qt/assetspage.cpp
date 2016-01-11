@@ -41,15 +41,12 @@ void AssetsPage::update()
 
 void AssetsPage::on_pasteButton_clicked()
 {
-    // Paste text from clipboard into recipient field
     ui->chainID->setText(QApplication::clipboard()->text());
 }
 
 void AssetsPage::setModel(WalletModel *model)
 {
     this->model = model;
-
-    //clear();
 }
 
 void AssetsPage::on_addressBookButton_clicked()
@@ -148,7 +145,11 @@ void AssetsPage::sendassets()
 	msgBox.addButton(QMessageBox::Cancel);
 	msgBox.setDefaultButton(QMessageBox::Cancel);
 	if(msgBox.exec() == QMessageBox::Yes){
-		p.start("python3.4 " + sendCmd);	
+#ifdef WIN32
+		p.start("C:/windows/system32/cmd.exe",QStringList()<<"/C"<<"python.exe "<< sendCmd);
+#else
+		p.start("python3.4 " + sendCmd);
+#endif
 		if (!p.waitForStarted()){
 			LogPrintf("Error: Could not send! \n");		
 		}
@@ -166,7 +167,12 @@ void AssetsPage::issueassets()
 {
 	QProcess d,m;
 	QString sendCmd = QCoreApplication::applicationDirPath() + "/assets/colorcore.py issueasset " + ui->chainID->text()+" "+ ui->amount->text();
-	d.start("python3.4 " + sendCmd);	
+#ifdef WIN32
+		d.start("C:/windows/system32/cmd.exe",QStringList()<<"/C"<<"python.exe "<< sendCmd);
+#else
+		d.start("python3.4 " + sendCmd);
+#endif
+	
 	if (!d.waitForStarted()){
 		LogPrintf("Error: Could not issue! \n");
 		
@@ -175,7 +181,11 @@ void AssetsPage::issueassets()
 
 	if (ui->distribute->isChecked()){
 		sendCmd = QCoreApplication::applicationDirPath() + "/assets/colorcore.py distribute " + ui->chainID->text()+" "+ ui->sendTo->text()+" "+ ui->price->text();
-		m.start("python3.4 " + sendCmd);	
+#ifdef WIN32
+		m.start("C:/windows/system32/cmd.exe",QStringList()<<"/C"<<"python.exe "<< sendCmd);
+#else
+		m.start("python3.4 " + sendCmd);
+#endif
 		if (!m.waitForStarted()){
 			LogPrintf("Error: Could not distribute! \n");		
 	}
@@ -192,7 +202,11 @@ bool AssetsPage::runColorCore()
 {
     QString startCmd = QCoreApplication::applicationDirPath() + "/assets/colorcore.py server";
     QObject::connect(serverProc, SIGNAL(readyRead()), this, SLOT(readPyOut()));
-    serverProc->start("python3.4 " + startCmd);
+#ifdef WIN32
+		serverProc->start("C:/windows/system32/cmd.exe",QStringList()<<"/C"<<"python.exe "<< startCmd);
+#else
+		serverProc->start("python3.4 " + startCmd);
+#endif
     if (!serverProc->waitForStarted()){
         LogPrintf("Error: Could not start! \n");
         return false;
