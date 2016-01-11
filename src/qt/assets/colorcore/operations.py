@@ -267,8 +267,8 @@ class Controller(object):
                 transactions.append(transaction)
                 summary.append({
                     'from': self.convert.script_to_display_string(script),
-                    'received': self.convert.to_coin(output.output.value) + " BTC",
-                    'collected': self.convert.to_coin(collected) + " BTC",
+                    'received': self.convert.to_coin(output.output.value) + " BCR",
+                    'collected': self.convert.to_coin(collected) + " BCR",
                     'sent': str(amount_issued) + " Units",
                     'transaction': lib.bitcoin.core.b2lx(output.out_point.hash)
                 })
