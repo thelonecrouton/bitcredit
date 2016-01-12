@@ -3,6 +3,7 @@
 #include <QApplication>
 #include <QDebug>
 #include <QJsonArray>
+#include <QComboBox>
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QLabel>
@@ -108,6 +109,8 @@ void AssetsPage::getBalance()
     }
 
 	QString assetID;
+	QComboBox *assetids;
+	QComboBox *qtys;
     unsigned long int quantity=0;
 
     QJsonParseError err;
@@ -122,14 +125,20 @@ void AssetsPage::getBalance()
         QString address = oaAddrMap["address"].toString();
         double balance = oaAddrMap["value"].toDouble();
 		QVariantList data = oaAddrMap["assets"].toList();
+		assetids = new QComboBox;
+		qtys = new QComboBox;
 		foreach(QVariant v, data) {
-		assetID = v.toMap().value("asset_id").toString();
-		quantity = v.toMap().value("quantity").toULongLong();
+		assetids->addItem(v.toMap().value("asset_id").toString());
+		qtys->addItem(v.toMap().value("quantity").toString());	
+		//assetID = v.toMap().value("asset_id").toString();
+		//quantity = v.toMap().value("quantity").toULongLong();
 		}		
         ui->tableWidget->setItem(i, 0, new QTableWidgetItem(address));
         ui->tableWidget->setItem(i, 1, new QTableWidgetItem(oaAddress));
-        ui->tableWidget->setItem(i, 2, new QTableWidgetItem(assetID));
-        ui->tableWidget->setItem(i, 3, new QTableWidgetItem(QString::number(quantity)));
+		ui->tableWidget->setCellWidget(i, 2, assetids );
+		ui->tableWidget->setCellWidget(i, 3, qtys );
+        //ui->tableWidget->setItem(i, 2, new QTableWidgetItem(assetID));
+        //ui->tableWidget->setItem(i, 3, new QTableWidgetItem(QString::number(quantity)));
         ui->tableWidget->setItem(i, 4, new QTableWidgetItem(QString::number(balance)));
     }
 }
@@ -137,7 +146,8 @@ void AssetsPage::getBalance()
 void AssetsPage::sendassets()
 {
 	QProcess p;
-	QString sendCmd = QCoreApplication::applicationDirPath() + "/assets/colorcore.py sendasset " + ui->chainID->text()+ " "+ ui->asset->text() + " " +ui->amount->text() +" " + ui->sendTo->text();
+	QString sendCmd,data;
+	data=ui->chainID->text()+ " "+ ui->asset->text() + " " +ui->amount->text() +" " + ui->sendTo->text(); 
 	QMessageBox msgBox;
 	msgBox.setWindowTitle("Transfer Asset");
 	msgBox.setText("Please confirm you wish to send " + ui->amount->text() + "units of " + ui->asset->text() + "to "+ ui->sendTo->text());
@@ -146,15 +156,16 @@ void AssetsPage::sendassets()
 	msgBox.setDefaultButton(QMessageBox::Cancel);
 	if(msgBox.exec() == QMessageBox::Yes){
 #ifdef WIN32
-		p.start("C:/windows/system32/cmd.exe",QStringList()<<"/C"<<"python.exe "<< sendCmd);
+		p.setWorkingDirectory(QCoreApplication::applicationDirPath());
+		sendCmd ="cmd.exe /c python.exe assets/colorcore.py sendasset" + data;
 #else
-		p.start("python3.4 " + sendCmd);
+		sendCmd ="python3.4 "+ QCoreApplication::applicationDirPath() +"/assets/colorcore.py sendasset " + data;
 #endif
+		p.start(sendCmd);
 		if (!p.waitForStarted()){
 			LogPrintf("Error: Could not send! \n");		
 		}
 		p.waitForFinished();	
-
 	}	
 		ui->chainID->clear();
 		ui->asset->clear();
@@ -165,13 +176,16 @@ void AssetsPage::sendassets()
 void AssetsPage::issueassets()
 {
 	QProcess d,m;
-	QString sendCmd = QCoreApplication::applicationDirPath() + "/assets/colorcore.py issueasset " + ui->chainID->text()+" "+ ui->amount->text();
+	QString sendCmd, data;
+	data =ui->chainID->text()+" "+ ui->amount->text();	
 #ifdef WIN32
-		d.start("C:/windows/system32/cmd.exe",QStringList()<<"/C"<<"python.exe "<< sendCmd);
+	d.setWorkingDirectory(QCoreApplication::applicationDirPath());
+	sendCmd = "cmd.exe /c python.exe assets/colorcore.py issueasset "+data ;
 #else
-		d.start("python3.4 " + sendCmd);
+	sendCmd = "python3.4 "+ QCoreApplication::applicationDirPath() +"/assets/colorcore.py issueasset " + data;
 #endif
-	
+	d.start(sendCmd);
+
 	if (!d.waitForStarted()){
 		LogPrintf("Error: Could not issue! \n");
 		
@@ -179,14 +193,17 @@ void AssetsPage::issueassets()
 	d.waitForFinished();
 
 	if (ui->distribute->isChecked()){
-		sendCmd = QCoreApplication::applicationDirPath() + "/assets/colorcore.py distribute " + ui->chainID->text()+" "+ ui->sendTo->text()+" "+ ui->price->text();
+		data =ui->chainID->text()+" "+ ui->sendTo->text()+" "+ ui->price->text();
 #ifdef WIN32
-		m.start("C:/windows/system32/cmd.exe",QStringList()<<"/C"<<"python.exe "<< sendCmd);
+	m.setWorkingDirectory(QCoreApplication::applicationDirPath());
+	sendCmd ="cmd.exe /c python.exe assets/colorcore.py distribute "+ data;
 #else
-		m.start("python3.4 " + sendCmd);
+	sendCmd ="python3.4 "+ QCoreApplication::applicationDirPath() +"/assets/colorcore.py distribute " + data;
 #endif
-		if (!m.waitForStarted()){
-			LogPrintf("Error: Could not distribute! \n");		
+	m.start(sendCmd);
+
+	if (!m.waitForStarted()){
+		LogPrintf("Error: Could not distribute! \n");		
 	}
 	m.waitForFinished();
 	}
@@ -199,13 +216,15 @@ void AssetsPage::issueassets()
 
 bool AssetsPage::runColorCore()
 {
-    QString startCmd = QCoreApplication::applicationDirPath() + "/assets/colorcore.py server";
+    QString startCmd;
     QObject::connect(serverProc, SIGNAL(readyRead()), this, SLOT(readPyOut()));
 #ifdef WIN32
-		serverProc->start("C:/windows/system32/cmd.exe",QStringList()<<"/C"<<"python.exe "<< startCmd);
+	serverProc->setWorkingDirectory(QCoreApplication::applicationDirPath());
+	startCmd = "cmd.exe /c python.exe assets/colorcore.py server";
 #else
-		serverProc->start("python3.4 " + startCmd);
+	startCmd = "python3.4 " + QCoreApplication::applicationDirPath() + "/assets/colorcore.py server";
 #endif
+	serverProc->start(startCmd);
     if (!serverProc->waitForStarted()){
         LogPrintf("Error: Could not start! \n");
         return false;
