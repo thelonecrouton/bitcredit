@@ -2556,12 +2556,13 @@ bool static ConnectTip(CValidationState &state, CBlockIndex *pindexNew, CBlock *
                 }
             }
         }
-        
-		if(sqlite3_close(rawdb) != SQLITE_OK ){
-			if (fDebug)LogPrintf("SQL unable to close database %s\n", sqlite3_errmsg(rawdb));
-				sqlite3_free(zErrMsg);
-		}else{
-			if (fDebug)LogPrintf( "database closed successfully\n");
+        if(fBaseNode){
+			if(sqlite3_close(rawdb) != SQLITE_OK ){
+				if (fDebug)LogPrintf("SQL unable to close database %s\n", sqlite3_errmsg(rawdb));
+					sqlite3_free(zErrMsg);
+			}else{
+				if (fDebug)LogPrintf( "database closed successfully\n");
+			}
 		}
 	}
 	ofstream addrdb;
