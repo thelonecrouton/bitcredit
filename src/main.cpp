@@ -2406,11 +2406,6 @@ bool static ConnectTip(CValidationState &state, CBlockIndex *pindexNew, CBlock *
         SyncWithWallets(tx, pblock);
     }
 
-	sqlite3 *rawdb;
-	sqlite3_stmt *stmt;
-	char *zErrMsg = 0;
-	int rc;
-
     boost::filesystem::path trustdb = (GetDataDir() / "ratings/rawdata.db").string().c_str();
     if(!(boost::filesystem::exists(trustdb))){
 
@@ -2443,11 +2438,17 @@ bool static ConnectTip(CValidationState &state, CBlockIndex *pindexNew, CBlock *
     std::map<std::string,int64_t>::iterator addrvalit;
 	std::map<std::string,int64_t> addressvalue = getbalances();
     BOOST_FOREACH(const CTransaction& tx, pblock->vtx){
-	
-	sqlite3_open((GetDataDir() / "ratings/rawdata.db").string().c_str(), &rawdb);
-    char * insertquery = sqlite3_mprintf("insert into BLOCKS (ID, HASH, TIME, MINER) values (%lld,'%q',%lld,'%q')",pindexNew->nHeight, pblock->GetHash().ToString().c_str(), pblock->nTime, miner.c_str());
-	rc = sqlite3_exec(rawdb, insertquery, callback, 0, &zErrMsg);
-	
+
+	sqlite3 *rawdb;
+	sqlite3_stmt *stmt;
+	char *zErrMsg = 0;
+	int rc;
+
+	if(fBaseNode){
+		sqlite3_open((GetDataDir() / "ratings/rawdata.db").string().c_str(), &rawdb);
+		char * insertquery = sqlite3_mprintf("insert into BLOCKS (ID, HASH, TIME, MINER) values (%lld,'%q',%lld,'%q')",pindexNew->nHeight, pblock->GetHash().ToString().c_str(), pblock->nTime, miner.c_str());
+		rc = sqlite3_exec(rawdb, insertquery, callback, 0, &zErrMsg);
+	}
     for (unsigned int j = 0; j < tx.vout.size();j++){
 		CTxDestination address;
 		ExtractDestination(tx.vout[j].scriptPubKey, address);
