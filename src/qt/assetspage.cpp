@@ -127,6 +127,8 @@ void AssetsPage::getBalance()
 		QVariantList data = oaAddrMap["assets"].toList();
 		assetids = new QComboBox;
 		qtys = new QComboBox;
+		assetids->setEditable(true);
+		qtys->setEditable(true);
 		foreach(QVariant v, data) {
 		assetids->addItem(v.toMap().value("asset_id").toString());
 		qtys->addItem(v.toMap().value("quantity").toString());	
@@ -267,8 +269,14 @@ void AssetsPage::cellSelected(int nRow, int nCol)
 
 	if(nCol==0) ui->chainID->setText(ui->tableWidget->model()->data(index).toString());
 	if(nCol==1) ui->sendTo->setText(ui->tableWidget->model()->data(index).toString());
-	if(nCol==2) ui->asset->setText(ui->tableWidget->model()->data(index).toString());
-	if(nCol==3) ui->amount->setText(ui->tableWidget->model()->data(index).toString());
+	if(nCol==2) {
+		QComboBox *myCB = qobject_cast<QComboBox*>(ui->tableWidget->cellWidget(nRow,nCol));
+		ui->asset->setText(myCB->currentText());		
+	}
+	if(nCol==3){
+		QComboBox *myCB = qobject_cast<QComboBox*>(ui->tableWidget->cellWidget(nRow,nCol));
+		ui->amount->setText(myCB->currentText());		
+	} 
 	
 }
 

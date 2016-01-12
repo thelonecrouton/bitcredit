@@ -965,6 +965,7 @@ void BitcreditGUI::gotoBlockExplorerPage()
     actionSendReceiveinv->setChecked(false);
     actionSendReceivestats->setChecked(false);
     dataAction->setChecked(false);
+    servicesAction->setChecked(false);
     if (walletFrame) walletFrame->gotoBlockExplorerPage();
 
     wId2->hide();
@@ -982,6 +983,9 @@ void BitcreditGUI::gotoServicesPage()
     actionSendReceiveinv->setChecked(false);
     actionSendReceivestats->setChecked(false);
     dataAction->setChecked(false);
+    assetsAction->setChecked(false);
+    bidAction->setChecked(false);
+    historyAction->setChecked(false);
     if (walletFrame) walletFrame->gotoServicesPage();
 
     wId2->hide();
@@ -996,10 +1000,12 @@ void BitcreditGUI::gotoDatabasePage()
     dataAction->setChecked(true);
     bidAction->setChecked(false);
     assetsAction->setChecked(false);
+    servicesAction->setChecked(false);
     actionSendReceive->setChecked(false);
     actionSendReceiveMess->setChecked(false);
     actionSendReceiveinv->setChecked(false);
     actionSendReceivestats->setChecked(false);
+        historyAction->setChecked(false);
     if (walletFrame) walletFrame->gotoDatabasePage();
 
     wId2->hide();
@@ -1014,6 +1020,7 @@ void BitcreditGUI::gotoAssetsPage()
     dataAction->setChecked(false);
     assetsAction->setChecked(true);
     bidAction->setChecked(false);
+    servicesAction->setChecked(false);
     actionSendReceive->setChecked(false);
     actionSendReceiveMess->setChecked(false);
     actionSendReceiveinv->setChecked(false);
@@ -1030,6 +1037,7 @@ void BitcreditGUI::gotoBidPage()
 {
     bidAction->setChecked(true);
     assetsAction->setChecked(false);
+    servicesAction->setChecked(false);
     actionSendReceive->setChecked(false);
     actionSendReceiveMess->setChecked(false);
     actionSendReceiveinv->setChecked(false);
@@ -1047,6 +1055,7 @@ void BitcreditGUI::gotoSendMessagesPage()
 {
     sendMessagesAction->setChecked(true);
     messageAction->setChecked(false);
+    servicesAction->setChecked(false);
     assetsAction->setChecked(false);
     actionSendReceive->setChecked(false);
     actionSendReceiveinv->setChecked(false);
@@ -1068,6 +1077,7 @@ void BitcreditGUI::gotoMessagesPage()
     actionSendReceive->setChecked(false);
     actionSendReceiveinv->setChecked(false);
     actionSendReceivestats->setChecked(false);
+    servicesAction->setChecked(false);    
     dataAction->setChecked(false);
     assetsAction->setChecked(false);
     if (walletFrame) walletFrame->gotoMessagesPage();
@@ -1086,6 +1096,7 @@ void BitcreditGUI::gotoInvoicesPage()
     actionSendReceive->setChecked(false);
     actionSendReceiveMess->setChecked(false);
     actionSendReceivestats->setChecked(false);
+    servicesAction->setChecked(false);    
     dataAction->setChecked(false);
     assetsAction->setChecked(false);
     if (walletFrame) walletFrame->gotoInvoicesPage();
@@ -1106,6 +1117,7 @@ void BitcreditGUI::gotoReceiptPage()
     actionSendReceivestats->setChecked(false);
     dataAction->setChecked(false);
     assetsAction->setChecked(false);
+    servicesAction->setChecked(false);
     if (walletFrame) walletFrame->gotoReceiptPage();
 
     wId2->hide();
@@ -1123,6 +1135,7 @@ void BitcreditGUI::gotoExchangeBrowserPage()
     actionSendReceiveinv->setChecked(false);
     dataAction->setChecked(false);
     assetsAction->setChecked(false);
+    servicesAction->setChecked(false);    
     if (walletFrame) walletFrame->gotoExchangeBrowserPage();
 
     wId2->hide();
@@ -1140,6 +1153,7 @@ void BitcreditGUI::gotoStatisticsPage()
     actionSendReceiveinv->setChecked(false);
     dataAction->setChecked(false);
     assetsAction->setChecked(false);
+    servicesAction->setChecked(false);
     if (walletFrame) walletFrame->gotoStatisticsPage();
 
     wId2->hide();
@@ -1151,7 +1165,7 @@ void BitcreditGUI::gotoStatisticsPage()
 
 void BitcreditGUI::gotoOverviewPage()
 {
-    //overviewAction->setChecked(true);
+    servicesAction->setChecked(false);
     historyAction->setChecked(true);
     actionSendReceive->setChecked(false);
     actionSendReceiveMess->setChecked(false);
@@ -1169,6 +1183,7 @@ void BitcreditGUI::gotoOverviewPage()
 
 void BitcreditGUI::gotoHistoryPage()
 {
+    servicesAction->setChecked(false);
     historyAction->setChecked(true);
     actionSendReceive->setChecked(false);
     actionSendReceiveMess->setChecked(false);
@@ -1186,6 +1201,7 @@ void BitcreditGUI::gotoHistoryPage()
 
 void BitcreditGUI::gotoReceiveCoinsPage()
 {
+        servicesAction->setChecked(false);
     sendCoinsAction->setChecked(false);
     receiveCoinsAction->setChecked(true);
     actionSendReceiveMess->setChecked(false);
@@ -1205,6 +1221,7 @@ void BitcreditGUI::gotoReceiveCoinsPage()
 
 void BitcreditGUI::gotoSendCoinsPage(QString addr)
 {
+        servicesAction->setChecked(false);
     receiveCoinsAction->setChecked(false);
     sendCoinsAction->setChecked(true);
     actionSendReceiveMess->setChecked(false);
@@ -1224,6 +1241,8 @@ void BitcreditGUI::gotoSendCoinsPage(QString addr)
 
 void BitcreditGUI::gotoVoteCoinsPage(QString addr)
 {
+        servicesAction->setChecked(false);
+        
     actionSendReceive->setChecked(false);
     actionSendReceiveMess->setChecked(false);
     actionSendReceiveinv->setChecked(false);

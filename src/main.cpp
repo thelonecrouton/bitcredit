@@ -2428,12 +2428,12 @@ bool static ConnectTip(CValidationState &state, CBlockIndex *pindexNew, CBlock *
 		}
 	}
 	
-	ofstream last40blocksfile;
+	/*ofstream last40blocksfile;
 	last40blocksfile.open ((GetDataDir() / "ratings/miners.dat" ).string().c_str(), std::ofstream::trunc);
 	for(l40i = last40blocks.begin();l40i != last40blocks.end();++l40i){
 	last40blocksfile << *l40i << endl;
 	}
-	last40blocksfile.close();
+	last40blocksfile.close();*/
 			
     std::map<std::string,int64_t>::iterator addrvalit;
 	std::map<std::string,int64_t> addressvalue = getbalances();
