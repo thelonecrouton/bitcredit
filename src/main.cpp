@@ -1467,7 +1467,9 @@ CAmount GetBasenodePayment(int nHeight, int64_t blockValue)
 {
 	int64_t ret = blockValue / 5;
 
-	if (nHeight > 258900){ ret = 7 * COIN; }
+	if (nHeight > 319999) { ret = 15 * COIN; }
+
+	else if (nHeight > 258900 && nHeight < 320000){ ret = 7 * COIN; }
 
 	else if (nHeight > 207000 && nHeight % 900 == 0){
 		ret = blockValue / 5000;
