@@ -106,7 +106,7 @@ void BidPage::GetBids()
 {
     // get current blockheight and calc next superblock
     int base = 200700;
-    int current = TestPage::getNumBlocks();
+    int current = BidPage::getNumBlocks();
     int diff = current - base;
 
     int until = 900 - (diff % 900);
