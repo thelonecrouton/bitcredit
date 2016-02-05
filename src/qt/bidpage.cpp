@@ -105,14 +105,22 @@ void BidPage::Estimate()
 void BidPage::GetBids()
 {
     // get current blockheight and calc next superblock
-    // get current time and calc period
+    int base = 200700;
+    int current = TestPage::getNumBlocks();
+    int diff = current - base;
 
-    long int startdate = 1450396800; // 18 December 2015 00:00
-    long int current = GetTime();
-    long int diff = current - startdate;
-
-    int until = 86400 - (diff % 86400);
-    ui->labelNumber->setText(GUIUtil::formatDurationStr(until));
+    int until = 900 - (diff % 900);
+    QString blocks = QString::number(until);
+    
+    // convert until (blocks) to hours and minutes
+    int blocksinsecs = until * 60;
+    int hours = blocksinsecs % 3600;
+    int mins = ((blocksinsecs - (hours * 3600)) / 60);
+    QString hh = QString::number(hours);
+    QString mm = QString::number(mins);
+    
+    // display both blocks until next bid cycle and estimated time
+    ui->labelNumber->setText(blocks + "  (appx. " + hh + "h:" + mm + "s )");
 
     // get default datadir, tack on bidtracker
     QString dataDir = getDefaultDataDirectory();
