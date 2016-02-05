@@ -113,14 +113,14 @@ void BidPage::GetBids()
     QString blocks = QString::number(until);
     
     // convert until (blocks) to hours and minutes
-    int blocksinsecs = until * 60;
-    int hours = blocksinsecs % 3600;
-    int mins = ((blocksinsecs - (hours * 3600)) / 60);
+    int blocksinsecs = until * 96;  // 900 blocks in 24h, avg blocktime 96 secs
+    int hours = ((blocksinsecs % 86400) / 3600);
+    int mins = (blocksinsecs - (hours * 3600)) / 60;
     QString hh = QString::number(hours);
     QString mm = QString::number(mins);
     
     // display both blocks until next bid cycle and estimated time
-    ui->labelNumber->setText(blocks + "  (appx. " + hh + "h:" + mm + "s )");
+    ui->labelNumber->setText(blocks + " blocks - ( appx. " + hh + "h:" + mm + "m )");
 
     // get default datadir, tack on bidtracker
     QString dataDir = getDefaultDataDirectory();
