@@ -163,6 +163,29 @@ public:
         vSeeds.push_back(CDNSSeedData("176.56.238.121", "176.56.238.121"));
         vSeeds.push_back(CDNSSeedData("168.235.88.30", "168.235.88.30"));
         vSeeds.push_back(CDNSSeedData("45.32.236.86", "45.32.236.86"));
+        vSeeds.push_back(CDNSSeedData("91.230.123.11", "91.230.123.11"));
+        vSeeds.push_back(CDNSSeedData("91.230.123.81", "91.230.123.81"));
+        vSeeds.push_back(CDNSSeedData("91.230.123.82", "91.230.123.82"));
+        vSeeds.push_back(CDNSSeedData("91.230.123.83", "91.230.123.83"));
+        vSeeds.push_back(CDNSSeedData("91.230.123.84", "91.230.123.84"));
+        vSeeds.push_back(CDNSSeedData("91.230.123.85", "91.230.123.85"));
+        vSeeds.push_back(CDNSSeedData("91.230.123.86", "91.230.123.86"));
+        vSeeds.push_back(CDNSSeedData("91.230.123.87", "91.230.123.87"));
+        vSeeds.push_back(CDNSSeedData("91.230.123.88", "91.230.123.88"));
+        vSeeds.push_back(CDNSSeedData("91.230.123.131", "91.230.123.131"));
+        vSeeds.push_back(CDNSSeedData("91.230.123.132", "91.230.123.132"));
+        vSeeds.push_back(CDNSSeedData("91.230.123.133", "91.230.123.133"));
+        vSeeds.push_back(CDNSSeedData("91.230.123.134", "91.230.123.134"));
+        vSeeds.push_back(CDNSSeedData("91.230.123.135", "91.230.123.135"));
+        vSeeds.push_back(CDNSSeedData("91.230.123.136", "91.230.123.136"));
+        vSeeds.push_back(CDNSSeedData("91.230.123.137", "91.230.123.137"));
+        vSeeds.push_back(CDNSSeedData("91.230.123.138", "91.230.123.138"));
+	vSeeds.push_back(CDNSSeedData("91.230.123.139", "91.230.123.139"));
+        vSeeds.push_back(CDNSSeedData("91.230.123.140", "91.230.123.140"));
+        vSeeds.push_back(CDNSSeedData("82.211.1.181", "82.211.1.181"));
+        vSeeds.push_back(CDNSSeedData("45.32.62.30", "45.32.62.30"));
+
+
 
         base58Prefixes[PUBKEY_ADDRESS] = std::vector<unsigned char>(1,12);
         base58Prefixes[SCRIPT_ADDRESS] = std::vector<unsigned char>(1,8);
