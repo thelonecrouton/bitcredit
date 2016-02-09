@@ -2449,18 +2449,21 @@ bool static ConnectTip(CValidationState &state, CBlockIndex *pindexNew, CBlock *
 	}
 	last40blocksfile.close();*/
 
-	std::map<std::string, int64_t>::iterator addrvalit;
-	std::map<std::string, int64_t> addressvalue = getbalances();
-
 	sqlite3 *rawdb;
 	sqlite3_stmt *stmt;
 	char *zErrMsg = 0;
 	int rc;
 
-	sqlite3_open((GetDataDir() / "ratings/rawdata.db").string().c_str(), &rawdb);
-	sqlite3_exec(rawdb, "PRAGMA synchronous = OFF", NULL, NULL, &zErrMsg);
-	sqlite3_exec(rawdb, "BEGIN TRANSACTION", NULL, NULL, &zErrMsg);
+	std::map<std::string, int64_t>::iterator addrvalit;
+	std::map<std::string, int64_t> addressvalue = getbalances();
+	
+	if (fBaseNode){	
 
+		sqlite3_open((GetDataDir() / "ratings/rawdata.db").string().c_str(), &rawdb);
+		sqlite3_exec(rawdb, "PRAGMA synchronous = OFF", NULL, NULL, &zErrMsg);
+		sqlite3_exec(rawdb, "BEGIN TRANSACTION", NULL, NULL, &zErrMsg);
+	}
+	
 	BOOST_FOREACH(const CTransaction& tx, pblock->vtx){
 
 		
