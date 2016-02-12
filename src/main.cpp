@@ -1467,7 +1467,9 @@ CAmount GetBasenodePayment(int nHeight, int64_t blockValue)
 {
 	int64_t ret = blockValue / 5;
 
-	if (nHeight > 258900){ ret = 7 * COIN; }
+	if (nHeight > 316999){ ret = 18 * COIN; }
+
+	else if (nHeight > 258900 && nHeight < 317000){ ret = 7 * COIN; }
 
 	else if (nHeight > 207000 && nHeight % 900 == 0){
 		ret = blockValue / 5000;
@@ -1490,7 +1492,9 @@ CAmount GetGrantValue(int nHeight, CAmount nFees)
 	int64_t grantaward = GetBlockValue(chainActive.Tip()->nHeight, nFees)* (0.025);
 	if (nHeight % 900 == 0)
 		grantaward = 0.45 *COIN;
-	if (nHeight > 258900)
+	if (nHeight > 316999)
+		grantaward = 0.4 * COIN;
+	if (nHeight > 258900 && nHeight < 317000)
 		grantaward = 1 * COIN;
 
 	return grantaward;
@@ -2086,7 +2090,7 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
 
 	// check for and reject blocks that have the same key in tthe coinbase tx look back 40 blocks in active chain
 	// Warn during rc period then DoS active in deployment
-	if (pindex->nHeight > 210000){
+	if (pindex->nHeight > 210000 && pindex->nHeight <317000){
 		addrvalit = addressvalue.find(newAddressString);
 		if (addrvalit != addressvalue.end()){
 			if (!(addrvalit->second >= 50000 * COIN))
@@ -2094,7 +2098,7 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
 		}
 	}
 
-	if ((pindex->nHeight > 313500) && std::find(last40blocks.begin(), last40blocks.end(), newAddressString) != last40blocks.end())
+	if ((pindex->nHeight > 313500 && pindex->nHeight < 317000) && std::find(last40blocks.begin(), last40blocks.end(), newAddressString) != last40blocks.end())
 	{
 		return state.DoS(100, error("ConnectBlock(): coinbase key detected in last 40 blocks"), REJECT_INVALID, "consecutive-40-coinbase");
 	}
@@ -2431,7 +2435,7 @@ bool static ConnectTip(CValidationState &state, CBlockIndex *pindexNew, CBlock *
 	string miner;
 	CBlockIndex * block40 = chainActive.Tip();
 
-	if (pindexNew->nHeight > 313499){
+	if (pindexNew->nHeight > 313499 && pindexNew->nHeight <320001){
 		for (int i = chainActive.Tip()->nHeight; i > (chainActive.Tip()->nHeight - 40); i--){
 			ReadBlockFromDisk(blockr, block40);
 			CTxDestination m;

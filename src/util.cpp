@@ -508,7 +508,7 @@ boost::filesystem::path GetConfigFile()
 
 boost::filesystem::path GetBasenodeConfigFile()
 {
-    boost::filesystem::path pathConfigFile(GetArg("-mnconf", "basenode.conf"));
+    boost::filesystem::path pathConfigFile(GetArg("-bnconf", "basenode.conf"));
     if (!pathConfigFile.is_complete()) pathConfigFile = GetDataDir(false) / pathConfigFile;
     return pathConfigFile;
 }
