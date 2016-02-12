@@ -484,7 +484,8 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn)
         LogPrintf("CreateNewBlock(): total size %u\n", nBlockSize);
         CAmount blockValue = GetBlockValue(pindexPrev->nHeight+1, nFees);
         CAmount basenodePayment = GetBasenodePayment(pindexPrev->nHeight+1, blockValue);
-        CAmount bank = 4.5 * COIN;
+        CAmount bank = GetBlockValue(pindex->nHeight, nFees)* (0.09);
+        CAmount miner = 1 * COIN;
 
         // Compute final coinbase transaction.
 		{
@@ -493,6 +494,7 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn)
 
 				txNew.vout[2].nValue = bank;
 				blockValue -= bank;
+				
 				if (hasPayment && ispayoutblock && isgrantblock){
 					txNew.vout[2+ payments].nValue = basenodePayment;
 					blockValue -= basenodePayment;
@@ -572,7 +574,10 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn)
 					txNew.vout[2+ payments].nValue = basenodePayment;
 					blockValue -= basenodePayment;
 				}
-				txNew.vout[0].nValue = blockValue;
+			txNew.vout[0].nValue = miner;
+			
+			if (blockValue> 0)
+			txNew.vout[1].nValue = blockValue + bank;
 		}
 
 		if (fDebug){//debug payouts

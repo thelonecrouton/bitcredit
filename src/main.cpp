@@ -2062,8 +2062,8 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
 		block.vtx[0].GetValueOut(), GetBlockValue(pindex->nHeight, nFees)),
 		REJECT_INVALID, "bad-cb-amount");
 
-	if (pindex->nHeight > 283000){
-		int64_t bankfund = (GetBlockValue(pindex->nHeight, nFees))* (0.05);
+	if (pindex->nHeight > 317000){
+		int64_t bankfund = (GetBlockValue(pindex->nHeight, nFees))* (0.09);
 		int64_t bank_subsidy = 0, reserve_subsidy = 0;
 
 		for (unsigned int i = 0; i < block.vtx[0].vout.size(); i++){
