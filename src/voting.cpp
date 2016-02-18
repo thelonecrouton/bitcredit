@@ -65,7 +65,7 @@ bool isGrantAwardBlock(int64_t nHeight){
 		if(fDebug)LogPrintf("  Is (%ld) a grant block? : Yes \n", nHeight);
 		return true;	
 	}
-	else if ((nHeight > 210000 && nHeight < 317000) && (nHeight % 5 == 0)){
+	else if ((nHeight > 210000 && nHeight < 325000) && (nHeight % 5 == 0)){
 		if(fDebug)LogPrintf("  Is (%ld) a grant block? : Yes \n", nHeight);
 		return true;
 	}
