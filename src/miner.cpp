@@ -484,7 +484,7 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn)
         LogPrintf("CreateNewBlock(): total size %u\n", nBlockSize);
         CAmount blockValue = GetBlockValue(pindexPrev->nHeight+1, nFees);
         CAmount basenodePayment = GetBasenodePayment(pindexPrev->nHeight+1, blockValue);
-        CAmount bank = GetBlockValue(pindex->nHeight, nFees)* (0.09);
+        CAmount bank = GetBlockValue(pindexPrev->nHeight+1, nFees)* (0.09);
         CAmount miner = 1 * COIN;
 
         // Compute final coinbase transaction.
