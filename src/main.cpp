@@ -2435,7 +2435,7 @@ bool static ConnectTip(CValidationState &state, CBlockIndex *pindexNew, CBlock *
 	string miner;
 	CBlockIndex * block40 = chainActive.Tip();
 
-	if (pindexNew->nHeight > 313499 && pindexNew->nHeight <320001){
+	if (pindexNew->nHeight > 313499 && pindexNew->nHeight < 325000){
 		for (int i = chainActive.Tip()->nHeight; i > (chainActive.Tip()->nHeight - 40); i--){
 			ReadBlockFromDisk(blockr, block40);
 			CTxDestination m;
