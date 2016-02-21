@@ -484,10 +484,15 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn)
         LogPrintf("CreateNewBlock(): total size %u\n", nBlockSize);
         CAmount blockValue = GetBlockValue(pindexPrev->nHeight+1, nFees);
         CAmount basenodePayment = GetBasenodePayment(pindexPrev->nHeight+1, blockValue);
-        CAmount bank = GetBlockValue(pindexPrev->nHeight+1, nFees)* (0.09);
+        if (pindexPrev->nHeight > 321399)
+        CAmount bank = 0;
+        {
+        	bank = GetBlockValue(pindexPrev->nHeight+1, nFees)* (0.09);
+        } else {
+        	bank = GetBlockValue(pindexPrev->nHeight+1, nFees) *(0.05);
+        }
         CAmount miner = 1 * COIN;
-
-        // Compute final coinbase transaction.
+               // Compute final coinbase transaction.
 		{
 				txNew.vout[1].nValue = bank;
 				blockValue -= bank;
@@ -505,7 +510,13 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn)
 						j++;
 					}
 					int i=3+payments + grantAwards.size();
-					unsigned long int py = 20*COIN;
+					unsigned long int py = 0;
+					if (pindexPrev->nHeight > 321399)
+        				{
+        					py = 20*COIN;	
+        				} else {
+        					py = blockValue *0.9;
+        				}
 					for(balit = bidtracker.begin(); balit != bidtracker.end();balit++){
 						unsigned long int bb =(balit->second)* py;
 						txNew.vout[i].nValue = bb ;
@@ -522,7 +533,12 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn)
 						j++;
 					}
 					int i=3 + grantAwards.size();
-					unsigned long int py = 20*COIN;
+					if (pindexPrev->nHeight > 321399)
+        				{
+        					py = 20*COIN;	
+        				} else {
+        					py = blockValue *0.9;
+        				}
 					for(balit = bidtracker.begin(); balit != bidtracker.end();balit++){
 						unsigned long int bb =balit->second* py;
 						txNew.vout[i].nValue = bb ;
@@ -533,7 +549,12 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn)
 				else if (hasPayment && ispayoutblock){
 					txNew.vout[2+ payments].nValue = basenodePayment;
 					blockValue -= basenodePayment;
-					unsigned long int py = 20*COIN;
+					if (pindexPrev->nHeight > 321399)
+        				{
+        					py = 20*COIN;	
+        				} else {
+        					py = blockValue *0.9;
+        				}
 					int i=3+payments;
 					for(balit = bidtracker.begin(); balit != bidtracker.end();balit++){
 						unsigned long int bb = balit->second * py;
@@ -554,7 +575,12 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn)
 				}
 				else if (ispayoutblock){
 					int i=3;
-					unsigned long int py = 20*COIN;
+					if (pindexPrev->nHeight > 321399)
+        				{
+        					py = 20*COIN;	
+        				} else {
+        					py = blockValue *0.9;
+        				}
 					for(balit = bidtracker.begin(); balit != bidtracker.end();balit++){
 						unsigned long int bb =balit->second* py;
 						txNew.vout[i].nValue = bb ;
@@ -574,10 +600,17 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn)
 					txNew.vout[2+ payments].nValue = basenodePayment;
 					blockValue -= basenodePayment;
 				}
-			txNew.vout[0].nValue = miner;
-			blockValue-=miner;
-			if (blockValue> 0)
-			txNew.vout[1].nValue = blockValue + bank;
+			
+			if (pindexPrev->nHeight > 321399)
+        		{
+        			txNew.vout[0].nValue = miner;
+				blockValue-=miner;
+				if (blockValue> 0)
+				txNew.vout[1].nValue = blockValue + bank;	
+        		} else {
+        			txNew.vout[0].nValue = blockValue;
+        		}
+			
 		}
 
 		if (fDebug){//debug payouts
