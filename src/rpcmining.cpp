@@ -176,7 +176,8 @@ Value setgenerate(const Array& params, bool fHelp)
         Array blockHashes;
         while (nHeight < nHeightEnd)
         {
-            auto_ptr<CBlockTemplate> pblocktemplate(CreateNewBlockWithKey());
+            CReserveKey reservekey(pwalletMain);
+            auto_ptr<CBlockTemplate> pblocktemplate(CreateNewBlockWithKey(reservekey));
             if (!pblocktemplate.get())
                 throw JSONRPCError(RPC_INTERNAL_ERROR, "Wallet keypool empty");
             CBlock *pblock = &pblocktemplate->block;
@@ -357,7 +358,8 @@ Value getwork(const Array& params, bool fHelp)
             nStart = GetTime();
 
             // Create new block
-            pblocktemplate = CreateNewBlockWithKey();
+            CReserveKey reservekey(pwalletMain);
+            pblocktemplate = CreateNewBlockWithKey(reservekey);
 
             if (!pblocktemplate)
                 throw JSONRPCError(RPC_OUT_OF_MEMORY, "Out of memory");
@@ -697,7 +699,8 @@ Value getblocktemplate(const Array& params, bool fHelp)
         }
         CScript scriptDummy = CScript() << OP_TRUE;
        // pblocktemplate = CreateNewBlock(scriptDummy);
-        pblocktemplate = CreateNewBlockWithKey();
+        CReserveKey reservekey(pwalletMain);
+        pblocktemplate = CreateNewBlockWithKey(reservekey);
         if (!pblocktemplate)
             throw JSONRPCError(RPC_OUT_OF_MEMORY, "Out of memory");
 

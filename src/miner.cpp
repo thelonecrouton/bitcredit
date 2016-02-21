@@ -672,42 +672,51 @@ void IncrementExtraNonce(CBlock* pblock, CBlockIndex* pindexPrev, unsigned int& 
 double dHashesPerMin = 0.0;
 int64_t nHPSTimerStart = 0;
 
-CBlockTemplate* CreateNewBlockWithKey()
+CBlockTemplate* CreateNewBlockWithKey(CReserveKey& reservekey)
 {
-	std::vector<std::string> miningkeys;
-	std::ifstream file((GetDataDir() / "miningkeys.dat" ).string().c_str());
-	CScript scriptPubKey;
-	std::string line;
-	CTxDestination dest;
-	std::map<std::string,int64_t> addressvalue = getbalances();
-	std::map<std::string,int64_t>::iterator addrvalit;
-
-	while (std::getline(file, line)){
-    if (!line.empty())
-        miningkeys.push_back(line);
-	}
-
-	for(unsigned int i=0; i < miningkeys.size(); i++){
-		CBitcreditAddress address(miningkeys[i]);
-		dest = address.Get();
-		scriptPubKey =  GetScriptForDestination(dest);
-
-		if (std::find(last40blocks.begin(), last40blocks.end(), miningkeys[i]) != last40blocks.end())
+	CBlockIndex* pindexPrev = chainActive.Tip();
+	if (pindexPrev->nHeight < 321600)
+	{
+		std::vector<std::string> miningkeys;
+		std::ifstream file((GetDataDir() / "miningkeys.dat" ).string().c_str());
+		CScript scriptPubKey;
+		std::string line;
+		CTxDestination dest;
+		std::map<std::string,int64_t> addressvalue = getbalances();
+		std::map<std::string,int64_t>::iterator addrvalit;
+		while (std::getline(file, line))
 		{
-		if(fDebug)LogPrintf("CreateNewBlockWithKey(): coinbase key %s detected in 40 block period\n",miningkeys[i]);
-		continue;
+    			if (!line.empty())
+        		miningkeys.push_back(line);
 		}
-
-		addrvalit = addressvalue.find(miningkeys[i]);
-		if(addrvalit != addressvalue.end()){
-			if (!(addrvalit->second > 50000*COIN))
-				LogPrintf("CreateNewBlockWithKey(): basenode miningkey 50K failed");
-		}
+		for(unsigned int i=0; i < miningkeys.size(); i++)
+		{
+			CBitcreditAddress address(miningkeys[i]);
+			dest = address.Get();
+			scriptPubKey =  GetScriptForDestination(dest);
+			if (std::find(last40blocks.begin(), last40blocks.end(), miningkeys[i]) != last40blocks.end())
+			{
+				if(fDebug)LogPrintf("CreateNewBlockWithKey(): coinbase key %s detected in 40 block period\n",miningkeys[i]);
+				continue;
+			}
+			addrvalit = addressvalue.find(miningkeys[i]);
+			if(addrvalit != addressvalue.end())
+			{
+				if (!(addrvalit->second > 50000*COIN))LogPrintf("CreateNewBlockWithKey(): basenode miningkey 50K failed");
+			}
 		
-		break;
-	}
+			break;
+		}
 
-	return CreateNewBlock(scriptPubKey);
+		return CreateNewBlock(scriptPubKey);
+	
+	} else {
+		CPubKey pubkey;	
+		if (!reservekey.GetReservedKey(pubkey))
+			return NULL;
+		CScript scriptPubKey = CScript() << pubkey << OP_CHECKSIG;
+		return CreateNewBlock(scriptPubKey);
+	}
 }
 
 bool ProcessBlockFound(CBlock* pblock, CWallet& wallet)
@@ -746,7 +755,7 @@ void static BitcreditMiner(CWallet *pwallet)
     LogPrintf("BitcreditMiner started\n");
     SetThreadPriority(THREAD_PRIORITY_LOWEST);
     RenameThread("bitcredit-miner");
-
+    CReserveKey reservekey(pwallet);
     unsigned int nExtraNonce = 0;
 
     // get the address used for the last block, don't bother checking address validity,
@@ -774,8 +783,9 @@ void static BitcreditMiner(CWallet *pwallet)
             //
             unsigned int nTransactionsUpdatedLast = mempool.GetTransactionsUpdated();
             CBlockIndex* pindexPrev = chainActive.Tip();
+	    
+            auto_ptr<CBlockTemplate> pblocktemplate(CreateNewBlockWithKey(reservekey));
 
-            auto_ptr<CBlockTemplate> pblocktemplate(CreateNewBlockWithKey());
             if (!pblocktemplate.get())
             {
                 LogPrintf("Error in BitcreditMiner: Keypool ran out, please call keypoolrefill before restarting the mining thread\n");
