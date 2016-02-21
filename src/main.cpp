@@ -1508,8 +1508,8 @@ bool IsInitialBlockDownload()
 	static bool lockIBDState = false;
 	if (lockIBDState)
 		return false;
-	bool state = (chainActive.Height() < pindexBestHeader->nHeight - 24 * 6 ||
-		pindexBestHeader->GetBlockTime() < GetTime() - 24 * 60 * 60);
+	bool state = (chainActive.Height() < pindexBestHeader->nHeight - 3 * 24 * 6 ||
+		pindexBestHeader->GetBlockTime() < GetTime() - 3 * 24 * 60 * 60);
 	if (!state)
 		lockIBDState = true;
 	return state;
