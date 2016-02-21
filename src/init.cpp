@@ -369,8 +369,8 @@ std::string HelpMessage(HelpMessageMode mode)
 
     strUsage += "\n" + _("Basenode options:") + "\n";
     strUsage += "  -basenode=<n>            " + _("Enable the client to act as a basenode (0-1, default: 0)") + "\n";
-    strUsage += "  -mnconf=<file>             " + _("Specify basenode configuration file (default: basenode.conf)") + "\n";
-    strUsage += "  -mnconflock=<n>            " + _("Lock basenodes from basenode configuration file (default: 1)") + "\n";
+    strUsage += "  -bnconf=<file>             " + _("Specify basenode configuration file (default: basenode.conf)") + "\n";
+    strUsage += "  -bnconflock=<n>            " + _("Lock basenodes from basenode configuration file (default: 1)") + "\n";
     strUsage += "  -basenodeprivkey=<n>     " + _("Set the basenode private key") + "\n";
     strUsage += "  -basenodeaddr=<n>        " + _("Set external address:port to get to this basenode (example: address:port)") + "\n";
     strUsage += "  -basenodeminprotocol=<n> " + _("Ignore basenodes less than version (example: 70007; default : 0)") + "\n";
@@ -1500,7 +1500,7 @@ bool AppInit2(boost::thread_group& threadGroup)
         }
     }
 
-    if(GetBoolArg("-mnconflock", true)) {
+    if(GetBoolArg("-bnconflock", true)) {
         LogPrintf("Locking Basenodes:\n");
         uint256 mnTxHash;
         BOOST_FOREACH(CBasenodeConfig::CBasenodeEntry mne, basenodeConfig.getEntries()) {
