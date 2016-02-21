@@ -484,8 +484,8 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn)
         LogPrintf("CreateNewBlock(): total size %u\n", nBlockSize);
         CAmount blockValue = GetBlockValue(pindexPrev->nHeight+1, nFees);
         CAmount basenodePayment = GetBasenodePayment(pindexPrev->nHeight+1, blockValue);
+        CAmount bank;
         if (pindexPrev->nHeight > 321399)
-        CAmount bank = 0;
         {
         	bank = GetBlockValue(pindexPrev->nHeight+1, nFees)* (0.09);
         } else {
@@ -533,6 +533,7 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn)
 						j++;
 					}
 					int i=3 + grantAwards.size();
+					unsigned long int py = 0;
 					if (pindexPrev->nHeight > 321399)
         				{
         					py = 20*COIN;	
@@ -549,6 +550,7 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn)
 				else if (hasPayment && ispayoutblock){
 					txNew.vout[2+ payments].nValue = basenodePayment;
 					blockValue -= basenodePayment;
+					unsigned long int py = 0;
 					if (pindexPrev->nHeight > 321399)
         				{
         					py = 20*COIN;	
@@ -575,6 +577,7 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn)
 				}
 				else if (ispayoutblock){
 					int i=3;
+					unsigned long int py = 0;
 					if (pindexPrev->nHeight > 321399)
         				{
         					py = 20*COIN;	
