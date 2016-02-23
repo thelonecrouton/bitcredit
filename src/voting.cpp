@@ -26,7 +26,7 @@ using namespace std;
 CCriticalSection grantdb;
 //SECTION: GrantPrefixes and Grant Block Intervals
 static string GRANTPREFIX="6BCR";
-static const int64_t GRANTBLOCKINTERVAL = 5;
+//static const int64_t GRANTBLOCKINTERVAL = 5; //To be changed to 1
 static int numberOfOffices = 5;
 string electedOffices[6];
 
@@ -105,6 +105,23 @@ void serializeGrantDB(string filename){
 		grantdb.close();
 }
 
+int64_t getGrantDatabaseBlockHeight() {
+    std::string line;
+    ifstream myfile;
+    string filename = (GetDataDir() / "/ratings/grantdb.dat").string().c_str();
+
+    myfile.open (filename.c_str());
+
+    if (myfile.is_open()) {
+		getline (myfile,line);
+		myfile.close();
+		return atoi64(line.c_str());
+    } else {
+		return -1;
+    }
+}
+    
+
 bool deSerializeGrantDB(string filename, int64_t maxWanted){
 
 	if(fDebug)LogPrintf(" De-Serialize Grant Info Database\n Max Blocks Wanted: %ld\n", maxWanted);
@@ -182,6 +199,7 @@ bool getGrantAwards(int64_t nHeight){
 
 bool ensureGrantDatabaseUptoDate(int64_t nHeight){
 
+//    grantDatabaseBlockHeight = getGrantDatabaseBlockHeight();
 	if(fDebug)LogPrintf(" === Grant Database Block Height %ld === \n", grantDatabaseBlockHeight);
     //This should always be true on startup
     if(grantDatabaseBlockHeight==-1){
