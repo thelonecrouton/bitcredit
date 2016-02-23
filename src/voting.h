@@ -30,6 +30,7 @@ extern std::map<std::string,int64_t> getcreditfinal();
 extern std::map<std::string,int64_t> getminedblocks();
 bool isGrantAwardBlock(int64_t nHeight);
 bool getGrantAwards(int64_t nHeight);
+static const int64_t GRANTBLOCKINTERVAL = 1;
 int64_t getGrantDatabaseBlockHeight();
 void processNextBlockIntoGrantDatabase();
 bool getGrantAwardsFromDatabaseForBlock(int64_t nHeight);
