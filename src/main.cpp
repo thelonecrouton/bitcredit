@@ -2102,10 +2102,17 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
 	{
 		return state.DoS(100, error("ConnectBlock(): coinbase key detected in last 40 blocks"), REJECT_INVALID, "consecutive-40-coinbase");
 	}
+	
+	int64_t grantBlockHeight = getGrantDatabaseBlockHeight();
+	//Skip grantDb check in case that grantDB Block Height > current block Height
+	if (pindex->nHeight <= (grantBlockHeight + GRANTBLOCKINTERVAL)) {
+	    //do nothing 
+	    if (fDebug)LogPrintf("GrantDB Block Height: %ld BlockChain Block Height: %ld. Waiting to sync ... \n", grantBlockHeight, pindex->nHeight);
+	} else {
 
-	LOCK(grantdb);
-	int64_t grantAward = 0;
-	if (isGrantAwardBlock(pindex->nHeight)){
+	    LOCK(grantdb);
+    	    int64_t grantAward = 0;
+	    if (isGrantAwardBlock(pindex->nHeight)){
 		if (!getGrantAwards(pindex->nHeight)){
 			return state.DoS(100, error("ConnectBlock() : grant awards error ( block=%d)", pindex->nHeight));
 		}
@@ -2157,6 +2164,7 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
 		if (awardFound != grantAwards.size()){
 			return state.DoS(100, error("ConnectBlock() : DB Corruption detected. Grant Awards not being paid or paying too much. \n Please restore a previous version of grantdb.dat and/or delete the old grantdb database."));
 		}
+	    }
 	}
 
 	if (!control.Wait())
