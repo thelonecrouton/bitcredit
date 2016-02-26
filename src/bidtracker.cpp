@@ -85,14 +85,14 @@ void Bidtracker::btcsortunspent(){
 			std::string search;
 			std::string search2;
 			size_t pos;
-			size_t f = line.find("			tx_hash_big_endian:");
-			size_t g = line.find("			value:");
+			size_t f = line.find("tx_hash_big_endian:");
+			size_t g = line.find("value:");
 
 			search = "tx_hash_big_endian";
 			pos = temp.find(search);
 			if (pos != std::string::npos){
 				std::string semp =line;
-				semp = semp.replace(f, std::string("			tx_hash_big_endian:").length(), "");
+				semp = semp.replace(f, std::string("tx_hash_big_endian:").length(), "");
 				semp = remove(semp, ',');
 				txid = semp;
 				url = "https://blockchain.info/rawtx/"+ txid ;
@@ -135,7 +135,7 @@ void Bidtracker::btcsortunspent(){
 			pos = temp.find(search2);
 			if (pos != std::string::npos){
 				std::string semp =line;
-				semp = semp.replace(g, std::string("			value:").length(), "");
+				semp = semp.replace(g, std::string("value:").length(), "");
 				string value = semp;
 				value = remove(value, ',');
 				long double amount = atof(value.c_str());
@@ -510,4 +510,3 @@ void getbids(){
 	if(fDebug)LogPrintf("Bids dump finished  %dms\n", GetTimeMillis() - nStart);
 
 }
-
