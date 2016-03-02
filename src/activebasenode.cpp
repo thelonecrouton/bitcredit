@@ -6,6 +6,7 @@
 
 #include "protocol.h"
 #include "activebasenode.h"
+#include "basenodeconfig.h"
 #include "basenodeman.h"
 #include <boost/lexical_cast.hpp>
 #include "clientversion.h"
@@ -307,9 +308,10 @@ bool CActiveBasenode::GetBaseNodeVin(CTxIn& vin, CPubKey& pubkey, CKey& secretKe
 }
 
 bool CActiveBasenode::GetBaseNodeVin(CTxIn& vin, CPubKey& pubkey, CKey& secretKey, std::string strTxHash, std::string strOutputIndex) {
-    CScript pubScript;
-
     // Find possible candidates
+    TRY_LOCK(pwalletMain->cs_wallet, fWallet);
+    if(!fWallet) return false;
+
     vector<COutput> possibleCoins = SelectCoinsBasenode();
     COutput *selectedOutput;
 
@@ -317,7 +319,7 @@ bool CActiveBasenode::GetBaseNodeVin(CTxIn& vin, CPubKey& pubkey, CKey& secretKe
     if(!strTxHash.empty()) {
         // Let's find it
         uint256 txHash(strTxHash);
-        int outputIndex = boost::lexical_cast<int>(strOutputIndex);
+        int outputIndex = atoi(strOutputIndex.c_str());
         bool found = false;
         BOOST_FOREACH(COutput& out, possibleCoins) {
             if(out.tx->GetHash() == txHash && out.i == outputIndex)
@@ -424,9 +426,28 @@ vector<COutput> CActiveBasenode::SelectCoinsBasenode()
 {
     vector<COutput> vCoins;
     vector<COutput> filteredCoins;
+    vector<COutPoint> confLockedCoins;
+
+    // Temporary unlock MN coins from basenode.conf
+    if(GetBoolArg("-bnconflock", true)) {
+        uint256 mnTxHash;
+        BOOST_FOREACH(CBasenodeConfig::CBasenodeEntry mne, basenodeConfig.getEntries()) {
+            mnTxHash.SetHex(mne.getTxHash());
+            COutPoint outpoint = COutPoint(mnTxHash, atoi(mne.getOutputIndex().c_str()));
+            confLockedCoins.push_back(outpoint);
+            pwalletMain->UnlockCoin(outpoint);
+        }
+    }
 
     // Retrieve all possible outputs
     pwalletMain->AvailableCoins(vCoins);
+
+	// Lock MN coins from basenode.conf back if they where temporary unlocked
+    if(!confLockedCoins.empty()) {
+        BOOST_FOREACH(COutPoint outpoint, confLockedCoins)
+            pwalletMain->LockCoin(outpoint);
+    }
+
 
     // Filter
     
@@ -466,24 +487,22 @@ vector<COutput> CActiveBasenode::SelectCoinsBasenodeForPubKey(std::string collat
     if (chainActive.Tip()->nHeight<145000) {
     BOOST_FOREACH(const COutput& out, vCoins)
     {
-        if(out.tx->vout[out.i].scriptPubKey == scriptPubKey && out.tx->vout[out.i].nValue == 250000*COIN) { //exactly
-        	filteredCoins.push_back(out);
+        if(out.tx->vout[out.i].nValue == 250000*COIN) { //exactly
+            filteredCoins.push_back(out);
         }
     }
 	}
 	else {
     BOOST_FOREACH(const COutput& out, vCoins)
     {
-        if(out.tx->vout[out.i].scriptPubKey == scriptPubKey && out.tx->vout[out.i].nValue == 50000*COIN) { //exactly
-        	filteredCoins.push_back(out);
+         if(out.tx->vout[out.i].nValue == 50000*COIN) { //exactly
+            filteredCoins.push_back(out);
         }
     }
 	} 
     return filteredCoins;
 }
 
-
-/* select coins with specified transaction hash and output index */
 
 
 // when starting a basenode, this can enable to run as a hot wallet with no funds

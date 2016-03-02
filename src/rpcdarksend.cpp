@@ -9,6 +9,7 @@
 #include "init.h"
 #include "basenode.h"
 #include "activebasenode.h"
+#include "basenodeman.h"
 #include "basenodeconfig.h"
 #include "rpcserver.h"
 #include <boost/lexical_cast.hpp>
@@ -140,10 +141,10 @@ Value basenode(const Array& params, bool fHelp)
                 "  genkey       - Generate new basenodeprivkey\n"
                 "  enforce      - Enforce basenode payments\n"
                 "  outputs      - Print basenode compatible outputs\n"
-                "  start        - Start basenode configured in dash.conf\n"
+                "  start        - Start basenode configured in basenode.conf\n"
                 "  start-alias  - Start single basenode by assigned alias configured in basenode.conf\n"
                 "  start-many   - Start all basenodes configured in basenode.conf\n"
-                "  stop         - Stop basenode configured in dash.conf\n"
+                "  stop         - Stop basenode configured in basenode.conf\n"
                 "  stop-alias   - Stop single basenode by assigned alias configured in basenode.conf\n"
                 "  stop-many    - Stop all basenodes configured in basenode.conf\n"
                 "  list         - Print list of all known basenodes (see basenodelist for more info)\n"
@@ -437,6 +438,10 @@ Value basenode(const Array& params, bool fHelp)
 			total++;
 
 			std::string errorMessage;
+
+			CTxIn vin = CTxIn(uint256(mne.getTxHash()), uint32_t(atoi(mne.getOutputIndex().c_str())));
+            CBasenode *pmn = mnodeman.Find(vin);
+
 			bool result = activeBasenode.Register(mne.getIp(), mne.getPrivKey(), mne.getTxHash(), mne.getOutputIndex(), errorMessage);
 
 			Object statusObj;

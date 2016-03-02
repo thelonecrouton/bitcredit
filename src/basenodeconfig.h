@@ -29,7 +29,6 @@ public:
         std::string privKey;
         std::string txHash;
         std::string outputIndex;
-
     public:
 
         CBasenodeEntry(std::string alias, std::string ip, std::string privKey, std::string txHash, std::string outputIndex) {
@@ -79,7 +78,6 @@ public:
         void setIp(const std::string& ip) {
             this->ip = ip;
         }
-
     };
 
     CBasenodeConfig() {
@@ -92,6 +90,14 @@ public:
 
     std::vector<CBasenodeEntry>& getEntries() {
         return entries;
+    }
+
+    int getCount() {
+        int c = -1;
+        BOOST_FOREACH(CBasenodeEntry e, entries) {
+            if(e.getAlias() != "") c++;
+        }
+        return c;
     }
 
 private:

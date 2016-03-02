@@ -23,6 +23,7 @@
 #include "paymentserver.h"
 #include "walletmodel.h"
 #endif
+#include "basenodeconfig.h"
 
 #include "init.h"
 #include "main.h"
@@ -230,7 +231,6 @@ private:
 #ifdef ENABLE_WALLET
     PaymentServer* paymentServer;
     WalletModel *walletModel;
-
 #endif
     int returnValue;
 
@@ -298,7 +298,6 @@ BitcreditApplication::BitcreditApplication(int &argc, char **argv):
 #ifdef ENABLE_WALLET
     paymentServer(0),
     walletModel(0),
-
 #endif
     returnValue(0)
 {
@@ -331,8 +330,6 @@ void BitcreditApplication::createPaymentServer()
 {
     paymentServer = new PaymentServer(this);
 }
-
-
 #endif
 
 void BitcreditApplication::createOptionsModel()
@@ -588,6 +585,14 @@ int main(int argc, char *argv[])
     initTranslations(qtTranslatorBase, qtTranslator, translatorBase, translator);
 
 #ifdef ENABLE_WALLET
+    /// 7a. parse basenode.conf
+    string strErr;
+    if(!basenodeConfig.read(strErr)) {
+        QMessageBox::critical(0, QObject::tr("Bitcredit Core"),
+                              QObject::tr("Error reading basenode configuration file: %1").arg(strErr.c_str()));
+        return false;
+    }
+
     /// 8. URI IPC sending
     // - Do this early as we don't want to bother initializing if we are just calling IPC
     // - Do this *after* setting up the data directory, as the data directory hash is used in the name
