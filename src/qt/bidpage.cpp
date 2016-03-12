@@ -35,35 +35,51 @@ BidPage::BidPage(QWidget *parent)
     if (themestring.contains("orange"))
     {
         ui->pushButtonRefresh->setStyleSheet("border: 2px solid #ffa405");
+        ui->frame->setStyleSheet("border: 2px solid #ffa405");
+        ui->label_heading->setStyleSheet("border: none");
     }
     else if (themestring.contains("dark"))
     {
         ui->pushButtonRefresh->setStyleSheet("border: 2px solid #ffa405");
+        ui->frame->setStyleSheet("border: 2px solid #ffa405");
+        ui->label_heading->setStyleSheet("border: none");
     }
     else if (themestring.contains("green"))
     {
         ui->pushButtonRefresh->setStyleSheet("border: 2px solid #45f806");
+        ui->frame->setStyleSheet("border: 2px solid #45f806");
+        ui->label_heading->setStyleSheet("border: none");
     }
     else if (themestring.contains("blue"))
     {
-        ui->pushButtonRefresh->setStyleSheet("border: 2px solid #088af8");
+        ui->pushButtonRefresh->setStyleSheet("border: 2px solid #031cd7");
+        ui->frame->setStyleSheet("border: 2px solid #031cd7");
+        ui->label_heading->setStyleSheet("border: none");
     }
     else if (themestring.contains("pink"))
     {
-        ui->pushButtonRefresh->setStyleSheet("border: 2px solid #fb04db");
+        ui->pushButtonRefresh->setStyleSheet("border: 2px solid #ff03a3");
+        ui->frame->setStyleSheet("border: 2px solid #ff03a3");
+        ui->label_heading->setStyleSheet("border: none");
     }
     else if (themestring.contains("purple"))
     {
-        ui->pushButtonRefresh->setStyleSheet("border: 2px solid #cb03d2");
+        ui->pushButtonRefresh->setStyleSheet("border: 2px solid #a106a7");
+        ui->frame->setStyleSheet("border: 2px solid #a106a7");
+        ui->label_heading->setStyleSheet("border: none");
     }
     else if (themestring.contains("turq"))
     {
         ui->pushButtonRefresh->setStyleSheet("border: 2px solid #0ab4dc");
+        ui->frame->setStyleSheet("border: 2px solid #0ab4dc");
+        ui->label_heading->setStyleSheet("border: none");
     }
     //fallback on default
     else
     {
         ui->pushButtonRefresh->setStyleSheet("border: 2px solid #ffa405");
+        ui->frame->setStyleSheet("border: 1px solid #ffa405");
+        ui->label_heading->setStyleSheet("border: none");
     }
 
 }
@@ -146,7 +162,7 @@ void BidPage::GetBids()
     // to do - add radiobuttons or dropdown to select sats or not?
     double btctotU = btctot / 100000000;
     QString btctotal = QString::number(btctotU, 'f', 8);
-    ui->labelBTC_2->setText(btctotal);
+    //ui->labelBTC_2->setText(btctotal);
 
     // add 'em up and display 'em
     double alltot = btctotU;

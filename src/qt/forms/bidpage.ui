@@ -19,18 +19,92 @@
      <x>10</x>
      <y>10</y>
      <width>761</width>
-     <height>501</height>
+     <height>504</height>
     </rect>
    </property>
    <layout class="QVBoxLayout" name="verticalLayout_2">
     <property name="topMargin">
-     <number>30</number>
+     <number>0</number>
     </property>
     <property name="rightMargin">
      <number>20</number>
     </property>
     <item>
-     <layout class="QGridLayout" name="gridLayout">
+     <widget class="QFrame" name="frame">
+      <property name="minimumSize">
+       <size>
+        <width>0</width>
+        <height>120</height>
+       </size>
+      </property>
+      <property name="maximumSize">
+       <size>
+        <width>16777215</width>
+        <height>120</height>
+       </size>
+      </property>
+      <property name="frameShape">
+       <enum>QFrame::StyledPanel</enum>
+      </property>
+      <property name="frameShadow">
+       <enum>QFrame::Raised</enum>
+      </property>
+      <widget class="QLabel" name="label_heading">
+       <property name="geometry">
+        <rect>
+         <x>0</x>
+         <y>42</y>
+         <width>740</width>
+         <height>30</height>
+        </rect>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>16777215</width>
+         <height>30</height>
+        </size>
+       </property>
+       <property name="font">
+        <font>
+         <pointsize>16</pointsize>
+         <weight>75</weight>
+         <bold>true</bold>
+        </font>
+       </property>
+       <property name="text">
+        <string>BitCredit Daily Auction</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignCenter</set>
+       </property>
+      </widget>
+     </widget>
+    </item>
+    <item>
+     <layout class="QGridLayout" name="gridLayout" rowminimumheight="75,25,25,0">
+      <property name="bottomMargin">
+       <number>0</number>
+      </property>
+      <item row="2" column="0">
+       <widget class="QLabel" name="labelEstprice">
+        <property name="maximumSize">
+         <size>
+          <width>16777215</width>
+          <height>30</height>
+         </size>
+        </property>
+        <property name="font">
+         <font>
+          <pointsize>12</pointsize>
+          <weight>50</weight>
+          <bold>false</bold>
+         </font>
+        </property>
+        <property name="text">
+         <string>Estimated BCR rate:</string>
+        </property>
+       </widget>
+      </item>
       <item row="0" column="3">
        <widget class="QPushButton" name="pushButtonRefresh">
         <property name="sizePolicy">
@@ -45,27 +119,17 @@
           <height>29</height>
          </size>
         </property>
+        <property name="maximumSize">
+         <size>
+          <width>130</width>
+          <height>16777215</height>
+         </size>
+        </property>
         <property name="toolTip">
          <string>Load current bids in bidtracker directory</string>
         </property>
         <property name="text">
          <string>Update</string>
-        </property>
-       </widget>
-      </item>
-      <item row="2" column="3">
-       <widget class="QPushButton" name="pushButtonBTC">
-        <property name="font">
-         <font>
-          <weight>50</weight>
-          <bold>false</bold>
-         </font>
-        </property>
-        <property name="toolTip">
-         <string>Launch bitcoin-qt (if installed)</string>
-        </property>
-        <property name="text">
-         <string>Bid with BTC</string>
         </property>
        </widget>
       </item>
@@ -93,22 +157,8 @@
         </property>
        </widget>
       </item>
-      <item row="2" column="0">
-       <widget class="QLabel" name="labelBTC">
-        <property name="font">
-         <font>
-          <pointsize>10</pointsize>
-          <weight>50</weight>
-          <bold>false</bold>
-         </font>
-        </property>
-        <property name="text">
-         <string>BTC:</string>
-        </property>
-       </widget>
-      </item>
-      <item row="3" column="0" alignment="Qt::AlignBottom">
-       <widget class="QLabel" name="labelTotal">
+      <item row="0" column="0">
+       <widget class="QLabel" name="labelNext">
         <property name="font">
          <font>
           <pointsize>12</pointsize>
@@ -117,11 +167,31 @@
          </font>
         </property>
         <property name="text">
-         <string>Total Bids (BTC):</string>
+         <string>Current Bid Period:</string>
         </property>
        </widget>
       </item>
-      <item row="4" column="1">
+      <item row="1" column="0">
+       <widget class="QLabel" name="labelCurrentbids">
+        <property name="maximumSize">
+         <size>
+          <width>16777215</width>
+          <height>30</height>
+         </size>
+        </property>
+        <property name="font">
+         <font>
+          <pointsize>12</pointsize>
+          <weight>50</weight>
+          <bold>false</bold>
+         </font>
+        </property>
+        <property name="text">
+         <string>Total Current Bids (BTC):   </string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="1">
        <widget class="QLabel" name="labelEstprice_2">
         <property name="font">
          <font>
@@ -135,7 +205,7 @@
         </property>
        </widget>
       </item>
-      <item row="3" column="1" alignment="Qt::AlignBottom">
+      <item row="1" column="1">
        <widget class="QLabel" name="labelTotal_2">
         <property name="font">
          <font>
@@ -149,36 +219,38 @@
         </property>
        </widget>
       </item>
-      <item row="4" column="0">
-       <widget class="QLabel" name="labelEstprice">
+      <item row="3" column="0">
+       <widget class="QLabel" name="label">
+        <property name="minimumSize">
+         <size>
+          <width>0</width>
+          <height>50</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>250</width>
+          <height>16777215</height>
+         </size>
+        </property>
         <property name="font">
          <font>
           <pointsize>12</pointsize>
-          <weight>50</weight>
-          <bold>false</bold>
          </font>
         </property>
         <property name="text">
-         <string>Estimated BCR rate:</string>
+         <string>Bid with Bitcoin, send your bid to: </string>
         </property>
        </widget>
       </item>
-      <item row="0" column="0">
-       <widget class="QLabel" name="labelNext">
-        <property name="font">
-         <font>
-          <pointsize>12</pointsize>
-          <weight>50</weight>
-          <bold>false</bold>
-         </font>
+      <item row="3" column="1" alignment="Qt::AlignLeft">
+       <widget class="QPushButton" name="pushButtonBTCExplorer">
+        <property name="maximumSize">
+         <size>
+          <width>330</width>
+          <height>16777215</height>
+         </size>
         </property>
-        <property name="text">
-         <string>Current Bid Period :</string>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="0">
-       <widget class="QLabel" name="labelCurrentbids">
         <property name="font">
          <font>
           <pointsize>12</pointsize>
@@ -186,13 +258,6 @@
           <bold>true</bold>
          </font>
         </property>
-        <property name="text">
-         <string>Current Bids:</string>
-        </property>
-       </widget>
-      </item>
-      <item row="2" column="2" alignment="Qt::AlignLeft">
-       <widget class="QPushButton" name="pushButtonBTCExplorer">
         <property name="toolTip">
          <string>View address on blockr.io</string>
         </property>
@@ -207,20 +272,25 @@
         </property>
        </widget>
       </item>
-      <item row="2" column="1">
-       <widget class="QLabel" name="labelBTC_2">
+      <item row="3" column="3">
+       <widget class="QPushButton" name="pushButtonBTC">
+        <property name="maximumSize">
+         <size>
+          <width>130</width>
+          <height>16777215</height>
+         </size>
+        </property>
         <property name="font">
          <font>
-          <pointsize>10</pointsize>
           <weight>50</weight>
           <bold>false</bold>
          </font>
         </property>
         <property name="toolTip">
-         <string>Current total BTC bids</string>
+         <string>Launch bitcoin-qt (if installed)</string>
         </property>
         <property name="text">
-         <string>0.00000000</string>
+         <string>Bid</string>
         </property>
        </widget>
       </item>
