@@ -39,7 +39,7 @@ void StatisticsPage::updateStatistics()
     double mincreditscore =  0.0;
     double avecreditscore = 0.0;
     double mintrust = 0.0;
-    double btcassets = r.getbalance("https://blockchain.info/q/addressbalance/16bi8R4FoDHfjNJ1RhpvcAEn4Cz78FbtZB")/COIN;
+    double btcassets = r.getbalance("https://blockchain.info/q/addressbalance/16bi8R4FoDHfjNJ1RhpvcAEn4Cz78FbtZB");
     double bcrassets = r.getbalance("http://chainz.cryptoid.info/bcr/api.dws?q=getbalance&a=5qH4yHaaaRuX1qKCZdUHXNJdesssNQcUct");
     double bcrprice = r.bcrbtc();
     double btcprice = r.usdbtc();
