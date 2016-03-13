@@ -42,6 +42,7 @@ public:
     int totalnumtxPrevious;
     QString bankstatus;
     int64_t marketcap;
+    std::string theme;
     
 public slots:
 

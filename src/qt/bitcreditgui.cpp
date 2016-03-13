@@ -456,15 +456,15 @@ void BitcreditGUI::createActions(const NetworkStyle *networkStyle)
 
     toolbarutils3->setIconSize(QSize(100, 35));
     toolbarutils3->setFixedSize(100, 35);
-    toolbarstats->setIconSize(QSize(100, 35));
-    toolbarstats2->setIconSize(QSize(100, 35));
-    toolbarstats3->setIconSize(QSize(100, 35));
+    toolbarstats->setIconSize(QSize(200, 35));
+    toolbarstats2->setIconSize(QSize(200, 35));
+    toolbarstats3->setIconSize(QSize(200, 35));
     toolbarstats->setObjectName("toolbar9");
     toolbarstats2->setObjectName("toolbar10");
     toolbarstats3->setObjectName("toolbar11");
-    toolbarstats->setFixedSize(100, 35);
-    toolbarstats2->setFixedSize(100, 35);
-    toolbarstats3->setFixedSize(100, 35);
+    toolbarstats->setFixedSize(200, 35);
+    toolbarstats2->setFixedSize(200, 35);
+    toolbarstats3->setFixedSize(200, 35);
     QHBoxLayout *vbox5 = new QHBoxLayout();
     vbox5->setContentsMargins(0, 0, 0, 0);
     vbox5->setSpacing(0);
@@ -474,7 +474,7 @@ void BitcreditGUI::createActions(const NetworkStyle *networkStyle)
     vbox5->addWidget(toolbarutils3);
     wId4 = new QWidget(this);
     wId4->setContentsMargins(0, 0, 0, 0);
-    wId4->setFixedSize(600, 35);
+    wId4->setFixedSize(700, 35);
     wId4->move(300, 9);
     wId4->setLayout(vbox5);
     wId4->setFocus();

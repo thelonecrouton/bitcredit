@@ -25,6 +25,7 @@ BidPage::BidPage(QWidget *parent)
     ui->setupUi(this);
 
     ui->lineEditBid->setEnabled(false);  //  cannot calc until update clicked and data fetched
+    ui->label_BTCassets->setStyleSheet("border: none");
 
     connect(ui->pushButtonBTCExplorer, SIGNAL(clicked()), this, SLOT(SummonBTCExplorer()));
     connect(ui->pushButtonBTC, SIGNAL(clicked()), this, SLOT(SummonBTCWallet()));
@@ -82,14 +83,8 @@ BidPage::BidPage(QWidget *parent)
         ui->frame->setStyleSheet("border: 1px solid #ffa405");
         ui->label_heading->setStyleSheet("border: none");
     }
-
-    Bidtracker r;
-    double btcassets = r.getbalance("https://blockchain.info/q/addressbalance/16bi8R4FoDHfjNJ1RhpvcAEn4Cz78FbtZB");
-    QString reserves = QString::number(btcassets/COIN, 'f', 8);
-    ui->label_BTCassets->setStyleSheet("border: none");
-    ui->label_BTCassets->setText("Current BTC reserves: " + reserves);
-
 }
+
 void BidPage::setClientModel(ClientModel *model)
 {
     clientModel = model;
@@ -127,6 +122,12 @@ void BidPage::Estimate()
 
 void BidPage::GetBids()
 {
+    // get current BTC assets
+    Bidtracker r;
+    double btcassets = r.getbalance("https://blockchain.info/q/addressbalance/16bi8R4FoDHfjNJ1RhpvcAEn4Cz78FbtZB");
+    QString reserves = QString::number(btcassets/COIN, 'f', 8);
+    ui->label_BTCassets->setText("Current BTC reserves: " + reserves);
+
     // calc time until next 00:00 GMT
     long int startdate = 1450396800; // 18 December 2015 00:00
     long int current = GetTime();

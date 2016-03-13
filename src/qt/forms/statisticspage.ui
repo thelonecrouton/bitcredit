@@ -22,29 +22,13 @@
   <property name="styleSheet">
    <string notr="true"/>
   </property>
-  <widget class="QFrame" name="globalstatsFrame">
-   <property name="geometry">
-    <rect>
-     <x>50</x>
-     <y>320</y>
-     <width>701</width>
-     <height>141</height>
-    </rect>
-   </property>
-   <property name="frameShape">
-    <enum>QFrame::StyledPanel</enum>
-   </property>
-   <property name="frameShadow">
-    <enum>QFrame::Raised</enum>
-   </property>
-  </widget>
   <widget class="QFrame" name="frame">
    <property name="geometry">
     <rect>
-     <x>50</x>
-     <y>158</y>
+     <x>40</x>
+     <y>203</y>
      <width>701</width>
-     <height>151</height>
+     <height>180</height>
     </rect>
    </property>
    <property name="frameShape">
@@ -59,7 +43,7 @@
       <x>10</x>
       <y>10</y>
       <width>681</width>
-      <height>131</height>
+      <height>162</height>
      </rect>
     </property>
     <layout class="QGridLayout" name="gridLayout">
@@ -275,7 +259,7 @@
         <string notr="true"/>
        </property>
        <property name="text">
-        <string>Assets Total ($)</string>
+        <string>Assets Total (US $)</string>
        </property>
       </widget>
      </item>
@@ -633,8 +617,8 @@
   <widget class="QFrame" name="frame_2">
    <property name="geometry">
     <rect>
-     <x>50</x>
-     <y>123</y>
+     <x>40</x>
+     <y>147</y>
      <width>701</width>
      <height>31</height>
     </rect>
@@ -756,8 +740,8 @@
   <widget class="QPushButton" name="startButton">
    <property name="geometry">
     <rect>
-     <x>50</x>
-     <y>460</y>
+     <x>40</x>
+     <y>406</y>
      <width>120</width>
      <height>30</height>
     </rect>
@@ -787,10 +771,67 @@
     <string>Refresh</string>
    </property>
   </widget>
+  <widget class="QFrame" name="frame_3">
+   <property name="geometry">
+    <rect>
+     <x>40</x>
+     <y>69</y>
+     <width>701</width>
+     <height>50</height>
+    </rect>
+   </property>
+   <property name="minimumSize">
+    <size>
+     <width>0</width>
+     <height>50</height>
+    </size>
+   </property>
+   <property name="maximumSize">
+    <size>
+     <width>16777215</width>
+     <height>50</height>
+    </size>
+   </property>
+   <property name="frameShape">
+    <enum>QFrame::StyledPanel</enum>
+   </property>
+   <property name="frameShadow">
+    <enum>QFrame::Raised</enum>
+   </property>
+   <widget class="QLabel" name="label_heading">
+    <property name="geometry">
+     <rect>
+      <x>0</x>
+      <y>10</y>
+      <width>701</width>
+      <height>30</height>
+     </rect>
+    </property>
+    <property name="maximumSize">
+     <size>
+      <width>16777215</width>
+      <height>30</height>
+     </size>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>16</pointsize>
+      <weight>75</weight>
+      <bold>true</bold>
+     </font>
+    </property>
+    <property name="text">
+     <string>BCR Network - Financial Stats</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignCenter</set>
+    </property>
+   </widget>
+  </widget>
   <zorder>startButton</zorder>
-  <zorder>globalstatsFrame</zorder>
   <zorder>frame</zorder>
   <zorder>frame_2</zorder>
+  <zorder>frame_3</zorder>
  </widget>
  <resources/>
  <connections/>

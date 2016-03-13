@@ -22,6 +22,51 @@ StatisticsPage::StatisticsPage(QWidget *parent) :
     ui->setupUi(this);
 
     connect(ui->startButton, SIGNAL(pressed()), this, SLOT(updateStatistics()));
+
+    theme = GetArg("-theme", "");
+    QString themestring = QString::fromUtf8(theme.c_str());
+    if (themestring.contains("orange"))
+    {
+        ui->frame_3->setStyleSheet("border: 2px solid #ffa405");
+        ui->label_heading->setStyleSheet("border: none");
+    }
+    else if (themestring.contains("dark"))
+    {
+        ui->frame_3->setStyleSheet("border: 2px solid #ffa405");
+        ui->label_heading->setStyleSheet("border: none");
+    }
+    else if (themestring.contains("green"))
+    {
+        ui->frame_3->setStyleSheet("border: 2px solid #45f806");
+        ui->label_heading->setStyleSheet("border: none");
+    }
+    else if (themestring.contains("blue"))
+    {
+        ui->frame_3->setStyleSheet("border: 2px solid #031cd7");
+        ui->label_heading->setStyleSheet("border: none");
+    }
+    else if (themestring.contains("pink"))
+    {
+        ui->frame_3->setStyleSheet("border: 2px solid #ff03a3");
+        ui->label_heading->setStyleSheet("border: none");
+    }
+    else if (themestring.contains("purple"))
+    {
+        ui->frame->setStyleSheet("border: 2px solid #a106a7");
+        ui->label_heading->setStyleSheet("border: none");
+    }
+    else if (themestring.contains("turq"))
+    {
+        ui->frame_3->setStyleSheet("border: 2px solid #0ab4dc");
+        ui->label_heading->setStyleSheet("border: none");
+    }
+    //fallback on default
+    else
+    {
+        ui->frame_3->setStyleSheet("border: 1px solid #ffa405");
+        ui->label_heading->setStyleSheet("border: none");
+    }
+
 }
 
 double bidsPrevious= -1, marketcapPrevious = -1, mincreditscorePrevious = -1, assetstotalPrevious = -1, avecreditscorePrevious = -1, mintrustPrevious = -1, btcassetsPrevious = -1, bcrassetsPrevious = -1, fiatassetsPrevious = -1, netinterestratePrevious = -1,
@@ -34,7 +79,7 @@ QString phase = "";
 
 void StatisticsPage::updateStatistics()
 {
-	Bidtracker r;
+    Bidtracker r;
     CCoinsStats stats;
     double mincreditscore =  0.0;
     double avecreditscore = 0.0;
@@ -48,13 +93,13 @@ void StatisticsPage::updateStatistics()
     double fiatassets = assetstotal*btcprice;
     int nHeight = (chainActive.Tip()->nHeight);
     int64_t totalnumtx = 0;
-    double gblmoneysupply = stats.nTotalAmount/COIN ;
+    double gblmoneysupply = stats.nTotalAmount/COIN;
     double marketcap =  assetstotal - ((bcrprice*0) *btcprice);
     double gblavailablecredit = (gblmoneysupply - bcrassets )- mnodeman.size()*50000;
     double grossmarketcap =  (gblmoneysupply * bcrprice) * btcprice;
     double inflationindex = (45000/gblmoneysupply) *100;
     double liquidityindex = ((gblmoneysupply * bcrprice)*btcprice)/ assetstotal;
-	double globaldebt =  grossmarketcap - marketcap;
+    double globaldebt =  grossmarketcap - marketcap;
 
 	
     if(btcassets > 0 && btcassets< 100)
@@ -89,9 +134,9 @@ void StatisticsPage::updateStatistics()
     QString navecreditscore = QString::number(avecreditscore, 'f', 6);
     QString nmintrust = QString::number(mintrust, 'f', 6);
     QString nbtcassets = QString::number(btcassets, 'f', 8);
-    QString nbcrassets = QString::number(bcrassets, 'f', 8);
-    QString nfiatassets = QString::number(fiatassets, 'f', 8);
-    QString nassetstotal = QString::number(assetstotal, 'f', 6);
+    QString nbcrassets = QString::number(bcrassets, 'f', 2);
+    QString nfiatassets = QString::number(fiatassets, 'f', 2);
+    QString nassetstotal = QString::number(assetstotal, 'f', 8);
     QString nnetinterestrate = QString::number(netinterestrate, 'f', 6);
     QString ntrust = QString::number(trust, 'f', 6);
     QString ninflationindex = QString::number(inflationindex, 'f', 6);
@@ -245,15 +290,15 @@ void StatisticsPage::updateStatistics()
 
     if(assetstotal > assetstotalPrevious)
     {
-        ui->assetstotal->setText("<font color=\"green\">$" + nassetstotal + "</font>");
+        ui->assetstotal->setText("<font color=\"green\">" + nassetstotal + "</font>");
     }
     else if (assetstotal < assetstotalPrevious)
     {
-        ui->assetstotal->setText("<font color=\"red\">$" + nassetstotal + "</font>");
+        ui->assetstotal->setText("<font color=\"red\">" + nassetstotal + "</font>");
     }
     else
     {
-    ui->assetstotal->setText("$"+nassetstotal);
+    ui->assetstotal->setText(nassetstotal);
     }
 
     if(gblavailablecredit > gblavailablecreditPrevious)
