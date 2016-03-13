@@ -275,7 +275,7 @@
         <string notr="true"/>
        </property>
        <property name="text">
-        <string>FIAT Assets</string>
+        <string>Assets Total ($)</string>
        </property>
       </widget>
      </item>
@@ -452,7 +452,7 @@
         <string notr="true"/>
        </property>
        <property name="text">
-        <string>Assets Total</string>
+        <string>Assets Total (BTC)</string>
        </property>
       </widget>
      </item>

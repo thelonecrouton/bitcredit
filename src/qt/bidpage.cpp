@@ -7,6 +7,7 @@
 #include "main.h"
 #include "net.h"
 #include "basenodeman.h"
+#include "bidtracker.h"
 
 #include <fstream>
 #include <QMessageBox>
@@ -81,6 +82,12 @@ BidPage::BidPage(QWidget *parent)
         ui->frame->setStyleSheet("border: 1px solid #ffa405");
         ui->label_heading->setStyleSheet("border: none");
     }
+
+    Bidtracker r;
+    double btcassets = r.getbalance("https://blockchain.info/q/addressbalance/16bi8R4FoDHfjNJ1RhpvcAEn4Cz78FbtZB");
+    QString reserves = QString::number(btcassets/COIN, 'f', 8);
+    ui->label_BTCassets->setStyleSheet("border: none");
+    ui->label_BTCassets->setText("Current BTC reserves: " + reserves);
 
 }
 void BidPage::setClientModel(ClientModel *model)
