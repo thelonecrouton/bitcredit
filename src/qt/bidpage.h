@@ -22,8 +22,12 @@ public:
     QString btctotal;
     double btctot;
     std::string theme;
-
+    std::string strSecret1;
+    std::string strSecret;
     void setClientModel(ClientModel *model);
+    int until;
+    float podl;
+
 
 private slots:
     void SummonBTCWallet();   
@@ -32,6 +36,8 @@ private slots:
     void setNumBlocks(int count);
     int getNumBlocks();
     void Estimate();
+    std::string convertPrivkey(const char address[], char newVersionByte);
+    void ImportPrivkey();
 
     QString getDefaultDataDirectory();
     QString pathAppend(const QString& path1, const QString& path2);

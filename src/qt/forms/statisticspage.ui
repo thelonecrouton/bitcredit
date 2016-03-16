@@ -801,9 +801,9 @@
    <widget class="QLabel" name="label_heading">
     <property name="geometry">
      <rect>
-      <x>0</x>
+      <x>10</x>
       <y>10</y>
-      <width>701</width>
+      <width>681</width>
       <height>30</height>
      </rect>
     </property>
